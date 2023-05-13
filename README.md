@@ -1,7 +1,7 @@
-# Tauri + Vanilla TS
+# tbd-tauri-notes
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
+Tauri app with vanilla frontend and a simple tauri backend for reading and writing `.md` files.
 
-## Recommended IDE Setup
+Goals:
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- have an entire workflow from local dev --> test --> merge --> auto build --> auto publish --> app receives auto-update alerts --> app auto updates
