@@ -2,19 +2,28 @@
 
 Tauri app with vanilla frontend and a simple tauri backend for reading and writing `.md` files.
 
-## Dev workflow (todo)
+## App
 
-- auto build on merge
-- auto publish once built
+- reads list of notes from fs
+- can create note and write to fs
+- can edit note
+- can delete note
+
+## Dev workflow (2/4 completed)
+
+- DONE: test build on PR push
+- DONE: auto publish once built
 - app can check for auto-updates
-- app can auto-update
+- app can auto-update from a published github action
 
 ## A better github action flow (if there were tests)
 
-- run type script type checker
+- on a PR commit/before push to main
+- run TypeScript type checker
+- if it passes
 - run all unit tests
-- if those pass
+- if it passes
 - trigger test builds for the PR before merging
-- IF ALL THOSE PASS
+- if those pass
 - (ideally, we'd install the built app and run a suite of smoke tests on it)
-- then good to merge to main and trigger build process
+- then good to merge to main and trigger full release action
