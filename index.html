@@ -2,11 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./src-ui/main.css" />
-    <link rel="stylesheet" href="./src-ui/sidebar.css" />
+    <link rel="stylesheet" href="./src-ui/styles/index.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tbd-tauri-notes</title>
-    <script type="module" src="./src-ui/main.ts" defer></script>
+    <script type="module" src="./src-ui/index.ts" defer></script>
   </head>
 
   <body>
@@ -23,14 +22,7 @@
     </div>
 
     <main>
-      <!-- render note and editor on right -->
-      <!-- this section will pretty much exclusively be tiptap -->
-      <div>
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button id="greet-button" type="button">Greet</button>
-      </div>
-
-      <p id="greet-msg"></p>
+      <div id="editor"></div>
     </main>
   </body>
 </html>
