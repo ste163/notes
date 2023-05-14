@@ -1,0 +1,24 @@
+#sidebar {
+  background-color: black;
+  padding: 0.5em;
+}
+
+.sidebar-header-title {
+  font-size: medium;
+}
+
+.sidebar-header-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 1.5em;
+  margin-right: 0.5em;
+  will-change: filter;
+  transition: 0.75s;
+}
+
+.logo.tauri:hover {
+  filter: drop-shadow(0 0 2em #24c8db);
+}

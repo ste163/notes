@@ -2,38 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./src-ui/styles.css" />
+    <link rel="stylesheet" href="./src-ui/main.css" />
+    <link rel="stylesheet" href="./src-ui/sidebar.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>tbd-tauri-notes</title>
     <script type="module" src="./src-ui/main.ts" defer></script>
   </head>
 
   <body>
-    <!-- Structure -->
-    <!-- list of notes on left that are selectable (read from fs) -->
-    <!-- once a note is selected, load from fs -->
-    <!-- render note and editor on right -->
-    <div class="container">
-      <h1>Welcome to Tauri!</h1>
-
-      <div class="row">
-        <a href="https://tauri.app" target="_blank">
-          <img
-            src="/src-ui/assets/tauri.svg"
-            class="logo tauri"
-            alt="Tauri logo"
-          />
-        </a>
+    <div id="sidebar">
+      <div class="sidebar-header-container">
+        <img
+          src="/src-ui/assets/tauri.svg"
+          class="logo tauri"
+          alt="Tauri logo"
+        />
+        <h1 class="sidebar-header-title">Tauri Notes</h1>
       </div>
+      <!-- Dynamic list of all note titles read from fs -->
+    </div>
 
-      <div class="row">
-        <div>
-          <input id="greet-input" placeholder="Enter a name..." />
-          <button id="greet-button" type="button">Greet</button>
-        </div>
+    <main>
+      <!-- render note and editor on right -->
+      <!-- this section will pretty much exclusively be tiptap -->
+      <div>
+        <input id="greet-input" placeholder="Enter a name..." />
+        <button id="greet-button" type="button">Greet</button>
       </div>
 
       <p id="greet-msg"></p>
-    </div>
+    </main>
   </body>
 </html>
