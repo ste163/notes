@@ -1,3 +1,5 @@
+/* todo */
+/* once I'm happy with colors, swap to css variables */
 :root {
   font-family: sans-serif;
   font-size: 16px;
@@ -25,39 +27,49 @@ body {
 main {
   display: flex;
   flex-direction: column;
-  padding: 1em;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #ffffff;
-  background-color: #0f0f0f98;
-
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  height: 100%;
 }
 
 button {
+  border-radius: 0.3em;
+  border: 0.1em solid black;
+  padding: 0.3em 0.5em;
+
+  font-size: 0.9em;
+  font-weight: bold;
+
   cursor: pointer;
+
+  color: #000000;
+  background-color: #ffffff;
 }
 
-h1 {
-  font-family: serif;
-  font-size: 1.2em;
+button:hover {
+  background-color: #0a4b144c;
 }
 
+button.isActive {
+  color: white;
+  background-color: #0a4b14;
+}
+
+/* if this stay very small, in-line */
 #sidebar {
   border-right: black 0.18em solid;
   width: 9em;
 }
 
-.sidebar-header-container > h1 {
+#sidebar-header-container > h1 {
   margin-left: 0.5em;
   font-size: 1em;
+}
+
+#editor-menu {
+  padding: 0.5em;
+  border-bottom: black 0.18em solid;
+}
+
+#editor {
+  margin: 1em;
 }

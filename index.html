@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./src-ui/styles/index.css" />
+    <link rel="stylesheet" href="./src-ui/index.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>t2-notes</title>
     <script type="module" src="./src-ui/index.ts" defer></script>
@@ -10,13 +10,14 @@
 
   <body>
     <div id="sidebar">
-      <div class="sidebar-header-container">
+      <div id="sidebar-header-container">
         <h1>Notes</h1>
       </div>
       <!-- Dynamic list of all note titles read from fs -->
     </div>
 
     <main>
+      <div id="editor-menu"></div>
       <div id="editor">
         <!-- Dynamically Generated -->
       </div>
