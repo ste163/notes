@@ -20,14 +20,13 @@ function createEditor(): Editor {
        * the menu buttons
        */
 
-      // set the active state for the buttons
+      // get any marks at the current location
       const marksAtCursorLocation =
         editor.state.selection.$head.marks() || editor.state.storedMarks;
 
-      // cursor location does not contain marks;
-      // disable all marks (potentially better not to call the toggle though)
-      // but a full disable as that would potentially be more performant
+      // disable all if no marks at current location
       if (!marksAtCursorLocation.length) {
+        // calling toggle to ensure latest state
         toggleIsActiveCss({
           elementId: "#menu-button-bold",
           markName: "bold",

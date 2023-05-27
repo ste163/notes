@@ -35,3 +35,11 @@ Decision for using vanilla html + js (TS) for the ui was to be as easily maintai
 - if those pass
 - (ideally, we'd install the built app and run a suite of smoke tests on it)
 - then good to merge to main and trigger full release action
+
+## Dev requirements
+
+- pnpm
+
+## getting up and running
+
+todo: commands to get started
