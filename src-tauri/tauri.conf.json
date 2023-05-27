@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "notes",
+    "productName": "t2-notes",
     "version": "0.0.0"
   },
   "tauri": {
@@ -40,7 +40,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "notes",
+        "title": "t2-notes",
         "width": 800,
         "height": 600
       }

@@ -1513,16 +1513,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
 
 [[package]]
-name = "notes"
-version = "0.0.0"
-dependencies = [
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
-]
-
-[[package]]
 name = "nu-ansi-term"
 version = "0.46.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2455,6 +2445,16 @@ dependencies = [
  "pkg-config",
  "toml 0.7.3",
  "version-compare 0.1.1",
+]
+
+[[package]]
+name = "t2-notes"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
 ]
 
 [[package]]

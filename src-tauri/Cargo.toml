@@ -1,7 +1,7 @@
 [package]
-name = "notes"
+name = "t2-notes"
 version = "0.0.0"
-description = "A Tauri App"
+description = "Tauri + Tiptap notes app"
 authors = ["you"]
 license = ""
 repository = ""

@@ -1,6 +1,8 @@
-# tbd-tauri-notes
+# t2-notes
 
-Tauri app with vanilla frontend and a simple tauri backend for reading and writing `.md` files.
+> Tauri + Tiptap notes app
+
+Tauri app with vanilla frontend and a simple tauri backend for reading and writing `.md` files using tiptap.
 
 ## App
 
@@ -15,6 +17,12 @@ Tauri app with vanilla frontend and a simple tauri backend for reading and writi
 - DONE: auto publish once built
 - app can check for auto-updates
 - app can auto-update from a published github action
+
+## Architecture decisions
+
+Decision for using vanilla html + js (TS) for the ui was to be as easily maintainable as possible. By leveraging TipTap and Tauri, the state management is directly based on the filesystem for selecting and displaying the list of notes. Tiptap handles state once a note is selected, so having any more
+
+(potentially add a mermaid chart that explains how this flow works)
 
 ## A better github action flow (if there were tests)
 
