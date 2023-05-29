@@ -5,15 +5,34 @@ import { Editor } from "@tiptap/core";
 // will be more efficient and easier to manage
 import StarterKit from "@tiptap/starter-kit";
 import { toggleIsActiveCss } from "./toggle-is-active-css";
-import { Marks } from "./enums";
+import { ElementSelectors, Marks } from "./enums";
+import FloatingMenu from "@tiptap/extension-floating-menu";
 
 function createEditor(): Editor {
   const editorLocation = document.querySelector("#editor");
-  if (!editorLocation) throw Error("Editor location not found");
+  const floatingEditorMenu = document.querySelector("#editor-floating-menu");
+  if (!editorLocation || !floatingEditorMenu)
+    throw Error("A required Editor element is missing");
+
+  const floatingMenuEvent = new Event("floating-menu-shown");
+
   return new Editor({
     element: editorLocation,
-    extensions: [StarterKit],
-    content: "<p>Hello World!</p>", // ideally would load last opened file contents
+    extensions: [
+      StarterKit,
+      FloatingMenu.configure({
+        element: floatingEditorMenu as HTMLElement,
+        shouldShow: ({ editor, view }) => {
+          const shouldShow =
+            view.state.selection.$head.node().content.size === 0
+              ? editor.isActive("paragraph")
+              : false;
+          if (shouldShow) dispatchEvent(floatingMenuEvent);
+          return shouldShow;
+        },
+      }),
+    ],
+    content: "<p>Hello World!</p>", // TODO: load last opened file contents
     onTransaction: ({ editor }) => {
       /**
        * onTransaction is being used to track
@@ -29,8 +48,13 @@ function createEditor(): Editor {
       if (!marksAtCursorLocation.length) {
         // calling toggle to ensure latest state
         toggleIsActiveCss({
-          elementId: "#menu-button-bold",
+          elementSelector: ElementSelectors.ButtonBold,
           markName: Marks.Bold,
+          editor,
+        });
+        toggleIsActiveCss({
+          elementSelector: ".menu-button-h1",
+          markName: "heading",
           editor,
         });
       }
@@ -38,7 +62,7 @@ function createEditor(): Editor {
       marksAtCursorLocation.forEach(({ type: { name } }) => {
         if (name === Marks.Bold) {
           toggleIsActiveCss({
-            elementId: "#menu-button-bold",
+            elementSelector: ElementSelectors.ButtonBold,
             markName: Marks.Bold,
             editor,
           });
