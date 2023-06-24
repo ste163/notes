@@ -7,14 +7,17 @@ import StarterKit from "@tiptap/starter-kit";
 import { toggleIsActiveCss } from "./toggle-is-active-css";
 import { ElementSelectors, Marks } from "./enums";
 import FloatingMenu from "@tiptap/extension-floating-menu";
+import { getMostRecentNote } from "./api";
 
-function createEditor(): Editor {
+async function createEditor(): Promise<Editor> {
   const editorLocation = document.querySelector("#editor");
   const floatingEditorMenu = document.querySelector("#editor-floating-menu");
   if (!editorLocation || !floatingEditorMenu)
     throw Error("A required Editor element is missing");
 
   const floatingMenuEvent = new Event("floating-menu-shown");
+
+  const content = (await getMostRecentNote()) ?? "<p>No content read</p>";
 
   return new Editor({
     element: editorLocation,
@@ -32,7 +35,7 @@ function createEditor(): Editor {
         },
       }),
     ],
-    content: "<p>Hello World!</p>", // TODO: load last opened file contents
+    content,
     onTransaction: ({ editor }) => {
       /**
        * onTransaction is being used to track

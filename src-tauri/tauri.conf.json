@@ -15,7 +15,10 @@
       "all": false,
       "fs": {
         "all": true,
-        "scope": ["$APPDATA/*"]
+        "scope": ["$APPDATA/*", "$APPDATA/notes/*"]
+      },
+      "path": {
+        "all": true
       },
       "shell": {
         "all": false,
