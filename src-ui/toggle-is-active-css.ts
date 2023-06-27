@@ -18,8 +18,7 @@ function toggleIsActiveCss({
   editor: Editor;
 }): void {
   const elements = document.querySelectorAll(elementSelector);
-  if (!elements.length)
-    throw `${elementSelector} not found. Unable to toggle active css state`;
+  if (!elements.length) throw `${elementSelector} not found.`;
   elements.forEach((element) =>
     editor.isActive(markName)
       ? element.classList.add("isActive")

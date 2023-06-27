@@ -7,9 +7,10 @@ import StarterKit from "@tiptap/starter-kit";
 import { toggleIsActiveCss } from "./toggle-is-active-css";
 import { ElementSelectors, Marks } from "./enums";
 import FloatingMenu from "@tiptap/extension-floating-menu";
-import { getMostRecentNote } from "./api";
+import { readNote } from "./api";
+import { FileEntry } from "@tauri-apps/api/fs";
 
-async function createEditor(): Promise<Editor> {
+async function createEditor(notes: FileEntry[]): Promise<Editor> {
   const editorLocation = document.querySelector("#editor");
   const floatingEditorMenu = document.querySelector("#editor-floating-menu");
   if (!editorLocation || !floatingEditorMenu)
@@ -17,7 +18,12 @@ async function createEditor(): Promise<Editor> {
 
   const floatingMenuEvent = new Event("floating-menu-shown");
 
-  const content = (await getMostRecentNote()) ?? "<p>No content read</p>";
+  // todo: get the last opened note
+  // which will probably live in local storage
+  // and get the path from there
+  const content = notes.length
+    ? await readNote(notes[0].path)
+    : "<p>No contents to read</p>";
 
   return new Editor({
     element: editorLocation,

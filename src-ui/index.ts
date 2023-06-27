@@ -12,7 +12,7 @@ import {
   createH1Button,
   createSaveButton,
 } from "./editor-buttons";
-import { getNotes, initializeFileStructure } from "./api";
+import { getNotes, initializeFileStructure, readNote } from "./api";
 
 // top-level app state
 let editor: null | Editor = null;
@@ -20,14 +20,62 @@ let editor: null | Editor = null;
 window.addEventListener("DOMContentLoaded", async () => {
   await initializeFileStructure(); // TODO: check if an earlier event would be better (probably)
   const notes = await getNotes();
-  console.log("ALL NOTES", notes);
-  // todo: with the notes
-  // render out the list of note file names
-  // and then attach onclick events
-  // to read their contents and set the editor state
-  // to that notes contents
 
-  editor = await createEditor();
+  // if NO NOTES, then we do not want to do a lot. Ie, do not setup the editor
+  if (!notes.length) {
+    console.log("NO NOTES, RENDER A DIFFERENT UI");
+
+    const editorContainer = document.querySelector("#editor");
+    if (editorContainer) {
+      const element = document.createElement("div");
+      // this should be a stringified component, essentially
+      // something that would be imported here.
+      // it would have all the proper styling
+      // and look really nice
+      // with all the welcome text and instructions but in the smallest
+      // amount of text possible.
+      // no one wants to read
+      element.innerText = "Create a note to get started";
+      editorContainer.appendChild(element);
+    }
+
+    return;
+  }
+
+  if (notes.length) {
+    const sidebarContainer = document.querySelector("#sidebar");
+
+    const setEditorContent = async (editor: Editor, path: string) => {
+      const content = await readNote(path);
+      editor.commands.setContent(content);
+    };
+
+    if (sidebarContainer) {
+      function createNewNote() {
+        // this will need to trigger a change in UI state:
+        // 1. clear out the editor, fully. And/or fully remove it
+        // 2. Reset the writing area with a section for the file name
+        // 3. once a file name is given, go to the editor
+        // however, this introduces the need for two different UI states:
+        // - create new note state
+        // - editor view state
+      }
+
+      const addButton = document.createElement("button");
+      addButton.innerText = "+ Create";
+      addButton.onclick = () => createNewNote;
+      sidebarContainer.appendChild(addButton);
+
+      notes.forEach(({ name, path }) => {
+        const selectableNote = document.createElement("button");
+        selectableNote.innerText = name ?? "unable to read name";
+        selectableNote.onclick = () => editor && setEditorContent(editor, path);
+        sidebarContainer.append(selectableNote);
+      });
+    }
+  }
+
+  editor = await createEditor(notes);
   const editorMenuContainer = document.querySelector("#editor-menu");
   const editorMenuButtons = [
     createSaveButton(editor),

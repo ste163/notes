@@ -35,19 +35,14 @@ async function getNotes() {
   });
 }
 
-async function getMostRecentNote() {
-  const notes = await getNotes();
-  if (notes.length) {
-    return await readTextFile(notes[0].path);
-  }
-  return null;
-}
-
 async function writeNote(title: string, contents: string) {
-  console.log(contents);
   await writeFile(await join("notes", title), contents, {
     dir: BaseDirectory.AppData,
   });
 }
 
-export { initializeFileStructure, getNotes, getMostRecentNote, writeNote };
+async function readNote(path: string) {
+  return await readTextFile(path);
+}
+
+export { initializeFileStructure, getNotes, writeNote, readNote };
