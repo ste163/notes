@@ -40,9 +40,14 @@ p {
   margin: 0;
 }
 
+input {
+  font-size: small;
+  max-width: intrinsic;
+}
+
 button {
   border-radius: 0.3em;
-  border: 0.1em solid black;
+  border: 0.15em solid black;
   padding: 0.3em 0.5em;
 
   font-size: 0.9em;
@@ -74,8 +79,22 @@ button.isActive {
 }
 
 #sidebar > h1 {
-  margin-left: 0.5em;
   font-size: 1em;
+  margin-left: 0.5em;
+}
+
+#sidebar > button {
+  margin-left: 0.5em;
+  font-size: 0.9em;
+}
+
+.create-note-input-container {
+  display: flex;
+  width: min-content;
+}
+
+.create-note-input-container > input {
+  max-width: 60%;
 }
 
 #editor-menu {
@@ -88,6 +107,7 @@ button.isActive {
   height: inherit;
   overflow-y: hidden;
   padding-top: 1em;
+  padding-left: 2em;
 }
 
 .ProseMirror {

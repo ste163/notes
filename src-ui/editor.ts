@@ -11,6 +11,8 @@ import { readNote } from "./api";
 import { FileEntry } from "@tauri-apps/api/fs";
 
 async function createEditor(notes: FileEntry[]): Promise<Editor> {
+  // TODO: pass the editorLocation and floatingMenuEditor in to the function
+
   const editorLocation = document.querySelector("#editor");
   const floatingEditorMenu = document.querySelector("#editor-floating-menu");
   if (!editorLocation || !floatingEditorMenu)

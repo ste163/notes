@@ -25,10 +25,12 @@ import { writeNote } from "./api";
  * all the menu types (bubble menus, etc.)
  */
 
+// this function will save based on the currently open note from state
+// the file name will have already been created
 function createSaveButton(editor: Editor) {
   const saveHtml = async (editor: Editor) => {
     const html = editor.getHTML();
-    await writeNote("test.txt", html);
+    await writeNote("test.html", html);
     // todo: need error handling
   };
 
