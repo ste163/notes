@@ -10,25 +10,32 @@ import FloatingMenu from "@tiptap/extension-floating-menu";
 import { readNote } from "./api";
 import { FileEntry } from "@tauri-apps/api/fs";
 
-async function createEditor(notes: FileEntry[]): Promise<Editor> {
-  // TODO: pass the editorLocation and floatingMenuEditor in to the function
+async function setEditorContent(editor: Editor, path: string) {
+  const content = await readNote(path);
+  editor.commands.setContent(content);
+}
 
-  const editorLocation = document.querySelector("#editor");
-  const floatingEditorMenu = document.querySelector("#editor-floating-menu");
-  if (!editorLocation || !floatingEditorMenu)
-    throw Error("A required Editor element is missing");
-
+async function createEditor({
+  notes,
+  editorElement,
+  floatingEditorMenu,
+}: {
+  notes: FileEntry[];
+  editorElement: Element;
+  floatingEditorMenu: Element;
+}): Promise<Editor> {
+  // todo: think about a non-hard-coded approach for event naming
   const floatingMenuEvent = new Event("floating-menu-shown");
 
   // todo: get the last opened note
   // which will probably live in local storage
   // and get the path from there
   const content = notes.length
-    ? await readNote(notes[0].path)
+    ? await readNote(notes[0].path) // IS THIS MOST RECENT?
     : "<p>No contents to read</p>";
 
   return new Editor({
-    element: editorLocation,
+    element: editorElement,
     extensions: [
       StarterKit,
       FloatingMenu.configure({
@@ -83,4 +90,4 @@ async function createEditor(notes: FileEntry[]): Promise<Editor> {
   });
 }
 
-export { createEditor };
+export { createEditor, setEditorContent };

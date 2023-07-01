@@ -28,6 +28,8 @@ import { writeNote } from "./api";
 // this function will save based on the currently open note from state
 // the file name will have already been created
 function createSaveButton(editor: Editor) {
+  // TODO: this should trigger an EVENT and not be the hard-coded
+  // save function. By making it event-based, it's decoupled
   const saveHtml = async (editor: Editor) => {
     const html = editor.getHTML();
     await writeNote("test.html", html);

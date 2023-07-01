@@ -36,6 +36,9 @@ async function getNotes() {
 }
 
 async function writeNote(title: string, contents: string) {
+  // todo:
+  // check that the file name isn't already taken
+
   await writeFile(await join("notes", title), contents, {
     dir: BaseDirectory.AppData,
   });
