@@ -4,10 +4,10 @@ import { Editor } from "@tiptap/core";
 // remove starter-kit and install individual packages;
 // will be more efficient and easier to manage
 import StarterKit from "@tiptap/starter-kit";
-import { toggleIsActiveCss } from "./toggle-is-active-css";
-import { ElementSelectors, Marks } from "./enums";
+import { toggleIsActiveCss } from "../toggle-is-active-css";
+import { ElementSelectors, Marks } from "../enums";
 import FloatingMenu from "@tiptap/extension-floating-menu";
-import { readNote } from "./api";
+import { readNote } from "../api";
 import { FileEntry } from "@tauri-apps/api/fs";
 
 async function setEditorContent(editor: Editor, path: string) {
@@ -30,6 +30,9 @@ async function createEditor({
   // todo: get the last opened note
   // which will probably live in local storage
   // and get the path from there
+  // ALSO!
+  // do note set the contents here.
+  // we want to do it with the event of note-selected
   const content = notes.length
     ? await readNote(notes[0].path) // IS THIS MOST RECENT?
     : "<p>No contents to read</p>";

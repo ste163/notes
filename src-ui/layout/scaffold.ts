@@ -15,15 +15,15 @@ function renderScaffold() {
 
     <main>
         <div id="editor-menu">
-        <!-- Dynamically Generated -->
+          <!-- Dynamically Generated -->
         </div>
 
         <div id="editor-floating-menu">
-        <!-- Dynamically Generated -->
+          <!-- Dynamically Generated -->
         </div>
 
         <div id="editor">
-        <!-- Dynamically Generated -->
+          <!-- Dynamically Generated -->
         </div>
     </main>
     `;

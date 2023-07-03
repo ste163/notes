@@ -1,3 +1,16 @@
+/**
+ * Architecture plan:
+ * An API-service that sits between the client
+ * and the tauri API would be ideal. Why?
+ * Because I'd like to also deploy this app
+ * to the web and use the browser's private file system
+ * to read and write notes to. This would require having
+ * the deployment environment decide which backend service to use.
+ *
+ * But because of the API service, the Client will never know what it's using:
+ * whether it's the browser or the actual desktop app.
+ */
+
 import {
   BaseDirectory,
   appDataDir,
@@ -7,6 +20,7 @@ import {
   readDir,
   readTextFile,
   writeFile,
+  removeFile,
 } from "./allowed-tauri-apis";
 // TODO: add error handling at correct places
 
@@ -44,8 +58,12 @@ async function writeNote(title: string, contents: string) {
   });
 }
 
+async function deleteNote(path: string) {
+  await removeFile(path);
+}
+
 async function readNote(path: string) {
   return await readTextFile(path);
 }
 
-export { initializeFileStructure, getNotes, writeNote, readNote };
+export { initializeFileStructure, getNotes, writeNote, deleteNote, readNote };

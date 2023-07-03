@@ -4,6 +4,7 @@
 import {
   exists,
   writeFile,
+  removeFile,
   readTextFile,
   BaseDirectory,
   readDir,
@@ -14,6 +15,7 @@ import { appDataDir, join } from "@tauri-apps/api/path";
 export {
   exists,
   writeFile,
+  removeFile,
   readTextFile,
   BaseDirectory,
   readDir,

@@ -1,7 +1,7 @@
 import { Editor } from "@tiptap/core";
-import { toggleIsActiveCss } from "./toggle-is-active-css";
-import { ElementSelectors, Marks } from "./enums";
-import { writeNote } from "./api";
+import { toggleIsActiveCss } from "../toggle-is-active-css";
+import { ElementSelectors, Marks } from "../enums";
+import { writeNote } from "../api";
 
 /**
  * TODO:

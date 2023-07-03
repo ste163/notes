@@ -1,12 +1,14 @@
 import { Editor } from "@tiptap/core";
-import { createEditor, setEditorContent } from "./editor";
 import {
+  createEditor,
+  setEditorContent,
   createBoldButton,
   createH1Button,
   createSaveButton,
-} from "./editor-buttons";
+} from "./editor";
 import { initializeFileStructure, getNotes, writeNote } from "./api";
-import { renderScaffold, renderGetStarted, renderSidebar } from "./layout";
+import { renderScaffold, renderGetStarted } from "./layout";
+import { renderSidebar, renderSidebarNoteList } from "./components";
 
 // TODO: see if this top-level editor is even needed. (I don't think so...)
 // top-level app state (keep as small as possible)
@@ -23,28 +25,20 @@ async function refreshClient(): Promise<void> {
     editorMenuElement,
     editorFloatingMenuElement,
   } = renderScaffold();
-
   renderSidebar(sidebarElement);
-
   const notes = await getNotes();
-
   if (!notes.length) {
     renderGetStarted(editorElement);
     return;
   }
-
-  notes.forEach(({ name, path }) => {
-    const selectableNote = document.createElement("button");
-    selectableNote.innerText = name ?? "unable to read name";
-    selectableNote.onclick = () => editor && setEditorContent(editor, path);
-    sidebarElement.append(selectableNote);
-  });
 
   editor = await createEditor({
     notes,
     editorElement: editorElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
+
+  renderSidebarNoteList(sidebarElement, notes);
 
   const editorMenuButtons = [
     createSaveButton(editor),
@@ -78,15 +72,30 @@ window.addEventListener("DOMContentLoaded", async () => {
     dispatchEvent(refreshEvent);
   });
 
+  window.addEventListener("note-selected", (event) => {
+    if (!editor) throw Error("No editor instance found for note-select event");
+    const { path } = (event as CustomEvent)?.detail?.note;
+    setEditorContent(editor, path);
+
+    // TODO:
+    // add the active class to the selected note
+    // but will need to remove the active class from any other selected note
+    // which probably means I need a function
+  });
+
   // floatingMenu buttons need to be appended in the event for rendering
   window.addEventListener("floating-menu-shown", () => {
+    if (!editor) throw new Error("No editor instance found for floating menus");
     const floatingMenuContainer = document.querySelector(
       "#editor-floating-menu"
     );
+    if (!floatingMenuContainer) return;
+    // fully reset the container content state
+    floatingMenuContainer.innerHTML = "";
     // each floating menu button must be a new instance of the button type
-    if (floatingMenuContainer && editor)
-      [createH1Button(editor)].forEach((button) =>
-        floatingMenuContainer.appendChild(button)
-      );
+    const floatingMenuButtons = [createH1Button(editor)];
+    floatingMenuButtons.forEach((button) =>
+      floatingMenuContainer.appendChild(button)
+    );
   });
 });

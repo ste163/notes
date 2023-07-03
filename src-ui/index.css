@@ -97,6 +97,21 @@ button.isActive {
   max-width: 60%;
 }
 
+.note-picker-container {
+  display: flex;
+  flex-direction: row;
+  margin: 0.5em 0;
+  max-width: inherit;
+}
+
+.note-picker-container > button {
+  border: none;
+  font-weight: normal;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 #editor-menu {
   padding: 0.5em;
   border-bottom: black 0.15em solid;
