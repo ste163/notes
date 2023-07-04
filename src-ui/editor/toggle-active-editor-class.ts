@@ -11,7 +11,7 @@ import { Editor } from "@tiptap/core";
  *
  * ie: toggleIsActiveCss({elementSelector: 'bold-button', markName: 'bold', editor: Editor})
  */
-function toggleIsActiveCss({
+function toggleActiveEditorClass({
   elementSelector,
   markName,
   editor,
@@ -29,4 +29,4 @@ function toggleIsActiveCss({
   );
 }
 
-export { toggleIsActiveCss };
+export { toggleActiveEditorClass };

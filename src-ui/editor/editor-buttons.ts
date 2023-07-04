@@ -1,5 +1,5 @@
 import { Editor } from "@tiptap/core";
-import { toggleIsActiveCss } from "../toggle-is-active-css";
+import { toggleActiveEditorClass } from "./toggle-active-editor-class";
 import { ElementSelectors, Marks } from "../enums";
 import { writeNote } from "../api";
 
@@ -46,7 +46,7 @@ function createBoldButton(editor: Editor) {
   const setBold = (editor: Editor) => {
     // set editor
     editor.chain().focus().toggleBold().run();
-    toggleIsActiveCss({
+    toggleActiveEditorClass({
       elementSelector: ElementSelectors.ButtonBold,
       markName: Marks.Bold,
       editor,
@@ -75,7 +75,7 @@ function createH1Button(editor: Editor) {
   const setH1 = (editor: Editor) => {
     // set editor
     editor.chain().focus().toggleHeading({ level: 1 }).run();
-    toggleIsActiveCss({
+    toggleActiveEditorClass({
       elementSelector: ".menu-button-h1",
       markName: "heading",
       editor,

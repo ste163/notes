@@ -11,33 +11,39 @@ import { deleteNote } from "../api";
  */
 function renderSidebarNoteList(sidebarElement: Element, notes: FileEntry[]) {
   notes.map(({ name, path }) => {
+    if (!name) throw new Error("Unable to read name from note");
     const selectableNote = document.createElement("button");
-    selectableNote.innerText = name ?? "unable to read name";
-    selectableNote.onclick = () => selectNote(path);
-    selectableNote.id = path; // path will always be unique, so I can identify the active note
+    selectableNote.innerText = name;
+    selectableNote.onclick = () => selectNote(name, path);
+    selectableNote.id = name; // TODO: should probably be an id as it needs to follow selector rules
+    // otherwise, I need to heavily restrict characters (which might be best anyway as its a filesystem setup)
 
-    const notePickerContainer = document.createElement("div");
-    notePickerContainer.classList.add("note-picker-container");
+    const noteSelectContainer = document.createElement("div");
+    noteSelectContainer.classList.add("note-select-container");
+    noteSelectContainer.id = `${name}-note-select-container`;
 
     const deleteButton = document.createElement("button");
     deleteButton.innerText = "X";
     deleteButton.onclick = async () => {
+      // TODO: this CAN NOT do a delete here. HUGE PROBLEM.
+      // MUST emit the event and index.ts handles the mutation
       await deleteNote(path);
       const refreshEvent = new Event("refresh-client");
       dispatchEvent(refreshEvent);
     };
 
-    notePickerContainer.appendChild(selectableNote);
-    notePickerContainer.appendChild(deleteButton);
+    noteSelectContainer.appendChild(selectableNote);
+    noteSelectContainer.appendChild(deleteButton);
 
-    sidebarElement.append(notePickerContainer);
+    sidebarElement.append(noteSelectContainer);
   });
 }
 
-function selectNote(path: string) {
+function selectNote(title: string, path: string) {
   const selectNoteEvent = new CustomEvent("note-selected", {
     detail: {
       note: {
+        title,
         path,
       },
     },

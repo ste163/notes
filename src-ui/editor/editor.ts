@@ -4,7 +4,7 @@ import { Editor } from "@tiptap/core";
 // remove starter-kit and install individual packages;
 // will be more efficient and easier to manage
 import StarterKit from "@tiptap/starter-kit";
-import { toggleIsActiveCss } from "../toggle-is-active-css";
+import { toggleActiveEditorClass } from "./toggle-active-editor-class";
 import { ElementSelectors, Marks } from "../enums";
 import FloatingMenu from "@tiptap/extension-floating-menu";
 import { readNote } from "../api";
@@ -68,12 +68,12 @@ async function createEditor({
       // disable all active css if no marks at current location
       if (!marksAtCursorLocation.length) {
         // calling toggle to ensure latest state
-        toggleIsActiveCss({
+        toggleActiveEditorClass({
           elementSelector: ElementSelectors.ButtonBold,
           markName: Marks.Bold,
           editor,
         });
-        toggleIsActiveCss({
+        toggleActiveEditorClass({
           elementSelector: ".menu-button-h1",
           markName: "heading",
           editor,
@@ -82,7 +82,7 @@ async function createEditor({
 
       marksAtCursorLocation.forEach(({ type: { name } }) => {
         if (name === Marks.Bold) {
-          toggleIsActiveCss({
+          toggleActiveEditorClass({
             elementSelector: ElementSelectors.ButtonBold,
             markName: Marks.Bold,
             editor,

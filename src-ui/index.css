@@ -97,19 +97,24 @@ button.isActive {
   max-width: 60%;
 }
 
-.note-picker-container {
+.note-select-container {
   display: flex;
   flex-direction: row;
   margin: 0.5em 0;
   max-width: inherit;
 }
 
-.note-picker-container > button {
+.note-select-container > button {
   border: none;
+  background-color: transparent;
   font-weight: normal;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.select-note-active {
+  background-color: lightblue;
 }
 
 #editor-menu {

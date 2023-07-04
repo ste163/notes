@@ -9,6 +9,7 @@ import {
 import { initializeFileStructure, getNotes, writeNote } from "./api";
 import { renderScaffold, renderGetStarted } from "./layout";
 import { renderSidebar, renderSidebarNoteList } from "./components";
+import { toggleActiveClass } from "./toggle-active-class";
 
 // TODO: see if this top-level editor is even needed. (I don't think so...)
 // top-level app state (keep as small as possible)
@@ -54,7 +55,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   /**
    * Setup the initial state based on filesystem
    */
-  await initializeFileStructure();
+  await initializeFileStructure(); // TODO: move out into another location (preferably client-api)
   await refreshClient();
 
   /**
@@ -74,13 +75,10 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   window.addEventListener("note-selected", (event) => {
     if (!editor) throw Error("No editor instance found for note-select event");
-    const { path } = (event as CustomEvent)?.detail?.note;
+    const { title, path } = (event as CustomEvent)?.detail?.note;
     setEditorContent(editor, path);
-
-    // TODO:
-    // add the active class to the selected note
-    // but will need to remove the active class from any other selected note
-    // which probably means I need a function
+    // NOTE: issue with this approach: CSS maintenance nightmare
+    toggleActiveClass(`#${title}-note-select-container`, "select-note");
   });
 
   // floatingMenu buttons need to be appended in the event for rendering
