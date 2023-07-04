@@ -6,14 +6,28 @@ import {
   createH1Button,
   createSaveButton,
 } from "./editor";
-import { initializeFileStructure, getNotes, writeNote } from "./api";
+import {
+  initializeFileStructure,
+  getNotes,
+  writeNote,
+  deleteNote,
+} from "./api";
 import { renderScaffold, renderGetStarted } from "./layout";
 import { renderSidebar, renderSidebarNoteList } from "./components";
 import { toggleActiveClass } from "./toggle-active-class";
+import { emitSelectedNote } from "./event-emitters";
+import { FileEntry } from "@tauri-apps/api/fs";
 
 // TODO: see if this top-level editor is even needed. (I don't think so...)
 // top-level app state (keep as small as possible)
 let editor: null | Editor = null;
+let notes: FileEntry[] = [];
+
+function selectMostRecentNote(notes: FileEntry[]) {
+  const { name, path } = notes[notes.length - 1];
+  if (!name || !path) throw new Error("Unable to get most recent note");
+  emitSelectedNote(name, path);
+}
 
 /**
  * Refetch all data and re-render complete
@@ -27,14 +41,13 @@ async function refreshClient(): Promise<void> {
     editorFloatingMenuElement,
   } = renderScaffold();
   renderSidebar(sidebarElement);
-  const notes = await getNotes();
+  notes = await getNotes();
   if (!notes.length) {
     renderGetStarted(editorElement);
     return;
   }
 
   editor = await createEditor({
-    notes,
     editorElement: editorElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
@@ -49,6 +62,13 @@ async function refreshClient(): Promise<void> {
   editorMenuButtons.forEach((button) => {
     editorMenuElement.appendChild(button);
   });
+
+  /**
+   * This has no effect on initial render
+   * as the event listeners have not been attached.
+   * This selects on every other call to refresh
+   */
+  selectMostRecentNote(notes);
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -73,11 +93,18 @@ window.addEventListener("DOMContentLoaded", async () => {
     dispatchEvent(refreshEvent);
   });
 
+  window.addEventListener("delete-note", async (event) => {
+    const { path } = (event as CustomEvent)?.detail?.note;
+    await deleteNote(path);
+    const refreshEvent = new Event("refresh-client");
+    dispatchEvent(refreshEvent);
+  });
+
   window.addEventListener("note-selected", (event) => {
     if (!editor) throw Error("No editor instance found for note-select event");
     const { title, path } = (event as CustomEvent)?.detail?.note;
     setEditorContent(editor, path);
-    // NOTE: issue with this approach: CSS maintenance nightmare
+    // TODO/NOTE: issue with this approach: CSS maintenance nightmare!
     toggleActiveClass(`#${title}-note-select-container`, "select-note");
   });
 
@@ -96,4 +123,10 @@ window.addEventListener("DOMContentLoaded", async () => {
       floatingMenuContainer.appendChild(button)
     );
   });
+
+  /**
+   * This only runs once, on initial load
+   * to select the most recent note
+   */
+  selectMostRecentNote(notes);
 });

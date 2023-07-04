@@ -2,7 +2,7 @@
 // of importing Tauri. The client should have NO idea
 // what tauri is
 import { FileEntry } from "@tauri-apps/api/fs";
-import { deleteNote } from "../api";
+import { emitSelectedNote } from "../event-emitters";
 
 /**
  * Renders the note list that can
@@ -14,7 +14,7 @@ function renderSidebarNoteList(sidebarElement: Element, notes: FileEntry[]) {
     if (!name) throw new Error("Unable to read name from note");
     const selectableNote = document.createElement("button");
     selectableNote.innerText = name;
-    selectableNote.onclick = () => selectNote(name, path);
+    selectableNote.onclick = () => emitSelectedNote(name, path);
     selectableNote.id = name; // TODO: should probably be an id as it needs to follow selector rules
     // otherwise, I need to heavily restrict characters (which might be best anyway as its a filesystem setup)
 
@@ -24,13 +24,7 @@ function renderSidebarNoteList(sidebarElement: Element, notes: FileEntry[]) {
 
     const deleteButton = document.createElement("button");
     deleteButton.innerText = "X";
-    deleteButton.onclick = async () => {
-      // TODO: this CAN NOT do a delete here. HUGE PROBLEM.
-      // MUST emit the event and index.ts handles the mutation
-      await deleteNote(path);
-      const refreshEvent = new Event("refresh-client");
-      dispatchEvent(refreshEvent);
-    };
+    deleteButton.onclick = () => deleteNote(path);
 
     noteSelectContainer.appendChild(selectableNote);
     noteSelectContainer.appendChild(deleteButton);
@@ -39,16 +33,15 @@ function renderSidebarNoteList(sidebarElement: Element, notes: FileEntry[]) {
   });
 }
 
-function selectNote(title: string, path: string) {
-  const selectNoteEvent = new CustomEvent("note-selected", {
+function deleteNote(path: string) {
+  const deleteNoteEvent = new CustomEvent("delete-note", {
     detail: {
       note: {
-        title,
         path,
       },
     },
   });
-  dispatchEvent(selectNoteEvent);
+  dispatchEvent(deleteNoteEvent);
 }
 
 export { renderSidebarNoteList };

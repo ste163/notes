@@ -8,7 +8,6 @@ import { toggleActiveEditorClass } from "./toggle-active-editor-class";
 import { ElementSelectors, Marks } from "../enums";
 import FloatingMenu from "@tiptap/extension-floating-menu";
 import { readNote } from "../api";
-import { FileEntry } from "@tauri-apps/api/fs";
 
 async function setEditorContent(editor: Editor, path: string) {
   const content = await readNote(path);
@@ -16,26 +15,14 @@ async function setEditorContent(editor: Editor, path: string) {
 }
 
 async function createEditor({
-  notes,
   editorElement,
   floatingEditorMenu,
 }: {
-  notes: FileEntry[];
   editorElement: Element;
   floatingEditorMenu: Element;
 }): Promise<Editor> {
   // todo: think about a non-hard-coded approach for event naming
   const floatingMenuEvent = new Event("floating-menu-shown");
-
-  // todo: get the last opened note
-  // which will probably live in local storage
-  // and get the path from there
-  // ALSO!
-  // do note set the contents here.
-  // we want to do it with the event of note-selected
-  const content = notes.length
-    ? await readNote(notes[0].path) // IS THIS MOST RECENT?
-    : "<p>No contents to read</p>";
 
   return new Editor({
     element: editorElement,
@@ -53,7 +40,7 @@ async function createEditor({
         },
       }),
     ],
-    content,
+    content: "<p>Issue selecting note</p>",
     onTransaction: ({ editor }) => {
       /**
        * onTransaction is being used to track
