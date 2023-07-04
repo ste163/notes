@@ -18,12 +18,14 @@ import { toggleActiveClass } from "./toggle-active-class";
 import { emitSelectedNote } from "./event-emitters";
 import { FileEntry } from "@tauri-apps/api/fs";
 
-// TODO: see if this top-level editor is even needed. (I don't think so...)
 // top-level app state (keep as small as possible)
 let editor: null | Editor = null;
-let notes: FileEntry[] = [];
+let notes: FileEntry[] = []; // TODO: create own Note interface and use that only
+let selectedNote: null | FileEntry = null;
 
 function selectMostRecentNote(notes: FileEntry[]) {
+  // TODO: this actually only fetches the last CREATED note
+  // not the one that was most recently updated. but this works for now
   const { name, path } = notes[notes.length - 1];
   if (!name || !path) throw new Error("Unable to get most recent note");
   emitSelectedNote(name, path);
@@ -93,6 +95,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     dispatchEvent(refreshEvent);
   });
 
+  window.addEventListener("save-note", async (event) => {
+    if (!selectedNote?.name) throw new Error("No note selected to save");
+    const { content } = (event as CustomEvent)?.detail?.note;
+    await writeNote(selectedNote?.name, content);
+  });
+
   window.addEventListener("delete-note", async (event) => {
     const { path } = (event as CustomEvent)?.detail?.note;
     await deleteNote(path);
@@ -100,12 +108,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     dispatchEvent(refreshEvent);
   });
 
+  // TODO: rename to select-note to follow pattern
   window.addEventListener("note-selected", (event) => {
     if (!editor) throw Error("No editor instance found for note-select event");
     const { title, path } = (event as CustomEvent)?.detail?.note;
     setEditorContent(editor, path);
     // TODO/NOTE: issue with this approach: CSS maintenance nightmare!
     toggleActiveClass(`#${title}-note-select-container`, "select-note");
+    selectedNote = { name: title, path };
   });
 
   // floatingMenu buttons need to be appended in the event for rendering

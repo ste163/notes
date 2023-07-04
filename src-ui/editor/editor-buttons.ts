@@ -1,7 +1,6 @@
 import { Editor } from "@tiptap/core";
 import { toggleActiveEditorClass } from "./toggle-active-editor-class";
 import { ElementSelectors, Marks } from "../enums";
-import { writeNote } from "../api";
 
 /**
  * TODO:
@@ -25,20 +24,10 @@ import { writeNote } from "../api";
  * all the menu types (bubble menus, etc.)
  */
 
-// this function will save based on the currently open note from state
-// the file name will have already been created
 function createSaveButton(editor: Editor) {
-  // TODO: this should trigger an EVENT and not be the hard-coded
-  // save function. By making it event-based, it's decoupled
-  const saveHtml = async (editor: Editor) => {
-    const html = editor.getHTML();
-    await writeNote("test.html", html);
-    // todo: need error handling
-  };
-
   const saveButton = document.createElement("button");
   saveButton.innerText = "Save";
-  saveButton.onclick = async () => editor && (await saveHtml(editor));
+  saveButton.onclick = () => editor && emitSaveNote(editor.getHTML());
   return saveButton;
 }
 
@@ -88,6 +77,17 @@ function createH1Button(editor: Editor) {
   heading1.onclick = () => editor && setH1(editor);
 
   return heading1;
+}
+
+function emitSaveNote(content: string) {
+  const event = new CustomEvent("save-note", {
+    detail: {
+      note: {
+        content,
+      },
+    },
+  });
+  dispatchEvent(event);
 }
 
 export { createBoldButton, createH1Button, createSaveButton };

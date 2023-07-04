@@ -46,6 +46,9 @@ function renderNoteInput(sidebarContainer: Element) {
  * Read input value and emit create-note event
  */
 function createNote() {
+  // TODO: refactor to only be the emit.
+  // need to pass in the title
+  // and remove content: "" as it's not needed
   const input = document.querySelector(".note-input") as HTMLInputElement;
   const title: string = input?.value;
   if (!title) throw new Error("Unable to read title from input");

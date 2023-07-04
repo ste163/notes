@@ -6,6 +6,7 @@
  * to the web and use the browser's private file system
  * to read and write notes to. This would require having
  * the deployment environment decide which backend service to use.
+ * Vite would also exclude bundling the code related to the unused service
  *
  * But because of the API service, the Client will never know what it's using:
  * whether it's the browser or the actual desktop app.
