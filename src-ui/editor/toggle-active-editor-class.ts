@@ -1,10 +1,6 @@
 import { Editor } from "@tiptap/core";
-
-// ISSUE: this is specific to tiptap
-// and NOT toggling isActive for the sidebar list items
-
 /**
- * Toggle active css state based on the given
+ * Toggle active css state for Editor based on the given
  * elementSelector, editor instance, and mark name.
  * Always call editor.isActive as tiptap is
  * the state-manager and will always be in sync
