@@ -4,13 +4,12 @@
  */
 function toggleActiveClass(selector: string, type: string) {
   const activeType = `${type}-active`;
-  // remove all active classes
+  // remove any active classes
   const elementsToClear = document.querySelectorAll(`.${activeType}`);
   elementsToClear?.forEach((element) => {
-    // for each element, toggle the active class
     element.classList.remove(activeType);
   });
-  // assign the activeType to the selector
+  // assign activeType to selector
   const elementToActivate = document.querySelector(selector);
   elementToActivate?.classList.add(activeType);
 }
