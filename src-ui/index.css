@@ -6,8 +6,12 @@
   line-height: 24px;
   font-weight: 400;
 
-  color: #151515;
-  background-color: #ffffff;
+  --background-color: #f0f0e1;
+  --outline-color: #1d1d1d;
+  --active-color: #1568224c;
+
+  color: var(--outline-color);
+  background-color: var(--background-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,10 +29,9 @@ body {
 }
 
 main {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
 }
 
 main > h1 {
@@ -47,7 +50,7 @@ input {
 
 button {
   border-radius: 0.3em;
-  border: 0.15em solid black;
+  border: 0.15em solid var(--outline-color);
   padding: 0.3em 0.5em;
 
   font-size: 0.9em;
@@ -55,12 +58,12 @@ button {
 
   cursor: pointer;
 
-  color: #000000;
-  background-color: #ffffff;
+  color: var(--outline-color);
+  background-color: var(--background-color);
 }
 
 button:hover {
-  background-color: #0a4b144c;
+  background-color: var(--active-color);
 }
 
 button > svg {
@@ -69,13 +72,13 @@ button > svg {
 }
 
 button.isActive {
-  background-color: #0a4b144c;
+  background-color: var(--active-color);
 }
 
 /* if this stay very small, in-line */
 #sidebar {
-  border-right: black 0.15em solid;
-  width: 9em;
+  border-right: var(--outline-color) 0.15em solid;
+  width: max-content;
 }
 
 #sidebar > h1 {
@@ -114,27 +117,24 @@ button.isActive {
 }
 
 .select-note-active {
-  background-color: lightblue;
+  background-color: rgb(210, 209, 188);
 }
 
 #editor-menu {
   padding: 0.5em;
-  border-bottom: black 0.15em solid;
+  border-bottom: var(--outline-color) 0.15em solid;
   margin-bottom: 1em;
 }
 
 #editor {
   height: inherit;
-  overflow-y: hidden;
-  padding-top: 1em;
-  padding-left: 2em;
+  overflow-y: scroll;
+  padding-left: 3em;
+  padding-right: 7em;
 }
 
 .ProseMirror {
   outline: none;
   height: inherit;
-  padding-top: 1em;
-  padding-left: 2em;
-  padding-right: 2em;
   overflow-y: scroll;
 }

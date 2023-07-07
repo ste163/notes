@@ -31,6 +31,13 @@ function selectMostRecentNote(notes: FileEntry[]) {
   emitSelectedNote(name, path);
 }
 
+// BUG ON NOTE SELECTION
+// if you have the cursor in the editor
+// and select a different note
+// - the scroll is not reset to the top of the editor
+// - the older cursor is still in the editor
+// need to reset state properly
+
 /**
  * Refetch all data and re-render complete
  * interface with latest data/state
