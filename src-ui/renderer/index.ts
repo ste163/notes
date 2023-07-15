@@ -19,5 +19,6 @@ function renderClient() {
 }
 
 export { renderClient };
+// below exports are for life-cycle specific components
 export { renderGetStarted } from "./get-started";
 export { renderSidebarNoteList } from "./sidebar-note-list";

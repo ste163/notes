@@ -1,3 +1,11 @@
+/**
+ * TODO PRIORITY ORDER
+ *
+ * - get all the editor buttons hooked up (once we have that, we're at v0.9)
+ * - then it's UI/UX polish
+ * - bug fixes
+ * - clean-up old todos
+ */
 import { Editor } from "@tiptap/core";
 import {
   createEditor,
