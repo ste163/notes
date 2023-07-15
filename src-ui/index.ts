@@ -105,10 +105,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 
   window.addEventListener("create-note", async (event) => {
-    const { title, content } = (event as CustomEvent)?.detail?.note;
+    const { title, content = "" } = (event as CustomEvent)?.detail?.note;
     await writeNote(title, content);
-    const refreshEvent = new Event("refresh-client");
-    dispatchEvent(refreshEvent);
+    dispatchEvent(new Event("refresh-client"));
   });
 
   window.addEventListener("save-note", async (event) => {
@@ -120,8 +119,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   window.addEventListener("delete-note", async (event) => {
     const { path } = (event as CustomEvent)?.detail?.note;
     await deleteNote(path);
-    const refreshEvent = new Event("refresh-client");
-    dispatchEvent(refreshEvent);
+    dispatchEvent(new Event("refresh-client"));
   });
 
   window.addEventListener("select-note", (event) => {
