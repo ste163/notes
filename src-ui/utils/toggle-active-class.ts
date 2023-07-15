@@ -1,3 +1,6 @@
+// TODO: if this is only ever used in /src-ui/index.ts
+// then move to that file and remove utils
+
 /**
  * Toggles a specific active class on an element.
  * Enforces that only one active class of a certain type can be active at a time

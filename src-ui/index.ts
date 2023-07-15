@@ -12,18 +12,18 @@ import {
   writeNote,
   deleteNote,
 } from "./api";
-import { renderScaffold, renderGetStarted } from "./layout";
-import { renderSidebar, renderSidebarNoteList } from "./components";
-import { toggleActiveClass } from "./toggle-active-class";
+import { renderGetStarted, renderSidebarNoteList } from "./renderer";
+import { toggleActiveClass } from "./utils";
 import { emitSelectedNote } from "./event-emitters";
-import { FileEntry } from "@tauri-apps/api/fs";
+import { renderClient } from "./renderer";
+import { Note } from "./api/interfaces";
 
 // top-level app state (keep as small as possible)
 let editor: null | Editor = null;
-let notes: FileEntry[] = []; // TODO: create own Note interface and use that only
-let selectedNote: null | FileEntry = null;
+let notes: Note[] = []; // TODO: create own Note interface and use that only
+let selectedNote: null | Note = null;
 
-function selectMostRecentNote(notes: FileEntry[]) {
+function selectMostRecentNote(notes: Note[]) {
   // TODO: this actually only fetches the last CREATED note
   // not the one that was most recently updated. but this works for now
   const { name, path } = notes[notes.length - 1];
@@ -31,6 +31,7 @@ function selectMostRecentNote(notes: FileEntry[]) {
   emitSelectedNote(name, path);
 }
 
+// TODO
 // BUG ON NOTE SELECTION
 // if you have the cursor in the editor
 // and select a different note
@@ -48,14 +49,19 @@ async function refreshClient(): Promise<void> {
     editorElement,
     editorMenuElement,
     editorFloatingMenuElement,
-  } = renderScaffold();
-  renderSidebar(sidebarElement);
+  } = renderClient();
+
   notes = await getNotes();
+
+  /**
+   * Set <main /> content based on if notes exist
+   */
   if (!notes.length) {
     renderGetStarted(editorElement);
     return;
   }
 
+  // notes exist, render editor & sidebar state
   editor = await createEditor({
     editorElement: editorElement,
     floatingEditorMenu: editorFloatingMenuElement,
@@ -80,6 +86,10 @@ async function refreshClient(): Promise<void> {
   selectMostRecentNote(notes);
 }
 
+/**
+ * All events live inside of DOMContentLoaded
+ * as that is when the DOM is ready to be manipulated
+ */
 window.addEventListener("DOMContentLoaded", async () => {
   /**
    * Setup the initial state based on filesystem
@@ -94,7 +104,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     await refreshClient();
   });
 
-  // todo: keep an eye on event listeners for a pattern
   window.addEventListener("create-note", async (event) => {
     const { title, content } = (event as CustomEvent)?.detail?.note;
     await writeNote(title, content);
@@ -115,8 +124,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     dispatchEvent(refreshEvent);
   });
 
-  // TODO: rename to select-note to follow pattern
-  window.addEventListener("note-selected", (event) => {
+  window.addEventListener("select-note", (event) => {
     if (!editor) throw Error("No editor instance found for note-select event");
     const { title, path } = (event as CustomEvent)?.detail?.note;
     setEditorContent(editor, path);

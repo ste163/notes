@@ -22,6 +22,7 @@ async function createEditor({
   floatingEditorMenu: Element;
 }): Promise<Editor> {
   // todo: think about a non-hard-coded approach for event naming
+  // however, if it's so few. YAGNI.
   const floatingMenuEvent = new Event("floating-menu-shown");
 
   return new Editor({

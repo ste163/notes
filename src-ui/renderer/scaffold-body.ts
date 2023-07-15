@@ -3,28 +3,28 @@
  * This makes resetting the client state very easy as we never
  * rely on index.html for anything
  */
-function renderScaffold() {
+function renderScaffoldBody() {
   const body = document.querySelector("body");
 
   if (!body) throw new Error("Body Element not found. Exit client scaffolding");
 
   body.innerHTML = `
     <div id="sidebar">
-        <!-- Dynamically Generated -->
+      <!-- Dynamically Generated -->
     </div>
 
     <main>
-        <div id="editor-menu">
-          <!-- Dynamically Generated -->
-        </div>
+      <div id="editor-menu">
+        <!-- Dynamically Generated -->
+      </div>
+      
+      <div id="editor-floating-menu">
+        <!-- Dynamically Generated -->
+      </div>
 
-        <div id="editor-floating-menu">
-          <!-- Dynamically Generated -->
-        </div>
-
-        <div id="editor">
-          <!-- Dynamically Generated -->
-        </div>
+      <div id="editor">
+        <!-- Dynamically Generated -->
+      </div>
     </main>
     `;
 
@@ -51,4 +51,4 @@ function renderScaffold() {
   };
 }
 
-export { renderScaffold };
+export { renderScaffoldBody };

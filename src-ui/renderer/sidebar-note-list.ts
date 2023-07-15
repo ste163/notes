@@ -1,7 +1,4 @@
-// TODO: create a Note interface to remove the use
-// of importing Tauri. The client should have NO idea
-// what tauri is
-import { FileEntry } from "@tauri-apps/api/fs";
+import { Note } from "../api/interfaces";
 import { emitSelectedNote } from "../event-emitters";
 
 /**
@@ -9,7 +6,7 @@ import { emitSelectedNote } from "../event-emitters";
  * - select a note and set editor state
  * - delete note and emit refresh event
  */
-function renderSidebarNoteList(sidebarElement: Element, notes: FileEntry[]) {
+function renderSidebarNoteList(sidebarElement: Element, notes: Note[]) {
   notes.map(({ name, path }) => {
     if (!name) throw new Error("Unable to read name from note");
     const selectableNote = document.createElement("button");
@@ -24,7 +21,7 @@ function renderSidebarNoteList(sidebarElement: Element, notes: FileEntry[]) {
 
     const deleteButton = document.createElement("button");
     deleteButton.innerText = "X";
-    deleteButton.onclick = () => deleteNote(path);
+    deleteButton.onclick = () => emitDeleteNote(path);
 
     noteSelectContainer.appendChild(selectableNote);
     noteSelectContainer.appendChild(deleteButton);
@@ -33,7 +30,7 @@ function renderSidebarNoteList(sidebarElement: Element, notes: FileEntry[]) {
   });
 }
 
-function deleteNote(path: string) {
+function emitDeleteNote(path: string) {
   const deleteNoteEvent = new CustomEvent("delete-note", {
     detail: {
       note: {

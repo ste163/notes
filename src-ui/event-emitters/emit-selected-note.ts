@@ -1,5 +1,5 @@
 function emitSelectedNote(title: string, path: string) {
-  const selectNoteEvent = new CustomEvent("note-selected", {
+  const selectNoteEvent = new CustomEvent("select-note", {
     detail: {
       note: {
         title,
