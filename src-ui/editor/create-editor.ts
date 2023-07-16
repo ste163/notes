@@ -5,14 +5,7 @@ import { Editor } from "@tiptap/core";
 // will be more efficient and easier to manage
 import StarterKit from "@tiptap/starter-kit";
 import { toggleActiveEditorClass } from "./toggle-active-editor-class";
-import { ElementSelectors, Marks } from "../enums";
 import FloatingMenu from "@tiptap/extension-floating-menu";
-import { readNote } from "../api";
-
-async function setEditorContent(editor: Editor, path: string) {
-  const content = await readNote(path);
-  editor.commands.setContent(content);
-}
 
 async function createEditor({
   editorElement,
@@ -32,6 +25,11 @@ async function createEditor({
       FloatingMenu.configure({
         element: floatingEditorMenu as HTMLElement,
         shouldShow: ({ editor, view }) => {
+          // TODO: this is where I should change the code
+          // to make the floating editor menu show whenever there is a new line
+          //
+          // seems to be setup incorrectly for the first render of the menu.
+          // then it works everytime
           const shouldShow =
             view.state.selection.$head.node().content.size === 0
               ? editor.isActive("paragraph")
@@ -44,41 +42,40 @@ async function createEditor({
     content: "<p>Issue selecting note</p>",
     onTransaction: ({ editor }) => {
       /**
-       * onTransaction is being used to track
-       * cursor state and toggle active css for
-       * menu buttons
+       * onTransaction tracks cursor position
+       * and is used to toggle active css for each button
        */
 
-      // get any marks at the current location
-      const marksAtCursorLocation =
-        editor.state.selection.$head.marks() || editor.state.storedMarks;
-
-      // disable all active css if no marks at current location
-      if (!marksAtCursorLocation.length) {
-        // calling toggle to ensure latest state
-        toggleActiveEditorClass({
-          elementSelector: ElementSelectors.ButtonBold,
-          markName: Marks.Bold,
-          editor,
-        });
-        toggleActiveEditorClass({
+      // TODO: this should be used in create-editor-buttons
+      // so that you change 1 thing in editor buttons, and everything 'just works'
+      const editorElements: Array<{
+        elementSelector: string;
+        markName: string;
+        markOptions?: any;
+      }> = [
+        { elementSelector: ".menu-button-bold", markName: "bold" },
+        {
           elementSelector: ".menu-button-h1",
           markName: "heading",
+          markOptions: { level: 1 },
+        },
+        {
+          elementSelector: ".menu-button-h2",
+          markName: "heading",
+          markOptions: { level: 2 },
+        },
+      ];
+
+      editorElements.forEach(({ elementSelector, markName, markOptions }) => {
+        toggleActiveEditorClass({
+          elementSelector: elementSelector,
+          markName: markName,
+          markOptions: markOptions,
           editor,
         });
-      }
-
-      marksAtCursorLocation.forEach(({ type: { name } }) => {
-        if (name === Marks.Bold) {
-          toggleActiveEditorClass({
-            elementSelector: ElementSelectors.ButtonBold,
-            markName: Marks.Bold,
-            editor,
-          });
-        }
       });
     },
   });
 }
 
-export { createEditor, setEditorContent };
+export { createEditor };

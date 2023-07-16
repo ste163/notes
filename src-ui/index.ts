@@ -10,9 +10,8 @@ import { Editor } from "@tiptap/core";
 import {
   createEditor,
   setEditorContent,
-  createBoldButton,
-  createH1Button,
-  createSaveButton,
+  createTopMenuButtons,
+  createFloatingMenuButtons,
 } from "./editor";
 import {
   initializeFileStructure,
@@ -77,11 +76,8 @@ async function refreshClient(): Promise<void> {
 
   renderSidebarNoteList(sidebarElement, notes);
 
-  const editorMenuButtons = [
-    createSaveButton(editor),
-    createBoldButton(editor),
-    createH1Button(editor),
-  ];
+  // should have a renderEditorMenuButtons function
+  const editorMenuButtons = createTopMenuButtons(editor);
   editorMenuButtons.forEach((button) => {
     editorMenuElement.appendChild(button);
   });
@@ -149,8 +145,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     // fully reset the container content state
     floatingMenuContainer.innerHTML = "";
     // each floating menu button must be a new instance of the button type
-    const floatingMenuButtons = [createH1Button(editor)];
-    floatingMenuButtons.forEach((button) =>
+    // todo: need a function that creates floating menu buttons
+    // ideally exported from the editor module
+    createFloatingMenuButtons(editor).forEach((button) =>
       floatingMenuContainer.appendChild(button)
     );
   });

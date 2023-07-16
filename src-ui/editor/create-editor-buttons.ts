@@ -1,6 +1,4 @@
 import { Editor } from "@tiptap/core";
-import { toggleActiveEditorClass } from "./toggle-active-editor-class";
-import { ElementSelectors, Marks } from "../enums";
 
 /**
  * TODO:
@@ -33,13 +31,7 @@ function createSaveButton(editor: Editor) {
 
 function createBoldButton(editor: Editor) {
   const setBold = (editor: Editor) => {
-    // set editor
     editor.chain().focus().toggleBold().run();
-    toggleActiveEditorClass({
-      elementSelector: ElementSelectors.ButtonBold,
-      markName: Marks.Bold,
-      editor,
-    });
   };
 
   const boldButton = document.createElement("button");
@@ -62,13 +54,7 @@ function createBoldButton(editor: Editor) {
  */
 function createH1Button(editor: Editor) {
   const setH1 = (editor: Editor) => {
-    // set editor
     editor.chain().focus().toggleHeading({ level: 1 }).run();
-    toggleActiveEditorClass({
-      elementSelector: ".menu-button-h1",
-      markName: "heading",
-      editor,
-    });
   };
 
   const heading1 = document.createElement("button");
@@ -77,6 +63,19 @@ function createH1Button(editor: Editor) {
   heading1.onclick = () => editor && setH1(editor);
 
   return heading1;
+}
+
+function createH2Button(editor: Editor) {
+  const setH2 = (editor: Editor) => {
+    editor.chain().focus().toggleHeading({ level: 2 }).run();
+  };
+
+  const heading2 = document.createElement("button");
+  heading2.className = "menu-button-h2";
+  heading2.innerText = "h2";
+  heading2.onclick = () => editor && setH2(editor);
+
+  return heading2;
 }
 
 function emitSaveNote(content: string) {
@@ -90,4 +89,23 @@ function emitSaveNote(content: string) {
   dispatchEvent(event);
 }
 
-export { createBoldButton, createH1Button, createSaveButton };
+/**
+ * Instantiates all top menu bar buttons
+ */
+function createTopMenuButtons(editor: Editor) {
+  return [
+    createSaveButton(editor),
+    createBoldButton(editor),
+    createH1Button(editor),
+    createH2Button(editor),
+  ];
+}
+
+/**
+ * Instantiates all floating menu buttons
+ */
+function createFloatingMenuButtons(editor: Editor) {
+  return [createH1Button(editor), createH2Button(editor)];
+}
+
+export { createTopMenuButtons, createFloatingMenuButtons };
