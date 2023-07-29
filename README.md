@@ -43,3 +43,8 @@ Decision for using vanilla html + js (TS) for the ui was to be as easily maintai
 ## getting up and running
 
 todo: commands to get started
+
+# credits: Remix Icons
+
+(before releasing app, need to properly share the license)
+https://remixicon.com/license
