@@ -35,7 +35,6 @@ import {
  */
 async function initializeFileStructure(): Promise<void> {
   const NOTES_PATH = await join(await appDataDir(), "notes");
-  console.log("PATH TO NOTES", NOTES_PATH);
   const doesNotesExist = await exists(NOTES_PATH);
   if (doesNotesExist) return; // we've already initialized the data structure once
   await createDir("notes", {
@@ -53,7 +52,6 @@ async function getNotes() {
 async function writeNote(title: string, contents: string) {
   // todo:
   // check that the file name isn't already taken
-
   await writeFile(await join("notes", title), contents, {
     dir: BaseDirectory.AppData,
   });

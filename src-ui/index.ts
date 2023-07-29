@@ -1,29 +1,26 @@
 /**
  * TODO PRIORITY ORDER
- *
  * - get all the editor buttons hooked up (once we have that, we're at v0.9)
  * - then it's UI/UX polish
  * - bug fixes
  * - clean-up old todos
  */
 import { Editor } from "@tiptap/core";
-import {
-  createEditor,
-  setEditorContent,
-  createTopMenuButtons,
-  createFloatingMenuButtons,
-} from "./editor";
+import { createEditor, setEditorContent, instantiateButtons } from "./editor";
 import {
   initializeFileStructure,
   getNotes,
   writeNote,
   deleteNote,
 } from "./api";
-import { renderGetStarted, renderSidebarNoteList } from "./renderer";
-import { toggleActiveClass } from "./utils";
-import { emitSelectedNote } from "./event-emitters";
-import { renderClient } from "./renderer";
 import { Note } from "./api/interfaces";
+import {
+  renderClient,
+  renderGetStarted,
+  renderSidebarNoteList,
+} from "./renderer";
+import { emitSelectedNote } from "./event-emitters";
+import { toggleActiveClass } from "./utils";
 
 // top-level app state (keep as small as possible)
 let editor: null | Editor = null;
@@ -76,9 +73,8 @@ async function refreshClient(): Promise<void> {
 
   renderSidebarNoteList(sidebarElement, notes);
 
-  // should have a renderEditorMenuButtons function
-  const editorMenuButtons = createTopMenuButtons(editor);
-  editorMenuButtons.forEach((button) => {
+  const { topMenuButtons } = instantiateButtons(editor);
+  topMenuButtons.forEach((button) => {
     editorMenuElement.appendChild(button);
   });
 
@@ -144,12 +140,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (!floatingMenuContainer) return;
     // fully reset the container content state
     floatingMenuContainer.innerHTML = "";
-    // each floating menu button must be a new instance of the button type
-    // todo: need a function that creates floating menu buttons
-    // ideally exported from the editor module
-    createFloatingMenuButtons(editor).forEach((button) =>
-      floatingMenuContainer.appendChild(button)
-    );
+    const { floatingMenuButtons } = instantiateButtons(editor);
+    floatingMenuButtons.forEach((button) => {
+      floatingMenuContainer.appendChild(button);
+    });
   });
 
   /**
