@@ -3,6 +3,7 @@ import { Editor } from "@tiptap/core";
 interface ButtonConfig {
   className?: string;
   icon: string;
+  title: string; // accessibility title for button
   isInFloatingMenu: boolean;
   onClick: (editor: Editor) => void;
   markName?: string; // used for toggling css
@@ -15,6 +16,7 @@ interface ButtonConfig {
  */
 const BUTTON_CONFIGURATION: ButtonConfig[] = [
   {
+    title: "Bold",
     markName: "bold",
     className: "menu-button-bold",
     isInFloatingMenu: false,
@@ -26,6 +28,7 @@ const BUTTON_CONFIGURATION: ButtonConfig[] = [
       </svg>`,
   },
   {
+    title: "Heading 1",
     markName: "heading",
     markOptions: { level: 1 },
     className: "menu-button-h1",
@@ -34,10 +37,12 @@ const BUTTON_CONFIGURATION: ButtonConfig[] = [
       editor.chain().focus().toggleHeading({ level: 1 }).run(),
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <title>Heading 1</title>
         <path d="M13 20H11V13H4V20H2V4H4V11H11V4H13V20ZM21.0005 8V20H19.0005L19 10.204L17 10.74V8.67L19.5005 8H21.0005Z"></path>
       </svg>`,
   },
   {
+    title: "Heading 2",
     markName: "heading",
     markOptions: { level: 2 },
     className: "menu-button-h2",
@@ -46,10 +51,12 @@ const BUTTON_CONFIGURATION: ButtonConfig[] = [
       editor.chain().focus().toggleHeading({ level: 2 }).run(),
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <title>Heading 2</title>
         <path d="M4 4V11H11V4H13V20H11V13H4V20H2V4H4ZM18.5 8C20.5711 8 22.25 9.67893 22.25 11.75C22.25 12.6074 21.9623 13.3976 21.4781 14.0292L21.3302 14.2102L18.0343 18H22V20H15L14.9993 18.444L19.8207 12.8981C20.0881 12.5908 20.25 12.1893 20.25 11.75C20.25 10.7835 19.4665 10 18.5 10C17.5818 10 16.8288 10.7071 16.7558 11.6065L16.75 11.75H14.75C14.75 9.67893 16.4289 8 18.5 8Z"></path>
       </svg>`,
   },
   {
+    title: "Heading 3",
     markName: "heading",
     markOptions: { level: 3 },
     className: "menu-button-h3",
@@ -58,10 +65,12 @@ const BUTTON_CONFIGURATION: ButtonConfig[] = [
       editor.chain().focus().toggleHeading({ level: 3 }).run(),
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <title>Heading 3</title>
         <path d="M22 8L21.9984 10L19.4934 12.883C21.0823 13.3184 22.25 14.7728 22.25 16.5C22.25 18.5711 20.5711 20.25 18.5 20.25C16.674 20.25 15.1528 18.9449 14.8184 17.2166L16.7821 16.8352C16.9384 17.6413 17.6481 18.25 18.5 18.25C19.4665 18.25 20.25 17.4665 20.25 16.5C20.25 15.5335 19.4665 14.75 18.5 14.75C18.214 14.75 17.944 14.8186 17.7056 14.9403L16.3992 13.3932L19.3484 10H15V8H22ZM4 4V11H11V4H13V20H11V13H4V20H2V4H4Z"></path>
       </svg>`,
   },
   {
+    title: "Bullet List",
     markName: "listItem",
     className: "menu-button-bullet-list",
     isInFloatingMenu: true,
@@ -75,6 +84,7 @@ const BUTTON_CONFIGURATION: ButtonConfig[] = [
       </svg>`,
   },
   {
+    title: "Ordered List",
     markName: "listItem", // BUG: fix conflicting names for order and unordered lists. Unable to toggle css properly
     className: "menu-button-ordered-list",
     isInFloatingMenu: true,
@@ -83,6 +93,7 @@ const BUTTON_CONFIGURATION: ButtonConfig[] = [
     },
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <title>Ordered List</title>
         <path d="M5.75024 3.5H4.71733L3.25 3.89317V5.44582L4.25002 5.17782L4.25018 8.5H3V10H7V8.5H5.75024V3.5ZM10 4H21V6H10V4ZM10 11H21V13H10V11ZM10 18H21V20H10V18ZM2.875 15.625C2.875 14.4514 3.82639 13.5 5 13.5C6.17361 13.5 7.125 14.4514 7.125 15.625C7.125 16.1106 6.96183 16.5587 6.68747 16.9167L6.68271 16.9229L5.31587 18.5H7V20H3.00012L2.99959 18.8786L5.4717 16.035C5.5673 15.9252 5.625 15.7821 5.625 15.625C5.625 15.2798 5.34518 15 5 15C4.67378 15 4.40573 15.2501 4.37747 15.5688L4.3651 15.875H2.875V15.625Z"></path>
       </svg>
     `,
@@ -98,6 +109,7 @@ function instantiateButtons(editor: Editor) {
 
   const createButton = (editor: Editor, button: ButtonConfig) => {
     const element = document.createElement("button");
+    element.title = button.title;
     element.className = button.className ?? "";
     element.innerHTML = button.icon;
     element.onclick = () => editor && button.onClick(editor);

@@ -1,9 +1,19 @@
 /**
  * TODO PRIORITY ORDER
- * - get all the editor buttons hooked up (once we have that, we're at v0.9)
+ * - get all the editor buttons hooked up (once we have that, we're at v0.1)
+ *    - italics
+ *    - strike-through
+ *    - underline
+ *    - link
+ *    - code blocks
+ *    - checkbox lists (tasklist)
+ * - EXTENSIONS
+ *    - History
+ *
  * - then it's UI/UX polish
  * - bug fixes
  * - clean-up old todos
+ * - potentially setup basic shortcuts (outside of tiptap)? Ie, cmd+s to save, visually indicator for saving was successful. Ie last saved timestamp
  */
 import { Editor } from "@tiptap/core";
 import { createEditor, setEditorContent, instantiateButtons } from "./editor";
@@ -66,13 +76,22 @@ async function refreshClient(): Promise<void> {
   // setup editor content buttons (bold, italic, etc.)
   const { topMenuButtons } = instantiateButtons(editor);
   topMenuButtons.forEach((button) => {
+    // todo: based on button type, I can place them in a different container:
+    // ie, position to the left, position to the middle, position to the far right container!
     editorTopMenuElement.appendChild(button);
   });
 
   // add non-editor specific buttons
-  editorTopMenuElement.appendChild(renderSaveButton(editor));
+  // TODO: this divider element will need a class that I can target
+  // so that all dividers for the top-menu can be styled the same
+  // POTENTIALLY though, just use .top-menu-bar > div
+  // as that might be the best solution... That's best...
+  const dividerElement = document.createElement("div");
+  editorTopMenuElement.appendChild(dividerElement);
+
+  dividerElement.appendChild(renderSaveButton(editor));
   if (selectedNote) {
-    editorTopMenuElement.appendChild(renderDeleteButton(selectedNote?.path));
+    dividerElement.appendChild(renderDeleteButton(selectedNote?.path));
   }
 
   renderSidebarNoteList(sidebarElement, notes);

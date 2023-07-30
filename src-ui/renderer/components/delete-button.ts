@@ -1,3 +1,11 @@
+// TODO: make a 'base button' component
+// that can be shared across EVERY button component
+// (editor menu, floating menu, non-editor related buttons)
+// because they all use the same core headless functionality
+// - Also allow for optional icons and text
+//
+// this will reduce code duplication and make maintenance easier
+
 function renderDeleteButton(path: string) {
   const deleteButton = document.createElement("button");
   deleteButton.title = "Delete note";
