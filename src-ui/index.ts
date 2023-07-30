@@ -19,6 +19,7 @@ import {
   renderGetStarted,
   renderSidebarNoteList,
 } from "./renderer";
+import { renderDeleteButton, renderSaveButton } from "./renderer/components";
 import { emitSelectedNote } from "./event-emitters";
 import { toggleActiveClass } from "./utils";
 
@@ -26,14 +27,6 @@ import { toggleActiveClass } from "./utils";
 let editor: null | Editor = null;
 let notes: Note[] = []; // TODO: create own Note interface and use that only
 let selectedNote: null | Note = null;
-
-function selectMostRecentNote(notes: Note[]) {
-  // TODO: this actually only fetches the last CREATED note
-  // not the one that was most recently updated. but this works for now
-  const { name, path } = notes[notes.length - 1];
-  if (!name || !path) throw new Error("Unable to get most recent note");
-  emitSelectedNote(name, path);
-}
 
 // TODO
 // BUG ON NOTE SELECTION
@@ -51,7 +44,7 @@ async function refreshClient(): Promise<void> {
   const {
     sidebarElement,
     editorElement,
-    editorMenuElement,
+    editorTopMenuElement,
     editorFloatingMenuElement,
   } = renderClient();
 
@@ -64,26 +57,36 @@ async function refreshClient(): Promise<void> {
     renderGetStarted(editorElement);
     return;
   }
-
   // notes exist, render editor & sidebar state
   editor = await createEditor({
     editorElement: editorElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
 
-  renderSidebarNoteList(sidebarElement, notes);
-
+  // setup editor content buttons (bold, italic, etc.)
   const { topMenuButtons } = instantiateButtons(editor);
   topMenuButtons.forEach((button) => {
-    editorMenuElement.appendChild(button);
+    editorTopMenuElement.appendChild(button);
   });
 
-  /**
-   * This has no effect on initial render
-   * as the event listeners have not been attached.
-   * This selects on every other call to refresh
-   */
-  selectMostRecentNote(notes);
+  // add non-editor specific buttons
+  editorTopMenuElement.appendChild(renderSaveButton(editor));
+  if (selectedNote) {
+    editorTopMenuElement.appendChild(renderDeleteButton(selectedNote?.path));
+  }
+
+  renderSidebarNoteList(sidebarElement, notes);
+
+  // last state updates need to be related to the selected note
+  if (selectedNote) {
+    setEditorContent(editor, selectedNote.path);
+    toggleActiveClass(
+      `#${selectedNote.name}-note-select-container`,
+      "select-note"
+    );
+  } else {
+    selectMostRecentNote(notes);
+  }
 }
 
 /**
@@ -114,6 +117,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (!selectedNote?.name) throw new Error("No note selected to save");
     const { content } = (event as CustomEvent)?.detail?.note;
     await writeNote(selectedNote?.name, content);
+    dispatchEvent(new Event("refresh-client"));
   });
 
   window.addEventListener("delete-note", async (event) => {
@@ -125,10 +129,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   window.addEventListener("select-note", (event) => {
     if (!editor) throw Error("No editor instance found for note-select event");
     const { title, path } = (event as CustomEvent)?.detail?.note;
-    setEditorContent(editor, path);
-    // TODO/NOTE: issue with this approach: CSS maintenance nightmare!
-    toggleActiveClass(`#${title}-note-select-container`, "select-note");
     selectedNote = { name: title, path };
+    dispatchEvent(new Event("refresh-client"));
   });
 
   // floatingMenu buttons need to be appended in the event for rendering
@@ -152,3 +154,11 @@ window.addEventListener("DOMContentLoaded", async () => {
    */
   selectMostRecentNote(notes);
 });
+
+function selectMostRecentNote(notes: Note[]) {
+  // TODO: this actually only fetches the last CREATED note
+  // not the one that was most recently updated. but this works for now
+  const { name, path } = notes[notes.length - 1];
+  if (!name || !path) throw new Error("Unable to get most recent note");
+  emitSelectedNote(name, path);
+}

@@ -5,7 +5,7 @@ function renderClient() {
   const {
     sidebarElement,
     editorElement,
-    editorMenuElement,
+    editorTopMenuElement,
     editorFloatingMenuElement,
   } = renderScaffoldBody();
   renderScaffoldSidebar(sidebarElement);
@@ -13,7 +13,7 @@ function renderClient() {
   return {
     sidebarElement,
     editorElement,
-    editorMenuElement,
+    editorTopMenuElement,
     editorFloatingMenuElement,
   };
 }

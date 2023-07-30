@@ -89,7 +89,7 @@ function toggleActiveEditorClass({
   editor: Editor;
 }): void {
   const elements = document.querySelectorAll(`.${className}`);
-  if (!elements.length) throw `${className} not found.`;
+  if (!elements.length) return;
   elements.forEach((element) => {
     editor.isActive(markName, markOptions && markOptions)
       ? element.classList.add("isActive")

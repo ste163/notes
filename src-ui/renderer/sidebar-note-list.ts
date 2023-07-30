@@ -19,26 +19,10 @@ function renderSidebarNoteList(sidebarElement: Element, notes: Note[]) {
     noteSelectContainer.classList.add("note-select-container");
     noteSelectContainer.id = `${name}-note-select-container`;
 
-    const deleteButton = document.createElement("button");
-    deleteButton.innerText = "X";
-    deleteButton.onclick = () => emitDeleteNote(path);
-
     noteSelectContainer.appendChild(selectableNote);
-    noteSelectContainer.appendChild(deleteButton);
 
     sidebarElement.append(noteSelectContainer);
   });
-}
-
-function emitDeleteNote(path: string) {
-  const deleteNoteEvent = new CustomEvent("delete-note", {
-    detail: {
-      note: {
-        path,
-      },
-    },
-  });
-  dispatchEvent(deleteNoteEvent);
 }
 
 export { renderSidebarNoteList };

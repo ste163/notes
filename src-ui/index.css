@@ -118,7 +118,7 @@ button.isActive {
   background-color: rgb(210, 209, 188);
 }
 
-#editor-menu {
+#editor-top-menu {
   padding: 0.5em;
   border-bottom: var(--outline-color) 0.15em solid;
   margin-bottom: 1em;

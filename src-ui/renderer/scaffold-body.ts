@@ -14,7 +14,7 @@ function renderScaffoldBody() {
     </div>
 
     <main>
-      <div id="editor-menu">
+      <div id="editor-top-menu">
         <!-- Dynamically Generated -->
       </div>
       
@@ -29,7 +29,7 @@ function renderScaffoldBody() {
     `;
 
   const sidebarElement = document.querySelector("#sidebar");
-  const editorMenuElement = document.querySelector("#editor-menu");
+  const editorTopMenuElement = document.querySelector("#editor-top-menu");
   const editorFloatingMenuElement = document.querySelector(
     "#editor-floating-menu"
   );
@@ -37,7 +37,7 @@ function renderScaffoldBody() {
 
   if (
     !sidebarElement ||
-    !editorMenuElement ||
+    !editorTopMenuElement ||
     !editorFloatingMenuElement ||
     !editorElement
   )
@@ -46,7 +46,7 @@ function renderScaffoldBody() {
   return {
     sidebarElement,
     editorElement,
-    editorMenuElement,
+    editorTopMenuElement,
     editorFloatingMenuElement,
   };
 }
