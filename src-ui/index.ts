@@ -1,8 +1,6 @@
 /**
  * TODO PRIORITY ORDER
  * - get all the editor buttons hooked up (once we have that, we're at v0.1)
- *    - italics
- *    - strike-through
  *    - underline
  *    - link
  *    - code blocks
