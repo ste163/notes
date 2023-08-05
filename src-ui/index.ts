@@ -1,9 +1,8 @@
 /**
  * TODO PRIORITY ORDER
- * - get all the editor buttons hooked up (once we have that, we're at v0.1)
- *    - History Extension
- *
- * - then it's UI/UX polish
+ * - History Extension + undo/redo buttons
+ * - refactor refreshClient to be more decoupled from state
+ * - UI/UX polish
  * - bug fixes
  * - clean-up old todos
  * - potentially setup basic shortcuts (outside of tiptap)? Ie, cmd+s to save, visually indicator for saving was successful. Ie last saved timestamp
@@ -28,7 +27,6 @@ import { emitSelectedNote } from "./events";
 
 // top-level app state (keep as small as possible)
 let editor: null | Editor = null;
-let notes: Note[] = []; // TODO: create own Note interface and use that only
 let selectedNote: null | Note = null;
 
 // TODO
@@ -40,83 +38,80 @@ let selectedNote: null | Note = null;
 // need to reset state properly
 
 /**
- * All events live inside of DOMContentLoaded
- * as that is when the DOM is ready to be manipulated
+ * All events related to the different app life-cycles
  */
-window.addEventListener("DOMContentLoaded", async () => {
-  /**
-   * Setup the initial state based on filesystem
-   */
-  await initializeFileStructure(); // TODO: needs to happen in the rust backend
+window.addEventListener("refresh-client", async () => {
+  // TODO
+  // get all notes, then pass into refreshClient
+  // so then refreshClient actually just calls renderClient(notes)
+  // and renderClient handles everything else
+  // note: could potentially pass selectedNote into renderClient as well.
+  // RenderClient then returns {editor, mainElements you can select}
+  // this way, everything is always up-to-date and decoupled
   await refreshClient();
+});
 
-  /**
-   * All events related to the different app life-cycles
-   */
-  window.addEventListener("refresh-client", async () => {
-    await refreshClient();
+window.addEventListener("create-note", async (event) => {
+  const { title, content = "" } = (event as CustomEvent)?.detail?.note;
+  await writeNote(title, content); // TODO: writeNote needs to return the file path
+  // so that I can select this note for the below:
+  // selectedNote = { name: title, path };
+  dispatchEvent(new Event("refresh-client"));
+});
+
+window.addEventListener("save-note", async (event) => {
+  if (!selectedNote?.name) throw new Error("No note selected to save");
+  const { content } = (event as CustomEvent)?.detail?.note;
+  await writeNote(selectedNote?.name, content);
+  dispatchEvent(new Event("refresh-client"));
+});
+
+window.addEventListener("delete-note", async (event) => {
+  const { path } = (event as CustomEvent)?.detail?.note;
+  await deleteNote(path);
+  selectedNote = null; // reset selected note as it was deleted. You can only delete selected notes
+  dispatchEvent(new Event("refresh-client"));
+});
+
+window.addEventListener("select-note", (event) => {
+  if (!editor) throw Error("No editor instance found for note-select event");
+  const { title, path } = (event as CustomEvent)?.detail?.note;
+  selectedNote = { name: title, path };
+  dispatchEvent(new Event("refresh-client"));
+});
+
+// floatingMenu buttons need to be appended in the event for rendering
+window.addEventListener("floating-menu-shown", () => {
+  if (!editor) throw new Error("No editor instance found for floating menus");
+  const floatingMenuContainer = document.querySelector("#editor-floating-menu");
+  if (!floatingMenuContainer) return;
+  // fully reset the container content state
+  floatingMenuContainer.innerHTML = "";
+  const { floatingMenuButtons } = instantiateEditorButtons(editor);
+  floatingMenuButtons.forEach((button) => {
+    floatingMenuContainer.appendChild(button);
   });
-
-  window.addEventListener("create-note", async (event) => {
-    const { title, content = "" } = (event as CustomEvent)?.detail?.note;
-    await writeNote(title, content); // TODO: writeNote needs to return the file path
-    // so that I can select this note for the below:
-    // selectedNote = { name: title, path };
-    dispatchEvent(new Event("refresh-client"));
-  });
-
-  window.addEventListener("save-note", async (event) => {
-    if (!selectedNote?.name) throw new Error("No note selected to save");
-    const { content } = (event as CustomEvent)?.detail?.note;
-    await writeNote(selectedNote?.name, content);
-    dispatchEvent(new Event("refresh-client"));
-  });
-
-  window.addEventListener("delete-note", async (event) => {
-    const { path } = (event as CustomEvent)?.detail?.note;
-    await deleteNote(path);
-    selectedNote = null; // reset selected note as it was deleted. You can only delete selected notes
-    dispatchEvent(new Event("refresh-client"));
-  });
-
-  window.addEventListener("select-note", (event) => {
-    if (!editor) throw Error("No editor instance found for note-select event");
-    const { title, path } = (event as CustomEvent)?.detail?.note;
-    selectedNote = { name: title, path };
-    dispatchEvent(new Event("refresh-client"));
-  });
-
-  // floatingMenu buttons need to be appended in the event for rendering
-  window.addEventListener("floating-menu-shown", () => {
-    if (!editor) throw new Error("No editor instance found for floating menus");
-    const floatingMenuContainer = document.querySelector(
-      "#editor-floating-menu"
-    );
-    if (!floatingMenuContainer) return;
-    // fully reset the container content state
-    floatingMenuContainer.innerHTML = "";
-    const { floatingMenuButtons } = instantiateEditorButtons(editor);
-    floatingMenuButtons.forEach((button) => {
-      floatingMenuContainer.appendChild(button);
-    });
-  });
-
-  /**
-   * This only runs once, on initial load
-   * to select the most recent note
-   */
-  // TODO: this should not happen. Why?
-  // the rust backend, when it loads (ie the api)
-  // should return Notes before DOMCONTENTLOADED.
-  // this way when we render, we're already ready to go
-  selectMostRecentNote(notes);
 });
 
 /**
- * Refetch all data and re-render complete
- * interface with latest data/state
+ * All events related to running the app have been created.
+ * Initial file structure state has been setup.
+ * The DOM has loaded.
+ * Can be sure by this point the client is ready to render.
  */
+window.addEventListener("DOMContentLoaded", async () => {
+  await initializeFileStructure(); // TODO: needs to happen in the rust backend before DOM CONTENT LOADED
+  dispatchEvent(new Event("refresh-client"));
+});
+
+// TODO: would probably be best to pass notes in here
+// Lifecycle is:
+// 1. fetch notes (happens at rust backend) on initial load
+// 2. when refresh event occurs, fetch notes again
+// 3. renderClient(notes)
+// this way the refreshClient is more decoupled from the state of notes
 async function refreshClient(): Promise<void> {
+  // refreshClient is an overloaded function and needs to be simplified
   const {
     sidebarElement,
     editorElement,
@@ -124,7 +119,9 @@ async function refreshClient(): Promise<void> {
     editorFloatingMenuElement,
   } = renderClient();
 
-  notes = await getNotes();
+  const notes = await getNotes();
+
+  // TODO: the below can be moved into renderClient(notes, selectedNote)
 
   /**
    * Set <main /> content based on if notes exist

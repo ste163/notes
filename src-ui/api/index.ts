@@ -23,6 +23,7 @@ import {
   writeFile,
   removeFile,
 } from "./allowed-tauri-apis";
+import { Note } from "./interfaces";
 // TODO: add error handling at correct places
 
 /**
@@ -43,7 +44,7 @@ async function initializeFileStructure(): Promise<void> {
   });
 }
 
-async function getNotes() {
+async function getNotes(): Promise<Note[]> {
   return await readDir("notes", {
     dir: BaseDirectory.AppData,
   });
