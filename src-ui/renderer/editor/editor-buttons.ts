@@ -100,7 +100,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
 /**
  * Reads Button Config and generates button instances
  */
-function instantiateButtons(editor: Editor) {
+function instantiateEditorButtons(editor: Editor) {
   const topMenuButtons: HTMLButtonElement[] = [];
   const floatingMenuButtons: HTMLButtonElement[] = [];
 
@@ -126,4 +126,4 @@ function instantiateButtons(editor: Editor) {
   };
 }
 
-export { BUTTON_CONFIGURATION, instantiateButtons };
+export { BUTTON_CONFIGURATION, instantiateEditorButtons };

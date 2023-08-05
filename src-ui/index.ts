@@ -16,24 +16,24 @@
  * - potentially setup basic shortcuts (outside of tiptap)? Ie, cmd+s to save, visually indicator for saving was successful. Ie last saved timestamp
  */
 import { Editor } from "@tiptap/core";
-import {
-  createEditor,
-  setEditorContent,
-  instantiateButtons,
-} from "./renderer/editor";
+import { Note } from "./api/interfaces";
 import {
   initializeFileStructure,
   getNotes,
   writeNote,
   deleteNote,
 } from "./api";
-import { Note } from "./api/interfaces";
+import { renderDeleteButton, renderSaveButton } from "./renderer/components";
+import {
+  createEditor,
+  setEditorContent,
+  instantiateEditorButtons,
+} from "./renderer/editor";
 import {
   renderClient,
   renderGetStarted,
   renderSidebarNoteList,
 } from "./renderer";
-import { renderDeleteButton, renderSaveButton } from "./renderer/components";
 import { emitSelectedNote } from "./events";
 
 // top-level app state (keep as small as possible)
@@ -105,7 +105,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (!floatingMenuContainer) return;
     // fully reset the container content state
     floatingMenuContainer.innerHTML = "";
-    const { floatingMenuButtons } = instantiateButtons(editor);
+    const { floatingMenuButtons } = instantiateEditorButtons(editor);
     floatingMenuButtons.forEach((button) => {
       floatingMenuContainer.appendChild(button);
     });
@@ -150,7 +150,7 @@ async function refreshClient(): Promise<void> {
   });
 
   // setup editor content buttons (bold, italic, etc.)
-  const { topMenuButtons } = instantiateButtons(editor);
+  const { topMenuButtons } = instantiateEditorButtons(editor);
   topMenuButtons.forEach((button) => {
     // todo: based on button type, I can place them in a different container:
     // ie, position to the left, position to the middle, position to the far right container!

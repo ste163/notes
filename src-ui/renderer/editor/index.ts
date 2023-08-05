@@ -4,4 +4,4 @@
  */
 export { createEditor } from "./editor";
 export { setEditorContent } from "./set-editor-content";
-export { instantiateButtons } from "./editor-buttons";
+export { instantiateEditorButtons } from "./editor-buttons";

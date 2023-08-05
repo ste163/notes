@@ -13,7 +13,7 @@ function createEvent(eventName: string, message: { [key: string]: any }) {
   return { dispatch: () => dispatchEvent(selectNoteEvent) };
 }
 
-// TODO: this could be removed. How? Create an enum:
+// TODO, potentially: this could be removed. How? Create an 'enum' or 'as const':
 // EventName: { selectNote: "select-note" } etc.
 // then we do not need functions like 'emitSelectedNote'
 // then we could also add the type: SelectNoteMessage: { note: {title, path } }
