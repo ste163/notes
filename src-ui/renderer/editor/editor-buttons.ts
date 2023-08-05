@@ -1,11 +1,8 @@
 import { Editor } from "@tiptap/core";
+import { Button, renderButton } from "../components/button";
 
-interface ButtonConfig {
-  className?: string;
-  icon: string;
-  title: string; // accessibility title for button
+interface EditorButton extends Button {
   isInFloatingMenu: boolean;
-  onClick: (editor: Editor) => void;
   markName?: string; // used for toggling css
   markOptions?: any; // used for toggling css
 }
@@ -14,7 +11,7 @@ interface ButtonConfig {
  * Configuration object for creating buttons.
  * Also used by the editor to toggle active CSS
  */
-const BUTTON_CONFIGURATION: ButtonConfig[] = [
+const BUTTON_CONFIGURATION: EditorButton[] = [
   {
     title: "Bold",
     markName: "bold",
@@ -107,20 +104,20 @@ function instantiateButtons(editor: Editor) {
   const topMenuButtons: HTMLButtonElement[] = [];
   const floatingMenuButtons: HTMLButtonElement[] = [];
 
-  const createButton = (editor: Editor, button: ButtonConfig) => {
-    const element = document.createElement("button");
-    element.title = button.title;
-    element.className = button.className ?? "";
-    element.innerHTML = button.icon;
-    element.onclick = () => editor && button.onClick(editor);
-    return element;
+  const renderEditorButton = (editor: Editor, button: EditorButton) => {
+    return renderButton({
+      title: button.title,
+      icon: button.icon,
+      className: button.className ?? "",
+      onClick: () => editor && button.onClick(editor),
+    });
   };
 
-  BUTTON_CONFIGURATION.forEach((button: ButtonConfig) => {
+  BUTTON_CONFIGURATION.forEach((button: EditorButton) => {
     if (button.isInFloatingMenu) {
-      floatingMenuButtons.push(createButton(editor, button));
+      floatingMenuButtons.push(renderEditorButton(editor, button));
     }
-    topMenuButtons.push(createButton(editor, button));
+    topMenuButtons.push(renderEditorButton(editor, button));
   });
 
   return {
