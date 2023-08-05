@@ -26,6 +26,9 @@ dependencies:
   '@tiptap/extension-heading':
     specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
+  '@tiptap/extension-italic':
+    specifier: ^2.0.4
+    version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-list-item':
     specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
@@ -785,6 +788,14 @@ packages:
 
   /@tiptap/extension-heading@2.0.4(@tiptap/core@2.0.4):
     resolution: {integrity: sha512-EfitUbew5ljH3xVlBXAxqqcJ4rjv15b8379LYOV6KQCf+Y1wY0gy9Q8wXSnrsAagqrvqipja4Ihn3OZeyIM+CA==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+    dependencies:
+      '@tiptap/core': 2.0.4(@tiptap/pm@2.0.4)
+    dev: false
+
+  /@tiptap/extension-italic@2.0.4(@tiptap/core@2.0.4):
+    resolution: {integrity: sha512-C/6+qs4Jh8xERRP0wcOopA1+emK8MOkBE4RQx5NbPnT2iCpERP0GlmHBFQIjaYPctZgKFHxsCfRnneS5Xe76+A==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
     dependencies:

@@ -25,6 +25,19 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       </svg>`,
   },
   {
+    title: "Italic",
+    markName: "italic",
+    className: "menu-button-italic",
+    isInFloatingMenu: false,
+    onClick: (editor: Editor) => editor.chain().focus().toggleItalic().run(),
+    icon: `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <title>Italic</title>
+      <path d="M15 20H7V18H9.92661L12.0425 6H9V4H17V6H14.0734L11.9575 18H15V20Z"></path>
+    </svg>
+    `,
+  },
+  {
     title: "Heading 1",
     markName: "heading",
     markOptions: { level: 1 },
