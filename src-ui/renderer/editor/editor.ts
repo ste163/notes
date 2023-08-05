@@ -12,6 +12,10 @@ import Heading from "@tiptap/extension-heading";
 import ListItem from "@tiptap/extension-list-item";
 import BulletList from "@tiptap/extension-bullet-list";
 import OrderedList from "@tiptap/extension-ordered-list";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
+import Code from "@tiptap/extension-code";
+import CodeBlock from "@tiptap/extension-code-block";
 
 async function createEditor({
   editorElement,
@@ -36,6 +40,10 @@ async function createEditor({
       BulletList,
       ListItem,
       OrderedList,
+      TaskList,
+      TaskItem.configure({ nested: true }),
+      Code,
+      CodeBlock,
       FloatingMenu.configure({
         element: floatingEditorMenu as HTMLElement,
         shouldShow: ({ editor, view }) => {

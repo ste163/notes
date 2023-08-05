@@ -2,10 +2,7 @@
  * TODO PRIORITY ORDER
  * - get all the editor buttons hooked up (once we have that, we're at v0.1)
  *    - link
- *    - code blocks
- *    - checkbox lists (tasklist)
- *    - EXTENSIONS
- *    - History
+ *    - History Extension
  *
  * - then it's UI/UX polish
  * - bug fixes
