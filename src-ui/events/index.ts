@@ -7,10 +7,10 @@
  * Creates custom events with messages that can be dispatched when needed
  */
 function createEvent(eventName: string, message: { [key: string]: any }) {
-  const selectNoteEvent = new CustomEvent(eventName, {
+  const event = new CustomEvent(eventName, {
     detail: message,
   });
-  return { dispatch: () => dispatchEvent(selectNoteEvent) };
+  return { dispatch: () => dispatchEvent(event) };
 }
 
 // TODO, potentially: this could be removed. How? Create an 'enum' or 'as const':
