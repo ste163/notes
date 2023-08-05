@@ -1,7 +1,6 @@
 /**
  * TODO PRIORITY ORDER
  * - get all the editor buttons hooked up (once we have that, we're at v0.1)
- *    - link
  *    - History Extension
  *
  * - then it's UI/UX polish
@@ -16,13 +15,10 @@ import {
   getNotes,
   writeNote,
   deleteNote,
+  readNote,
 } from "./api";
 import { renderDeleteButton, renderSaveButton } from "./renderer/components";
-import {
-  createEditor,
-  setEditorContent,
-  instantiateEditorButtons,
-} from "./renderer/editor";
+import { createEditor, instantiateEditorButtons } from "./renderer/editor";
 import {
   renderClient,
   renderGetStarted,
@@ -168,7 +164,8 @@ async function refreshClient(): Promise<void> {
 
   // last state updates need to be related to the selected note
   if (selectedNote) {
-    setEditorContent(editor, selectedNote.path);
+    const content = await readNote(selectedNote?.path);
+    editor.commands.setContent(content);
     toggleActiveClass(
       `#${selectedNote.name}-note-select-container`,
       "select-note"
