@@ -16,6 +16,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
+import History from "@tiptap/extension-history";
 
 /**
  * Instantiates the editor and returns the instance.
@@ -47,6 +48,7 @@ async function renderEditor({
       TaskItem.configure({ nested: true }),
       Code,
       CodeBlock,
+      History,
       FloatingMenu.configure({
         element: floatingEditorMenu as HTMLElement,
         shouldShow: ({ editor, view }) => {
@@ -64,7 +66,7 @@ async function renderEditor({
         },
       }),
     ],
-    content: "<p>Issue selecting note</p>",
+    content: "<p>Issue selecting note</p>", // BUG/TODO: with undo, this is always initial state. So do not set it this way! If we can't select a note, don't render the editor
     onTransaction: ({ editor }) => {
       /**
        * onTransaction tracks cursor position

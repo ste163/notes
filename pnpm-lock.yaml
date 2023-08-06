@@ -12,16 +12,16 @@ dependencies:
     specifier: 2.0.4
     version: 2.0.4(@tiptap/pm@2.0.4)
   '@tiptap/extension-bold':
-    specifier: ^2.0.4
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-bullet-list':
     specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-code':
-    specifier: ^2.0.4
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-code-block':
-    specifier: ^2.0.4
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)(@tiptap/pm@2.0.4)
   '@tiptap/extension-document':
     specifier: 2.0.4
@@ -32,8 +32,11 @@ dependencies:
   '@tiptap/extension-heading':
     specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
-  '@tiptap/extension-italic':
+  '@tiptap/extension-history':
     specifier: ^2.0.4
+    version: 2.0.4(@tiptap/core@2.0.4)(@tiptap/pm@2.0.4)
+  '@tiptap/extension-italic':
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-list-item':
     specifier: 2.0.4
@@ -45,19 +48,19 @@ dependencies:
     specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-strike':
-    specifier: ^2.0.4
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-task-item':
-    specifier: ^2.0.4
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)(@tiptap/pm@2.0.4)
   '@tiptap/extension-task-list':
-    specifier: ^2.0.4
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-text':
     specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/extension-underline':
-    specifier: ^2.0.4
+    specifier: 2.0.4
     version: 2.0.4(@tiptap/core@2.0.4)
   '@tiptap/pm':
     specifier: 2.0.4
@@ -828,6 +831,16 @@ packages:
       '@tiptap/core': ^2.0.0
     dependencies:
       '@tiptap/core': 2.0.4(@tiptap/pm@2.0.4)
+    dev: false
+
+  /@tiptap/extension-history@2.0.4(@tiptap/core@2.0.4)(@tiptap/pm@2.0.4):
+    resolution: {integrity: sha512-3GAUszn1xZx3vniHMiX9BSKmfvb5QOb0oSLXInN+hx80CgJDIHqIFuhx2dyV9I/HWpa0cTxaLWj64kfDzb1JVg==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+      '@tiptap/pm': ^2.0.0
+    dependencies:
+      '@tiptap/core': 2.0.4(@tiptap/pm@2.0.4)
+      '@tiptap/pm': 2.0.4(@tiptap/core@2.0.4)
     dev: false
 
   /@tiptap/extension-italic@2.0.4(@tiptap/core@2.0.4):

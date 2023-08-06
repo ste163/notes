@@ -1,7 +1,5 @@
 /**
  * TODO PRIORITY ORDER
- * - History Extension + undo/redo buttons
- * - refactor refreshClient to be more decoupled from state
  * - UI/UX polish
  * - bug fixes
  * - clean-up old todos
@@ -16,7 +14,12 @@ import {
   deleteNote,
   readNote,
 } from "./api";
-import { renderDeleteButton, renderSaveButton } from "./renderer/components";
+import {
+  renderDeleteButton,
+  renderRedoButton,
+  renderSaveButton,
+  renderUndoButton,
+} from "./renderer/components";
 import { renderEditor, instantiateEditorButtons } from "./renderer/editor";
 import {
   renderClient,
@@ -47,9 +50,8 @@ window.addEventListener("refresh-client", async () => {
 
 window.addEventListener("create-note", async (event) => {
   const { title, content = "" } = (event as CustomEvent)?.detail?.note;
-  await writeNote(title, content); // TODO: writeNote needs to return the file path
-  // so that I can select this note for the below:
-  // selectedNote = { name: title, path };
+  const { note } = await writeNote(title, content);
+  selectedNote = note;
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -116,6 +118,7 @@ async function refreshClient(
   notes: Note[],
   selectedNote: Note | null
 ): Promise<void> {
+  // render stateless components
   const {
     sidebarElement,
     editorElement,
@@ -123,7 +126,7 @@ async function refreshClient(
     editorFloatingMenuElement,
   } = renderClient();
 
-  // Set <main /> content based on if notes exist
+  // Set <main /> content based on note state
   if (!notes.length) {
     renderGetStarted(editorElement);
     return;
@@ -131,11 +134,13 @@ async function refreshClient(
 
   // notes exist, render state-based components
   renderSidebarNoteList(sidebarElement, notes);
+
   editor = await renderEditor({
     editorElement: editorElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
 
+  // TODO: potentially move this to renderEditor
   // setup editor content buttons (bold, italic, etc.)
   const { topMenuButtons } = instantiateEditorButtons(editor);
   topMenuButtons.forEach((button) => {
@@ -153,11 +158,12 @@ async function refreshClient(
   editorTopMenuElement.appendChild(dividerElement);
 
   dividerElement.appendChild(renderSaveButton(editor));
-
   // only render the delete button if there is a selected note (ie, one we can delete)
   if (selectedNote) {
     dividerElement.appendChild(renderDeleteButton(selectedNote?.path));
   }
+  dividerElement.appendChild(renderUndoButton(editor));
+  dividerElement.appendChild(renderRedoButton(editor));
 
   // if a note was selected, render that
   // otherwise, select the most recent

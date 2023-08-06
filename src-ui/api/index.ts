@@ -51,11 +51,15 @@ async function getNotes(): Promise<Note[]> {
 }
 
 async function writeNote(title: string, contents: string) {
-  // todo:
-  // check that the file name isn't already taken
+  // TODO: check that the file name isn't already taken
   await writeFile(await join("notes", title), contents, {
     dir: BaseDirectory.AppData,
   });
+  // this approach is not ideal but it should work for short-term
+  // get all notes, then filter by title
+  const notes = await getNotes();
+  const note = notes.find((note) => note.name === title) ?? null;
+  return { note };
 }
 
 async function deleteNote(path: string) {
