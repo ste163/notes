@@ -14,12 +14,6 @@ import {
   deleteNote,
   readNote,
 } from "./api";
-import {
-  renderDeleteButton,
-  renderRedoButton,
-  renderSaveButton,
-  renderUndoButton,
-} from "./renderer/components";
 import { renderEditor, instantiateEditorButtons } from "./renderer/editor";
 import {
   renderClient,
@@ -29,7 +23,7 @@ import {
 import { emitSelectedNote } from "./events";
 
 // top-level app state (keep as small as possible)
-let editor: null | Editor = null;
+let editor: null | Editor = null; // used for the floating-menu event
 let selectedNote: null | Note = null;
 
 // TODO
@@ -70,22 +64,27 @@ window.addEventListener("delete-note", async (event) => {
 });
 
 window.addEventListener("select-note", (event) => {
-  if (!editor) throw Error("No editor instance found for note-select event");
   const { title, path } = (event as CustomEvent)?.detail?.note;
   selectedNote = { name: title, path };
   dispatchEvent(new Event("refresh-client"));
 });
 
+// TODO: could this potentially be moved into the editor.ts?
+// along with that, the editor instance could be passed into the event?
+// GOAL: remove the top-level state for the editor
+//
 // floatingMenu buttons need to be appended in the event for rendering
 window.addEventListener("floating-menu-shown", () => {
   if (!editor) throw new Error("No editor instance found for floating menus");
-  const floatingMenuContainer = document.querySelector("#editor-floating-menu");
-  if (!floatingMenuContainer) return;
+  const floatingEditorMenuContainer = document.querySelector(
+    "#editor-floating-menu"
+  );
+  if (!floatingEditorMenuContainer) return;
   // fully reset the container content state
-  floatingMenuContainer.innerHTML = "";
-  const { floatingMenuButtons } = instantiateEditorButtons(editor);
-  floatingMenuButtons.forEach((button) => {
-    floatingMenuContainer.appendChild(button);
+  floatingEditorMenuContainer.innerHTML = "";
+  const { floatingEditorMenuButtons } = instantiateEditorButtons(editor);
+  floatingEditorMenuButtons.forEach((button) => {
+    floatingEditorMenuContainer.appendChild(button);
   });
 });
 
@@ -98,6 +97,7 @@ window.addEventListener("floating-menu-shown", () => {
 window.addEventListener("DOMContentLoaded", async () => {
   await initializeFileStructure(); // TODO: needs to happen in the rust backend before DOM CONTENT LOADED
 
+  // todo:
   // ideally, by this point, we do not call refresh-client
   // but the backend will have already fetched data.
   // so we just need to render the client
@@ -136,34 +136,11 @@ async function refreshClient(
   renderSidebarNoteList(sidebarElement, notes);
 
   editor = await renderEditor({
+    selectedNote,
     editorElement: editorElement,
+    topEditorMenu: editorTopMenuElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
-
-  // TODO: potentially move this to renderEditor
-  // setup editor content buttons (bold, italic, etc.)
-  const { topMenuButtons } = instantiateEditorButtons(editor);
-  topMenuButtons.forEach((button) => {
-    // todo: based on button type, I can place them in a different container:
-    // ie, position to the left, position to the middle, position to the far right container!
-    editorTopMenuElement.appendChild(button);
-  });
-
-  // add non-editor specific buttons
-  // TODO: this divider element will need a class that I can target
-  // so that all dividers for the top-menu can be styled the same
-  // POTENTIALLY though, just use .top-menu-bar > div
-  // as that might be the best solution... That's best...
-  const dividerElement = document.createElement("div");
-  editorTopMenuElement.appendChild(dividerElement);
-
-  dividerElement.appendChild(renderSaveButton(editor));
-  // only render the delete button if there is a selected note (ie, one we can delete)
-  if (selectedNote) {
-    dividerElement.appendChild(renderDeleteButton(selectedNote?.path));
-  }
-  dividerElement.appendChild(renderUndoButton(editor));
-  dividerElement.appendChild(renderRedoButton(editor));
 
   // if a note was selected, render that
   // otherwise, select the most recent

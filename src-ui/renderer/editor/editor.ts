@@ -1,4 +1,7 @@
-import { BUTTON_CONFIGURATION } from "./editor-buttons";
+import {
+  BUTTON_CONFIGURATION,
+  instantiateEditorButtons,
+} from "./editor-buttons";
 import { Editor } from "@tiptap/core";
 import FloatingMenu from "@tiptap/extension-floating-menu";
 import Document from "@tiptap/extension-document";
@@ -17,20 +20,30 @@ import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 import History from "@tiptap/extension-history";
+import { Note } from "../../api/interfaces";
+import {
+  renderDeleteButton,
+  renderRedoButton,
+  renderSaveButton,
+  renderUndoButton,
+} from "../components";
 
 /**
  * Instantiates the editor and returns the instance.
  */
 async function renderEditor({
   editorElement,
+  topEditorMenu,
   floatingEditorMenu,
+  selectedNote,
 }: {
   editorElement: Element;
+  topEditorMenu: Element;
   floatingEditorMenu: Element;
+  selectedNote: Note | null;
 }): Promise<Editor> {
   const floatingMenuEvent = new Event("floating-menu-shown");
-
-  return new Editor({
+  const editor = new Editor({
     element: editorElement,
     extensions: [
       Document,
@@ -83,6 +96,53 @@ async function renderEditor({
       });
     },
   });
+
+  renderTopMenu({ editor, topEditorMenu, selectedNote });
+  return editor;
+}
+
+/**
+ * Renders the top-menu for the editor:
+ * creates top-menu buttons and places them in correct containers
+ */
+function renderTopMenu({
+  editor,
+  topEditorMenu,
+  selectedNote,
+}: {
+  editor: Editor;
+  topEditorMenu: Element;
+  selectedNote: Note | null;
+}) {
+  const { topEditorMenuButtons } = instantiateEditorButtons(editor);
+  // setup editor buttons (bold, italic, etc.)
+  topEditorMenuButtons.forEach((button) => {
+    // get the button grouping from the data attribute
+    const group = button.dataset.group;
+    if (!group) throw new Error("Top menu button is not assigned to a group");
+    const groupId = `top-menu-group-${group}`;
+    let groupContainer = document.querySelector(`#${groupId}`);
+    if (!groupContainer) {
+      groupContainer = document.createElement("div");
+      groupContainer.id = groupId;
+    }
+    topEditorMenu.appendChild(groupContainer);
+    groupContainer.appendChild(button);
+  });
+
+  // add non-editor config buttons
+  const nonConfigButtonContainer = document.createElement("div");
+  // it is appended to the end for now
+  topEditorMenu.appendChild(nonConfigButtonContainer);
+  const buttons = [
+    renderUndoButton(editor),
+    renderRedoButton(editor),
+    renderSaveButton(editor),
+    selectedNote && renderDeleteButton(selectedNote?.path),
+  ];
+  buttons.forEach(
+    (button) => button && nonConfigButtonContainer.appendChild(button)
+  );
 }
 
 /**

@@ -2,6 +2,7 @@ import { Editor } from "@tiptap/core";
 import { Button, renderButton } from "../components/button";
 
 interface EditorButton extends Button {
+  group: number; // used for placing in which div for organization
   isInFloatingMenu: boolean;
   markName?: string; // used for toggling css
   markOptions?: any; // used for toggling css
@@ -13,6 +14,7 @@ interface EditorButton extends Button {
  */
 const BUTTON_CONFIGURATION: EditorButton[] = [
   {
+    group: 1,
     title: "Bold",
     markName: "bold",
     className: "menu-button-bold",
@@ -25,6 +27,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       </svg>`,
   },
   {
+    group: 1,
     title: "Italic",
     markName: "italic",
     className: "menu-button-italic",
@@ -38,6 +41,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     `,
   },
   {
+    group: 1,
     title: "Underline",
     markName: "underline",
     className: "menu-button-underline",
@@ -51,6 +55,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     `,
   },
   {
+    group: 1,
     title: "Strike",
     markName: "strike",
     className: "menu-button-strike",
@@ -64,6 +69,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     `,
   },
   {
+    group: 2,
     title: "Heading 1",
     markName: "heading",
     markOptions: { level: 1 },
@@ -78,6 +84,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       </svg>`,
   },
   {
+    group: 2,
     title: "Heading 2",
     markName: "heading",
     markOptions: { level: 2 },
@@ -92,6 +99,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       </svg>`,
   },
   {
+    group: 2,
     title: "Heading 3",
     markName: "heading",
     markOptions: { level: 3 },
@@ -106,6 +114,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       </svg>`,
   },
   {
+    group: 3,
     title: "Bullet List",
     markName: "listItem",
     className: "menu-button-bullet-list",
@@ -120,6 +129,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       </svg>`,
   },
   {
+    group: 3,
     title: "Ordered List",
     markName: "listItem", // BUG: fix conflicting names for order and unordered lists. Unable to toggle css properly
     className: "menu-button-ordered-list",
@@ -135,6 +145,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     `,
   },
   {
+    group: 3,
     // todo: need to remove the bullet from this
     // and make the checkbox bigger
     title: "Task List",
@@ -152,6 +163,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     `,
   },
   {
+    group: 4,
     // TODO: style this with background color
     // (not the button, but the actually editor active code text)
     title: "Code",
@@ -169,6 +181,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     `,
   },
   {
+    group: 4,
     // TODO: style the background css for when
     // the code block is active (not the button)
     title: "Code Block",
@@ -188,11 +201,13 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
 ];
 
 /**
- * Reads Button Config and generates button instances
+ * Reads editor button config and
+ * generates button instances depending on menu location.
+ * Not concerned with what happens to these buttons, just the creation
  */
 function instantiateEditorButtons(editor: Editor) {
-  const topMenuButtons: HTMLButtonElement[] = [];
-  const floatingMenuButtons: HTMLButtonElement[] = [];
+  const topEditorMenuButtons: HTMLButtonElement[] = [];
+  const floatingEditorMenuButtons: HTMLButtonElement[] = [];
 
   const renderEditorButton = (editor: Editor, button: EditorButton) => {
     return renderButton({
@@ -205,14 +220,17 @@ function instantiateEditorButtons(editor: Editor) {
 
   BUTTON_CONFIGURATION.forEach((button: EditorButton) => {
     if (button.isInFloatingMenu) {
-      floatingMenuButtons.push(renderEditorButton(editor, button));
+      floatingEditorMenuButtons.push(renderEditorButton(editor, button));
     }
-    topMenuButtons.push(renderEditorButton(editor, button));
+    // add data-group attribute for grouping buttons into containers
+    const renderedButton = renderEditorButton(editor, button);
+    renderedButton.dataset.group = button.group.toString();
+    topEditorMenuButtons.push(renderedButton);
   });
 
   return {
-    topMenuButtons,
-    floatingMenuButtons,
+    topEditorMenuButtons,
+    floatingEditorMenuButtons,
   };
 }
 

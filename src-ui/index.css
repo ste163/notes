@@ -119,9 +119,18 @@ button.isActive {
 }
 
 #editor-top-menu {
+  display: flex;
   padding: 0.5em;
   border-bottom: var(--outline-color) 0.15em solid;
   margin-bottom: 1em;
+}
+
+#editor-top-menu > div {
+  margin: 0 0.5em;
+}
+
+#editor-top-menu > div > button {
+  margin: 0.1em;
 }
 
 #editor {
