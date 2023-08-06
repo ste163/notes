@@ -42,7 +42,6 @@ async function renderEditor({
   floatingEditorMenu: Element;
   selectedNote: Note | null;
 }): Promise<Editor> {
-  const floatingMenuEvent = new Event("floating-menu-shown");
   const editor = new Editor({
     element: editorElement,
     extensions: [

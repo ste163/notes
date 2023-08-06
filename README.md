@@ -17,6 +17,9 @@ Tauri app with vanilla frontend and a simple tauri backend for reading and writi
 - DONE: auto publish once built
 - app can check for auto-updates
 - app can auto-update from a published github action
+- on pre-commit, run type checker
+- on pre-commit, run eslint config + formatting
+- basic unit tests?
 
 ## Architecture decisions
 
