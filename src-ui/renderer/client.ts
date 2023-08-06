@@ -69,33 +69,35 @@ function renderSidebar(sidebarContainer: Element): void {
 function renderNoteInput(sidebarContainer: Element) {
   // todo:
   // will eventually need to have some input validation to ensure no characters like '.' or '/', " " (space)
-  const isInputAlreadyRendered = document.querySelector(
-    ".create-note-input-container"
-  );
+  const containerClass = "create-note-input-container";
+  const isInputAlreadyRendered = document.querySelector(`.${containerClass}`);
   if (isInputAlreadyRendered) return;
   const input = `
-    <div class="create-note-input-container">
+    <div class="${containerClass}">
       <input class="note-input" title="Input note filename title" placeholder="note-title" />
     </div>
   `;
-
   sidebarContainer.insertAdjacentHTML("beforeend", input);
-
-  const inputContainer = document.querySelector(".create-note-input-container");
+  const inputContainer = document.querySelector(`.${containerClass}`);
+  const noteInputClass = "note-input";
   // add the save/create button to the input container
   inputContainer?.appendChild(
     renderButton({
       text: "Save",
       title: "Save file",
       onClick: () => {
-        const input = document.querySelector(".note-input") as HTMLInputElement;
+        const input = document.querySelector(
+          `.${noteInputClass}`
+        ) as HTMLInputElement;
         const title: string = input?.value;
         if (!title) throw new Error("Unable to read title from input");
         createEvent("create-note", { note: { title } }).dispatch();
       },
     })
   );
-  const inputElement = document.querySelector(".note-input") as HTMLElement;
+  const inputElement = document.querySelector(
+    `.${noteInputClass}`
+  ) as HTMLElement;
   inputElement?.focus();
 }
 
