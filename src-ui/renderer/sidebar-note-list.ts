@@ -1,5 +1,5 @@
 import { Note } from "../api/interfaces";
-import { emitSelectedNote } from "../events";
+import { createEvent } from "../events";
 import { renderButton } from "./components";
 
 /**
@@ -13,7 +13,8 @@ function renderSidebarNoteList(sidebarElement: Element, notes: Note[]) {
     const selectableNoteButton = renderButton({
       text: name,
       title: name,
-      onClick: () => emitSelectedNote(name, path),
+      onClick: () =>
+        createEvent("select-note", { note: { title: name, path } }).dispatch(),
     });
     selectableNoteButton.id = name; // TODO: should probably be an id as it needs to follow selector rules
     // otherwise, I need to heavily restrict characters (which might be best anyway as its a filesystem setup)

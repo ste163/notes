@@ -46,9 +46,6 @@ function renderClient() {
  * Renders sidebar without note state: only the title and create note functionality
  */
 function renderSidebar(sidebarContainer: Element): void {
-  sidebarContainer.innerHTML = `
-    <h1>notes</h1>
-  `;
   sidebarContainer.appendChild(
     renderButton({
       title: "Create note",

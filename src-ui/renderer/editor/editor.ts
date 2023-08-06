@@ -64,19 +64,10 @@ async function renderEditor({
       History,
       FloatingMenu.configure({
         element: floatingEditorMenu as HTMLElement,
-        shouldShow: ({ editor, view }) => {
-          // TODO: this is where I should change the code
-          // to make the floating editor menu show whenever there is a new line
-          //
-          // seems to be setup incorrectly for the first render of the menu.
-          // then it works every time
-          const shouldShow =
-            view.state.selection.$head.node().content.size === 0
-              ? editor.isActive("paragraph")
-              : false;
-          if (shouldShow) dispatchEvent(floatingMenuEvent);
-          return shouldShow;
-        },
+        shouldShow: ({ editor, view }) =>
+          view.state.selection.$head.node().content.size === 0
+            ? editor.isActive("paragraph")
+            : false,
       }),
     ],
     content: "<p>Issue selecting note</p>", // BUG/TODO: with undo, this is always initial state. So do not set it this way! If we can't select a note, don't render the editor
@@ -98,6 +89,7 @@ async function renderEditor({
   });
 
   renderTopMenu({ editor, topEditorMenu, selectedNote });
+  renderFloatingMenu(editor, floatingEditorMenu);
   return editor;
 }
 
@@ -143,6 +135,16 @@ function renderTopMenu({
   buttons.forEach(
     (button) => button && nonConfigButtonContainer.appendChild(button)
   );
+}
+
+function renderFloatingMenu(
+  editor: Editor,
+  floatingEditorMenuContainer: Element
+) {
+  const { floatingEditorMenuButtons } = instantiateEditorButtons(editor);
+  floatingEditorMenuButtons.forEach((button) => {
+    floatingEditorMenuContainer.appendChild(button);
+  });
 }
 
 /**
