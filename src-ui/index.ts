@@ -17,7 +17,7 @@ import {
   readNote,
 } from "./api";
 import { renderDeleteButton, renderSaveButton } from "./renderer/components";
-import { createEditor, instantiateEditorButtons } from "./renderer/editor";
+import { renderEditor, instantiateEditorButtons } from "./renderer/editor";
 import {
   renderClient,
   renderGetStarted,
@@ -41,14 +41,8 @@ let selectedNote: null | Note = null;
  * All events related to the different app life-cycles
  */
 window.addEventListener("refresh-client", async () => {
-  // TODO
-  // get all notes, then pass into refreshClient
-  // so then refreshClient actually just calls renderClient(notes)
-  // and renderClient handles everything else
-  // note: could potentially pass selectedNote into renderClient as well.
-  // RenderClient then returns {editor, mainElements you can select}
-  // this way, everything is always up-to-date and decoupled
-  await refreshClient();
+  const notes = await getNotes();
+  await refreshClient(notes, selectedNote);
 });
 
 window.addEventListener("create-note", async (event) => {
@@ -101,17 +95,27 @@ window.addEventListener("floating-menu-shown", () => {
  */
 window.addEventListener("DOMContentLoaded", async () => {
   await initializeFileStructure(); // TODO: needs to happen in the rust backend before DOM CONTENT LOADED
+
+  // ideally, by this point, we do not call refresh-client
+  // but the backend will have already fetched data.
+  // so we just need to render the client
+  //
+  // so then there are two lifecycles:
+  // 1. initial load
+  // 2. any update
+
   dispatchEvent(new Event("refresh-client"));
 });
 
-// TODO: would probably be best to pass notes in here
-// Lifecycle is:
-// 1. fetch notes (happens at rust backend) on initial load
-// 2. when refresh event occurs, fetch notes again
-// 3. renderClient(notes)
-// this way the refreshClient is more decoupled from the state of notes
-async function refreshClient(): Promise<void> {
-  // refreshClient is an overloaded function and needs to be simplified
+/**
+ * Main app lifecycle function.
+ * Renders the stateless client
+ * then decides what to render based on passed-in note state
+ */
+async function refreshClient(
+  notes: Note[],
+  selectedNote: Note | null
+): Promise<void> {
   const {
     sidebarElement,
     editorElement,
@@ -119,19 +123,15 @@ async function refreshClient(): Promise<void> {
     editorFloatingMenuElement,
   } = renderClient();
 
-  const notes = await getNotes();
-
-  // TODO: the below can be moved into renderClient(notes, selectedNote)
-
-  /**
-   * Set <main /> content based on if notes exist
-   */
+  // Set <main /> content based on if notes exist
   if (!notes.length) {
     renderGetStarted(editorElement);
     return;
   }
-  // notes exist, render editor & sidebar state
-  editor = await createEditor({
+
+  // notes exist, render state-based components
+  renderSidebarNoteList(sidebarElement, notes);
+  editor = await renderEditor({
     editorElement: editorElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
@@ -153,13 +153,14 @@ async function refreshClient(): Promise<void> {
   editorTopMenuElement.appendChild(dividerElement);
 
   dividerElement.appendChild(renderSaveButton(editor));
+
+  // only render the delete button if there is a selected note (ie, one we can delete)
   if (selectedNote) {
     dividerElement.appendChild(renderDeleteButton(selectedNote?.path));
   }
 
-  renderSidebarNoteList(sidebarElement, notes);
-
-  // last state updates need to be related to the selected note
+  // if a note was selected, render that
+  // otherwise, select the most recent
   if (selectedNote) {
     const content = await readNote(selectedNote?.path);
     editor.commands.setContent(content);

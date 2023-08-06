@@ -17,7 +17,10 @@ import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 
-async function createEditor({
+/**
+ * Instantiates the editor and returns the instance.
+ */
+async function renderEditor({
   editorElement,
   floatingEditorMenu,
 }: {
@@ -109,4 +112,4 @@ function toggleActiveEditorClass({
   });
 }
 
-export { createEditor };
+export { renderEditor };

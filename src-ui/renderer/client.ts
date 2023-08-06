@@ -2,12 +2,50 @@ import { createEvent } from "../events";
 import { renderButton } from "./components";
 
 /**
- * Main render function for base sidebar.
- * Outside of the scaffold component because sidebar
- * contains functions for rendering sidebar specific components
- * and emitting events
+ * Render the stateless HTML structure for the application.
+ * Returns the base elements for selecting
  */
-function renderScaffoldSidebar(sidebarContainer: Element): void {
+function renderClient() {
+  const body = document.querySelector("body");
+  if (!body) throw new Error("Body Element not found. Exit client scaffolding");
+  body.innerHTML = `
+    <div id="sidebar"></div>
+    <main>
+      <div id="editor-top-menu"></div>     
+      <div id="editor-floating-menu"></div>
+      <div id="editor"></div>
+    </main>
+    `;
+  const sidebarElement = document.querySelector("#sidebar");
+  const editorTopMenuElement = document.querySelector("#editor-top-menu");
+  const editorFloatingMenuElement = document.querySelector(
+    "#editor-floating-menu"
+  );
+  const editorElement = document.querySelector("#editor");
+
+  if (
+    !sidebarElement ||
+    !editorTopMenuElement ||
+    !editorFloatingMenuElement ||
+    !editorElement
+  )
+    throw new Error("Missing required HTML elements");
+
+  // render the rest of the non-state-based HTML
+  renderSidebar(sidebarElement);
+
+  return {
+    sidebarElement,
+    editorElement,
+    editorTopMenuElement,
+    editorFloatingMenuElement,
+  };
+}
+
+/**
+ * Renders sidebar without note state: only the title and create note functionality
+ */
+function renderSidebar(sidebarContainer: Element): void {
   sidebarContainer.innerHTML = `
     <h1>notes</h1>
   `;
@@ -26,8 +64,7 @@ function renderScaffoldSidebar(sidebarContainer: Element): void {
 }
 
 /**
- * Renders the note input used only by the sidebar.
- * Scoped to this file as it won't be used elsewhere
+ * Renders the note input used only by the sidebar (currently).
  */
 function renderNoteInput(sidebarContainer: Element) {
   // todo:
@@ -62,4 +99,4 @@ function renderNoteInput(sidebarContainer: Element) {
   inputElement?.focus();
 }
 
-export { renderScaffoldSidebar };
+export { renderClient };

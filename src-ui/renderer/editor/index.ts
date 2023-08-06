@@ -1,2 +1,2 @@
-export { createEditor } from "./editor";
+export { renderEditor } from "./editor";
 export { instantiateEditorButtons } from "./editor-buttons";

@@ -17,13 +17,10 @@ function renderSidebarNoteList(sidebarElement: Element, notes: Note[]) {
     });
     selectableNoteButton.id = name; // TODO: should probably be an id as it needs to follow selector rules
     // otherwise, I need to heavily restrict characters (which might be best anyway as its a filesystem setup)
-
     const noteSelectContainer = document.createElement("div");
     noteSelectContainer.classList.add("note-select-container");
     noteSelectContainer.id = `${name}-note-select-container`;
-
     noteSelectContainer.appendChild(selectableNoteButton);
-
     sidebarElement.append(noteSelectContainer);
   });
 }
