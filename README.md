@@ -1,4 +1,4 @@
-# t2-notes
+# untitled-notes-app
 
 > Tauri + Tiptap notes app
 
