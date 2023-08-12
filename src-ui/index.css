@@ -6,7 +6,7 @@
 
   --background-color: #f0f0e1;
   --outline-color: #1d1d1d;
-  --active-color: #1568224c;
+  --active-color: #b3d4b8;
 
   color: var(--outline-color);
   background-color: var(--background-color);
@@ -47,6 +47,9 @@ input {
 }
 
 button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   border-radius: 0.3em;
   border: 0.15em solid var(--outline-color);
   padding: 0.3em 0.5em;
@@ -58,6 +61,9 @@ button {
 
   color: var(--outline-color);
   background-color: var(--background-color);
+  /* background-color: var(--active-color); */
+
+  transition: background-color 0.1s ease-in-out;
 }
 
 button:hover {
@@ -65,18 +71,17 @@ button:hover {
 }
 
 button > svg {
-  margin-top: 0.1em;
   width: 1.2em;
+  margin: 0.1em 0;
 }
 
 button.isActive {
   background-color: var(--active-color);
 }
 
-/* if this stay very small, in-line */
+/* todo: if this stays very small, potentially in-line it */
 #sidebar {
   border-right: var(--outline-color) 0.15em solid;
-  width: max-content;
 }
 
 #sidebar > h1 {
@@ -85,7 +90,7 @@ button.isActive {
 }
 
 #sidebar > button {
-  margin-top: 0.5em;
+  margin-top: 0.8em;
   margin-left: 0.5em;
   font-size: 0.9em;
 }
@@ -108,15 +113,16 @@ button.isActive {
 
 .note-select-container > button {
   border: none;
-  background-color: transparent;
+  color: gray;
+  width: 100%;
   font-weight: normal;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.select-note-active {
-  background-color: rgb(210, 209, 188);
+.select-note-active > button {
+  color: black;
 }
 
 #editor-top-menu {
@@ -127,6 +133,7 @@ button.isActive {
 }
 
 #editor-top-menu > div {
+  display: flex;
   margin: 0 0.5em;
 }
 
@@ -141,8 +148,25 @@ button.isActive {
   padding-right: 7em;
 }
 
+#editor-floating-menu {
+  display: flex;
+}
+
+#editor-floating-menu > button {
+  margin: 0 0.1em;
+}
+
+/* TipTap/ProseMirror specific */
 .ProseMirror {
   outline: none;
   height: inherit;
   overflow-y: scroll;
+}
+
+.code,
+.code-block {
+  background-color: #303030;
+  color: white;
+  padding: 0.5em;
+  border-radius: 0.3em;
 }

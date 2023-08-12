@@ -1,19 +1,20 @@
 /**
  * TODO PRIORITY ORDER
+ * - DB Restructure
+ *   - local PouchDB, not connected to a server yet. Can I get it working fully?
+ * - BUGS
+ *   - task list styling is off. Tiptap bug?
  * - UI/UX polish
- *   - button css animation (fade background, z-index)
- *   - sidebar list. Underline instead of highligh?
- *   - buttons with icons need centering
- *   - stretch: re-sizable side-bar + collapsible
- *   - stretch: collapsible top-menu
  *   - save notification (could be as simple as a timestamp of last saved at top of editor)
  *   - error notification
  *   - delete confirmation
- *   - floating menu button grouping
- * - clean-up old todos
- * - code-wise: Note and FileEntry decide on Title or Name for the note
- * - potentially setup basic shortcuts (outside of tiptap)? Ie, cmd+s to save, visually indicator for saving was successful. Ie last saved timestamp
- * - need a visual way of showing what shortcuts are available. Maybe in an Edit menu? like in VS code?
+ * - Code Quality:
+ *   - Note and FileEntry decide on Title or Name for the note
+ *   - clean-up todos
+ * - Quality of Life
+ *   - crtl+s saves
+ *   - auto-save on note switch with dirty editor (or ask to save)
+ *   - (later): visual explanation of available shortcuts
  */
 import { Note } from "./api/interfaces";
 import {

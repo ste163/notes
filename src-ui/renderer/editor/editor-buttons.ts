@@ -74,7 +74,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "heading",
     markOptions: { level: 1 },
     className: "menu-button-h1",
-    isInFloatingMenu: true,
+    isInFloatingMenu: false,
     onClick: (editor: Editor) =>
       editor.chain().focus().toggleHeading({ level: 1 }).run(),
     icon: `
@@ -89,7 +89,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "heading",
     markOptions: { level: 2 },
     className: "menu-button-h2",
-    isInFloatingMenu: true,
+    isInFloatingMenu: false,
     onClick: (editor: Editor) =>
       editor.chain().focus().toggleHeading({ level: 2 }).run(),
     icon: `
@@ -104,7 +104,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "heading",
     markOptions: { level: 3 },
     className: "menu-button-h3",
-    isInFloatingMenu: true,
+    isInFloatingMenu: false,
     onClick: (editor: Editor) =>
       editor.chain().focus().toggleHeading({ level: 3 }).run(),
     icon: `
@@ -118,7 +118,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: "Bullet List",
     markName: "listItem",
     className: "menu-button-bullet-list",
-    isInFloatingMenu: true,
+    isInFloatingMenu: false,
     onClick: (editor: Editor) => {
       editor.chain().focus().toggleBulletList().run();
     },
@@ -133,7 +133,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: "Ordered List",
     markName: "listItem", // BUG: fix conflicting names for order and unordered lists. Unable to toggle css properly
     className: "menu-button-ordered-list",
-    isInFloatingMenu: true,
+    isInFloatingMenu: false,
     onClick: (editor: Editor) => {
       editor.chain().focus().toggleOrderedList().run();
     },
