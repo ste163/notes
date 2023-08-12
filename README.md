@@ -47,6 +47,21 @@ Decision for using vanilla html + js (TS) for the ui was to be as easily maintai
 
 todo: commands to get started
 
+- required packages
+-
+
+## updating packages
+
+NPM
+`npm i` from root
+
+Rust Cargo packages
+
+```
+cd src-tauri
+cargo update
+```
+
 # credits: Remix Icons
 
 (before releasing app, need to properly share the license)

@@ -1,5 +1,5 @@
 {
-  "name": "t2-notes",
+  "name": "untitled-notes-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -35,6 +35,6 @@
   "devDependencies": {
     "@tauri-apps/cli": "1.4.0",
     "typescript": "5.1.6",
-    "vite": "4.4.8"
+    "vite": "4.4.9"
   }
 }
