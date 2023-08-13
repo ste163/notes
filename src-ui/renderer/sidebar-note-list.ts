@@ -1,4 +1,4 @@
-import { Note } from "../api/interfaces";
+import { Db_Note } from "../db";
 import { createEvent } from "../events";
 import { renderButton } from "./components";
 
@@ -7,20 +7,22 @@ import { renderButton } from "./components";
  * - select a note and set editor state
  * - delete note and emit refresh event
  */
-function renderSidebarNoteList(sidebarElement: Element, notes: Note[]) {
-  notes.map(({ name, path }) => {
-    if (!name) throw new Error("Unable to read name from note");
+function renderSidebarNoteList(
+  sidebarElement: Element,
+  notes: Record<string, Db_Note>
+) {
+  Object.values(notes).map(({ title, _id }) => {
+    if (!title) throw new Error("Unable to read name from note");
     const selectableNoteButton = renderButton({
-      text: name,
-      title: name,
+      title,
+      text: title,
       onClick: () =>
-        createEvent("select-note", { note: { title: name, path } }).dispatch(),
+        createEvent("select-note", { note: { id: _id } }).dispatch(),
     });
-    selectableNoteButton.id = name; // TODO: should probably be an id as it needs to follow selector rules
-    // otherwise, I need to heavily restrict characters (which might be best anyway as its a filesystem setup)
+    selectableNoteButton.id = _id;
     const noteSelectContainer = document.createElement("div");
     noteSelectContainer.classList.add("note-select-container");
-    noteSelectContainer.id = `${name}-note-select-container`;
+    noteSelectContainer.id = `${_id}-note-select-container`;
     noteSelectContainer.appendChild(selectableNoteButton);
     sidebarElement.append(noteSelectContainer);
   });

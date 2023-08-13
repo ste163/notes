@@ -11,66 +11,75 @@
  * - Code Quality:
  *   - Note and FileEntry decide on Title or Name for the note
  *   - clean-up todos
+ *   - try/catch blocks per component. Will make debugging much easier
+ *   - ask chatgpt for info on tips for a vanilla JS SPA
  * - Quality of Life
  *   - crtl+s saves
  *   - auto-save on note switch with dirty editor (or ask to save)
  *   - (later): visual explanation of available shortcuts
  */
-import { Note } from "./api/interfaces";
-import {
-  initializeFileStructure,
-  getNotes,
-  writeNote,
-  deleteNote,
-  readNote,
-} from "./api";
+
 import { renderEditor } from "./renderer/editor";
 import {
   renderClient,
   renderGetStarted,
   renderSidebarNoteList,
 } from "./renderer";
+import { Db_Note, getAllNotes, initDb, putNote } from "./db";
 
 // top-level app state (keep as small as possible)
-let selectedNote: null | Note = null;
+let selectedNoteId: null | string = null;
 
 /**
  * All events related to the different app life-cycles
  */
 window.addEventListener("refresh-client", async () => {
-  const notes = await getNotes();
-  if (!selectedNote) {
+  const notes = await getAllNotes(); // i can pass a sort into this, by default its by created_at
+  // but I could easily extend to sort by any of the data
+  console.log(notes);
+  if (!selectedNoteId) {
     // TODO: this should get based on timestamp of last saved
-    const { name, path } = notes[notes.length - 1];
-    selectedNote = { name, path };
+    // const { name, path } = notes[notes.length - 1];
+    // selectedNote = { name, path };
+    selectedNoteId = Object.keys(notes)[0];
   }
-  await refreshClient(notes, selectedNote);
+  await refreshClient(notes, selectedNoteId);
 });
 
 window.addEventListener("create-note", async (event) => {
   const { title, content = "" } = (event as CustomEvent)?.detail?.note;
-  const { note } = await writeNote(title, content);
-  selectedNote = note;
+  const id = await putNote({ title, content });
+  selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
 });
 
 window.addEventListener("save-note", async (event) => {
-  if (!selectedNote?.name) throw new Error("No note selected to save");
+  if (!selectedNoteId) throw new Error("No note selected to save");
+
+  // TODO: gonna need to know notes state
+  // so I can get the full data;
+  // unless I move that to the PUT function
+  const note = notes[selectedNoteId];
+
   const { content } = (event as CustomEvent)?.detail?.note;
-  await writeNote(selectedNote?.name, content);
+  console.log("SAVE");
+
+  await writeNote(selectedNoteId, content);
   dispatchEvent(new Event("refresh-client"));
 });
 
 window.addEventListener("delete-note", async (event) => {
   const { path } = (event as CustomEvent)?.detail?.note;
   await deleteNote(path);
-  selectedNote = null; // reset selected note as it was deleted. You can only delete selected notes
+  selectedNoteId = null; // reset selected note as it was deleted. You can only delete selected notes
   dispatchEvent(new Event("refresh-client"));
 });
 
 window.addEventListener("select-note", (event) => {
-  const { title, path } = (event as CustomEvent)?.detail?.note;
-  selectedNote = { name: title, path };
+  const { id } = (event as CustomEvent)?.detail?.note;
+  // Question? If I set the whole document to the selectedNote, what if it has thousands of words in its content?
+  // is that a problem?
+  selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -81,15 +90,8 @@ window.addEventListener("select-note", (event) => {
  * Can be sure by this point the client is ready to render.
  */
 window.addEventListener("DOMContentLoaded", async () => {
-  await initializeFileStructure(); // TODO: needs to happen in the rust backend before DOM CONTENT LOADED
-  // TODO:
-  // ideally, by this point, we do not call refresh-client
-  // but the backend will have already fetched data.
-  // so we just need to render the client
-  //
-  // so then there are two life-cycles:
-  // 1. initial load (here, DOMContentLoaded)
-  // 2. any update (note here, but refresh-client event)
+  // await initDb
+  await initDb();
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -98,7 +100,10 @@ window.addEventListener("DOMContentLoaded", async () => {
  * Renders the stateless client
  * then decides what to render based on passed-in note state
  */
-async function refreshClient(notes: Note[], selectedNote: Note): Promise<void> {
+async function refreshClient(
+  notes: Record<string, Db_Note>,
+  selectedNoteId: string
+): Promise<void> {
   // render stateless components
   const {
     sidebarElement,
@@ -107,25 +112,28 @@ async function refreshClient(notes: Note[], selectedNote: Note): Promise<void> {
     editorFloatingMenuElement,
   } = renderClient();
   // Set main element content based on note state
-  if (!notes.length) {
+  if (!Object.keys(notes).length) {
     renderGetStarted(editorElement);
     return;
   }
   // notes exist, render state-based components
   renderSidebarNoteList(sidebarElement, notes);
   const editor = await renderEditor({
-    selectedNote,
+    selectedNoteId,
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
   // set editor content to the selected note
-  const content = await readNote(selectedNote?.path);
+  console.log("HERE");
+  const content = notes[selectedNoteId]?.content;
   editor.commands.setContent(content);
-  toggleActiveClass(
-    `#${selectedNote.name}-note-select-container`,
-    "select-note"
-  );
+  console.log("HIT");
+  // Problem: cannot use the Date _id
+  // as that is not a valid selector for the dom.
+  // needs to be something like a uuid
+  toggleActiveClass(`#${selectedNoteId}-note-select-container`, "select-note");
+  console.log("ERROR?");
   // reset editor scroll position
   editorElement.scrollTop = 0;
   // focus on editor
