@@ -55,14 +55,22 @@ export interface Db_Note {
 // will more easily be able to render the error states
 
 //  if it all works, create a PutNote or PartialNote type
-async function putNote(note: { title: string; content: string }) {
+async function putNote(note: { title: string; content: string } | Db_Note) {
+  // TODO
   // get note by Id
   // if it exists, update it
   // if it doesn't exist, create it
+  //
+  // this is an update note
+  if (note?._id) {
+    await dbState.put(note);
+    return;
+  }
 
+  // this is a new note
   const { id } = await dbState.put({
     ...note,
-    _id: nanoid(),
+    _id: `id${nanoid()}`,
     createdAt: new Date(),
     updatedAt: new Date(),
   } as Db_Note);
@@ -72,7 +80,7 @@ async function putNote(note: { title: string; content: string }) {
 async function deleteNote(note: Db_Note) {
   // its odd that this await isn't working... need to look at docs later
   const response = await dbState.remove({ _id: note._id, _rev: note._rev });
-  console.log(response);
+  console.log("DELETE RESPONSE", response);
 }
 
 async function getAllNotes() {
@@ -81,6 +89,7 @@ async function getAllNotes() {
     descending: true,
   });
   return rows.reduce((acc, { doc }) => {
+    if (!doc.title) return acc; // pouchdb returns a language query doc, ignore that and only return legit notes
     const note = doc as Db_Note;
     acc[note._id] = note;
     return acc;

@@ -20,14 +20,12 @@ import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 import History from "@tiptap/extension-history";
-import { Note } from "../../api/interfaces";
 import {
   renderDeleteButton,
   renderRedoButton,
   renderSaveButton,
   renderUndoButton,
 } from "../components";
-import { Db_Note } from "../../db";
 
 /**
  * Instantiates the editor and returns the instance.

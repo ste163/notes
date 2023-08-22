@@ -21,8 +21,9 @@ function renderSidebarNoteList(
     });
     selectableNoteButton.id = _id;
     const noteSelectContainer = document.createElement("div");
-    noteSelectContainer.classList.add("note-select-container");
-    noteSelectContainer.id = `${_id}-note-select-container`;
+    const containerClass = "note-select-container";
+    noteSelectContainer.classList.add(containerClass);
+    noteSelectContainer.id = `${_id}-${containerClass}`;
     noteSelectContainer.appendChild(selectableNoteButton);
     sidebarElement.append(noteSelectContainer);
   });
