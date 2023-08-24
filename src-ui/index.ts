@@ -26,17 +26,18 @@ import {
   renderGetStarted,
   renderSidebarNoteList,
 } from "./renderer";
-import { Db_Note, deleteNote, getAllNotes, initDb, putNote } from "./db";
+import { Note, Database } from "./db";
 
 // top-level app state (keep as small as possible)
-let notes: Record<string, Db_Note> = {}; // NOTE: can I get rid of notes state?
+let database: Database;
+let notes: Record<string, Note> = {}; // NOTE: can I get rid of notes state?
 let selectedNoteId: null | string = null;
 
 /**
  * All events related to the different app life-cycles
  */
 window.addEventListener("refresh-client", async () => {
-  notes = await getAllNotes(); // i can pass a sort into this, by default its by created_at
+  notes = await database.getAll(); // i can pass a sort into this, by default its by created_at
   // but I could easily extend to sort by any of the data
   if (!selectedNoteId) {
     // todo: get the last edited note
@@ -47,7 +48,7 @@ window.addEventListener("refresh-client", async () => {
 
 window.addEventListener("create-note", async (event) => {
   const { title, content = "" } = (event as CustomEvent)?.detail?.note;
-  const id = await putNote({ title, content });
+  const id = await database.put({ title, content });
   selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
 });
@@ -60,7 +61,7 @@ window.addEventListener("save-note", async (event) => {
   const note = notes[selectedNoteId];
   const { content } = (event as CustomEvent)?.detail?.note;
   note.content = content;
-  await putNote(note);
+  await database.put(note);
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -69,7 +70,7 @@ window.addEventListener("delete-note", async (event) => {
   // TODO:
   // move the fetch to the deleteNote route
   const noteToDelete = notes[id];
-  await deleteNote(noteToDelete);
+  await database.delete(noteToDelete);
   selectedNoteId = null; // reset selected note as it was deleted
   dispatchEvent(new Event("refresh-client"));
 });
@@ -88,7 +89,7 @@ window.addEventListener("select-note", (event) => {
  */
 window.addEventListener("DOMContentLoaded", async () => {
   // await initDb
-  await initDb();
+  database = new Database();
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -98,7 +99,7 @@ window.addEventListener("DOMContentLoaded", async () => {
  * then decides what to render based on passed-in note state
  */
 async function refreshClient(
-  notes: Record<string, Db_Note>,
+  notes: Record<string, Note>,
   selectedNoteId: string
 ): Promise<void> {
   // render stateless components

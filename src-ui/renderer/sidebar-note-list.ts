@@ -1,4 +1,4 @@
-import { Db_Note } from "../db";
+import { Note } from "../db";
 import { createEvent } from "../events";
 import { renderButton } from "./components";
 
@@ -9,7 +9,7 @@ import { renderButton } from "./components";
  */
 function renderSidebarNoteList(
   sidebarElement: Element,
-  notes: Record<string, Db_Note>
+  notes: Record<string, Note>
 ) {
   Object.values(notes).map(({ title, _id }) => {
     if (!title) throw new Error("Unable to read name from note");
