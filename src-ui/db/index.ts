@@ -17,6 +17,9 @@ class Database {
   constructor(serverUrl?: string) {
     // TODO: implement user-defined server-urls
     // use localStorage first
+    //
+    // NOTE: will need to render whether they are connected to a db
+    // and if they are, need to display the url
     if (serverUrl) {
       console.log("SERVER URL IS", serverUrl);
     } else {
