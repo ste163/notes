@@ -15,8 +15,10 @@ function renderClient() {
       <div id="editor-floating-menu"></div>
       <div id="editor"></div>
     </main>
+    <footer></footer>
     `;
   const sidebarElement = document.querySelector("#sidebar");
+  const footerElement = document.querySelector("footer");
   const editorTopMenuElement = document.querySelector("#editor-top-menu");
   const editorFloatingMenuElement = document.querySelector(
     "#editor-floating-menu"
@@ -25,6 +27,7 @@ function renderClient() {
 
   if (
     !sidebarElement ||
+    !footerElement ||
     !editorTopMenuElement ||
     !editorFloatingMenuElement ||
     !editorElement
@@ -36,6 +39,7 @@ function renderClient() {
 
   return {
     sidebarElement,
+    footerElement,
     editorElement,
     editorTopMenuElement,
     editorFloatingMenuElement,

@@ -1,18 +1,14 @@
 import { nanoid } from "nanoid";
 import PouchDb from "pouchdb-browser";
 import PouchDbFind from "pouchdb-find";
-
-interface Note {
-  _id: string;
-  _rev?: string; // only exists on items in the db, may need 2 separate interfaces, a base and an extended one with _rev
-  title: string;
-  content: string; // all the JSON
-  createdAt: Date; // or string?
-  updatedAt: Date; // or string?
-}
+import { Note } from "../types";
 
 class Database {
   private db: PouchDB.Database;
+
+  // TODO:
+  // need to read docs on how pouchdb connects to a remote and then export our
+  // a method for getting the status information in the Status type
 
   constructor(serverUrl?: string) {
     // TODO: implement user-defined server-urls
@@ -73,4 +69,3 @@ class Database {
 }
 
 export { Database };
-export type { Note };

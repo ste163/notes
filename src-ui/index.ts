@@ -26,7 +26,9 @@ import {
   renderGetStarted,
   renderSidebarNoteList,
 } from "./renderer";
-import { Note, Database } from "./db";
+import { Database } from "./db";
+import { renderFooter } from "./renderer/footer";
+import { Note, Status } from "./types";
 
 // top-level app state (keep as small as possible)
 let database: Database;
@@ -43,7 +45,10 @@ window.addEventListener("refresh-client", async () => {
     // todo: get the last edited note
     selectedNoteId = Object.keys(notes)[0];
   }
-  await refreshClient(notes, selectedNoteId);
+
+  //  const status = await database.getStatus();
+
+  await refreshClient({ notes, status, selectedNoteId });
 });
 
 window.addEventListener("create-note", async (event) => {
@@ -98,13 +103,19 @@ window.addEventListener("DOMContentLoaded", async () => {
  * Renders the stateless client
  * then decides what to render based on passed-in note state
  */
-async function refreshClient(
-  notes: Record<string, Note>,
-  selectedNoteId: string
-): Promise<void> {
+async function refreshClient({
+  notes,
+  status,
+  selectedNoteId,
+}: {
+  notes: Record<string, Note>;
+  status: Status;
+  selectedNoteId: string;
+}): Promise<void> {
   // render stateless components
   const {
     sidebarElement,
+    footerElement,
     editorElement,
     editorTopMenuElement,
     editorFloatingMenuElement,
@@ -116,6 +127,8 @@ async function refreshClient(
   }
   // notes exist, render state-based components
   renderSidebarNoteList(sidebarElement, notes);
+
+  renderFooter(footerElement, status);
   const editor = await renderEditor({
     selectedNoteId,
     editorElement: editorElement,
