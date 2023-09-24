@@ -23,6 +23,7 @@ class Database {
     }
 
     PouchDb.plugin(PouchDbFind);
+
     this.db = new PouchDb("local_db_test");
 
     this.db.createIndex({

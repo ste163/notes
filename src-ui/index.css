@@ -21,7 +21,7 @@
 body {
   display: grid;
   grid-template-columns: 1fr 10fr;
-  grid-template-rows: 96vh 3vh;
+  grid-template-rows: 1fr auto;
   grid-template-areas:
     "sidebar main"
     "footer footer";
@@ -47,6 +47,7 @@ footer {
   grid-area: footer;
   border-top: var(--outline-color) 0.15em solid;
   padding: 0 0.5rem;
+  height: min-content;
 }
 
 p {
@@ -153,10 +154,9 @@ button.isActive {
 }
 
 #editor {
+  flex-grow: 1;
   height: inherit;
   overflow-y: scroll;
-  padding-left: 3em;
-  padding-right: 7em;
 }
 
 #editor-floating-menu {
@@ -170,8 +170,10 @@ button.isActive {
 /* TipTap/ProseMirror specific */
 .ProseMirror {
   outline: none;
-  height: inherit;
+  height: 100%;
   overflow-y: scroll;
+  padding-left: 3em;
+  padding-right: 7em;
 }
 
 .code,

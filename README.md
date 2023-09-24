@@ -42,6 +42,7 @@ Decision for using vanilla html + js (TS) for the ui was to be as easily maintai
 ## Dev requirements
 
 - pnpm
+- docker-compose
 
 ## getting up and running
 
@@ -63,8 +64,8 @@ To interact with the CouchDB server and databases while running the container, g
 
 ## updating packages
 
-NPM
-`npm i` from root
+PNPM
+`pnpm i` from root
 
 Rust Cargo packages
 
