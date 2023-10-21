@@ -3,13 +3,17 @@ import PouchDb from "pouchdb-browser";
 import PouchDbFind from "pouchdb-find";
 import { Note } from "../types";
 
+/**
+ * Creates the Pouchdb database instance
+ * with the methods for interacting with the db
+ */
 class Database {
   private db: PouchDB.Database;
-
   // TODO:
   // need to read docs on how pouchdb connects to a remote and then export
   // a method for getting the status information in the Status type
   // for rendering in footer
+
   /**
    * TODO: for first version, only using the local db.
    * Next version is to hook into a remote db for syncing

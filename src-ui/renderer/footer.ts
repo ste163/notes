@@ -1,25 +1,21 @@
-import { Status } from "../types";
-
-// TODO:
-// create the footer using the proxy idea.
-// which can be set at the app level.
-// and if the proxy works, then convert the app to it as it seems much cleaner
-// for passing props
+import { StatusStore } from "../store";
 
 /**
- * Renders footer with latest status state
+ * Renders footer with latest StatusStore state
  */
-function renderFooter(footerContainer: Element, status: Status): void {
-  // could pass in a status object to render
-  const { isConnected, lastSaved } = status;
+function renderFooter(footerContainer: Element): void {
+  const {
+    remoteUrl,
+    isConnectedToRemote,
+    lastSavedDate,
+    lastSyncedDate,
+    error,
+  } = StatusStore;
   // need to render a gear icon for changing the remote server
   footerContainer.innerHTML = `
-  ${isConnected ? databaseIcon : "not connected"}
+  ${lastSavedDate}
   `;
 }
-
-// COUPLE NOTES:
-// will need to handle disconnect events and re-connect events
 
 // break out into the different sections and render each piece dynamically:
 // 1. the isConnected status: db icon, then the server url OR a button to connect that renders a modal

@@ -5,8 +5,8 @@
  * - BUGS
  *   - task list styling is off. Tiptap bug?
  * - UI/UX polish
- *   - save notification (could be as simple as a timestamp of last saved at top of editor)
- *   - error notification
+ *   - last saved timestamp in footer
+ *   - error notification (in footer)
  *   - delete confirmation
  * - Code Quality:
  *   - Note and FileEntry decide on Title or Name for the note
@@ -29,6 +29,7 @@ import {
 import { Database } from "./db";
 import { renderFooter } from "./renderer/footer";
 import { Note } from "./types";
+import { StatusStore } from "./store";
 
 // top-level app state (keep as small as possible)
 let database: Database;
@@ -68,6 +69,10 @@ window.addEventListener("save-note", async (event) => {
   const { content } = (event as CustomEvent)?.detail?.note;
   note.content = content;
   await database.put(note);
+  // TEST for re-rendering
+  // would be better to use the date from the db
+  // also update based on when a note is selected
+  StatusStore.lastSavedDate = new Date();
   dispatchEvent(new Event("refresh-client"));
 });
 

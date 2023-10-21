@@ -1,4 +1,4 @@
-import { Note } from "../db";
+import type { Note } from "../types";
 import { createEvent } from "../events";
 import { renderButton } from "./components";
 

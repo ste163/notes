@@ -7,12 +7,4 @@ interface Note {
   updatedAt: Date; // or string?
 }
 
-interface Status {
-  isConnected: boolean;
-  serverUrl: string;
-  lastSynced: Date;
-  syncError: string;
-  lastSaved: Date;
-}
-
-export type { Note, Status };
+export type { Note };
