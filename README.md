@@ -60,7 +60,7 @@ Running docker-compose.yml to run local db:
 docker-compose up -d
 ```
 
-To interact with the CouchDB server and databases while running the container, go to: `http://localhost:5984/_utils/` to open the GUI
+To interact with the CouchDB server and databases while running the container, go to: `http://localhost:5984/_utils/` to open the GUI. Username and password are located in `docker-compose.yml`
 
 ## updating packages
 

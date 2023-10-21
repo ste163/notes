@@ -7,38 +7,31 @@ class Database {
   private db: PouchDB.Database;
 
   // TODO:
-  // need to read docs on how pouchdb connects to a remote and then export our
+  // need to read docs on how pouchdb connects to a remote and then export
   // a method for getting the status information in the Status type
-
-  constructor(serverUrl?: string) {
-    // TODO: implement user-defined server-urls
-    // use localStorage first
-    //
-    // NOTE: will need to render whether they are connected to a db
-    // and if they are, need to display the url
-    if (serverUrl) {
-      console.log("SERVER URL IS", serverUrl);
-    } else {
-      console.log("no serverUrl");
-    }
-
+  // for rendering in footer
+  /**
+   * TODO: for first version, only using the local db.
+   * Next version is to hook into a remote db for syncing
+   */
+  constructor(_remoteUrl?: string) {
     PouchDb.plugin(PouchDbFind);
-
     this.db = new PouchDb("local_db_test");
-
     this.db.createIndex({
       index: { fields: ["_id"] },
     });
   }
 
-  // TODO: use a partial type from Note
-  async put(note: { title: string; content: string } | Note) {
+  /**
+   * Creates or updates a note and returns its id
+   */
+  async put(note: Partial<Note>): Promise<string> {
     // TODO:
     // get note by id
     // if exists, update else create
     if (note?._id) {
       await this.db.put(note);
-      return;
+      return note._id;
     }
 
     const { id } = await this.db.put({
@@ -61,7 +54,7 @@ class Database {
       descending: true,
     });
     return rows.reduce((acc, { doc }) => {
-      if (!doc.title) return acc; // pouchdb returns a language query doc, ignore that and only return legit notes
+      if (!(doc as any).title) return acc; // pouchdb always returns a language query doc, ignore that and only return real notes
       const note = doc as Note;
       acc[note._id] = note;
       return acc;

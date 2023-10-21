@@ -11,10 +11,8 @@ import { Status } from "../types";
  */
 function renderFooter(footerContainer: Element, status: Status): void {
   // could pass in a status object to render
-  console.log("STATUS IN FOOTER", status);
   const { isConnected, lastSaved } = status;
   // need to render a gear icon for changing the remote server
-
   footerContainer.innerHTML = `
   ${isConnected ? databaseIcon : "not connected"}
   `;

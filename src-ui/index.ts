@@ -28,7 +28,7 @@ import {
 } from "./renderer";
 import { Database } from "./db";
 import { renderFooter } from "./renderer/footer";
-import { Note, Status } from "./types";
+import { Note } from "./types";
 
 // top-level app state (keep as small as possible)
 let database: Database;
@@ -39,16 +39,17 @@ let selectedNoteId: null | string = null;
  * All events related to the different app life-cycles
  */
 window.addEventListener("refresh-client", async () => {
-  notes = await database.getAll(); // i can pass a sort into this, by default its by created_at
-  // but I could easily extend to sort by any of the data
+  /**
+   * Note on sorting:
+   * by default it's by created_at,
+   * but can easily be extended to sort by any note data
+   */
+  notes = await database.getAll();
   if (!selectedNoteId) {
     // todo: get the last edited note
     selectedNoteId = Object.keys(notes)[0];
   }
-
-  //  const status = await database.getStatus();
-
-  await refreshClient({ notes, status, selectedNoteId });
+  await refreshClient({ notes, selectedNoteId });
 });
 
 window.addEventListener("create-note", async (event) => {
@@ -93,7 +94,6 @@ window.addEventListener("select-note", (event) => {
  * Can be sure by this point the client is ready to render.
  */
 window.addEventListener("DOMContentLoaded", async () => {
-  // await initDb
   database = new Database();
   dispatchEvent(new Event("refresh-client"));
 });
@@ -105,11 +105,9 @@ window.addEventListener("DOMContentLoaded", async () => {
  */
 async function refreshClient({
   notes,
-  status,
   selectedNoteId,
 }: {
   notes: Record<string, Note>;
-  status: Status;
   selectedNoteId: string;
 }): Promise<void> {
   // render stateless components
@@ -120,15 +118,15 @@ async function refreshClient({
     editorTopMenuElement,
     editorFloatingMenuElement,
   } = renderClient();
-  // Set main element content based on note state
+  // set main element content based on note state
   if (!Object.keys(notes).length) {
     renderGetStarted(editorElement);
     return;
   }
   // notes exist, render state-based components
   renderSidebarNoteList(sidebarElement, notes);
+  renderFooter(footerElement, {});
 
-  renderFooter(footerElement, status);
   const editor = await renderEditor({
     selectedNoteId,
     editorElement: editorElement,
