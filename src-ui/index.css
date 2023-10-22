@@ -19,8 +19,12 @@
 }
 
 body {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 10fr;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    "sidebar main"
+    "footer footer";
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -30,11 +34,20 @@ main {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  grid-area: main;
 }
 
 main > h1 {
   font-size: 1.3em;
   margin-left: 1.5em;
+}
+
+footer {
+  font-size: small;
+  grid-area: footer;
+  border-top: var(--outline-color) 0.15em solid;
+  padding: 0 0.5rem;
+  height: min-content;
 }
 
 p {
@@ -61,7 +74,6 @@ button {
 
   color: var(--outline-color);
   background-color: var(--background-color);
-  /* background-color: var(--active-color); */
 
   transition: background-color 0.1s ease-in-out;
 }
@@ -79,9 +91,10 @@ button.isActive {
   background-color: var(--active-color);
 }
 
-/* todo: if this stays very small, potentially in-line it */
 #sidebar {
   border-right: var(--outline-color) 0.15em solid;
+  grid-area: sidebar;
+  padding-right: 0.5em;
 }
 
 #sidebar > h1 {
@@ -142,10 +155,9 @@ button.isActive {
 }
 
 #editor {
+  flex-grow: 1;
   height: inherit;
   overflow-y: scroll;
-  padding-left: 3em;
-  padding-right: 7em;
 }
 
 #editor-floating-menu {
@@ -159,8 +171,10 @@ button.isActive {
 /* TipTap/ProseMirror specific */
 .ProseMirror {
   outline: none;
-  height: inherit;
+  height: 100%;
   overflow-y: scroll;
+  padding-left: 3em;
+  padding-right: 7em;
 }
 
 .code,

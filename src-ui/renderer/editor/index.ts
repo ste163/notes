@@ -20,7 +20,6 @@ import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 import History from "@tiptap/extension-history";
-import { Note } from "../../api/interfaces";
 import {
   renderDeleteButton,
   renderRedoButton,
@@ -35,12 +34,12 @@ async function renderEditor({
   editorElement,
   topEditorMenu,
   floatingEditorMenu,
-  selectedNote,
+  selectedNoteId,
 }: {
   editorElement: Element;
   topEditorMenu: Element;
   floatingEditorMenu: Element;
-  selectedNote: Note | null;
+  selectedNoteId: string | null;
 }): Promise<Editor> {
   const editor = new Editor({
     element: editorElement,
@@ -95,7 +94,7 @@ async function renderEditor({
     },
   });
 
-  renderTopMenu({ editor, topEditorMenu, selectedNote });
+  renderTopMenu({ editor, topEditorMenu, selectedNoteId });
   renderFloatingMenu(editor, floatingEditorMenu);
   return editor;
 }
@@ -107,11 +106,11 @@ async function renderEditor({
 function renderTopMenu({
   editor,
   topEditorMenu,
-  selectedNote,
+  selectedNoteId,
 }: {
   editor: Editor;
   topEditorMenu: Element;
-  selectedNote: Note | null;
+  selectedNoteId: string | null;
 }) {
   const { topEditorMenuButtons } = instantiateEditorButtons(editor);
   // setup editor buttons (bold, italic, etc.)
@@ -137,7 +136,7 @@ function renderTopMenu({
     renderUndoButton(editor),
     renderRedoButton(editor),
     renderSaveButton(editor),
-    selectedNote && renderDeleteButton(selectedNote?.path),
+    selectedNoteId && renderDeleteButton(selectedNoteId),
   ];
   buttons.forEach(
     (button) => button && nonConfigButtonContainer.appendChild(button)

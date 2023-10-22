@@ -1,5 +1,6 @@
 import { createEvent } from "../events";
 import { renderButton } from "./components";
+import { renderFooter } from "./footer";
 
 /**
  * Render the stateless HTML structure for the application.
@@ -15,8 +16,10 @@ function renderClient() {
       <div id="editor-floating-menu"></div>
       <div id="editor"></div>
     </main>
+    <footer></footer>
     `;
   const sidebarElement = document.querySelector("#sidebar");
+  const footerElement = document.querySelector("footer");
   const editorTopMenuElement = document.querySelector("#editor-top-menu");
   const editorFloatingMenuElement = document.querySelector(
     "#editor-floating-menu"
@@ -25,14 +28,15 @@ function renderClient() {
 
   if (
     !sidebarElement ||
+    !footerElement ||
     !editorTopMenuElement ||
     !editorFloatingMenuElement ||
     !editorElement
   )
     throw new Error("Missing required HTML elements");
 
-  // render the rest of the non-state-based HTML
   renderSidebar(sidebarElement);
+  renderFooter(footerElement);
 
   return {
     sidebarElement,

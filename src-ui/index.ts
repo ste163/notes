@@ -1,76 +1,92 @@
 /**
  * TODO PRIORITY ORDER
- * - DB Restructure
- *   - local PouchDB, not connected to a server yet. Can I get it working fully?
  * - BUGS
  *   - task list styling is off. Tiptap bug?
  * - UI/UX polish
- *   - save notification (could be as simple as a timestamp of last saved at top of editor)
- *   - error notification
+ *   - error notification (in footer)
  *   - delete confirmation
  * - Code Quality:
- *   - Note and FileEntry decide on Title or Name for the note
  *   - clean-up todos
+ *   - try/catch blocks per component. Will make debugging much easier
  * - Quality of Life
+ *   - ability to rename note titles
  *   - crtl+s saves
  *   - auto-save on note switch with dirty editor (or ask to save)
  *   - (later): visual explanation of available shortcuts
+ * - REMOTE DB
+ *   - setup the remote db that connects to the docker container
  */
-import { Note } from "./api/interfaces";
-import {
-  initializeFileStructure,
-  getNotes,
-  writeNote,
-  deleteNote,
-  readNote,
-} from "./api";
+
 import { renderEditor } from "./renderer/editor";
 import {
   renderClient,
   renderGetStarted,
   renderSidebarNoteList,
 } from "./renderer";
+import { Database } from "./db";
+import { Note } from "./types";
+import { StatusStore } from "./store";
 
 // top-level app state (keep as small as possible)
-let selectedNote: null | Note = null;
+// TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store
+let database: Database;
+let notes: Record<string, Note> = {};
+let selectedNoteId: null | string = null;
 
 /**
  * All events related to the different app life-cycles
  */
 window.addEventListener("refresh-client", async () => {
-  const notes = await getNotes();
-  if (!selectedNote) {
-    // TODO: this should get based on timestamp of last saved
-    const { name, path } = notes[notes.length - 1];
-    selectedNote = { name, path };
+  /**
+   * Note on sorting:
+   * by default it's by created_at,
+   * but can easily be extended to sort by any note data
+   */
+  notes = await database.getAll();
+  if (!selectedNoteId) {
+    // todo: get the last edited note
+    selectedNoteId = Object.keys(notes)[0];
   }
-  await refreshClient(notes, selectedNote);
+
+  await refreshClient({ notes, selectedNoteId });
 });
 
 window.addEventListener("create-note", async (event) => {
   const { title, content = "" } = (event as CustomEvent)?.detail?.note;
-  const { note } = await writeNote(title, content);
-  selectedNote = note;
+  const id = await database.put({ title, content });
+  selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
 });
 
 window.addEventListener("save-note", async (event) => {
-  if (!selectedNote?.name) throw new Error("No note selected to save");
+  if (!selectedNoteId) throw new Error("No note selected to save");
+  // TODO: gonna need to know notes state
+  // so I can get the full data;
+  // unless I move that to the PUT function
+  const note = notes[selectedNoteId];
   const { content } = (event as CustomEvent)?.detail?.note;
-  await writeNote(selectedNote?.name, content);
+  note.content = content;
+  await database.put(note);
+  // TEST for re-rendering
+  // would be better to use the date from the db
+  // also update based on when a note is selected
+  StatusStore.lastSavedDate = new Date();
   dispatchEvent(new Event("refresh-client"));
 });
 
 window.addEventListener("delete-note", async (event) => {
-  const { path } = (event as CustomEvent)?.detail?.note;
-  await deleteNote(path);
-  selectedNote = null; // reset selected note as it was deleted. You can only delete selected notes
+  const { id } = (event as CustomEvent)?.detail?.note;
+  // TODO:
+  // move the fetch to the deleteNote route
+  const noteToDelete = notes[id];
+  await database.delete(noteToDelete);
+  selectedNoteId = null; // reset selected note as it was deleted
   dispatchEvent(new Event("refresh-client"));
 });
 
 window.addEventListener("select-note", (event) => {
-  const { title, path } = (event as CustomEvent)?.detail?.note;
-  selectedNote = { name: title, path };
+  const { id } = (event as CustomEvent)?.detail?.note;
+  selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -81,15 +97,7 @@ window.addEventListener("select-note", (event) => {
  * Can be sure by this point the client is ready to render.
  */
 window.addEventListener("DOMContentLoaded", async () => {
-  await initializeFileStructure(); // TODO: needs to happen in the rust backend before DOM CONTENT LOADED
-  // TODO:
-  // ideally, by this point, we do not call refresh-client
-  // but the backend will have already fetched data.
-  // so we just need to render the client
-  //
-  // so then there are two life-cycles:
-  // 1. initial load (here, DOMContentLoaded)
-  // 2. any update (note here, but refresh-client event)
+  database = new Database();
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -98,48 +106,77 @@ window.addEventListener("DOMContentLoaded", async () => {
  * Renders the stateless client
  * then decides what to render based on passed-in note state
  */
-async function refreshClient(notes: Note[], selectedNote: Note): Promise<void> {
-  // render stateless components
+async function refreshClient({
+  notes,
+  selectedNoteId,
+}: {
+  notes: Record<string, Note>;
+  selectedNoteId: string;
+}): Promise<void> {
+  /**
+   * Update state for initial render
+   */
+  if (selectedNoteId) {
+    StatusStore.lastSavedDate = notes[selectedNoteId].updatedAt;
+  }
+
   const {
     sidebarElement,
     editorElement,
     editorTopMenuElement,
     editorFloatingMenuElement,
   } = renderClient();
-  // Set main element content based on note state
-  if (!notes.length) {
+
+  // set main element content based on note state
+  if (!Object.keys(notes).length) {
+    StatusStore.lastSavedDate = null;
     renderGetStarted(editorElement);
     return;
   }
   // notes exist, render state-based components
   renderSidebarNoteList(sidebarElement, notes);
+
   const editor = await renderEditor({
-    selectedNote,
+    selectedNoteId,
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
+
   // set editor content to the selected note
-  const content = await readNote(selectedNote?.path);
+  const content = notes[selectedNoteId]?.content;
   editor.commands.setContent(content);
-  toggleActiveClass(
-    `#${selectedNote.name}-note-select-container`,
-    "select-note"
-  );
+  // Problem: cannot use the Date _id
+  // as that is not a valid selector for the dom.
+  // needs to be something like a uuid
+  toggleActiveClass({
+    selector: `#${selectedNoteId}-note-select-container`,
+    type: "select-note",
+  });
   // reset editor scroll position
   editorElement.scrollTop = 0;
   // focus on editor
   editor.commands.focus("start");
 }
 
-function toggleActiveClass(selector: string, type: string) {
-  const activeType = `${type}-active`;
-  // remove any active classes
-  const elementsToClear = document.querySelectorAll(`.${activeType}`);
-  elementsToClear?.forEach((element) => {
-    element.classList.remove(activeType);
-  });
-  // assign activeType to selector
-  const elementToActivate = document.querySelector(selector);
-  elementToActivate?.classList.add(activeType);
+function toggleActiveClass({
+  selector,
+  type,
+}: {
+  selector: string;
+  type: string;
+}) {
+  try {
+    const activeType = `${type}-active`;
+    // remove any active classes
+    const elementsToClear = document.querySelectorAll(`.${activeType}`);
+    elementsToClear?.forEach((element) => {
+      element?.classList?.remove(activeType);
+    });
+    // assign activeType to selector
+    const elementToActivate = document.querySelector(selector);
+    elementToActivate?.classList.add(activeType);
+  } catch (error) {
+    console.error(error);
+  }
 }

@@ -21,11 +21,11 @@ function renderSaveButton(editor: Editor) {
   });
 }
 
-function renderDeleteButton(path: string) {
+function renderDeleteButton(id: string) {
   return renderButton({
     title: "Delete note",
     onClick: () =>
-      path && createEvent("delete-note", { note: { path } }).dispatch(),
+      id && createEvent("delete-note", { note: { id } }).dispatch(),
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Delete note</title>

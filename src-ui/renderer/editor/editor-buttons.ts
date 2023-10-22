@@ -203,7 +203,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
 /**
  * Reads editor button config and
  * generates button instances depending on menu location.
- * Not concerned with what happens to these buttons, just the creation
+ * This is not concerned with what happens to these buttons, only their creation
  */
 function instantiateEditorButtons(editor: Editor) {
   const topEditorMenuButtons: HTMLButtonElement[] = [];
