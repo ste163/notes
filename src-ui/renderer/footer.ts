@@ -4,16 +4,9 @@ import { StatusStore } from "../store";
  * Renders footer with latest StatusStore state
  */
 function renderFooter(footerContainer: Element): void {
-  const {
-    remoteUrl,
-    isConnectedToRemote,
-    lastSavedDate,
-    lastSyncedDate,
-    error,
-  } = StatusStore;
-  // need to render a gear icon for changing the remote server
+  const { lastSavedDate, error } = StatusStore;
   footerContainer.innerHTML = `
-  ${lastSavedDate}
+  ${lastSavedDate ? `Last saved: ${lastSavedDate}` : ""}
   `;
 }
 

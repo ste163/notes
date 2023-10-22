@@ -94,6 +94,7 @@ button.isActive {
 #sidebar {
   border-right: var(--outline-color) 0.15em solid;
   grid-area: sidebar;
+  padding-right: 0.5em;
 }
 
 #sidebar > h1 {

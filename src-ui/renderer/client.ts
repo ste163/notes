@@ -1,5 +1,6 @@
 import { createEvent } from "../events";
 import { renderButton } from "./components";
+import { renderFooter } from "./footer";
 
 /**
  * Render the stateless HTML structure for the application.
@@ -34,12 +35,11 @@ function renderClient() {
   )
     throw new Error("Missing required HTML elements");
 
-  // render the rest of the non-state-based HTML
   renderSidebar(sidebarElement);
+  renderFooter(footerElement);
 
   return {
     sidebarElement,
-    footerElement,
     editorElement,
     editorTopMenuElement,
     editorFloatingMenuElement,

@@ -27,13 +27,13 @@ import {
   renderSidebarNoteList,
 } from "./renderer";
 import { Database } from "./db";
-import { renderFooter } from "./renderer/footer";
 import { Note } from "./types";
 import { StatusStore } from "./store";
 
 // top-level app state (keep as small as possible)
+// TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store
 let database: Database;
-let notes: Record<string, Note> = {}; // NOTE: can I get rid of notes state?
+let notes: Record<string, Note> = {};
 let selectedNoteId: null | string = null;
 
 /**
@@ -50,6 +50,7 @@ window.addEventListener("refresh-client", async () => {
     // todo: get the last edited note
     selectedNoteId = Object.keys(notes)[0];
   }
+
   await refreshClient({ notes, selectedNoteId });
 });
 
@@ -115,22 +116,28 @@ async function refreshClient({
   notes: Record<string, Note>;
   selectedNoteId: string;
 }): Promise<void> {
-  // render stateless components
+  /**
+   * Update state for initial render
+   */
+  if (selectedNoteId) {
+    StatusStore.lastSavedDate = notes[selectedNoteId].updatedAt;
+  }
+
   const {
     sidebarElement,
-    footerElement,
     editorElement,
     editorTopMenuElement,
     editorFloatingMenuElement,
   } = renderClient();
+
   // set main element content based on note state
   if (!Object.keys(notes).length) {
+    StatusStore.lastSavedDate = null;
     renderGetStarted(editorElement);
     return;
   }
   // notes exist, render state-based components
   renderSidebarNoteList(sidebarElement, notes);
-  renderFooter(footerElement, {});
 
   const editor = await renderEditor({
     selectedNoteId,
@@ -138,6 +145,7 @@ async function refreshClient({
     topEditorMenu: editorTopMenuElement,
     floatingEditorMenu: editorFloatingMenuElement,
   });
+
   // set editor content to the selected note
   const content = notes[selectedNoteId]?.content;
   editor.commands.setContent(content);

@@ -34,7 +34,10 @@ class Database {
     // get note by id
     // if exists, update else create
     if (note?._id) {
-      await this.db.put(note);
+      await this.db.put({
+        ...note,
+        updatedAt: new Date(),
+      });
       return note._id;
     }
 

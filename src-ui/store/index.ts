@@ -1,15 +1,20 @@
+/**
+ * TODO:
+ * revisit store state once
+ * I'm setting up the remote server
+ */
 type StatusStoreKey =
-  | "remoteUrl"
-  | "isConnectedToRemote"
+  // | "remoteUrl"
+  // | "isConnectedToRemote"
   | "lastSavedDate"
-  | "lastSyncedDate"
+  // | "lastSyncedDate"
   | "error";
 
 interface StatusStore {
-  remoteUrl: string;
-  isConnectedToRemote: boolean;
+  // remoteUrl: string;
+  // isConnectedToRemote: boolean;
   lastSavedDate: null | Date;
-  lastSyncedDate: null | Date;
+  // lastSyncedDate: null | Date;
   error: string;
 }
 
@@ -25,14 +30,18 @@ interface StatusStore {
  */
 const StatusStore = new Proxy(
   {
-    remoteUrl: "",
-    isConnectedToRemote: false,
+    // remoteUrl: "",
+    // isConnectedToRemote: false,
     lastSavedDate: null,
-    lastSyncedDate: null,
+    // lastSyncedDate: null,
     error: "",
   },
   {
     set(target: StatusStore, key: StatusStoreKey, value) {
+      if (key === "lastSavedDate") {
+        value = new Date(value).toLocaleString();
+      }
+
       (target[key] as any) = value;
       // trigger re-render of all components that use StatusStore
       return true;
