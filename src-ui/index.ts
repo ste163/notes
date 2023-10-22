@@ -6,7 +6,6 @@
  *   - error notification (in footer)
  *   - delete confirmation
  * - Code Quality:
- *   - Note and FileEntry decide on Title or Name for the note
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
  * - Quality of Life
