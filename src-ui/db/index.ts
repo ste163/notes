@@ -51,8 +51,11 @@ class Database {
   }
 
   async delete(note: Note) {
-    const response = await this.db.remove({ _id: note._id, _rev: note._rev });
-    console.log("DELETE RESPONSE", response);
+    // TODO: better error handling around this
+    if (note._rev) {
+      const response = await this.db.remove({ _id: note._id, _rev: note._rev });
+      console.log("DELETE RESPONSE", response);
+    }
   }
 
   async getAll() {
