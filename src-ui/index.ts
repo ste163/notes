@@ -1,23 +1,21 @@
 /**
  * TODO PRIORITY ORDER
- * - DB Restructure
- *   - local PouchDB, not connected to a server yet. Can I get it working fully?
  * - BUGS
  *   - task list styling is off. Tiptap bug?
  * - UI/UX polish
- *   - last saved timestamp in footer
  *   - error notification (in footer)
  *   - delete confirmation
  * - Code Quality:
  *   - Note and FileEntry decide on Title or Name for the note
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
- *   - ask chatgpt for info on tips for a vanilla JS SPA
  * - Quality of Life
- *   - rename note titles
+ *   - ability to rename note titles
  *   - crtl+s saves
  *   - auto-save on note switch with dirty editor (or ask to save)
  *   - (later): visual explanation of available shortcuts
+ * - REMOTE DB
+ *   - setup the remote db that connects to the docker container
  */
 
 import { renderEditor } from "./renderer/editor";
