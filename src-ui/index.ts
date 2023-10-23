@@ -3,15 +3,15 @@
  * - BUGS
  *   - task list styling is off. Tiptap bug?
  * - UI/UX polish
+ *   - Accessible modal for saving and delete confirmation
+ *   - delete confirmation (modal)
  *   - error notification (in footer)
- *   - delete confirmation
  * - Code Quality:
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
  * - Quality of Life
+ *   - auto-save on note switch with dirty editor (or ask to save, modal)
  *   - ability to rename note titles
- *   - crtl+s saves
- *   - auto-save on note switch with dirty editor (or ask to save)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
  *   - setup the remote db that connects to the docker container
@@ -24,17 +24,33 @@ import {
   renderSidebarNoteList,
 } from "./renderer";
 import { Database } from "./db";
-import { Note } from "./types";
+import { Editor } from "@tiptap/core";
 import { StatusStore } from "./store";
+import { createEvent } from "./events";
+import type { Note } from "./types";
 
 // top-level app state (keep as small as possible)
 // TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store
 let database: Database;
+let editor: Editor;
 let notes: Record<string, Note> = {};
 let selectedNoteId: null | string = null;
 
 /**
- * All events related to the different app life-cycles
+ * Keyboard events
+ */
+document.addEventListener("keydown", (event) => {
+  if (event.metaKey && event.key === "s") {
+    event.preventDefault(); // prevent default save behavior
+    editor &&
+      createEvent("save-note", {
+        note: { content: editor.getHTML() },
+      }).dispatch();
+  }
+});
+
+/**
+ * App life-cycle events
  */
 window.addEventListener("refresh-client", async () => {
   /**
@@ -136,7 +152,7 @@ async function refreshClient({
   // notes exist, render state-based components
   renderSidebarNoteList(sidebarElement, notes);
 
-  const editor = await renderEditor({
+  editor = await renderEditor({
     selectedNoteId,
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
@@ -156,6 +172,7 @@ async function refreshClient({
   // reset editor scroll position
   editorElement.scrollTop = 0;
   // focus on editor
+  // TODO: only focus on the start if we're selecting a NEW note
   editor.commands.focus("start");
 }
 
