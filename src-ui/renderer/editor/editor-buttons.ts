@@ -116,7 +116,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
   {
     group: 3,
     title: "Bullet List",
-    markName: "listItem",
+    markName: "bulletList",
     className: "menu-button-bullet-list",
     isInFloatingMenu: false,
     onClick: (editor: Editor) => {
@@ -131,7 +131,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
   {
     group: 3,
     title: "Ordered List",
-    markName: "listItem", // BUG: fix conflicting names for order and unordered lists. Unable to toggle css properly
+    markName: "orderedList",
     className: "menu-button-ordered-list",
     isInFloatingMenu: false,
     onClick: (editor: Editor) => {

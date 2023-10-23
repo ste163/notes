@@ -1,7 +1,5 @@
 /**
  * TODO PRIORITY ORDER
- * - BUGS
- *   - task list styling is off. Tiptap bug?
  * - UI/UX polish
  *   - Accessible modal for saving and delete confirmation
  *   - delete confirmation (modal)
@@ -76,17 +74,10 @@ window.addEventListener("create-note", async (event) => {
 
 window.addEventListener("save-note", async (event) => {
   if (!selectedNoteId) throw new Error("No note selected to save");
-  // TODO: gonna need to know notes state
-  // so I can get the full data;
-  // unless I move that to the PUT function
   const note = notes[selectedNoteId];
   const { content } = (event as CustomEvent)?.detail?.note;
   note.content = content;
   await database.put(note);
-  // TEST for re-rendering
-  // would be better to use the date from the db
-  // also update based on when a note is selected
-  StatusStore.lastSavedDate = new Date();
   dispatchEvent(new Event("refresh-client"));
 });
 
