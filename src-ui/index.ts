@@ -6,9 +6,9 @@
  *   - error notification (in footer)
  *   - checkbox styling is wrong
  * - Code Quality:
- *   - test with moving Editor to a proxy store to remove 'prop' drilling/dependency injection
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
+ *   - test with moving Editor to a proxy store to remove 'prop' drilling/dependency injection
  * - Quality of Life
  *   - auto-save on note switch with dirty editor (or ask to save, modal)
  *   - ability to rename note titles
@@ -60,8 +60,14 @@ window.addEventListener("refresh-client", async () => {
    */
   notes = await database.getAll();
   if (!selectedNoteId) {
-    // todo: get the last edited note
-    selectedNoteId = Object.keys(notes)[0];
+    /**
+     * To start, not calling the db again to get the most recent note.
+     * However, if slow downs become noticeable, this would be a place to optimize.
+     */
+    const sortedNotes = Object.values(notes).sort((a, b) => {
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+    selectedNoteId = sortedNotes[0]?._id;
   }
 
   await refreshClient({ notes, selectedNoteId });
