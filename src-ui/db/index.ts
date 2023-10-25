@@ -30,9 +30,6 @@ class Database {
    * Creates or updates a note and returns its id
    */
   async put(note: Partial<Note>): Promise<string> {
-    // TODO:
-    // get note by id
-    // if exists, update else create
     if (note?._id) {
       await this.db.put({
         ...note,
@@ -51,18 +48,27 @@ class Database {
   }
 
   async delete(note: Note) {
-    // TODO: better error handling around this
-    if (note._rev) {
-      const response = await this.db.remove({ _id: note._id, _rev: note._rev });
-      console.log("DELETE RESPONSE", response);
-    }
+    if (note._rev) await this.db.remove({ _id: note._id, _rev: note._rev });
   }
 
+  /**
+   * Fetches all notes sorted by created_at and returned as Record<id, Note>
+   */
   async getAll() {
     const { rows } = await this.db.allDocs({
       include_docs: true,
       descending: true,
     });
+
+    // TODO: update the fetch do sort by createdAt from the start.
+    // let the API do the heavy lifting
+    rows.sort((a, b) => {
+      return (
+        new Date((a.doc as Note).createdAt).getTime() -
+        new Date((b.doc as Note).createdAt).getTime()
+      );
+    });
+
     return rows.reduce((acc, { doc }) => {
       if (!(doc as any).title) return acc; // pouchdb always returns a language query doc, ignore that and only return real notes
       const note = doc as Note;

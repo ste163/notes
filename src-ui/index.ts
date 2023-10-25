@@ -2,7 +2,8 @@
  * TODO PRIORITY ORDER
  * - UI/UX polish
  *   - Accessible modal for saving and delete confirmation
- *   - delete confirmation (modal)
+ *   - delete confirmation modal
+ *   - save confirmation modal on window close + note switch if dirty
  *   - error notification (in footer)
  *   - checkbox styling is wrong
  * - Code Quality:
@@ -30,7 +31,7 @@ import { createEvent } from "./events";
 import type { Note } from "./types";
 
 // top-level app state (keep as small as possible)
-// TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store
+// TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store if it's used app-wide
 let database: Database;
 let editor: Editor;
 let notes: Record<string, Note> = {};
@@ -93,6 +94,7 @@ window.addEventListener("delete-note", async (event) => {
   const { id } = (event as CustomEvent)?.detail?.note;
   // TODO:
   // move the fetch to the deleteNote route
+  // so we don't have to know the full state here
   const noteToDelete = notes[id];
   await database.delete(noteToDelete);
   selectedNoteId = null; // reset selected note as it was deleted

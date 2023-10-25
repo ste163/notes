@@ -164,8 +164,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
   },
   {
     group: 4,
-    // TODO: style this with background color
-    // (not the button, but the actually editor active code text)
     title: "Code",
     markName: "code",
     className: "menu-button-code",
@@ -182,8 +180,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
   },
   {
     group: 4,
-    // TODO: style the background css for when
-    // the code block is active (not the button)
     title: "Code Block",
     markName: "codeBlock",
     className: "menu-button-code-block",
