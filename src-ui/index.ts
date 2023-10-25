@@ -4,7 +4,9 @@
  *   - Accessible modal for saving and delete confirmation
  *   - delete confirmation (modal)
  *   - error notification (in footer)
+ *   - checkbox styling is wrong
  * - Code Quality:
+ *   - test with moving Editor to a proxy store to remove 'prop' drilling/dependency injection
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
  * - Quality of Life

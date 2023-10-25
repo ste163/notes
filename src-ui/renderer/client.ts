@@ -68,8 +68,6 @@ function renderSidebar(sidebarContainer: Element): void {
  * Renders the note input used only by the sidebar (currently).
  */
 function renderNoteInput(sidebarContainer: Element) {
-  // todo:
-  // will eventually need to have some input validation to ensure no characters like '.' or '/', " " (space)
   const containerClass = "create-note-input-container";
   const isInputAlreadyRendered = document.querySelector(`.${containerClass}`);
   if (isInputAlreadyRendered) return;
