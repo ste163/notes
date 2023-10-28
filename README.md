@@ -1,33 +1,53 @@
 # untitled-notes-app
 
-> Tauri + Tiptap notes app
+Vanilla JS notes app using PouchDb for local and remote data storage
 
-Tauri app with vanilla frontend and a simple tauri backend for reading and writing `.md` files using tiptap.
+As a desktop app using Tauri or on the browser
 
-## App
+## TODOs
 
-- reads list of notes from fs
-- can create note and write to fs
-- can edit note
-- can delete note
+- Build process for Tauri
+- Separate build process + deployment of browser-only version
+- Tauri version
+  - supports auto-updates
+- Dev workflow
+  - on pre-commit, run type checker
+  - on pre-commit, run eslint config + formatting
+  - basic unit tests run on push + on PR?
+- PouchDb remote
+  - make it work + update readme
 
-## Dev workflow
+## Architecture
 
-- app can check for auto-updates
-- app can auto-update from a published github action
-- on pre-commit, run type checker
-- on pre-commit, run eslint config + formatting
-- basic unit tests run on push + on PR?
+This application uses vanilla HTML & Javascript (TypeScript) to keep the UI as easily maintainable as possible with as few as possible dependencies to upkeep. Keeping up with multiple dependencies becomes a major time commitment that I want to avoid. This application is built to be as simple as possible.
 
-## Architecture decisions
+Decisions for simplicity:
 
-Decision for using vanilla html + js (TS) for the ui was to be as easily maintainable as possible. By leveraging TipTap and Tauri, the state management is directly based on the database for selecting and displaying the list of notes. Tiptap handles state once a note is selected.
+- Two main dependencies: PouchDb and TipTap (the Editor)
+- The UI always renders the exact state from PouchDb
+- TipTap is utilized for the main interactivity
+- When a state-change occurs, the client is re-rendered with the latest data
 
-(add a mermaid chart that explains architecture)
+By going with this approach, the App's goal is to seamlessly connect PouchDb note state and the writing Editor's state.
 
-- PouchDb on browser and optional CouchDB running from a docker container with remote access for data backup and syncing across any amount of devices
+The UI contains a note list and mechanics for creating, selecting, and deleting notes. Everything related to having an excellent writing experience is handled by TipTap.
 
-## A better github action flow (if there were tests)
+(TODO) For portability, this repo contains a docker container for setting up a remote PouchDb with instructions
+
+### Flow chart on the data flow
+
+```mermaid
+flowchart TD
+    A[Browser/Client] -- Reads from local PouchDb --> B[(Local PouchDb \n using Indexdb)]
+    B -- Sync local changes to remote --> C[(Optional Remote PouchDb \n for two-way data syncing)]
+    C -- Sync remote changes to local --> B
+    B -- On state change, re-render Client --> D{Loads db state into \n Client}
+    D -- Created/selected note content passed into --> E[TipTap Editor]
+    E -- On save/delete event, store changes --> B
+
+```
+
+## TODO github action flow (if there were tests)
 
 - on a PR commit/before push to main
 - run TypeScript type checker
@@ -41,6 +61,7 @@ Decision for using vanilla html + js (TS) for the ui was to be as easily maintai
 
 ## Dev requirements
 
+- (link to tuari requirements)
 - pnpm
 - docker-compose
 
@@ -64,10 +85,11 @@ To interact with the CouchDB server and databases while running the container, g
 
 ## updating packages
 
-PNPM
+### pnpm
+
 `pnpm i` from root
 
-Rust Cargo packages
+### Rust Cargo packages
 
 ```
 cd src-tauri
