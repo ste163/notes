@@ -4,6 +4,7 @@
 import { Editor } from "@tiptap/core";
 import { renderButton } from "./button";
 import { createEvent } from "../../events";
+import { renderModal } from "./modal";
 
 function renderSaveButton(editor: Editor) {
   return renderButton({
@@ -21,11 +22,36 @@ function renderSaveButton(editor: Editor) {
   });
 }
 
+/**
+ * Setups the delete confirmation modal and the rendered button
+ * @returns button element
+ */
 function renderDeleteButton(id: string) {
-  return renderButton({
+  const modalDeleteButton = renderButton({
     title: "Delete note",
+    text: "Delete",
     onClick: () =>
       id && createEvent("delete-note", { note: { id } }).dispatch(),
+  });
+
+  modalDeleteButton.style.marginTop = "1rem";
+
+  // setup modal content
+  const div = document.createElement("div");
+  div.appendChild(
+    document.createTextNode("You cannot recover a deleted note.")
+  );
+  div.appendChild(modalDeleteButton);
+
+  // return the main button instance
+  return renderButton({
+    title: "Delete note",
+    onClick: () => {
+      renderModal({
+        title: "Confirm deletion",
+        content: div,
+      });
+    },
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Delete note</title>

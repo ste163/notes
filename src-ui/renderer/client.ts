@@ -10,6 +10,17 @@ function renderClient() {
   const body = document.querySelector("body");
   if (!body) throw new Error("Body Element not found. Exit client scaffolding");
   body.innerHTML = `
+    <div id="modal-backdrop" tabindex="-1" readonly="readonly">
+      <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1" readonly="readonly">
+        <div role="document">
+          <header id="modal-header">
+            <h2 id="modal-title"> Title</h2>
+            <button id="modal-close">X</button>
+          </header>
+          <div id="modal-content"></div>
+        </div>
+      </div>
+    </div>
     <div id="sidebar"></div>
     <main>
       <div id="editor-top-menu"></div>     

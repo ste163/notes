@@ -1,11 +1,12 @@
 /**
  * TODO PRIORITY ORDER
  * - UI/UX polish
- *   - Accessible modal for saving and delete confirmation
- *   - delete confirmation modal
  *   - save confirmation modal on window close + note switch if dirty
  *   - error notification (in footer)
  *   - checkbox styling is wrong
+ *   - window resizing of main button toolbar
+ *   - If the modal is open, other keyboard events shouldn't work (like ctrl+s to save)
+ *   - If the modal is open, the floating menu should not render (it has higher z-index than modal)
  * - Code Quality:
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
@@ -41,7 +42,7 @@ let selectedNoteId: null | string = null;
  * Keyboard events
  */
 document.addEventListener("keydown", (event) => {
-  if (event.metaKey && event.key === "s") {
+  if (event.ctrlKey && event.key === "s") {
     event.preventDefault(); // prevent default save behavior
     editor &&
       createEvent("save-note", {
@@ -136,7 +137,6 @@ async function refreshClient({
   if (selectedNoteId) {
     StatusStore.lastSavedDate = notes[selectedNoteId].updatedAt;
   }
-
   const {
     sidebarElement,
     editorElement,
