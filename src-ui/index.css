@@ -91,6 +91,45 @@ button.isActive {
   background-color: var(--active-color);
 }
 
+#modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  display: none;
+}
+
+#modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--background-color);
+  border-radius: 0.3em;
+  padding: 1em;
+}
+
+#modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#modal-header > button {
+  place-self: flex-start;
+  margin: 0;
+  padding: 1em 0.75em;
+  height: 1em;
+  border: none;
+}
+
+#modal-header > button:hover {
+  background-color: transparent;
+}
+
 #sidebar {
   border-right: var(--outline-color) 0.15em solid;
   grid-area: sidebar;
