@@ -7,6 +7,7 @@
  *   - window resizing of main button toolbar
  *   - If the modal is open, other keyboard events shouldn't work (like ctrl+s to save)
  *   - If the modal is open, the floating menu should not render (it has higher z-index than modal)
+ *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
  * - Code Quality:
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
