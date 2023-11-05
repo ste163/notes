@@ -83,12 +83,8 @@ window.addEventListener("create-note", async (event) => {
   dispatchEvent(new Event("refresh-client"));
 });
 
-window.addEventListener("save-note", async (event) => {
-  if (!selectedNoteId) throw new Error("No note selected to save");
-  const note = notes[selectedNoteId];
-  const { content } = (event as CustomEvent)?.detail?.note;
-  note.content = content;
-  await database.put(note);
+window.addEventListener("save-note", async () => {
+  await saveNote();
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -103,7 +99,10 @@ window.addEventListener("delete-note", async (event) => {
   dispatchEvent(new Event("refresh-client"));
 });
 
-window.addEventListener("select-note", (event) => {
+window.addEventListener("select-note", async (event) => {
+  // todo: need some way to see if editor state has changed
+  // if so, then do not save
+  await saveNote();
   const { id } = (event as CustomEvent)?.detail?.note;
   selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
@@ -159,23 +158,32 @@ async function refreshClient({
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
     floatingEditorMenu: editorFloatingMenuElement,
+    editorContent: notes[selectedNoteId]?.content,
   });
 
-  // set editor content to the selected note
-  const content = notes[selectedNoteId]?.content;
-  editor.commands.setContent(content);
-  // Problem: cannot use the Date _id
-  // as that is not a valid selector for the dom.
-  // needs to be something like a uuid
   toggleActiveClass({
     selector: `#${selectedNoteId}-note-select-container`,
     type: "select-note",
   });
+
+  // TODO: these should probably
+  // be moved to renderEditor as it is based
+  // directly on the editor state
+  //
   // reset editor scroll position
   editorElement.scrollTop = 0;
   // focus on editor
   // TODO: only focus on the start if we're selecting a NEW note
+  // otherwise, focus at the end of the document.
   editor.commands.focus("start");
+}
+
+async function saveNote() {
+  if (!selectedNoteId) throw new Error("No note selected to save");
+  const note = notes[selectedNoteId];
+  const content = editor.getHTML();
+  note.content = content;
+  await database.put(note);
 }
 
 function toggleActiveClass({
