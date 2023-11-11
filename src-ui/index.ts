@@ -28,7 +28,7 @@ import {
 } from "./renderer";
 import { Database } from "./db";
 import { Editor } from "@tiptap/core";
-import { StatusStore } from "./store";
+import { EditorStore, StatusStore } from "./store";
 import { createEvent } from "./events";
 import type { Note } from "./types";
 
@@ -72,6 +72,8 @@ window.addEventListener("refresh-client", async () => {
     });
     selectedNoteId = sortedNotes[0]?._id;
   }
+  // reset global state
+  EditorStore.isDirty = false;
 
   await refreshClient({ notes, selectedNoteId });
 });
@@ -100,9 +102,7 @@ window.addEventListener("delete-note", async (event) => {
 });
 
 window.addEventListener("select-note", async (event) => {
-  // todo: need some way to see if editor state has changed
-  // if so, then do not save
-  await saveNote();
+  if (EditorStore.isDirty) await saveNote();
   const { id } = (event as CustomEvent)?.detail?.note;
   selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));

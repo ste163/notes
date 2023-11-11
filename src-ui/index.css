@@ -159,7 +159,7 @@ button.isActive {
 .note-select-container {
   display: flex;
   flex-direction: row;
-  margin: 0.5em 0;
+  margin: 0.5em;
   max-width: inherit;
 }
 
@@ -171,6 +171,10 @@ button.isActive {
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.note-select-container > button:hover {
+  background-color: rgba(128, 128, 128, 0.2);
 }
 
 .select-note-active > button {

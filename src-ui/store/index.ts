@@ -49,4 +49,21 @@ const StatusStore = new Proxy(
   }
 );
 
-export { StatusStore };
+interface EditorStore {
+  isDirty: boolean;
+}
+
+const EditorStore = new Proxy(
+  {
+    isDirty: false,
+  },
+  {
+    set(target: EditorStore, key, value) {
+      (target[key] as any) = value;
+      console.log(`Setting key to ${value}}`);
+      return true;
+    },
+  }
+);
+
+export { EditorStore, StatusStore };
