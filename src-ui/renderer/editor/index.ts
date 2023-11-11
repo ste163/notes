@@ -81,7 +81,6 @@ async function renderEditor({
     ],
     content: editorContent ?? "<p>Issue selecting note</p>", // BUG/TODO: with undo, this is always initial state. So do not set it this way! If we can't select a note, don't render the editor
     onUpdate: ({ editor }) => {
-      console.log("ON UPDATE, isDirty is:", EditorStore.isDirty);
       if (EditorStore.isDirty) return;
       const currentContent = editor.getHTML();
       EditorStore.isDirty = currentContent !== editorContent;
