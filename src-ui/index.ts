@@ -1,7 +1,6 @@
 /**
  * TODO PRIORITY ORDER
  * - UI/UX polish
- *   - save confirmation modal on window close + note switch if dirty
  *   - error notification (in footer)
  *   - checkbox styling is wrong
  *   - window resizing of main button toolbar
@@ -13,8 +12,8 @@
  *   - try/catch blocks per component. Will make debugging much easier
  *   - test with moving Editor to a proxy store to remove 'prop' drilling/dependency injection
  * - Quality of Life
- *   - auto-save on note switch with dirty editor (or ask to save, modal)
  *   - ability to rename note titles
+ *   - auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
  *   - setup the remote db that connects to the docker container
