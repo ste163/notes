@@ -6,14 +6,10 @@ import { renderButton } from "./button";
 import { createEvent } from "../../events";
 import { renderModal } from "./modal";
 
-function renderSaveButton(editor: Editor) {
+function renderSaveButton() {
   return renderButton({
     title: "Save note",
-    onClick: () =>
-      editor &&
-      createEvent("save-note", {
-        note: { content: editor.getHTML() },
-      }).dispatch(),
+    onClick: () => dispatchEvent(new Event("save-note")),
     icon: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Save note</title>  

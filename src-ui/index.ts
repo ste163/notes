@@ -1,19 +1,19 @@
 /**
  * TODO PRIORITY ORDER
  * - UI/UX polish
- *   - save confirmation modal on window close + note switch if dirty
  *   - error notification (in footer)
  *   - checkbox styling is wrong
  *   - window resizing of main button toolbar
  *   - If the modal is open, other keyboard events shouldn't work (like ctrl+s to save)
  *   - If the modal is open, the floating menu should not render (it has higher z-index than modal)
+ *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
  * - Code Quality:
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
  *   - test with moving Editor to a proxy store to remove 'prop' drilling/dependency injection
  * - Quality of Life
- *   - auto-save on note switch with dirty editor (or ask to save, modal)
  *   - ability to rename note titles
+ *   - auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
  *   - setup the remote db that connects to the docker container
@@ -27,7 +27,7 @@ import {
 } from "./renderer";
 import { Database } from "./db";
 import { Editor } from "@tiptap/core";
-import { StatusStore } from "./store";
+import { EditorStore, StatusStore } from "./store";
 import { createEvent } from "./events";
 import type { Note } from "./types";
 
@@ -71,6 +71,8 @@ window.addEventListener("refresh-client", async () => {
     });
     selectedNoteId = sortedNotes[0]?._id;
   }
+  // reset global state
+  EditorStore.isDirty = false;
 
   await refreshClient({ notes, selectedNoteId });
 });
@@ -82,12 +84,8 @@ window.addEventListener("create-note", async (event) => {
   dispatchEvent(new Event("refresh-client"));
 });
 
-window.addEventListener("save-note", async (event) => {
-  if (!selectedNoteId) throw new Error("No note selected to save");
-  const note = notes[selectedNoteId];
-  const { content } = (event as CustomEvent)?.detail?.note;
-  note.content = content;
-  await database.put(note);
+window.addEventListener("save-note", async () => {
+  await saveNote();
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -102,7 +100,8 @@ window.addEventListener("delete-note", async (event) => {
   dispatchEvent(new Event("refresh-client"));
 });
 
-window.addEventListener("select-note", (event) => {
+window.addEventListener("select-note", async (event) => {
+  if (EditorStore.isDirty) await saveNote();
   const { id } = (event as CustomEvent)?.detail?.note;
   selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
@@ -158,23 +157,32 @@ async function refreshClient({
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
     floatingEditorMenu: editorFloatingMenuElement,
+    editorContent: notes[selectedNoteId]?.content,
   });
 
-  // set editor content to the selected note
-  const content = notes[selectedNoteId]?.content;
-  editor.commands.setContent(content);
-  // Problem: cannot use the Date _id
-  // as that is not a valid selector for the dom.
-  // needs to be something like a uuid
   toggleActiveClass({
     selector: `#${selectedNoteId}-note-select-container`,
     type: "select-note",
   });
+
+  // TODO: these should probably
+  // be moved to renderEditor as it is based
+  // directly on the editor state
+  //
   // reset editor scroll position
   editorElement.scrollTop = 0;
   // focus on editor
   // TODO: only focus on the start if we're selecting a NEW note
+  // otherwise, focus at the end of the document.
   editor.commands.focus("start");
+}
+
+async function saveNote() {
+  if (!selectedNoteId) throw new Error("No note selected to save");
+  const note = notes[selectedNoteId];
+  const content = editor.getHTML();
+  note.content = content;
+  await database.put(note);
 }
 
 function toggleActiveClass({

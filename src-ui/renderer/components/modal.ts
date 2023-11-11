@@ -47,6 +47,8 @@ function openModal(
   closeButton.onclick = closeModal;
   modalBackdrop.style.display = "block"; // shows modal
 
+  closeButton.focus(); // set focus on close button
+
   modal.addEventListener("keydown", trapFocusListener);
   modal.addEventListener("keydown", escapePressListener);
 
@@ -57,6 +59,7 @@ function openModal(
     modalBackdrop.style.display = "none";
     modal.removeEventListener("keydown", trapFocusListener);
     modal.removeEventListener("keydown", escapePressListener);
+
     if (previouslyFocusedOutsideModalElement)
       previouslyFocusedOutsideModalElement?.focus();
   }
@@ -82,12 +85,6 @@ function trapFocus(container: HTMLElement, event: KeyboardEvent) {
   const lastFocusable = focusableElements[
     focusableElements.length - 1
   ] as HTMLElement;
-
-  // if there is no actively focused element, focus on the first
-  if (!document.activeElement) {
-    firstFocusable.focus();
-    return;
-  }
 
   if (event.shiftKey && document.activeElement === firstFocusable) {
     event.preventDefault();

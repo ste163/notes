@@ -38,13 +38,14 @@ The UI contains a note list and mechanics for creating, selecting, and deleting 
 
 ```mermaid
 flowchart TD
-    A[Browser/Client] -- Reads from local PouchDb --> B[(Local PouchDb \n using Indexdb)]
-    B -- Sync local changes to remote --> C[(Optional Remote PouchDb \n for two-way data syncing)]
-    C -- Sync remote changes to local --> B
-    B -- On state change, re-render Client --> D{Loads db state into \n Client}
-    D -- Created/selected note content passed into --> E[TipTap Editor]
-    E -- On save/delete event, store changes --> B
-
+    subgraph Client-side - browser or tauri app
+      A[Browser/Client] -- Reads from local PouchDb --> B[(Local PouchDb \n using Indexdb)]
+      B -- On state change, re-render Client --> D{Loads db state into \n Client}
+      D -- Created/selected note content passed into --> E[TipTap Editor]
+      E -- On save/delete event, store changes --> B
+    end
+  B -- Sync local changes to remote --> C[(Optional Remote PouchDb \n for two-way data syncing)]
+  C -- Sync remote changes to local --> B
 ```
 
 ## TODO github action flow (if there were tests)

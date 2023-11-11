@@ -1,3 +1,4 @@
+import { EditorStore } from "../../store";
 import {
   BUTTON_CONFIGURATION,
   instantiateEditorButtons,
@@ -35,11 +36,13 @@ async function renderEditor({
   topEditorMenu,
   floatingEditorMenu,
   selectedNoteId,
+  editorContent,
 }: {
   editorElement: Element;
   topEditorMenu: Element;
   floatingEditorMenu: Element;
   selectedNoteId: string | null;
+  editorContent?: string;
 }): Promise<Editor> {
   const editor = new Editor({
     element: editorElement,
@@ -76,7 +79,12 @@ async function renderEditor({
             : false,
       }),
     ],
-    content: "<p>Issue selecting note</p>", // BUG/TODO: with undo, this is always initial state. So do not set it this way! If we can't select a note, don't render the editor
+    content: editorContent ?? "<p>Issue selecting note</p>", // BUG/TODO: with undo, this is always initial state. So do not set it this way! If we can't select a note, don't render the editor
+    onUpdate: ({ editor }) => {
+      if (EditorStore.isDirty) return;
+      const currentContent = editor.getHTML();
+      EditorStore.isDirty = currentContent !== editorContent;
+    },
     onTransaction: ({ editor }) => {
       /**
        * onTransaction tracks cursor position
@@ -133,9 +141,11 @@ function renderTopMenu({
   // it is appended to the end for now
   topEditorMenu.appendChild(nonConfigButtonContainer);
   const buttons = [
+    // TODO: remove editor passed in here, potentially
+    // editor could be moved to a Store
     renderUndoButton(editor),
     renderRedoButton(editor),
-    renderSaveButton(editor),
+    renderSaveButton(),
     selectedNoteId && renderDeleteButton(selectedNoteId),
   ];
   buttons.forEach(
