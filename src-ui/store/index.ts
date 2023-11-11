@@ -53,12 +53,14 @@ interface EditorStore {
   isDirty: boolean;
 }
 
+type EditorStoreKey = "isDirty";
+
 const EditorStore = new Proxy(
   {
     isDirty: false,
   },
   {
-    set(target: EditorStore, key, value) {
+    set(target: EditorStore, key: EditorStoreKey, value) {
       (target[key] as any) = value;
       console.log(`Setting key to ${value}}`);
       return true;
