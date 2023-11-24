@@ -19,7 +19,7 @@ As a desktop app using Tauri or on the browser
 
 ## Architecture
 
-This application uses vanilla HTML & Javascript (TypeScript) to keep the UI as easily maintainable as possible with as few as possible dependencies to upkeep. Keeping up with multiple dependencies becomes a major time commitment that I want to avoid. This application is built to be as simple as possible.
+This application uses vanilla HTML & Javascript (TypeScript) to keep the project with as few dependencies as possible. Upgrading dependencies versions is a major time commitment that I want to avoid. This application is built to be as simple as possible.
 
 Decisions for simplicity:
 
@@ -27,6 +27,7 @@ Decisions for simplicity:
 - The UI always renders the exact state from PouchDb
 - TipTap is utilized for the main interactivity
 - When a state-change occurs, the client is re-rendered with the latest data
+- Using the Proxy approach for the state stores
 
 By going with this approach, the App's goal is to seamlessly connect PouchDb note state and the writing Editor's state.
 
@@ -34,7 +35,9 @@ The UI contains a note list and mechanics for creating, selecting, and deleting 
 
 (TODO) For portability, this repo contains a docker container for setting up a remote PouchDb with instructions
 
-### Flow chart on the data flow
+### Basic app structure and data flow
+
+(TODO) restructure this diagram so it relates back into the A the [Browser/Client]
 
 ```mermaid
 flowchart TD
