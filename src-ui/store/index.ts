@@ -62,7 +62,6 @@ const EditorStore = new Proxy(
   {
     set(target: EditorStore, key: EditorStoreKey, value) {
       (target[key] as any) = value;
-      console.log(`Setting key to ${value}}`);
       return true;
     },
   }

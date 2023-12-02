@@ -3,15 +3,13 @@
  * - UI/UX polish
  *   - error notification (in footer)
  *   - checkbox styling is wrong
- *   - window resizing of main button toolbar
- *   - If the modal is open, other keyboard events shouldn't work (like ctrl+s to save)
- *   - If the modal is open, the floating menu should not render (it has higher z-index than modal)
+ *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
+ *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
  *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
- * - Code Quality:
+ * - Code Quality (before release):
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
- *   - test with moving Editor to a proxy store to remove 'prop' drilling/dependency injection
- * - Quality of Life
+ * - Features: Quality of Life
  *   - ability to rename note titles
  *   - auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts

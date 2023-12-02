@@ -183,6 +183,7 @@ button.isActive {
 
 #editor-top-menu {
   display: flex;
+  flex-wrap: wrap;
   padding: 0.5em;
   border-bottom: var(--outline-color) 0.15em solid;
   margin-bottom: 1em;
@@ -190,7 +191,7 @@ button.isActive {
 
 #editor-top-menu > div {
   display: flex;
-  margin: 0 0.5em;
+  margin: 0.15em 0.5em;
 }
 
 #editor-top-menu > div > button {

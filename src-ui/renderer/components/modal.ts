@@ -1,5 +1,5 @@
 /**
- * Renders a modal with the given title and content
+ * Renders a modal with the given title and content.
  * Handles open and close events along with trapping focus inside the modal
  */
 function renderModal({
