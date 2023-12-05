@@ -40,6 +40,6 @@
     "@tauri-apps/cli": "1.5.6",
     "@types/pouchdb-browser": "6.1.5",
     "typescript": "5.3.2",
-    "vite": "5.0.2"
+    "vite": "5.0.5"
   }
 }
