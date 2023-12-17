@@ -79,7 +79,7 @@ async function renderEditor({
             : false,
       }),
     ],
-    content: editorContent ?? "<p>Issue selecting note</p>", // BUG/TODO: with undo, this is always initial state. So do not set it this way! If we can't select a note, don't render the editor
+    content: editorContent ?? "<p>Issue selecting note</p>",
     onUpdate: ({ editor }) => {
       if (EditorStore.isDirty) return;
       const currentContent = editor.getHTML();
@@ -104,6 +104,16 @@ async function renderEditor({
 
   renderTopMenu({ editor, topEditorMenu, selectedNoteId });
   renderFloatingMenu(editor, floatingEditorMenu);
+
+  // TODO: only set these IF we're selecting a new note
+  // if the same note is active, then we don't want to reset
+  // pointer positioning (like on a save event, otherwise it's awkward)
+
+  // reset editor scroll position
+  editorElement.scrollTop = 0;
+  // focus on editor
+  editor.commands.focus("start");
+
   return editor;
 }
 

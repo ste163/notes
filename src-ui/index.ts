@@ -11,6 +11,8 @@
  *   - try/catch blocks per component. Will make debugging much easier
  * - Features: Quality of Life
  *   - ability to rename note titles
+ *   - sort note list by last updated or name
+ *   - ONLY the editor content should scroll, not the entire page.
  *   - auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
@@ -18,11 +20,7 @@
  */
 
 import { renderEditor } from "./renderer/editor";
-import {
-  renderClient,
-  renderGetStarted,
-  renderSidebarNoteList,
-} from "./renderer";
+import { renderBaseElements, renderGetStarted } from "./renderer";
 import { Database } from "./db";
 import { Editor } from "@tiptap/core";
 import { EditorStore, StatusStore } from "./store";
@@ -105,6 +103,12 @@ window.addEventListener("select-note", async (event) => {
   dispatchEvent(new Event("refresh-client"));
 });
 
+// TODO: save this in the db or local storage and then set this on app load
+window.addEventListener("sort-notes", async (event) => {
+  const { sort } = (event as CustomEvent)?.detail;
+  console.log(sort);
+});
+
 /**
  * All events related to running the app have been created.
  * Initial file structure state has been setup.
@@ -117,9 +121,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 /**
- * Main app lifecycle function.
- * Renders the stateless client
- * then decides what to render based on passed-in note state
+ * Main app lifecycle, refresh based on latest state
  */
 async function refreshClient({
   notes,
@@ -134,12 +136,8 @@ async function refreshClient({
   if (selectedNoteId) {
     StatusStore.lastSavedDate = notes[selectedNoteId].updatedAt;
   }
-  const {
-    sidebarElement,
-    editorElement,
-    editorTopMenuElement,
-    editorFloatingMenuElement,
-  } = renderClient();
+  const { editorElement, editorTopMenuElement, editorFloatingMenuElement } =
+    renderBaseElements(notes);
 
   // set main element content based on note state
   if (!Object.keys(notes).length) {
@@ -147,8 +145,6 @@ async function refreshClient({
     renderGetStarted(editorElement);
     return;
   }
-  // notes exist, render state-based components
-  renderSidebarNoteList(sidebarElement, notes);
 
   editor = await renderEditor({
     selectedNoteId,
@@ -162,17 +158,6 @@ async function refreshClient({
     selector: `#${selectedNoteId}-note-select-container`,
     type: "select-note",
   });
-
-  // TODO: these should probably
-  // be moved to renderEditor as it is based
-  // directly on the editor state
-  //
-  // reset editor scroll position
-  editorElement.scrollTop = 0;
-  // focus on editor
-  // TODO: only focus on the start if we're selecting a NEW note
-  // otherwise, focus at the end of the document.
-  editor.commands.focus("start");
 }
 
 async function saveNote() {

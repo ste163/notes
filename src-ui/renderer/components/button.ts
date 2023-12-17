@@ -4,6 +4,7 @@ interface Button {
   className?: string;
   icon?: string;
   text?: string;
+  html?: string; // if this is passed in, ignores icon and text and renders the html
 }
 
 /**
@@ -16,8 +17,9 @@ const renderButton = (button: Button) => {
   if (button.className) element.className = button.className;
   // by setting innerHtml then appending, the icon is always
   // on the left, with text on right
-  if (button.icon) element.innerHTML = button.icon;
-  if (button.text) element.append(button.text);
+  if (button.icon && !button.html) element.innerHTML = button.icon;
+  if (button.text && !button.html) element.append(button.text);
+  if (button.html) element.innerHTML = button.html;
   return element;
 };
 

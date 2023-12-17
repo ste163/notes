@@ -181,6 +181,10 @@ button.isActive {
   color: black;
 }
 
+.select-note-date {
+  font-size: x-small;
+}
+
 #editor-top-menu {
   display: flex;
   flex-wrap: wrap;

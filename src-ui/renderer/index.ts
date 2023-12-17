@@ -1,3 +1,2 @@
-export { renderClient } from "./client";
+export { renderBaseElements } from "./base";
 export { renderGetStarted } from "./get-started";
-export { renderSidebarNoteList } from "./sidebar-note-list";
