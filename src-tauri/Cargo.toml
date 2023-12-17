@@ -1,5 +1,5 @@
 [package]
-name = "untitled-notes-app"
+name = "notes"
 version = "0.0.0"
 description = "Tauri + Tiptap notes app"
 authors = ["you"]

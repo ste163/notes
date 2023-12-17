@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "untitled-notes-app",
+    "productName": "notes",
     "version": "0.0.0"
   },
   "tauri": {
@@ -47,7 +47,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "untitled-notes-app",
+        "title": "notes",
         "width": 800,
         "height": 600
       }

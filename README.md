@@ -1,4 +1,4 @@
-# untitled-notes-app
+# notes
 
 Vanilla JS notes app using PouchDb for local and remote data storage
 
