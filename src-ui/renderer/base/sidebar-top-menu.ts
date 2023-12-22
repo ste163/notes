@@ -4,7 +4,7 @@ import { createEvent } from "../../events";
 /**
  * Renders sidebar without note state: only the title and create note functionality
  */
-function renderSidebar(sidebarContainer: Element): void {
+function renderSidebarTopMenu(sidebarContainer: Element): void {
   sidebarContainer.appendChild(
     renderButton({
       title: "Create note",
@@ -59,4 +59,4 @@ function renderNoteInput(sidebarContainer: Element) {
   inputElement?.focus();
 }
 
-export { renderSidebar };
+export { renderSidebarTopMenu };

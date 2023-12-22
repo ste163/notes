@@ -1,6 +1,6 @@
-import { renderSidebar } from "./sidebar";
-import { renderFooter } from "./footer";
+import { renderSidebarTopMenu } from "./sidebar-top-menu";
 import { renderSidebarNoteList } from "./sidebar-note-list";
+import { renderFooter } from "./footer";
 import type { Note } from "../../types";
 
 /**
@@ -51,7 +51,7 @@ function renderBaseElements(notes: Record<string, Note>) {
   )
     throw new Error("Missing required HTML elements");
 
-  renderSidebar(sidebarTopMenuElement);
+  renderSidebarTopMenu(sidebarTopMenuElement);
   renderSidebarNoteList(sidebarElement, notes);
   renderFooter(footerElement);
 
