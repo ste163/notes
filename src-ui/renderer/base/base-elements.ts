@@ -22,7 +22,9 @@ function renderBaseElements(notes: Record<string, Note>) {
         </div>
       </div>
     </div>
-    <div id="sidebar"></div>
+    <div id="sidebar">
+      <div id="sidebar-top-menu"></div>
+    </div>
     <main>
       <div id="editor-top-menu"></div>
       <div id="editor-floating-menu"></div>
@@ -31,6 +33,7 @@ function renderBaseElements(notes: Record<string, Note>) {
     <footer></footer>
     `;
   const sidebarElement = document.querySelector("#sidebar");
+  const sidebarTopMenuElement = document.querySelector("#sidebar-top-menu");
   const footerElement = document.querySelector("footer");
   const editorTopMenuElement = document.querySelector("#editor-top-menu");
   const editorFloatingMenuElement = document.querySelector(
@@ -40,6 +43,7 @@ function renderBaseElements(notes: Record<string, Note>) {
 
   if (
     !sidebarElement ||
+    !sidebarTopMenuElement ||
     !footerElement ||
     !editorTopMenuElement ||
     !editorFloatingMenuElement ||
@@ -47,12 +51,13 @@ function renderBaseElements(notes: Record<string, Note>) {
   )
     throw new Error("Missing required HTML elements");
 
-  renderSidebar(sidebarElement);
+  renderSidebar(sidebarTopMenuElement);
   renderSidebarNoteList(sidebarElement, notes);
   renderFooter(footerElement);
 
   return {
     sidebarElement,
+    sidebarTopMenuElement,
     editorElement,
     editorTopMenuElement,
     editorFloatingMenuElement,

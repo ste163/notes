@@ -26,10 +26,13 @@ function renderSidebar(sidebarContainer: Element): void {
 function renderNoteInput(sidebarContainer: Element) {
   const containerClass = "create-note-input-container";
   const isInputAlreadyRendered = document.querySelector(`.${containerClass}`);
-  if (isInputAlreadyRendered) return;
+  if (isInputAlreadyRendered) {
+    isInputAlreadyRendered.remove();
+    return;
+  }
   const input = `
       <div class="${containerClass}">
-        <input class="note-input" title="Input note filename title" placeholder="note-title" />
+        <input class="note-input" title="Input note title" placeholder="Note title" />
       </div>
     `;
   sidebarContainer.insertAdjacentHTML("beforeend", input);

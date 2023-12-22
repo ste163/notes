@@ -259,7 +259,6 @@ function instantiateEditorButtons(editor: Editor) {
 /**
  * Render functions for the more complex editor buttons
  */
-
 function renderSaveButton() {
   return renderButton({
     title: "Save note",

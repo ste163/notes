@@ -135,11 +135,7 @@ button.isActive {
   border-right: var(--outline-color) 0.15em solid;
   grid-area: sidebar;
   padding-right: 0.5em;
-}
-
-#sidebar > h1 {
-  font-size: 1em;
-  margin-left: 0.5em;
+  width: 10em;
 }
 
 #sidebar > button {
@@ -148,13 +144,24 @@ button.isActive {
   font-size: 0.9em;
 }
 
+#sidebar-top-menu {
+  margin: 1em;
+}
+
 .create-note-input-container {
   display: flex;
-  width: min-content;
+  flex-direction: column;
 }
 
 .create-note-input-container > input {
-  max-width: 60%;
+  max-width: 100%;
+  margin: 0.5em 0;
+  border: var(--outline-color) 0.15em solid;
+  padding: 0.5em;
+}
+
+.create-note-input-container > button {
+  align-self: baseline;
 }
 
 .note-select-container {
