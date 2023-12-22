@@ -11,7 +11,6 @@
  *   - try/catch blocks per component. Will make debugging much easier
  * - Features: Quality of Life
  *   - ability to rename note titles
- *   - sort note list by last updated or name
  *   - ONLY the editor content should scroll, not the entire page.
  *   - auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
@@ -101,12 +100,6 @@ window.addEventListener("select-note", async (event) => {
   const { id } = (event as CustomEvent)?.detail?.note;
   selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
-});
-
-// TODO: save this in the db or local storage and then set this on app load
-window.addEventListener("sort-notes", async (event) => {
-  const { sort } = (event as CustomEvent)?.detail;
-  console.log(sort);
 });
 
 /**
