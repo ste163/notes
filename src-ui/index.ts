@@ -11,11 +11,13 @@
  *   - try/catch blocks per component. Will make debugging much easier
  * - Features: Quality of Life
  *   - ability to rename note titles
- *   - ONLY the editor content should scroll, not the entire page.
- *   - auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - (later) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
  *   - setup the remote db that connects to the docker container
+ * - DEPLOYMENT
+ *   - setup deployment for UI only to browsers (no remote db access)
+ *   - setup deployment for tauri app
  */
 
 import { renderEditor } from "./renderer/editor";
@@ -62,7 +64,7 @@ window.addEventListener("refresh-client", async () => {
      * However, if slow downs become noticeable, this would be a place to optimize.
      */
     const sortedNotes = Object.values(notes).sort((a, b) => {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
     selectedNoteId = sortedNotes[0]?._id;
   }
