@@ -2,6 +2,8 @@ import { EditorStore } from "../../store";
 import {
   BUTTON_CONFIGURATION,
   instantiateEditorButtons,
+  renderDeleteButton,
+  renderSaveButton,
 } from "./editor-buttons";
 import { Editor } from "@tiptap/core";
 import FloatingMenu from "@tiptap/extension-floating-menu";
@@ -21,12 +23,6 @@ import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 import History from "@tiptap/extension-history";
-import {
-  renderDeleteButton,
-  renderRedoButton,
-  renderSaveButton,
-  renderUndoButton,
-} from "../components";
 
 /**
  * Instantiates the editor and returns the instance.
@@ -152,9 +148,7 @@ function renderTopMenu({
   topEditorMenu.appendChild(nonConfigButtonContainer);
   const buttons = [
     // TODO: remove editor passed in here, potentially
-    // editor could be moved to a Store
-    renderUndoButton(editor),
-    renderRedoButton(editor),
+    // editor could be moved to a Store?
     renderSaveButton(),
     selectedNoteId && renderDeleteButton(selectedNoteId),
   ];

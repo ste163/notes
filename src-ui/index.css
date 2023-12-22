@@ -28,6 +28,7 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
+  overflow-y: hidden;
 }
 
 main {
@@ -204,8 +205,7 @@ button.isActive {
 
 #editor {
   flex-grow: 1;
-  height: inherit;
-  overflow-y: scroll;
+  overflow-y: -webkit-paged-y;
 }
 
 #editor-floating-menu {

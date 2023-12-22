@@ -8,7 +8,6 @@ function renderSidebar(sidebarContainer: Element): void {
   sidebarContainer.appendChild(
     renderButton({
       title: "Create note",
-
       onClick: () => renderNoteInput(sidebarContainer),
       html: `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

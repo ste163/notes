@@ -24,7 +24,7 @@ function renderBaseElements(notes: Record<string, Note>) {
     </div>
     <div id="sidebar"></div>
     <main>
-      <div id="editor-top-menu"></div>     
+      <div id="editor-top-menu"></div>
       <div id="editor-floating-menu"></div>
       <div id="editor"></div>
     </main>
