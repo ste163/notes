@@ -1,3 +1,4 @@
+import { NoteStore } from "store";
 import { renderSidebarTopMenu } from "./sidebar-top-menu";
 import { renderSidebarNoteList } from "./sidebar-note-list";
 import { renderFooter } from "./footer";
@@ -25,7 +26,11 @@ function renderBaseElements() {
       <div id="sidebar-top-menu"></div>
     </div>
     <main>
-      <div id="editor-top-menu"></div>
+      ${
+        Object.values(NoteStore?.notes)?.length
+          ? '<div id="editor-top-menu"></div>'
+          : ""
+      }
       <div id="editor-floating-menu"></div>
       <div id="editor"></div>
     </main>
@@ -44,7 +49,6 @@ function renderBaseElements() {
     !sidebarElement ||
     !sidebarTopMenuElement ||
     !footerElement ||
-    !editorTopMenuElement ||
     !editorFloatingMenuElement ||
     !editorElement
   )
