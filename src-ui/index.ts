@@ -29,7 +29,6 @@ import { Database } from "database";
 import { createEvent } from "event";
 import { EditorStore, StatusStore } from "store";
 import type { Note } from "types";
-import type { Editor } from "@tiptap/core";
 
 // top-level app state (keep as small as possible)
 // TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store if it's used app-wide
@@ -37,7 +36,6 @@ import type { Editor } from "@tiptap/core";
 // It would give me access to the state anywhere, so it'd be better.
 // that state is only ever set here, so it's easier to read
 let database: Database;
-let editor: Editor;
 let notes: Record<string, Note> = {};
 let selectedNoteId: null | string = null;
 
@@ -47,9 +45,9 @@ let selectedNoteId: null | string = null;
 document.addEventListener("keydown", (event) => {
   if (event.ctrlKey && event.key === "s") {
     event.preventDefault(); // prevent default save behavior
-    editor &&
+    EditorStore.editor &&
       createEvent("save-note", {
-        note: { content: editor.getHTML() },
+        note: { content: EditorStore.editor.getHTML() },
       }).dispatch();
   }
 });
@@ -149,7 +147,7 @@ async function refreshClient({
 
   // NOTE: so if the
 
-  editor = await renderEditor({
+  EditorStore.editor = await renderEditor({
     selectedNoteId,
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
@@ -164,9 +162,10 @@ async function refreshClient({
 }
 
 async function saveNote() {
-  if (!selectedNoteId) throw new Error("No note selected to save");
+  if (!selectedNoteId || !EditorStore.editor)
+    throw new Error("No note selected to save or no editor instance");
   const note = notes[selectedNoteId];
-  const content = editor.getHTML();
+  const content = EditorStore.editor.getHTML();
   note.content = content;
   await database.put(note);
 }

@@ -1,4 +1,4 @@
-import { Editor } from "@tiptap/core";
+import { EditorStore } from "store";
 import { createEvent } from "event";
 import { renderModal, renderButton } from "components";
 import type { Button } from "components";
@@ -21,7 +21,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "bold",
     className: "menu-button-bold",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => editor.chain().focus().toggleBold().run(),
+    onClick: () => EditorStore.editor?.chain().focus().toggleBold().run(),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Bold</title>
@@ -34,7 +34,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "italic",
     className: "menu-button-italic",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => editor.chain().focus().toggleItalic().run(),
+    onClick: () => EditorStore.editor?.chain().focus().toggleItalic().run(),
     html: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <title>Italic</title>
@@ -48,7 +48,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "underline",
     className: "menu-button-underline",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => editor.chain().focus().toggleUnderline().run(),
+    onClick: () => EditorStore.editor?.chain().focus().toggleUnderline().run(),
     html: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <title>Underline</title>
@@ -62,7 +62,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "strike",
     className: "menu-button-strike",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => editor.chain().focus().toggleStrike().run(),
+    onClick: () => EditorStore.editor?.chain().focus().toggleStrike().run(),
     html: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
       <title>Strike-through</title>
@@ -77,8 +77,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 1 },
     className: "menu-button-h1",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) =>
-      editor.chain().focus().toggleHeading({ level: 1 }).run(),
+    onClick: () =>
+      EditorStore.editor?.chain().focus().toggleHeading({ level: 1 }).run(),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Heading 1</title>
@@ -92,8 +92,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 2 },
     className: "menu-button-h2",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) =>
-      editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    onClick: () =>
+      EditorStore.editor?.chain().focus().toggleHeading({ level: 2 }).run(),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Heading 2</title>
@@ -107,8 +107,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 3 },
     className: "menu-button-h3",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) =>
-      editor.chain().focus().toggleHeading({ level: 3 }).run(),
+    onClick: () =>
+      EditorStore.editor?.chain().focus().toggleHeading({ level: 3 }).run(),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Heading 3</title>
@@ -121,8 +121,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "bulletList",
     className: "menu-button-bullet-list",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => {
-      editor.chain().focus().toggleBulletList().run();
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleBulletList().run();
     },
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -136,8 +136,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "orderedList",
     className: "menu-button-ordered-list",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => {
-      editor.chain().focus().toggleOrderedList().run();
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleOrderedList().run();
     },
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -154,8 +154,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "taskList",
     className: "menu-button-task-list",
     isInFloatingMenu: true,
-    onClick: (editor: Editor) => {
-      editor.chain().focus().toggleTaskList().run();
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleTaskList().run();
     },
     html: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -170,8 +170,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "code",
     className: "menu-button-code",
     isInFloatingMenu: true,
-    onClick: (editor: Editor) => {
-      editor.chain().focus().toggleCode().run();
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleCode().run();
     },
     html: `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -186,8 +186,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: "codeBlock",
     className: "menu-button-code-block",
     isInFloatingMenu: true,
-    onClick: (editor: Editor) => {
-      editor.chain().focus().toggleCodeBlock().run();
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleCodeBlock().run();
     },
     html: `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 5,
     title: "Undo",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => editor.chain().focus().undo().run(),
+    onClick: () => EditorStore.editor?.chain().focus().undo().run(),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Undo</title>
@@ -212,7 +212,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 5,
     title: "Redo",
     isInFloatingMenu: false,
-    onClick: (editor: Editor) => editor.chain().focus().redo().run(),
+    onClick: () => EditorStore.editor?.chain().focus().redo().run(),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Redo</title>
@@ -227,27 +227,28 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
  * generates button instances depending on menu location.
  * This is not concerned with what happens to these buttons, only their creation
  */
-function instantiateEditorButtons(editor: Editor) {
+function instantiateEditorButtons() {
   const topEditorMenuButtons: HTMLButtonElement[] = [];
   const floatingEditorMenuButtons: HTMLButtonElement[] = [];
 
-  // TODO: consider using Editor state, so that this can be de-coupled from the Editor instance.
-  // That way each button is unique, and I can be more generic with this instantiator
-  const renderEditorButton = (editor: Editor, button: EditorButton) => {
-    return renderButton({
+  BUTTON_CONFIGURATION.forEach((button: EditorButton) => {
+    if (button.isInFloatingMenu)
+      floatingEditorMenuButtons.push(
+        renderButton({
+          title: button.title,
+          html: button.html,
+          className: button.className ?? "",
+          onClick: button.onClick,
+        })
+      );
+
+    // add data-group attribute for grouping buttons into containers
+    const renderedButton = renderButton({
       title: button.title,
       html: button.html,
       className: button.className ?? "",
-      onClick: () => editor && button.onClick(editor),
+      onClick: button.onClick,
     });
-  };
-
-  BUTTON_CONFIGURATION.forEach((button: EditorButton) => {
-    if (button.isInFloatingMenu)
-      floatingEditorMenuButtons.push(renderEditorButton(editor, button));
-
-    // add data-group attribute for grouping buttons into containers
-    const renderedButton = renderEditorButton(editor, button);
     renderedButton.dataset.group = button.group.toString();
     topEditorMenuButtons.push(renderedButton);
   });
