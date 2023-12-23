@@ -27,8 +27,14 @@ function renderModal({
     throw new Error("modal missing required element");
 
   modalTitle.innerText = title;
-  modalContent.appendChild(content);
 
+  // Remove any existing children in modalContent
+  // to clear its state
+  while (modalContent.firstChild) {
+    modalContent.removeChild(modalContent.firstChild);
+  }
+
+  modalContent.appendChild(content);
   openModal(modalBackdrop, modal, modalCloseButton);
 }
 

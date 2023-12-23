@@ -3,20 +3,22 @@
  * - UI/UX polish
  *   - error notification (in footer)
  *   - checkbox styling is wrong
+ *   - clean-up modal styling
  *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
  *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
  *   - close/open sidebar and remember state on re-open
- *   - mobile view support (related to close/open sidebar)
+ *   - (before web-only release) mobile view support (related to close/open sidebar)
  * - Code Quality (before release):
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
  * - Features: Quality of Life
  *   - ability to rename note titles
- *   - (later) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
  *   - setup the remote db that connects to the docker container
+ *   - set this up as an "extension"; ie, only ship the remote code if it's the desktop env
  * - DEPLOYMENT
  *   - setup deployment for UI only to browsers (no remote db access)
  *   - setup deployment for tauri app
@@ -31,6 +33,9 @@ import type { Editor } from "@tiptap/core";
 
 // top-level app state (keep as small as possible)
 // TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store if it's used app-wide
+// this is already global state, so moving to a proxy wouldn't really change anything.
+// It would give me access to the state anywhere, so it'd be better.
+// that state is only ever set here, so it's easier to read
 let database: Database;
 let editor: Editor;
 let notes: Record<string, Note> = {};
@@ -141,6 +146,8 @@ async function refreshClient({
     renderGetStarted(editorElement);
     return;
   }
+
+  // NOTE: so if the
 
   editor = await renderEditor({
     selectedNoteId,

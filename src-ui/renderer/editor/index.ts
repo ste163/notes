@@ -3,6 +3,7 @@ import {
   BUTTON_CONFIGURATION,
   instantiateEditorButtons,
   renderDeleteButton,
+  renderNoteSettingsButton,
   renderSaveButton,
 } from "./editor-buttons";
 import { Editor } from "@tiptap/core";
@@ -147,9 +148,10 @@ function renderTopMenu({
   // it is appended to the end for now
   topEditorMenu.appendChild(nonConfigButtonContainer);
   const buttons = [
-    // TODO: remove editor passed in here, potentially
-    // editor could be moved to a Store?
+    // TODO: see if these could just be moved to the editorButtons
+    // it would simplify the code here and make it easier to understand
     renderSaveButton(),
+    renderNoteSettingsButton(),
     selectedNoteId && renderDeleteButton(selectedNoteId),
   ];
   buttons.forEach(
