@@ -5,15 +5,13 @@ interface EditorStore {
   isDirty: boolean;
 }
 
-type EditorStoreKey = "isDirty";
-
 const EditorStore = new Proxy(
   {
     editor: null,
     isDirty: false,
   },
   {
-    set(target: EditorStore, key: EditorStoreKey, value) {
+    set(target: EditorStore, key: keyof EditorStore, value) {
       (target[key] as any) = value;
       return true;
     },

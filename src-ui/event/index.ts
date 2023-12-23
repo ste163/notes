@@ -1,10 +1,13 @@
 /**
  * Creates custom events with messages that can be dispatched when needed
  */
-function createEvent(eventName: string, message: { [key: string]: any }) {
-  const event = new CustomEvent(eventName, {
-    detail: message,
-  });
+function createEvent(eventName: string, message?: { [key: string]: any }) {
+  const event = new CustomEvent(
+    eventName,
+    message && {
+      detail: message,
+    }
+  );
   return { dispatch: () => dispatchEvent(event) };
 }
 

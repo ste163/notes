@@ -1,15 +1,8 @@
 /**
  * TODO:
- * revisit store state once
+ * revisit store once
  * I'm setting up the remote server
  */
-type StatusStoreKey =
-  // | "remoteUrl"
-  // | "isConnectedToRemote"
-  | "lastSavedDate"
-  // | "lastSyncedDate"
-  | "error";
-
 interface StatusStore {
   // remoteUrl: string;
   // isConnectedToRemote: boolean;
@@ -18,16 +11,6 @@ interface StatusStore {
   error: string;
 }
 
-/**
- * Global store for status state.
- *
- * Example usage:
- * ```
- * import { StatusStore } from "../store";
- * StatusStore.remoteUrl = "http://localhost:5984";
- * ```
- * This will trigger all components that use the store to re-render state
- */
 const StatusStore = new Proxy(
   {
     // remoteUrl: "",
@@ -37,13 +20,9 @@ const StatusStore = new Proxy(
     error: "",
   },
   {
-    set(target: StatusStore, key: StatusStoreKey, value) {
-      if (key === "lastSavedDate") {
-        value = new Date(value).toLocaleString();
-      }
-
+    set(target: StatusStore, key: keyof StatusStore, value) {
+      if (key === "lastSavedDate") value = new Date(value).toLocaleString();
       (target[key] as any) = value;
-      // trigger re-render of all components that use StatusStore
       return true;
     },
   }

@@ -32,13 +32,11 @@ async function renderEditor({
   editorElement,
   topEditorMenu,
   floatingEditorMenu,
-  selectedNoteId,
   editorContent,
 }: {
   editorElement: Element;
   topEditorMenu: Element;
   floatingEditorMenu: Element;
-  selectedNoteId: string | null;
   editorContent?: string;
 }): Promise<Editor> {
   const editor = new Editor({
@@ -99,8 +97,8 @@ async function renderEditor({
     },
   });
 
-  renderTopMenu({ editor, topEditorMenu, selectedNoteId });
-  renderFloatingMenu(editor, floatingEditorMenu);
+  renderTopMenu(topEditorMenu);
+  renderFloatingMenu(floatingEditorMenu);
 
   // TODO: only set these IF we're selecting a new note
   // if the same note is active, then we don't want to reset
@@ -118,16 +116,8 @@ async function renderEditor({
  * Renders the top-menu for the editor:
  * creates top-menu buttons and places them in correct containers
  */
-function renderTopMenu({
-  editor,
-  topEditorMenu,
-  selectedNoteId,
-}: {
-  editor: Editor;
-  topEditorMenu: Element;
-  selectedNoteId: string | null;
-}) {
-  const { topEditorMenuButtons } = instantiateEditorButtons(editor);
+function renderTopMenu(topEditorMenu: Element) {
+  const { topEditorMenuButtons } = instantiateEditorButtons();
   // setup editor buttons (bold, italic, etc.)
   topEditorMenuButtons.forEach((button) => {
     // get the button grouping from the data attribute
@@ -152,18 +142,15 @@ function renderTopMenu({
     // it would simplify the code here and make it easier to understand
     renderSaveButton(),
     renderNoteSettingsButton(),
-    selectedNoteId && renderDeleteButton(selectedNoteId),
+    renderDeleteButton(),
   ];
   buttons.forEach(
     (button) => button && nonConfigButtonContainer.appendChild(button)
   );
 }
 
-function renderFloatingMenu(
-  editor: Editor,
-  floatingEditorMenuContainer: Element
-) {
-  const { floatingEditorMenuButtons } = instantiateEditorButtons(editor);
+function renderFloatingMenu(floatingEditorMenuContainer: Element) {
+  const { floatingEditorMenuButtons } = instantiateEditorButtons();
   floatingEditorMenuButtons.forEach((button) => {
     floatingEditorMenuContainer.appendChild(button);
   });

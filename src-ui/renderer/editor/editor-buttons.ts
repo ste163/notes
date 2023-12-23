@@ -308,14 +308,13 @@ function renderNoteSettingsButton() {
  * Setups the delete confirmation modal and the rendered button
  * @returns button element
  */
-function renderDeleteButton(id: string) {
+function renderDeleteButton() {
   // setup modal first so that its content
   // can be rendered on the delete button click
   const modalDeleteButton = renderButton({
     title: "Delete note",
     html: "<span>Delete</span>",
-    onClick: () =>
-      id && createEvent("delete-note", { note: { id } }).dispatch(),
+    onClick: () => createEvent("delete-note").dispatch(),
   });
 
   modalDeleteButton.style.marginTop = "1rem";
