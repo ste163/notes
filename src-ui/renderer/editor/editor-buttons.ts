@@ -258,6 +258,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       `,
   },
   {
+    // TODO: remove this button and move delete into the setting button modal
     group: 6,
     isInFloatingMenu: false,
     title: "Delete note",

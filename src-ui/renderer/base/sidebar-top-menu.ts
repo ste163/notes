@@ -1,5 +1,5 @@
-import { renderButton } from "components";
 import { createEvent } from "event";
+import { renderButton } from "components";
 
 /**
  * Renders sidebar without note state: only the title and create note functionality

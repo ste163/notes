@@ -2,9 +2,7 @@ function renderGetStarted(editorContainer: Element): void {
   editorContainer.innerHTML = `
   <div>
     <h1>Get started</h1>
-    <ul>
-      <li>Create a note from the sidebar</li>
-    </ul>
+    <p>Create a note from the sidebar</p>
   </div>
   `;
 }

@@ -4,6 +4,7 @@
  *   - error notification (in footer)
  *   - checkbox styling is wrong
  *   - clean-up modal styling
+ *   - clean-up styling for get-started state (no notes state)
  *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
  *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
@@ -121,7 +122,7 @@ async function refreshClient(): Promise<void> {
       NoteStore.notes[NoteStore.selectedNoteId].updatedAt;
   }
   const { editorElement, editorTopMenuElement, editorFloatingMenuElement } =
-    renderBaseElements(NoteStore.notes);
+    renderBaseElements();
 
   // set main element content based on note state
   if (!Object.keys(NoteStore.notes).length || !NoteStore.selectedNoteId) {

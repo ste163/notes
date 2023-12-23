@@ -1,13 +1,12 @@
 import { renderSidebarTopMenu } from "./sidebar-top-menu";
 import { renderSidebarNoteList } from "./sidebar-note-list";
 import { renderFooter } from "./footer";
-import type { Note } from "types";
 
 /**
  * Render the stateless HTML structure for the application.
  * Returns the base elements for selecting
  */
-function renderBaseElements(notes: Record<string, Note>) {
+function renderBaseElements() {
   const body = document.querySelector("body");
   if (!body) throw new Error("Body Element not found. Exit client scaffolding");
   body.innerHTML = `
@@ -52,7 +51,7 @@ function renderBaseElements(notes: Record<string, Note>) {
     throw new Error("Missing required HTML elements");
 
   renderSidebarTopMenu(sidebarTopMenuElement);
-  renderSidebarNoteList(sidebarElement, notes);
+  renderSidebarNoteList(sidebarElement);
   renderFooter(footerElement);
 
   return {
