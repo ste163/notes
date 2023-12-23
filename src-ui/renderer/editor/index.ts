@@ -2,9 +2,6 @@ import { EditorStore } from "store";
 import {
   BUTTON_CONFIGURATION,
   instantiateEditorButtons,
-  renderDeleteButton,
-  renderNoteSettingsButton,
-  renderSaveButton,
 } from "./editor-buttons";
 import { Editor } from "@tiptap/core";
 import FloatingMenu from "@tiptap/extension-floating-menu";
@@ -113,8 +110,7 @@ async function renderEditor({
 }
 
 /**
- * Renders the top-menu for the editor:
- * creates top-menu buttons and places them in correct containers
+ * Instantiates top-menu buttons and organizes them into their container groups
  */
 function renderTopMenu(topEditorMenu: Element) {
   const { topEditorMenuButtons } = instantiateEditorButtons();
@@ -132,21 +128,6 @@ function renderTopMenu(topEditorMenu: Element) {
     topEditorMenu.appendChild(groupContainer);
     groupContainer.appendChild(button);
   });
-
-  // add non-editor config buttons
-  const nonConfigButtonContainer = document.createElement("div");
-  // it is appended to the end for now
-  topEditorMenu.appendChild(nonConfigButtonContainer);
-  const buttons = [
-    // TODO: see if these could just be moved to the editorButtons
-    // it would simplify the code here and make it easier to understand
-    renderSaveButton(),
-    renderNoteSettingsButton(),
-    renderDeleteButton(),
-  ];
-  buttons.forEach(
-    (button) => button && nonConfigButtonContainer.appendChild(button)
-  );
 }
 
 function renderFloatingMenu(floatingEditorMenuContainer: Element) {
