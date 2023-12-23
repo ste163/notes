@@ -8,6 +8,8 @@ import { renderFooter } from "./footer";
  * Returns the base elements for selecting
  */
 function renderBaseElements() {
+  const notesExist = Object.values(NoteStore?.notes)?.length;
+
   const body = document.querySelector("body");
   if (!body) throw new Error("Body Element not found. Exit client scaffolding");
   body.innerHTML = `
@@ -26,11 +28,7 @@ function renderBaseElements() {
       <div id="sidebar-top-menu"></div>
     </div>
     <main>
-      ${
-        Object.values(NoteStore?.notes)?.length
-          ? '<div id="editor-top-menu"></div>'
-          : ""
-      }
+      ${notesExist ? '<div id="editor-top-menu"></div>' : ""}
       <div id="editor-floating-menu"></div>
       <div id="editor"></div>
     </main>
@@ -56,7 +54,7 @@ function renderBaseElements() {
 
   renderSidebarTopMenu(sidebarTopMenuElement);
   renderSidebarNoteList(sidebarElement);
-  renderFooter(footerElement);
+  if (notesExist) renderFooter(footerElement);
 
   return {
     sidebarElement,

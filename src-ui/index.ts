@@ -89,6 +89,8 @@ window.addEventListener("delete-note", async () => {
   const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId];
   await database.delete(noteToDelete);
   NoteStore.selectedNoteId = null; // reset selected note as it was deleted
+  // TODO: if all notes have been deleted, null the lastSaved state
+  // in the StatusStore
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -125,7 +127,11 @@ async function refreshClient(): Promise<void> {
     renderBaseElements();
 
   // set main element content based on note state
-  if (!Object.keys(NoteStore.notes).length || !NoteStore.selectedNoteId) {
+  if (
+    !Object.keys(NoteStore.notes).length ||
+    !NoteStore.selectedNoteId ||
+    !editorTopMenuElement
+  ) {
     StatusStore.lastSavedDate = null;
     renderGetStarted(editorElement);
     return;
