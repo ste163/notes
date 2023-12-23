@@ -1,4 +1,4 @@
-import { EditorStore } from "../../store";
+import { EditorStore } from "store";
 import {
   BUTTON_CONFIGURATION,
   instantiateEditorButtons,

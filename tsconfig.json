@@ -12,7 +12,15 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "paths": {
+      "components": ["./src-ui/renderer/components"],
+      "database": ["./src-ui/database"],
+      "event": ["./src-ui/event"],
+      "renderer": ["./src-ui/renderer"],
+      "store": ["./src-ui/store"],
+      "types": ["./src-ui/types"]
+    }
   },
   "include": ["./src-ui"]
 }

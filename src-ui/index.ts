@@ -6,6 +6,8 @@
  *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
  *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
+ *   - close/open sidebar and remember state on re-open
+ *   - mobile view support (related to close/open sidebar)
  * - Code Quality (before release):
  *   - clean-up todos
  *   - try/catch blocks per component. Will make debugging much easier
@@ -20,13 +22,12 @@
  *   - setup deployment for tauri app
  */
 
-import { renderEditor } from "./renderer/editor";
-import { renderBaseElements, renderGetStarted } from "./renderer";
-import { Database } from "./db";
-import { Editor } from "@tiptap/core";
-import { EditorStore, StatusStore } from "./store";
-import { createEvent } from "./events";
-import type { Note } from "./types";
+import { renderBaseElements, renderGetStarted, renderEditor } from "renderer";
+import { Database } from "database";
+import { createEvent } from "event";
+import { EditorStore, StatusStore } from "store";
+import type { Note } from "types";
+import type { Editor } from "@tiptap/core";
 
 // top-level app state (keep as small as possible)
 // TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store if it's used app-wide

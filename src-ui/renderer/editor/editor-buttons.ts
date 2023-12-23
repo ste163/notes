@@ -1,7 +1,7 @@
 import { Editor } from "@tiptap/core";
-import { Button, renderButton } from "../components/button";
-import { createEvent } from "../../events";
-import { renderModal } from "../components/modal";
+import { createEvent } from "event";
+import { renderModal, renderButton } from "components";
+import type { Button } from "components";
 
 interface EditorButton extends Button {
   group: number; // used for placing in which div for organization

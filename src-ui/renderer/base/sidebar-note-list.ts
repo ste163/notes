@@ -1,6 +1,6 @@
-import type { Note } from "../../types";
-import { createEvent } from "../../events";
-import { renderButton } from "../components";
+import type { Note } from "types";
+import { createEvent } from "event";
+import { renderButton } from "components";
 
 /**
  * Renders the note list that can

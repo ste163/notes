@@ -1,7 +1,7 @@
 import { renderSidebarTopMenu } from "./sidebar-top-menu";
 import { renderSidebarNoteList } from "./sidebar-note-list";
 import { renderFooter } from "./footer";
-import type { Note } from "../../types";
+import type { Note } from "types";
 
 /**
  * Render the stateless HTML structure for the application.
