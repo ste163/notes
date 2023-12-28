@@ -1,6 +1,5 @@
 import { EditorStore } from "store";
-import { createEvent } from "event";
-import { renderModal, renderButton } from "components";
+import { renderButton } from "components";
 import { renderNoteDetailsModal } from "./note-details-modal";
 import type { Button } from "components";
 

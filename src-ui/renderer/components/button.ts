@@ -3,6 +3,7 @@ interface Button {
   onClick: (args: any) => void;
   className?: string;
   html?: string;
+  style?: Partial<CSSStyleDeclaration>;
 }
 
 /**
@@ -14,6 +15,13 @@ const renderButton = (button: Button) => {
   element.onclick = (args) => button.onClick(args);
   if (button.className) element.className = button.className;
   if (button.html) element.innerHTML = button.html;
+  if (button.style) {
+    for (const key in button.style) {
+      if (button.style.hasOwnProperty(key)) {
+        (element.style as any)[key] = (button.style as any)[key];
+      }
+    }
+  }
   return element;
 };
 

@@ -32,6 +32,9 @@ function renderNoteDetailsModal() {
         </svg>
         <span>Delete forever</span>`,
       onClick: () => createEvent("delete-note").dispatch(),
+      style: {
+        marginTop: "1em",
+      },
     })
   );
 
