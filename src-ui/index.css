@@ -43,6 +43,10 @@ main > h1 {
   margin-left: 1.5em;
 }
 
+h3 {
+  margin: 0.5em 0;
+}
+
 footer {
   font-size: small;
   grid-area: footer;
@@ -86,6 +90,10 @@ button:hover {
 button > svg {
   width: 1.2em;
   margin: 0.1em 0;
+}
+
+button > span {
+  margin-left: 0.25em;
 }
 
 button.isActive {

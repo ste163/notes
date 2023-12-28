@@ -15,8 +15,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--background-color);
-  border: 0.15em solid var(--outline-color);
-  border-radius: 0.2.5em;
+  border: 0.1em solid var(--outline-color);
+  border-radius: 0.25em;
   padding: 1em;
 }
 
@@ -24,6 +24,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 1.5em;
 }
 
 #modal-header > button {
@@ -36,4 +37,9 @@
 
 #modal-header > button:hover {
   background-color: transparent;
+}
+
+#modal-title {
+  margin: 0;
+  margin-right: 1em;
 }
