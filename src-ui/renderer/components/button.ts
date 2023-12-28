@@ -1,3 +1,5 @@
+import "./button.css";
+
 interface Button {
   title: string; // accessibility title for button
   onClick: (args: any) => void;

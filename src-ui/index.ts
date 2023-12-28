@@ -4,10 +4,8 @@
  *   - error notification (in footer)
  *   - checkbox styling is wrong
  *   - clean-up modal styling
- *   - clean-up styling for get-started state (no notes state)
  *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
- *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
  *   - close/open sidebar and remember state on re-open
  *   - (before web-only release) mobile view support (related to close/open sidebar)
  * - Code Quality (before release):
@@ -25,10 +23,10 @@
  *   - setup deployment for tauri app
  */
 
-import { renderBaseElements, renderGetStarted, renderEditor } from "renderer";
 import { Database } from "database";
 import { createEvent } from "event";
 import { NoteStore, EditorStore, StatusStore } from "store";
+import { renderBaseElements, renderGetStarted, renderEditor } from "renderer";
 
 // top-level app state (keep as small as possible)
 let database: Database;

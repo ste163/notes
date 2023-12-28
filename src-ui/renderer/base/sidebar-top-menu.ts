@@ -21,10 +21,16 @@ function renderSidebarTopMenu(sidebarContainer: Element): void {
   );
 }
 
+// TODO
+// make this input be create/edit based on
+// if a note is passed in. If a note is passed in,
+// then we're in the edit state
+// otherwise, we're in the create state
+
 /**
  * Renders the note input used only by the sidebar (currently).
  */
-function renderNoteInput(sidebarContainer: Element) {
+function renderNoteInput(parentContainer: Element) {
   const checkForAlreadyRenderedInput = () => {
     const isInputAlreadyRendered = document.querySelector(`.${containerClass}`);
     if (isInputAlreadyRendered) {
@@ -39,7 +45,7 @@ function renderNoteInput(sidebarContainer: Element) {
         <input class="note-input" title="Input note title" placeholder="Note title" />
       </div>
     `;
-  sidebarContainer.insertAdjacentHTML("beforeend", input);
+  parentContainer.insertAdjacentHTML("beforeend", input);
   const inputContainer = document.querySelector(`.${containerClass}`);
   const noteInputClass = "note-input";
 
