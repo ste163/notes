@@ -3,16 +3,14 @@
  * - UI/UX polish
  *   - error notification (in footer)
  *   - checkbox styling is wrong
- *   - clean-up modal styling
  *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
  *   - close/open sidebar and remember state on re-open
  *   - (before web-only release) mobile view support (related to close/open sidebar)
  * - Code Quality (before release):
  *   - clean-up todos
- *   - try/catch blocks per component. Will make debugging much easier
+ *   - try/catch blocks per component? Will make debugging much easier
  * - Features: Quality of Life
- *   - ability to rename note titles
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
@@ -28,8 +26,7 @@ import { createEvent } from "event";
 import { NoteStore, EditorStore, StatusStore } from "store";
 import { renderBaseElements, renderGetStarted, renderEditor } from "renderer";
 
-// top-level app state (keep as small as possible)
-let database: Database;
+let database: Database; // not using a Store because the database is only used here
 
 /**
  * Keyboard events
@@ -84,7 +81,7 @@ window.addEventListener("save-note", async () => {
 
 window.addEventListener("edit-note-title", async (event) => {
   const { title } = (event as CustomEvent)?.detail?.note;
-  if (!title || !NoteStore.selectedNoteId || !EditorStore.editor)
+  if (!title || !NoteStore.selectedNoteId)
     throw new Error("Unable to edit note title");
   const note = NoteStore.notes[NoteStore.selectedNoteId];
   note.title = title;
@@ -97,8 +94,6 @@ window.addEventListener("delete-note", async () => {
   const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId];
   await database.delete(noteToDelete);
   NoteStore.selectedNoteId = null; // reset selected note as it was deleted
-  // TODO: if all notes have been deleted, null the lastSaved state
-  // in the StatusStore
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -110,10 +105,9 @@ window.addEventListener("select-note", async (event) => {
 });
 
 /**
- * All events related to running the app have been created.
- * Initial file structure state has been setup.
- * The DOM has loaded.
- * Can be sure by this point the client is ready to render.
+ * By this point, all events related to running the app have been created:
+ * initial state has been setup, DOM has loaded, and
+ * client is ready to render.
  */
 window.addEventListener("DOMContentLoaded", async () => {
   database = new Database();
@@ -152,7 +146,7 @@ async function refreshClient(): Promise<void> {
     editorContent: NoteStore.notes[NoteStore.selectedNoteId]?.content,
   });
 
-  // set which note in the note-list is active
+  // set which note in the list is active
   toggleActiveClass({
     selector: `#${NoteStore.selectedNoteId}-note-select-container`,
     type: "select-note",
