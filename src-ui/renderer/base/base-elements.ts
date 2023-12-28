@@ -18,7 +18,7 @@ function renderBaseElements() {
         <div role="document">
           <header id="modal-header">
             <h2 id="modal-title"> Title</h2>
-            <button id="modal-close">X</button>
+            <button id="modal-close"></button>
           </header>
           <div id="modal-content"></div>
         </div>
