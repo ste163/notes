@@ -1,5 +1,6 @@
 import { createEvent } from "event";
 import { renderButton } from "components";
+import "./sidebar-top-menu.css";
 
 /**
  * Renders sidebar without note state: only the title and create note functionality
@@ -24,12 +25,15 @@ function renderSidebarTopMenu(sidebarContainer: Element): void {
  * Renders the note input used only by the sidebar (currently).
  */
 function renderNoteInput(sidebarContainer: Element) {
+  const checkForAlreadyRenderedInput = () => {
+    const isInputAlreadyRendered = document.querySelector(`.${containerClass}`);
+    if (isInputAlreadyRendered) {
+      isInputAlreadyRendered.remove();
+      return;
+    }
+  };
   const containerClass = "create-note-input-container";
-  const isInputAlreadyRendered = document.querySelector(`.${containerClass}`);
-  if (isInputAlreadyRendered) {
-    isInputAlreadyRendered.remove();
-    return;
-  }
+  checkForAlreadyRenderedInput();
   const input = `
       <div class="${containerClass}">
         <input class="note-input" title="Input note title" placeholder="Note title" />
@@ -38,10 +42,16 @@ function renderNoteInput(sidebarContainer: Element) {
   sidebarContainer.insertAdjacentHTML("beforeend", input);
   const inputContainer = document.querySelector(`.${containerClass}`);
   const noteInputClass = "note-input";
-  // add the save/create button to the input container
-  inputContainer?.appendChild(
+
+  const buttonContainer = document.createElement("div");
+  buttonContainer.className = "note-input-buttons";
+
+  inputContainer?.appendChild(buttonContainer);
+
+  // add the create button to the input container
+  buttonContainer?.appendChild(
     renderButton({
-      title: "Save file",
+      title: "Save note",
       html: "Save",
       onClick: () => {
         const input = document.querySelector(
@@ -53,9 +63,18 @@ function renderNoteInput(sidebarContainer: Element) {
       },
     })
   );
+  buttonContainer?.appendChild(
+    renderButton({
+      title: "Cancel creating",
+      html: "Cancel",
+      onClick: checkForAlreadyRenderedInput,
+    })
+  );
+
   const inputElement = document.querySelector(
     `.${noteInputClass}`
   ) as HTMLElement;
+
   inputElement?.focus();
 }
 

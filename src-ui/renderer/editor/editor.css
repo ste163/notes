@@ -1,0 +1,46 @@
+#editor-top-menu {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.5em;
+  border-bottom: var(--outline-color) 0.15em solid;
+  margin-bottom: 1em;
+}
+
+#editor-top-menu > div {
+  display: flex;
+  margin: 0.15em 0.5em;
+}
+
+#editor-top-menu > div > button {
+  margin: 0.1em;
+}
+
+#editor {
+  flex-grow: 1;
+  overflow-y: -webkit-paged-y;
+}
+
+#editor-floating-menu {
+  display: flex;
+}
+
+#editor-floating-menu > button {
+  margin: 0 0.1em;
+}
+
+/* TipTap/ProseMirror specific */
+.ProseMirror {
+  outline: none;
+  height: 100%;
+  overflow-y: scroll;
+  padding-left: 3em;
+  padding-right: 7em;
+}
+
+.code,
+.code-block {
+  background-color: #303030;
+  color: white;
+  padding: 0.5em;
+  border-radius: 0.3em;
+}

@@ -1,3 +1,5 @@
+import "./modal.css";
+
 /**
  * Renders a modal with the given title and content.
  * Handles open and close events along with trapping focus inside the modal

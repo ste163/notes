@@ -1,6 +1,7 @@
 import { NoteStore } from "store";
 import { createEvent } from "event";
 import { renderButton } from "components";
+import "./sidebar-note-list.css";
 
 /**
  * Renders the note list that can

@@ -21,6 +21,7 @@ import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 import History from "@tiptap/extension-history";
+import "./editor.css";
 
 /**
  * Instantiates the editor and returns the instance.
