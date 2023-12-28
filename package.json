@@ -8,7 +8,6 @@
     "start:dev:ui": "vite",
     "start:dev:tauri": "tauri dev",
     "start:production:ui": "npm run build:ui && vite preview",
-    "tauri": "tauri",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
