@@ -227,13 +227,17 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: "Note settings",
     isInFloatingMenu: false,
     onClick: () => {
+      // Write it here, then move to note-details-modal
+
       if (!NoteStore.selectedNoteId) throw new Error("No note selected");
       const { title, createdAt, updatedAt } =
         NoteStore.notes[NoteStore.selectedNoteId];
       const modalContent = document.createElement("div");
 
-      // TODO: make the title edit-able
-      // TODO: add delete note button (no modal, say "Delete Forever")
+      // TODO
+      // Have bold headings with the items beneath
+      // (the Title will be editable)
+      // then have a button at the bottom that says 'delete forever' with trashcan icon
 
       modalContent.innerHTML = `
         <ul>

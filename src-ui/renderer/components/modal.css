@@ -15,7 +15,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--background-color);
-  border-radius: 0.3em;
+  border: 0.15em solid var(--outline-color);
+  border-radius: 0.2.5em;
   padding: 1em;
 }
 
