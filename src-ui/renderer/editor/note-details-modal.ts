@@ -2,19 +2,18 @@ import { NoteStore } from "store";
 import { createEvent } from "event";
 import { renderButton, renderModal } from "components";
 
+const EDIT_NOTE_TITLE_CONTAINER = "edit-note-title-container";
+
 function renderNoteDetailsModal() {
   if (!NoteStore.selectedNoteId) throw new Error("No note selected");
   const { title, createdAt, updatedAt } =
     NoteStore.notes[NoteStore.selectedNoteId];
   const modalContent = document.createElement("div");
 
-  // TODO
-  // Have bold headings with the items beneath
-  // (the Title will be editable)
-
+  // setup modal structure
   modalContent.innerHTML = `
     <h3>Title</h3>
-    <div>${title}</div>
+    <div id="title-edit"></div>
     
     <h3>Created at</h3>
     <div>${new Date(createdAt).toLocaleString()}</div>
@@ -22,6 +21,7 @@ function renderNoteDetailsModal() {
     <h3>Last updated at</h3>
     <div>${new Date(updatedAt).toLocaleString()}</div>`;
 
+  // add delete button
   modalContent.appendChild(
     renderButton({
       title: "Delete note",
@@ -42,6 +42,96 @@ function renderNoteDetailsModal() {
     title: "Details",
     content: modalContent,
   });
+
+  // setup title-edit section
+  const container = document.querySelector("#title-edit");
+  if (!container) throw new Error("Missing title edit container");
+  renderTitleEdit(container, title);
+}
+
+function resetTitleEditContainer() {
+  // remove any existing title edit container
+  const titleEditContainer = document.querySelector(
+    `#${EDIT_NOTE_TITLE_CONTAINER}`
+  );
+  titleEditContainer?.remove(); // remove it from DOM as we will replace it with the input
+  // create the fresh container
+  const container = document.createElement("div");
+  container.id = EDIT_NOTE_TITLE_CONTAINER;
+  return container;
+}
+
+function renderTitleEdit(container: Element, title: string) {
+  const titleContainer = resetTitleEditContainer();
+  titleContainer.style.display = "flex";
+  titleContainer.style.alignItems = "center";
+
+  const titleSpan = document.createElement("span");
+  titleSpan.textContent = title;
+
+  titleContainer.appendChild(titleSpan);
+  titleContainer.appendChild(
+    renderButton({
+      title: "Edit",
+      html: "Edit",
+      onClick: () => {
+        renderTitleInput(container, title);
+      },
+      style: {
+        marginLeft: "0.5em",
+      },
+    })
+  );
+
+  container.append(titleContainer);
+}
+
+function renderTitleInput(container: Element, title: string) {
+  const titleContainer = resetTitleEditContainer();
+
+  const inputClass = "edit-note-input";
+  const input = `
+      <input class="${inputClass}" title="Edit note title" placeholder="Note title" value="${title}" />`;
+
+  titleContainer.innerHTML = input;
+
+  container.appendChild(titleContainer);
+
+  const buttonContainer = document.createElement("div");
+
+  buttonContainer.style.display = "flex";
+  buttonContainer.style.marginTop = "0.5em";
+
+  buttonContainer.appendChild(
+    renderButton({
+      title: "Save title",
+      html: "Save",
+      onClick: () => {
+        const input = document.querySelector(
+          `.${inputClass}`
+        ) as HTMLInputElement;
+        const title: string = input?.value;
+        if (!title) throw new Error("Unable to read title from input");
+        createEvent("edit-note-title", { note: { title } }).dispatch();
+      },
+      style: {
+        marginRight: "0.5em",
+      },
+    })
+  );
+  buttonContainer.appendChild(
+    renderButton({
+      title: "Cancel title edit",
+      html: "Cancel",
+      onClick: () => {
+        renderTitleEdit(container, title);
+      },
+    })
+  );
+
+  titleContainer.appendChild(buttonContainer);
+  const inputElement = document.querySelector(`.${inputClass}`) as HTMLElement;
+  inputElement?.focus();
 }
 
 export { renderNoteDetailsModal };

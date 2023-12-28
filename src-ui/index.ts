@@ -82,6 +82,16 @@ window.addEventListener("save-note", async () => {
   dispatchEvent(new Event("refresh-client"));
 });
 
+window.addEventListener("edit-note-title", async (event) => {
+  const { title } = (event as CustomEvent)?.detail?.note;
+  if (!title || !NoteStore.selectedNoteId || !EditorStore.editor)
+    throw new Error("Unable to edit note title");
+  const note = NoteStore.notes[NoteStore.selectedNoteId];
+  note.title = title;
+  await database.put(note);
+  dispatchEvent(new Event("refresh-client"));
+});
+
 window.addEventListener("delete-note", async () => {
   if (!NoteStore.selectedNoteId) throw new Error("No note selected to delete");
   const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId];

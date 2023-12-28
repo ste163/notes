@@ -62,6 +62,8 @@ p {
 input {
   font-size: small;
   max-width: intrinsic;
+  border: var(--outline-color) 0.15em solid;
+  padding: 0.5em;
 }
 
 #sidebar {
