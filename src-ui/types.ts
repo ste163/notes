@@ -7,4 +7,6 @@ interface Note {
   updatedAt: Date; // or string?
 }
 
-export type { Note };
+type Notes = Record<string, Note>;
+
+export type { Note, Notes };

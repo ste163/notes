@@ -1,0 +1,14 @@
+.create-note-input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.create-note-input-container > input {
+  max-width: 100%;
+  margin: 0.5em 0;
+}
+
+.note-input-buttons {
+  display: flex;
+  justify-content: space-between;
+}

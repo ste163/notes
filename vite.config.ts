@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 
-// https://vitejs.dev/config/
-export default defineConfig(async () => ({
+export default defineConfig({
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
   clearScreen: false,
@@ -9,6 +8,16 @@ export default defineConfig(async () => ({
   server: {
     port: 1420,
     strictPort: true,
+  },
+  resolve: {
+    alias: {
+      components: "/src-ui/renderer/components",
+      database: "/src-ui/database",
+      event: "/src-ui/event",
+      renderer: "/src-ui/renderer",
+      store: "/src-ui/store",
+      types: "/src-ui/types",
+    },
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
@@ -21,4 +30,4 @@ export default defineConfig(async () => ({
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
   },
-}));
+});

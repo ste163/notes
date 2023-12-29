@@ -1,0 +1,35 @@
+button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 0.3em;
+  border: 0.15em solid var(--outline-color);
+  padding: 0.3em 0.5em;
+
+  font-size: 0.9em;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  color: var(--outline-color);
+  background-color: var(--background-color);
+
+  transition: background-color 0.1s ease-in-out;
+}
+
+button:hover {
+  background-color: var(--active-color);
+}
+
+button > svg {
+  width: 1.2em;
+  margin: 0.1em 0;
+}
+
+button > span {
+  margin-left: 0.25em;
+}
+
+button.isActive {
+  background-color: var(--active-color);
+}

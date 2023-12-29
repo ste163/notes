@@ -5,36 +5,28 @@
  *   - checkbox styling is wrong
  *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
- *   - BUG: if there is no UNDO state, hitting undo causes error (disable button if no undo/redo state)
+ *   - close/open sidebar and remember state on re-open
+ *   - (before web-only release) mobile view support (related to close/open sidebar)
  * - Code Quality (before release):
  *   - clean-up todos
- *   - try/catch blocks per component. Will make debugging much easier
+ *   - try/catch blocks per component? Will make debugging much easier
  * - Features: Quality of Life
- *   - ability to rename note titles
- *   - auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
  *   - setup the remote db that connects to the docker container
+ *   - set this up as an "extension"; ie, only ship the remote code if it's the desktop env
+ * - DEPLOYMENT
+ *   - setup deployment for UI only to browsers (no remote db access)
+ *   - setup deployment for tauri app
  */
 
-import { renderEditor } from "./renderer/editor";
-import {
-  renderClient,
-  renderGetStarted,
-  renderSidebarNoteList,
-} from "./renderer";
-import { Database } from "./db";
-import { Editor } from "@tiptap/core";
-import { EditorStore, StatusStore } from "./store";
-import { createEvent } from "./events";
-import type { Note } from "./types";
+import { Database } from "database";
+import { createEvent } from "event";
+import { NoteStore, EditorStore, StatusStore } from "store";
+import { renderBaseElements, renderGetStarted, renderEditor } from "renderer";
 
-// top-level app state (keep as small as possible)
-// TODO: revisit notes and selectedNoteId state. Might be best to use a Proxy Store if it's used app-wide
-let database: Database;
-let editor: Editor;
-let notes: Record<string, Note> = {};
-let selectedNoteId: null | string = null;
+let database: Database; // not using a Store because the database is only used here
 
 /**
  * Keyboard events
@@ -42,9 +34,9 @@ let selectedNoteId: null | string = null;
 document.addEventListener("keydown", (event) => {
   if (event.ctrlKey && event.key === "s") {
     event.preventDefault(); // prevent default save behavior
-    editor &&
+    EditorStore.editor &&
       createEvent("save-note", {
-        note: { content: editor.getHTML() },
+        note: { content: EditorStore.editor.getHTML() },
       }).dispatch();
   }
 });
@@ -58,27 +50,27 @@ window.addEventListener("refresh-client", async () => {
    * by default it's by created_at,
    * but can easily be extended to sort by any note data
    */
-  notes = await database.getAll();
-  if (!selectedNoteId) {
+  NoteStore.notes = await database.getAll();
+  if (!NoteStore.selectedNoteId) {
     /**
      * To start, not calling the db again to get the most recent note.
      * However, if slow downs become noticeable, this would be a place to optimize.
      */
-    const sortedNotes = Object.values(notes).sort((a, b) => {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    const sortedNotes = Object.values(NoteStore.notes).sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
-    selectedNoteId = sortedNotes[0]?._id;
+    NoteStore.selectedNoteId = sortedNotes[0]?._id;
   }
   // reset global state
   EditorStore.isDirty = false;
 
-  await refreshClient({ notes, selectedNoteId });
+  await refreshClient();
 });
 
 window.addEventListener("create-note", async (event) => {
   const { title, content = "" } = (event as CustomEvent)?.detail?.note;
   const id = await database.put({ title, content });
-  selectedNoteId = id;
+  NoteStore.selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
 });
 
@@ -87,29 +79,35 @@ window.addEventListener("save-note", async () => {
   dispatchEvent(new Event("refresh-client"));
 });
 
-window.addEventListener("delete-note", async (event) => {
-  const { id } = (event as CustomEvent)?.detail?.note;
-  // TODO:
-  // move the fetch to the deleteNote route
-  // so we don't have to know the full state here
-  const noteToDelete = notes[id];
+window.addEventListener("edit-note-title", async (event) => {
+  const { title } = (event as CustomEvent)?.detail?.note;
+  if (!title || !NoteStore.selectedNoteId)
+    throw new Error("Unable to edit note title");
+  const note = NoteStore.notes[NoteStore.selectedNoteId];
+  note.title = title;
+  await database.put(note);
+  dispatchEvent(new Event("refresh-client"));
+});
+
+window.addEventListener("delete-note", async () => {
+  if (!NoteStore.selectedNoteId) throw new Error("No note selected to delete");
+  const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId];
   await database.delete(noteToDelete);
-  selectedNoteId = null; // reset selected note as it was deleted
+  NoteStore.selectedNoteId = null; // reset selected note as it was deleted
   dispatchEvent(new Event("refresh-client"));
 });
 
 window.addEventListener("select-note", async (event) => {
   if (EditorStore.isDirty) await saveNote();
   const { id } = (event as CustomEvent)?.detail?.note;
-  selectedNoteId = id;
+  NoteStore.selectedNoteId = id;
   dispatchEvent(new Event("refresh-client"));
 });
 
 /**
- * All events related to running the app have been created.
- * Initial file structure state has been setup.
- * The DOM has loaded.
- * Can be sure by this point the client is ready to render.
+ * By this point, all events related to running the app have been created:
+ * initial state has been setup, DOM has loaded, and
+ * client is ready to render.
  */
 window.addEventListener("DOMContentLoaded", async () => {
   database = new Database();
@@ -117,68 +115,49 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 /**
- * Main app lifecycle function.
- * Renders the stateless client
- * then decides what to render based on passed-in note state
+ * Main app lifecycle, refresh based on latest state
  */
-async function refreshClient({
-  notes,
-  selectedNoteId,
-}: {
-  notes: Record<string, Note>;
-  selectedNoteId: string;
-}): Promise<void> {
+async function refreshClient(): Promise<void> {
   /**
    * Update state for initial render
    */
-  if (selectedNoteId) {
-    StatusStore.lastSavedDate = notes[selectedNoteId].updatedAt;
+  if (NoteStore.selectedNoteId) {
+    StatusStore.lastSavedDate =
+      NoteStore.notes[NoteStore.selectedNoteId].updatedAt;
   }
-  const {
-    sidebarElement,
-    editorElement,
-    editorTopMenuElement,
-    editorFloatingMenuElement,
-  } = renderClient();
+  const { editorElement, editorTopMenuElement, editorFloatingMenuElement } =
+    renderBaseElements();
 
   // set main element content based on note state
-  if (!Object.keys(notes).length) {
+  if (
+    !Object.keys(NoteStore.notes).length ||
+    !NoteStore.selectedNoteId ||
+    !editorTopMenuElement
+  ) {
     StatusStore.lastSavedDate = null;
     renderGetStarted(editorElement);
     return;
   }
-  // notes exist, render state-based components
-  renderSidebarNoteList(sidebarElement, notes);
 
-  editor = await renderEditor({
-    selectedNoteId,
+  EditorStore.editor = await renderEditor({
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
     floatingEditorMenu: editorFloatingMenuElement,
-    editorContent: notes[selectedNoteId]?.content,
+    editorContent: NoteStore.notes[NoteStore.selectedNoteId]?.content,
   });
 
+  // set which note in the list is active
   toggleActiveClass({
-    selector: `#${selectedNoteId}-note-select-container`,
+    selector: `#${NoteStore.selectedNoteId}-note-select-container`,
     type: "select-note",
   });
-
-  // TODO: these should probably
-  // be moved to renderEditor as it is based
-  // directly on the editor state
-  //
-  // reset editor scroll position
-  editorElement.scrollTop = 0;
-  // focus on editor
-  // TODO: only focus on the start if we're selecting a NEW note
-  // otherwise, focus at the end of the document.
-  editor.commands.focus("start");
 }
 
 async function saveNote() {
-  if (!selectedNoteId) throw new Error("No note selected to save");
-  const note = notes[selectedNoteId];
-  const content = editor.getHTML();
+  if (!NoteStore.selectedNoteId || !EditorStore.editor)
+    throw new Error("No note selected to save or no editor instance");
+  const note = NoteStore.notes[NoteStore.selectedNoteId];
+  const content = EditorStore.editor.getHTML();
   note.content = content;
   await database.put(note);
 }

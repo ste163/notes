@@ -1,21 +1,25 @@
-import type { Note } from "../types";
-import { createEvent } from "../events";
-import { renderButton } from "./components";
+import { NoteStore } from "store";
+import { createEvent } from "event";
+import { renderButton } from "components";
+import "./sidebar-note-list.css";
 
 /**
  * Renders the note list that can
- * - select a note and set editor state
- * - delete note and emit refresh event
+ * - emit select note event
+ * - emit delete note event
  */
-function renderSidebarNoteList(
-  sidebarElement: Element,
-  notes: Record<string, Note>
-) {
-  Object.values(notes).map(({ title, _id }) => {
+function renderSidebarNoteList(sidebarElement: Element) {
+  Object.values(NoteStore.notes)?.map(({ _id, title, updatedAt }) => {
     if (!title) throw new Error("Unable to read name from note");
     const selectableNoteButton = renderButton({
       title,
-      text: title,
+      html: `
+      <div>
+        <div>${title}</div>
+        <div class="select-note-date">${new Date(
+          updatedAt
+        ).toLocaleString()}</div>
+      </div>`,
       onClick: () =>
         createEvent("select-note", { note: { id: _id } }).dispatch(),
     });

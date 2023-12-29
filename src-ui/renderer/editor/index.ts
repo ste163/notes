@@ -1,4 +1,4 @@
-import { EditorStore } from "../../store";
+import { EditorStore } from "store";
 import {
   BUTTON_CONFIGURATION,
   instantiateEditorButtons,
@@ -21,12 +21,7 @@ import TaskList from "@tiptap/extension-task-list";
 import Code from "@tiptap/extension-code";
 import CodeBlock from "@tiptap/extension-code-block";
 import History from "@tiptap/extension-history";
-import {
-  renderDeleteButton,
-  renderRedoButton,
-  renderSaveButton,
-  renderUndoButton,
-} from "../components";
+import "./editor.css";
 
 /**
  * Instantiates the editor and returns the instance.
@@ -35,13 +30,11 @@ async function renderEditor({
   editorElement,
   topEditorMenu,
   floatingEditorMenu,
-  selectedNoteId,
   editorContent,
 }: {
   editorElement: Element;
   topEditorMenu: Element;
   floatingEditorMenu: Element;
-  selectedNoteId: string | null;
   editorContent?: string;
 }): Promise<Editor> {
   const editor = new Editor({
@@ -79,7 +72,7 @@ async function renderEditor({
             : false,
       }),
     ],
-    content: editorContent ?? "<p>Issue selecting note</p>", // BUG/TODO: with undo, this is always initial state. So do not set it this way! If we can't select a note, don't render the editor
+    content: editorContent ?? "<p>Issue selecting note</p>",
     onUpdate: ({ editor }) => {
       if (EditorStore.isDirty) return;
       const currentContent = editor.getHTML();
@@ -102,25 +95,26 @@ async function renderEditor({
     },
   });
 
-  renderTopMenu({ editor, topEditorMenu, selectedNoteId });
-  renderFloatingMenu(editor, floatingEditorMenu);
+  renderTopMenu(topEditorMenu);
+  renderFloatingMenu(floatingEditorMenu);
+
+  // TODO: only set these IF we're selecting a new note
+  // if the same note is active, then we don't want to reset
+  // pointer positioning (like on a save event, otherwise it's awkward)
+
+  // reset editor scroll position
+  editorElement.scrollTop = 0;
+  // focus on editor
+  editor.commands.focus("start");
+
   return editor;
 }
 
 /**
- * Renders the top-menu for the editor:
- * creates top-menu buttons and places them in correct containers
+ * Instantiates top-menu buttons and organizes them into their container groups
  */
-function renderTopMenu({
-  editor,
-  topEditorMenu,
-  selectedNoteId,
-}: {
-  editor: Editor;
-  topEditorMenu: Element;
-  selectedNoteId: string | null;
-}) {
-  const { topEditorMenuButtons } = instantiateEditorButtons(editor);
+function renderTopMenu(topEditorMenu: Element) {
+  const { topEditorMenuButtons } = instantiateEditorButtons();
   // setup editor buttons (bold, italic, etc.)
   topEditorMenuButtons.forEach((button) => {
     // get the button grouping from the data attribute
@@ -135,29 +129,10 @@ function renderTopMenu({
     topEditorMenu.appendChild(groupContainer);
     groupContainer.appendChild(button);
   });
-
-  // add non-editor config buttons
-  const nonConfigButtonContainer = document.createElement("div");
-  // it is appended to the end for now
-  topEditorMenu.appendChild(nonConfigButtonContainer);
-  const buttons = [
-    // TODO: remove editor passed in here, potentially
-    // editor could be moved to a Store
-    renderUndoButton(editor),
-    renderRedoButton(editor),
-    renderSaveButton(),
-    selectedNoteId && renderDeleteButton(selectedNoteId),
-  ];
-  buttons.forEach(
-    (button) => button && nonConfigButtonContainer.appendChild(button)
-  );
 }
 
-function renderFloatingMenu(
-  editor: Editor,
-  floatingEditorMenuContainer: Element
-) {
-  const { floatingEditorMenuButtons } = instantiateEditorButtons(editor);
+function renderFloatingMenu(floatingEditorMenuContainer: Element) {
+  const { floatingEditorMenuButtons } = instantiateEditorButtons();
   floatingEditorMenuButtons.forEach((button) => {
     floatingEditorMenuContainer.appendChild(button);
   });

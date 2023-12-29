@@ -28,6 +28,7 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
+  overflow-y: hidden;
 }
 
 main {
@@ -40,6 +41,10 @@ main {
 main > h1 {
   font-size: 1.3em;
   margin-left: 1.5em;
+}
+
+h3 {
+  margin: 0.5em 0;
 }
 
 footer {
@@ -57,88 +62,15 @@ p {
 input {
   font-size: small;
   max-width: intrinsic;
-}
-
-button {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  border-radius: 0.3em;
-  border: 0.15em solid var(--outline-color);
-  padding: 0.3em 0.5em;
-
-  font-size: 0.9em;
-  font-weight: bold;
-
-  cursor: pointer;
-
-  color: var(--outline-color);
-  background-color: var(--background-color);
-
-  transition: background-color 0.1s ease-in-out;
-}
-
-button:hover {
-  background-color: var(--active-color);
-}
-
-button > svg {
-  width: 1.2em;
-  margin: 0.1em 0;
-}
-
-button.isActive {
-  background-color: var(--active-color);
-}
-
-#modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1;
-  display: none;
-}
-
-#modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--background-color);
-  border-radius: 0.3em;
-  padding: 1em;
-}
-
-#modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-#modal-header > button {
-  place-self: flex-start;
-  margin: 0;
-  padding: 1em 0.75em;
-  height: 1em;
-  border: none;
-}
-
-#modal-header > button:hover {
-  background-color: transparent;
+  border: var(--outline-color) 0.15em solid;
+  padding: 0.5em;
 }
 
 #sidebar {
   border-right: var(--outline-color) 0.15em solid;
   grid-area: sidebar;
   padding-right: 0.5em;
-}
-
-#sidebar > h1 {
-  font-size: 1em;
-  margin-left: 0.5em;
+  width: 10em;
 }
 
 #sidebar > button {
@@ -147,84 +79,11 @@ button.isActive {
   font-size: 0.9em;
 }
 
-.create-note-input-container {
-  display: flex;
-  width: min-content;
+#sidebar-top-menu {
+  margin: 1em;
 }
 
-.create-note-input-container > input {
-  max-width: 60%;
-}
-
-.note-select-container {
-  display: flex;
-  flex-direction: row;
-  margin: 0.5em;
-  max-width: inherit;
-}
-
-.note-select-container > button {
-  border: none;
-  color: gray;
-  width: 100%;
-  font-weight: normal;
-  text-align: left;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.note-select-container > button:hover {
-  background-color: rgba(128, 128, 128, 0.2);
-}
-
-.select-note-active > button {
-  color: black;
-}
-
-#editor-top-menu {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0.5em;
-  border-bottom: var(--outline-color) 0.15em solid;
-  margin-bottom: 1em;
-}
-
-#editor-top-menu > div {
-  display: flex;
-  margin: 0.15em 0.5em;
-}
-
-#editor-top-menu > div > button {
-  margin: 0.1em;
-}
-
-#editor {
-  flex-grow: 1;
-  height: inherit;
-  overflow-y: scroll;
-}
-
-#editor-floating-menu {
-  display: flex;
-}
-
-#editor-floating-menu > button {
-  margin: 0 0.1em;
-}
-
-/* TipTap/ProseMirror specific */
-.ProseMirror {
-  outline: none;
-  height: 100%;
-  overflow-y: scroll;
-  padding-left: 3em;
-  padding-right: 7em;
-}
-
-.code,
-.code-block {
-  background-color: #303030;
-  color: white;
-  padding: 0.5em;
-  border-radius: 0.3em;
+#no-notes-page {
+  margin-top: 2em;
+  margin-left: 2em;
 }

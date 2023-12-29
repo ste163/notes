@@ -1,7 +1,7 @@
-import { nanoid } from "nanoid";
 import PouchDb from "pouchdb-browser";
 import PouchDbFind from "pouchdb-find";
-import { Note } from "../types";
+import { nanoid } from "nanoid";
+import type { Note } from "types";
 
 /**
  * Creates the Pouchdb database instance

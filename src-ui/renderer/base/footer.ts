@@ -1,4 +1,4 @@
-import { StatusStore } from "../store";
+import { StatusStore } from "store";
 
 /**
  * Renders footer with latest StatusStore state
