@@ -14,10 +14,8 @@ function renderNoteDetailsModal() {
   modalContent.innerHTML = `
     <h3>Title</h3>
     <div id="title-edit"></div>
-    
     <h3>Created at</h3>
     <div>${new Date(createdAt).toLocaleString()}</div>
-     
     <h3>Last updated at</h3>
     <div>${new Date(updatedAt).toLocaleString()}</div>`;
 
