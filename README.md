@@ -1,66 +1,60 @@
 # notes
 
-Vanilla JS notes app using PouchDb for local and remote data storage
-
-As a desktop app using Tauri or on the browser
+A minimal note-taking application for Linux, Mac, Windows, and browsers. Supports cloud syncing through [PouchDb](https://pouchdb.com/)
 
 ## TODOs
 
-- Build process for Tauri
-- Separate build process + deployment of browser-only version
-- Tauri version
-  - supports auto-updates
+- Separate build process + deployment of browser-only version and desktop version
+- Tauri version: supports auto-updates
 - Dev workflow
   - on pre-commit, run type checker
   - on pre-commit, run eslint config + formatting
-  - basic unit tests run on push + on PR?
+  - basic unit tests run on push + on PR
 - PouchDb remote
-  - make it work + update readme
+  - make it work + update readme with work (separate repo for docker container?)
 
-## Architecture
+## Application Architecture
 
-This application uses vanilla HTML & Javascript (TypeScript) to keep the project with as few dependencies as possible. Upgrading dependencies versions is a major time commitment that I want to avoid. This application is built to be as simple as possible.
+Goal: keep the application as simple to use and maintain as possible. Leverage existing technologies when possible and strictly vet each dependency.
 
 Decisions for simplicity:
 
-- Two main dependencies: PouchDb and TipTap (the Editor)
-- The UI always renders the exact state from PouchDb
-- TipTap is utilized for the main interactivity
-- When a state-change occurs, the client is re-rendered with the latest data
-- Using the Proxy approach for the state stores
+- Two main dependencies: PouchDb (cloud-enabled database) and TipTap (word processor)
+- Pure Javascript instead of a UI framework. The application works as a light wrapper around TipTap to connect the database and writing editor states
+- Using the [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) approach for global state across components
 
-By going with this approach, the App's goal is to seamlessly connect PouchDb note state and the writing Editor's state.
+### Database Docker Container
 
-The UI contains a note list and mechanics for creating, selecting, and deleting notes. Everything related to having an excellent writing experience is handled by TipTap.
+PouchDb works locally using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) and in the cloud using [CouchDb](https://couchdb.apache.org/). This repo contains instructions and a docker container for setting up a remote PouchDb instance.
 
 (TODO) For portability, this repo contains a docker container for setting up a remote PouchDb with instructions
 
-### Basic app structure and data flow
-
-(TODO) restructure this diagram so it relates back into the A the [Browser/Client]
+### Application structure and data-flow
 
 ```mermaid
 flowchart TD
-    subgraph Client-side - browser or tauri app
-      A[Browser/Client] -- Reads from local PouchDb --> B[(Local PouchDb \n using Indexdb)]
-      B -- On state change, re-render Client --> D{Loads db state into \n Client}
-      D -- Created/selected note content passed into --> E[TipTap Editor]
-      E -- On save/delete event, store changes --> B
+    subgraph Docker Container
+      C[(PouchDb instance)]
     end
-  B -- Sync local changes to remote --> C[(Optional Remote PouchDb \n for two-way data syncing)]
-  C -- Sync remote changes to local --> B
+    subgraph Client-side - browser or tauri desktop application
+      A[(local IndexedDB)]
+      A -- Render editor with data from db --> B[TipTap Editor]
+      B -- On save/delete event, store changes --> A
+    end
+  A -- Sync changes --> C
+  C -- Sync changes --> A
 ```
 
-## TODO github action flow (if there were tests)
+## TODO ci/cd
 
-- on a PR commit/before push to main
+On a PR commit/before push to main:
+
 - run TypeScript type checker
 - if it passes
 - run all unit tests
 - if it passes
 - trigger test builds for the PR before merging
 - if those pass
-- (ideally, we'd install the built app and run a suite of smoke tests on it)
 - then good to merge to main and trigger full release action
 
 ## Dev requirements
