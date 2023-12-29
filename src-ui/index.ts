@@ -9,7 +9,7 @@
  *   - (before web-only release) mobile view support (related to close/open sidebar)
  * - Code Quality (before release):
  *   - clean-up todos
- *   - try/catch blocks per component? Will make debugging much easier
+ *   - try/catch blocks at index-level events
  * - Features: Quality of Life
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
