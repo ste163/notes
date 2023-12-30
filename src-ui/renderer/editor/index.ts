@@ -21,6 +21,7 @@ import TaskList from '@tiptap/extension-task-list'
 import Code from '@tiptap/extension-code'
 import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
+import type { MarkOptions } from 'types'
 import './editor.css'
 
 /**
@@ -155,7 +156,7 @@ function toggleActiveEditorClass({
 }: {
   className: string
   markName: string
-  markOptions?: { level: number }
+  markOptions?: MarkOptions
   editor: Editor
 }): void {
   const elements = document.querySelectorAll(`.${className}`)

@@ -2,12 +2,13 @@ import { EditorStore } from 'store'
 import { renderButton } from 'components'
 import { renderNoteDetailsModal } from './note-details-modal'
 import type { Button } from 'components'
+import type { MarkOptions } from 'types'
 
 interface EditorButton extends Button {
   group: number // used for placing in which div for organization
   isInFloatingMenu: boolean
   markName?: string // used for toggling css
-  markOptions?: unknown // used for toggling css
+  markOptions?: MarkOptions // used for toggling css
 }
 
 /**

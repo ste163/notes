@@ -9,4 +9,6 @@ interface Note {
 
 type Notes = Record<string, Note>
 
-export type { Note, Notes }
+type MarkOptions = { level: number }
+
+export type { Note, Notes, MarkOptions }
