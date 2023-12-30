@@ -61,7 +61,10 @@ function openModal(
   closeButton.onclick = closeModal
   modalBackdrop.style.display = 'block' // shows modal
 
-  closeButton.focus() // set focus on close button
+  // delaying focus to allow modal to render
+  setTimeout(() => {
+    closeButton.focus() // set focus on close button
+  }, 1)
 
   modal.addEventListener('keydown', trapFocusListener)
   modal.addEventListener('keydown', escapePressListener)

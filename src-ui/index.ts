@@ -4,13 +4,12 @@
  *   - error notification (in footer)
  *   - consistent cross-browser css styling with reset.css
  *   - checkbox styling is wrong
- *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
- *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
  *   - close/open sidebar and remember state on re-open (local-storage)
  *   - (before web-only release) mobile view support (related to close/open sidebar)
  * - Code Quality (before release):
  *   - clean-up todos
  * - Features: Quality of Life
+ *   - delete note confirmation step
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
@@ -19,6 +18,9 @@
  * - DEPLOYMENT
  *   - setup deployment for UI only to browsers (no remote db access)
  *   - setup deployment for tauri app
+ * - "Branding"
+ *  - make favicon
+ *  - make icons for desktop
  */
 
 import { Database } from 'database'
