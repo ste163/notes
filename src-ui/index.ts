@@ -7,6 +7,7 @@
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
  *   - close/open sidebar and remember state on re-open
  *   - (before web-only release) mobile view support (related to close/open sidebar)
+ *   - consistent cross-browser css styling with reset.css
  * - Code Quality (before release):
  *   - clean-up todos
  *   - try/catch blocks at index-level events
