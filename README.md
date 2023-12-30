@@ -60,11 +60,11 @@ On a PR commit/before push to main:
 
 For developing Notes locally
 
-## Required, installed software
+## Software to install
 
 - [Tauri](https://tauri.app/)
 - [pnpm](https://pnpm.io/)
-- [docker-compose](https://github.com/docker/compose)
+- [docker-compose](https://github.com/docker/compose) (only for running the docker container)
 
 ## getting up and running
 
@@ -84,13 +84,13 @@ docker-compose up -d
 
 To interact with the CouchDB server and databases while running the container, go to: `http://localhost:5984/_utils/` to open the GUI. Username and password are located in `docker-compose.yml`
 
-## updating packages
+## Updating packages
 
-### pnpm
+### Client
 
 `pnpm i` from root
 
-### Rust Cargo packages
+### Tauri/Rust Cargo packages
 
 ```
 cd src-tauri

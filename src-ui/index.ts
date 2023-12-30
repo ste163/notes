@@ -2,15 +2,14 @@
  * TODO PRIORITY ORDER
  * - UI/UX polish
  *   - error notification (in footer)
+ *   - consistent cross-browser css styling with reset.css
  *   - checkbox styling is wrong
  *   - BUG: when the modal opens, sometimes it doesn't move focus to inside the modal, but keeps it in the editor
  *   - BUG: If the modal is open, the floating menu should not render (it has higher z-index than modal)
- *   - close/open sidebar and remember state on re-open
+ *   - close/open sidebar and remember state on re-open (local-storage)
  *   - (before web-only release) mobile view support (related to close/open sidebar)
- *   - consistent cross-browser css styling with reset.css
  * - Code Quality (before release):
  *   - clean-up todos
- *   - try/catch blocks at index-level events
  * - Features: Quality of Life
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - (later): visual explanation of available shortcuts
