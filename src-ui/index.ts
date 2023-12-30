@@ -70,8 +70,8 @@ window.addEventListener("refresh-client", async () => {
 
 window.addEventListener("create-note", async (event) => {
   try {
-    const { title, content = "" } = (event as CustomEvent)?.detail?.note;
-    const id = await database.put({ title, content });
+    const note = (event as CustomEvent)?.detail?.note;
+    const id = await database.put({ title: note.title, content: "" });
     NoteStore.selectedNoteId = id;
     dispatchEvent(new Event("refresh-client"));
   } catch (error) {
@@ -92,12 +92,13 @@ window.addEventListener("save-note", async () => {
 
 window.addEventListener("edit-note-title", async (event) => {
   try {
-    const { title } = (event as CustomEvent)?.detail?.note;
+    const note = (event as CustomEvent)?.detail?.note;
+    const { title } = note;
     if (!title || !NoteStore.selectedNoteId)
       throw new Error("Unable to edit note title");
-    const note = NoteStore.notes[NoteStore.selectedNoteId];
-    note.title = title;
-    await database.put(note);
+    const noteToUpdate = NoteStore.notes[NoteStore.selectedNoteId];
+    noteToUpdate.title = title;
+    await database.put(noteToUpdate);
     dispatchEvent(new Event("refresh-client"));
   } catch (error) {
     // TODO: show error notification
@@ -122,8 +123,8 @@ window.addEventListener("delete-note", async () => {
 window.addEventListener("select-note", async (event) => {
   try {
     if (EditorStore.isDirty) await saveNote();
-    const { id } = (event as CustomEvent)?.detail?.note;
-    NoteStore.selectedNoteId = id;
+    const note = (event as CustomEvent)?.detail?.note;
+    NoteStore.selectedNoteId = note.id;
     dispatchEvent(new Event("refresh-client"));
   } catch (error) {
     // TODO: show error notification

@@ -7,7 +7,7 @@ interface EditorButton extends Button {
   group: number; // used for placing in which div for organization
   isInFloatingMenu: boolean;
   markName?: string; // used for toggling css
-  markOptions?: any; // used for toggling css
+  markOptions?: unknown; // used for toggling css
 }
 
 /**

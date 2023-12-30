@@ -1,7 +1,7 @@
 /**
  * Creates custom events with messages that can be dispatched when needed
  */
-function createEvent(eventName: string, message?: { [key: string]: any }) {
+function createEvent(eventName: string, message?: { [key: string]: unknown }) {
   const event = new CustomEvent(
     eventName,
     message && {

@@ -2,7 +2,7 @@ import "./button.css";
 
 interface Button {
   title: string; // accessibility title for button
-  onClick: (args: any) => void;
+  onClick: (args: unknown) => void;
   className?: string;
   html?: string;
   style?: Partial<CSSStyleDeclaration>;
@@ -20,7 +20,8 @@ const renderButton = (button: Button) => {
   if (button.style) {
     for (const key in button.style) {
       if (button.style.hasOwnProperty(key)) {
-        (element.style as any)[key] = (button.style as any)[key];
+        const style = button.style[key];
+        if (style) element.style[key] = style;
       }
     }
   }

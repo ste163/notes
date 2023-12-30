@@ -22,7 +22,7 @@ const StatusStore = new Proxy(
   {
     set(target: StatusStore, key: keyof StatusStore, value) {
       if (key === "lastSavedDate") value = new Date(value).toLocaleString();
-      (target[key] as any) = value;
+      (target[key] as unknown) = value;
       return true;
     },
   }

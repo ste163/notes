@@ -18,9 +18,9 @@ class Database {
    * TODO: for first version, only using the local db.
    * Next version is to hook into a remote db for syncing
    */
-  constructor(_remoteUrl?: string) {
+  constructor(remoteUrl?: string) {
     PouchDb.plugin(PouchDbFind);
-    this.db = new PouchDb("local_db_test");
+    this.db = new PouchDb(remoteUrl ?? "local_db_test");
     this.db.createIndex({
       index: { fields: ["_id"] },
     });
@@ -70,7 +70,7 @@ class Database {
     });
 
     return rows.reduce((acc, { doc }) => {
-      if (!(doc as any).title) return acc; // pouchdb always returns a language query doc, ignore that and only return real notes
+      if (!(doc as Note).title) return acc; // pouchdb always returns a language query doc, ignore that and only return real notes
       const note = doc as Note;
       acc[note._id] = note;
       return acc;
