@@ -2,6 +2,8 @@
 
 A minimal note-taking application for Linux, Mac, Windows, and browsers. Supports cloud syncing through [PouchDb](https://pouchdb.com/)
 
+INSERT IMAGE OF APPLICATION HERE
+
 ## TODOs
 
 - Separate build process + deployment of browser-only version and desktop version
@@ -42,55 +44,39 @@ flowchart TD
   C -- Sync changes --> A
 ```
 
-## TODO ci/cd
-
-On a PR commit/before push to main:
-
-(goal is to run 1 action at a time to reduce usage as much as possible)
-
-- run TypeScript type checker
-- if it passes THEN
-- run all unit tests
-- if it passes THEN
-- trigger test builds for the PR before merging
-- if those pass
-- then good to merge to main and trigger full release action
-
 # Development
 
 For developing Notes locally
 
 ## Software to install
 
-- [Tauri](https://tauri.app/)
 - [pnpm](https://pnpm.io/)
+- [Tauri](https://tauri.app/)
 - [docker-compose](https://github.com/docker/compose) (only for running the docker container)
 
 ## getting up and running
 
-TODO: commands for a fresh install
+After the above software has been installed, from the root, run:
 
-- required packages
-
-### with docker db
-
-info on couchdb w/ docker: https://github.com/apache/couchdb-docker
-
-Running docker-compose.yml to run local db:
-
+```bash
+pnpm i
 ```
+
+### with the docker container couchdb
+
+Using the [couchdb-docker](https://github.com/apache/couchdb-docker) image
+
+To run `docker-compose.yaml`, from the project's root, run:
+
+```bash
 docker-compose up -d
 ```
 
-To interact with the CouchDB server and databases while running the container, go to: `http://localhost:5984/_utils/` to open the GUI. Username and password are located in `docker-compose.yml`
+This will setup the container and the basic admin user and password.
 
-## Updating packages
+To interact with the CouchDB server and databases while running the container, go to: `http://localhost:5984/_utils/` to open the GUI. Username and password are located in `docker-compose.yaml`
 
-### Client
-
-`pnpm i` from root
-
-### Tauri/Rust Cargo packages
+### Updating Tauri/Rust Cargo packages
 
 ```
 cd src-tauri
