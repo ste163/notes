@@ -1,8 +1,8 @@
-import type { Notes } from "types";
+import type { Notes } from 'types'
 
 interface NoteStore {
-  notes: Notes;
-  selectedNoteId: null | string;
+  notes: Notes
+  selectedNoteId: null | string
 }
 
 const NoteStore = new Proxy(
@@ -12,10 +12,10 @@ const NoteStore = new Proxy(
   },
   {
     set(target: NoteStore, key: keyof NoteStore, value) {
-      (target[key] as any) = value;
-      return true;
+      ;(target[key] as unknown) = value
+      return true
     },
   }
-);
+)
 
-export { NoteStore };
+export { NoteStore }

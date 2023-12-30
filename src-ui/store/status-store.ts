@@ -6,9 +6,9 @@
 interface StatusStore {
   // remoteUrl: string;
   // isConnectedToRemote: boolean;
-  lastSavedDate: null | Date;
+  lastSavedDate: null | Date
   // lastSyncedDate: null | Date;
-  error: string;
+  error: string
 }
 
 const StatusStore = new Proxy(
@@ -17,15 +17,15 @@ const StatusStore = new Proxy(
     // isConnectedToRemote: false,
     lastSavedDate: null,
     // lastSyncedDate: null,
-    error: "",
+    error: '',
   },
   {
     set(target: StatusStore, key: keyof StatusStore, value) {
-      if (key === "lastSavedDate") value = new Date(value).toLocaleString();
-      (target[key] as any) = value;
-      return true;
+      if (key === 'lastSavedDate') value = new Date(value).toLocaleString()
+      ;(target[key] as unknown) = value
+      return true
     },
   }
-);
+)
 
-export { StatusStore };
+export { StatusStore }

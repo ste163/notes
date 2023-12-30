@@ -1,0 +1,23 @@
+env:
+  browser: true,
+  es2024: true,
+extends:
+  [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+    'plugin:prettier/recommended',
+  ]
+plugins: ['@typescript-eslint', 'eslint-plugin-prettier/recommended']
+parserOptions:
+  parser: '@typescript-eslint/parser'
+  ecmaVersion: 'latest'
+  sourceType: 'module'
+root: true
+ignorePatterns:
+  ['node_modules/', 'dist/', 'dbdata/', '.github/', 'src-tauri/', '*.yaml']
+rules:
+  {
+    no-prototype-builtins: 'off',
+    '@typescript-eslint/consistent-type-imports': 'error',
+  }

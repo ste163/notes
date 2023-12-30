@@ -1,7 +1,7 @@
-import { NoteStore } from "store";
-import { createEvent } from "event";
-import { renderButton } from "components";
-import "./sidebar-note-list.css";
+import { NoteStore } from 'store'
+import { createEvent } from 'event'
+import { renderButton } from 'components'
+import './sidebar-note-list.css'
 
 /**
  * Renders the note list that can
@@ -10,7 +10,7 @@ import "./sidebar-note-list.css";
  */
 function renderSidebarNoteList(sidebarElement: Element) {
   Object.values(NoteStore.notes)?.map(({ _id, title, updatedAt }) => {
-    if (!title) throw new Error("Unable to read name from note");
+    if (!title) throw new Error('Unable to read name from note')
     const selectableNoteButton = renderButton({
       title,
       html: `
@@ -21,16 +21,16 @@ function renderSidebarNoteList(sidebarElement: Element) {
         ).toLocaleString()}</div>
       </div>`,
       onClick: () =>
-        createEvent("select-note", { note: { id: _id } }).dispatch(),
-    });
-    selectableNoteButton.id = _id;
-    const noteSelectContainer = document.createElement("div");
-    const containerClass = "note-select-container";
-    noteSelectContainer.classList.add(containerClass);
-    noteSelectContainer.id = `${_id}-${containerClass}`;
-    noteSelectContainer.appendChild(selectableNoteButton);
-    sidebarElement.append(noteSelectContainer);
-  });
+        createEvent('select-note', { note: { id: _id } }).dispatch(),
+    })
+    selectableNoteButton.id = _id
+    const noteSelectContainer = document.createElement('div')
+    const containerClass = 'note-select-container'
+    noteSelectContainer.classList.add(containerClass)
+    noteSelectContainer.id = `${_id}-${containerClass}`
+    noteSelectContainer.appendChild(selectableNoteButton)
+    sidebarElement.append(noteSelectContainer)
+  })
 }
 
-export { renderSidebarNoteList };
+export { renderSidebarNoteList }

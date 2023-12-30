@@ -1,0 +1,6 @@
+src-tauri
+dbdata
+dist
+node_modules
+pnpm-lock.yaml
+.github

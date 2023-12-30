@@ -4,7 +4,7 @@ function renderGetStarted(editorContainer: Element): void {
     <h1>Get started</h1>
     <p>Create a note from the sidebar</p>
   </div>
-  `;
+  `
 }
 
-export { renderGetStarted };
+export { renderGetStarted }

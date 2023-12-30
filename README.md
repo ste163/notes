@@ -5,13 +5,10 @@ A minimal note-taking application for Linux, Mac, Windows, and browsers. Support
 ## TODOs
 
 - Separate build process + deployment of browser-only version and desktop version
-- Tauri version: supports auto-updates
-- Dev workflow
-  - on pre-commit, run type checker
-  - on pre-commit, run eslint config + formatting
-  - basic unit tests run on push + on PR
 - PouchDb remote
   - make it work + update readme with work (separate repo for docker container?)
+- Tauri version: supports auto-updates
+- Basic unit tests run on push + on PR
 
 ## Application Architecture
 
@@ -27,19 +24,19 @@ Decisions for simplicity:
 
 PouchDb works locally using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) and in the cloud using [CouchDb](https://couchdb.apache.org/). This repo contains instructions and a docker container for setting up a remote PouchDb instance.
 
-(TODO) For portability, this repo contains a docker container for setting up a remote PouchDb with instructions
-
 ### Application structure and data-flow
+
+This structure allows for multiple clients to stay in-sync.
 
 ```mermaid
 flowchart TD
     subgraph Docker Container
       C[(PouchDb instance)]
     end
-    subgraph Client-side - browser or tauri desktop application
-      A[(local IndexedDB)]
-      A -- Render editor with data from db --> B[TipTap Editor]
-      B -- On save/delete event, store changes --> A
+    subgraph Client - browser or tauri desktop application
+      A[(IndexedDB)]
+      A -- Render editor with data from db --> B[UI and TipTap]
+      B -- On update/delete event, store changes --> A
     end
   A -- Sync changes --> C
   C -- Sync changes --> A
@@ -49,23 +46,29 @@ flowchart TD
 
 On a PR commit/before push to main:
 
+(goal is to run 1 action at a time to reduce usage as much as possible)
+
 - run TypeScript type checker
-- if it passes
+- if it passes THEN
 - run all unit tests
-- if it passes
+- if it passes THEN
 - trigger test builds for the PR before merging
 - if those pass
 - then good to merge to main and trigger full release action
 
-## Dev requirements
+# Development
 
-- (link to tuari requirements)
-- pnpm
-- docker-compose
+For developing Notes locally
+
+## Required, installed software
+
+- [Tauri](https://tauri.app/)
+- [pnpm](https://pnpm.io/)
+- [docker-compose](https://github.com/docker/compose)
 
 ## getting up and running
 
-todo: commands to get started
+TODO: commands for a fresh install
 
 - required packages
 
