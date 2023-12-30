@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -11,23 +11,23 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      components: "/src-ui/renderer/components",
-      database: "/src-ui/database",
-      event: "/src-ui/event",
-      renderer: "/src-ui/renderer",
-      store: "/src-ui/store",
-      types: "/src-ui/types",
+      components: '/src-ui/renderer/components',
+      database: '/src-ui/database',
+      event: '/src-ui/event',
+      renderer: '/src-ui/renderer',
+      store: '/src-ui/store',
+      types: '/src-ui/types',
     },
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
-  envPrefix: ["VITE_", "TAURI_"],
+  envPrefix: ['VITE_', 'TAURI_'],
   build: {
     // Tauri supports es2021
-    target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
+    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
     // don't minify for debug builds
-    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
   },
-});
+})

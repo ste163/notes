@@ -7,8 +7,8 @@ function createEvent(eventName: string, message?: { [key: string]: unknown }) {
     message && {
       detail: message,
     }
-  );
-  return { dispatch: () => dispatchEvent(event) };
+  )
+  return { dispatch: () => dispatchEvent(event) }
 }
 
-export { createEvent };
+export { createEvent }

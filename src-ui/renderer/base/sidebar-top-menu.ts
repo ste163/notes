@@ -1,6 +1,6 @@
-import { createEvent } from "event";
-import { renderButton } from "components";
-import "./sidebar-top-menu.css";
+import { createEvent } from 'event'
+import { renderButton } from 'components'
+import './sidebar-top-menu.css'
 
 /**
  * Renders sidebar without note state: only the title and create note functionality
@@ -8,7 +8,7 @@ import "./sidebar-top-menu.css";
 function renderSidebarTopMenu(sidebarContainer: Element): void {
   sidebarContainer.appendChild(
     renderButton({
-      title: "Create note",
+      title: 'Create note',
       onClick: () => renderNoteInput(sidebarContainer),
       html: `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -18,66 +18,66 @@ function renderSidebarTopMenu(sidebarContainer: Element): void {
         <span>Create<span/>
       `,
     })
-  );
+  )
 }
 
 /**
  * Renders the note input used only by the sidebar (currently).
  */
 function renderNoteInput(container: Element) {
-  const inputContainerClass = "create-note-input-container";
+  const inputContainerClass = 'create-note-input-container'
   const checkForAlreadyRenderedInput = () => {
     const isInputAlreadyRendered = document.querySelector(
       `.${inputContainerClass}`
-    );
+    )
     if (isInputAlreadyRendered) {
-      isInputAlreadyRendered.remove();
-      return;
+      isInputAlreadyRendered.remove()
+      return
     }
-  };
-  checkForAlreadyRenderedInput();
+  }
+  checkForAlreadyRenderedInput()
   const input = `
       <div class="${inputContainerClass}">
         <input class="note-input" title="Input note title" placeholder="Note title" />
       </div>
-    `;
-  container.insertAdjacentHTML("beforeend", input);
-  const inputContainer = document.querySelector(`.${inputContainerClass}`);
-  const noteInputClass = "note-input";
+    `
+  container.insertAdjacentHTML('beforeend', input)
+  const inputContainer = document.querySelector(`.${inputContainerClass}`)
+  const noteInputClass = 'note-input'
 
-  const buttonContainer = document.createElement("div");
-  buttonContainer.className = "note-input-buttons";
+  const buttonContainer = document.createElement('div')
+  buttonContainer.className = 'note-input-buttons'
 
-  inputContainer?.appendChild(buttonContainer);
+  inputContainer?.appendChild(buttonContainer)
 
   // add the create button to the input container
   buttonContainer?.appendChild(
     renderButton({
-      title: "Save note",
-      html: "Save",
+      title: 'Save note',
+      html: 'Save',
       onClick: () => {
         const input = document.querySelector(
           `.${noteInputClass}`
-        ) as HTMLInputElement;
-        const title: string = input?.value;
-        if (!title) throw new Error("Unable to read title from input");
-        createEvent("create-note", { note: { title } }).dispatch();
+        ) as HTMLInputElement
+        const title: string = input?.value
+        if (!title) throw new Error('Unable to read title from input')
+        createEvent('create-note', { note: { title } }).dispatch()
       },
     })
-  );
+  )
   buttonContainer?.appendChild(
     renderButton({
-      title: "Cancel creating",
-      html: "Cancel",
+      title: 'Cancel creating',
+      html: 'Cancel',
       onClick: checkForAlreadyRenderedInput,
     })
-  );
+  )
 
   const inputElement = document.querySelector(
     `.${noteInputClass}`
-  ) as HTMLElement;
+  ) as HTMLElement
 
-  inputElement?.focus();
+  inputElement?.focus()
 }
 
-export { renderSidebarTopMenu };
+export { renderSidebarTopMenu }

@@ -8,6 +8,6 @@
  * ```
  * This will trigger all components that use the store to re-render state
  */
-export { NoteStore } from "./note-store";
-export { EditorStore } from "./editor-store";
-export { StatusStore } from "./status-store";
+export { NoteStore } from './note-store'
+export { EditorStore } from './editor-store'
+export { StatusStore } from './status-store'
