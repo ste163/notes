@@ -7,7 +7,7 @@
     "build:ui": "tsc && vite build",
     "start:dev:ui": "vite",
     "start:dev:tauri": "tauri dev",
-    "start:production:ui": "npm run build:ui && vite preview",
+    "start:preview:ui": "npm run build:ui && vite preview",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

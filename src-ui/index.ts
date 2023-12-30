@@ -68,40 +68,66 @@ window.addEventListener("refresh-client", async () => {
 });
 
 window.addEventListener("create-note", async (event) => {
-  const { title, content = "" } = (event as CustomEvent)?.detail?.note;
-  const id = await database.put({ title, content });
-  NoteStore.selectedNoteId = id;
-  dispatchEvent(new Event("refresh-client"));
+  try {
+    const { title, content = "" } = (event as CustomEvent)?.detail?.note;
+    const id = await database.put({ title, content });
+    NoteStore.selectedNoteId = id;
+    dispatchEvent(new Event("refresh-client"));
+  } catch (error) {
+    // TODO: show error notification
+    console.error(error);
+  }
 });
 
 window.addEventListener("save-note", async () => {
-  await saveNote();
-  dispatchEvent(new Event("refresh-client"));
+  try {
+    await saveNote();
+    dispatchEvent(new Event("refresh-client"));
+  } catch (error) {
+    // TODO: show error notification
+    console.error(error);
+  }
 });
 
 window.addEventListener("edit-note-title", async (event) => {
-  const { title } = (event as CustomEvent)?.detail?.note;
-  if (!title || !NoteStore.selectedNoteId)
-    throw new Error("Unable to edit note title");
-  const note = NoteStore.notes[NoteStore.selectedNoteId];
-  note.title = title;
-  await database.put(note);
-  dispatchEvent(new Event("refresh-client"));
+  try {
+    const { title } = (event as CustomEvent)?.detail?.note;
+    if (!title || !NoteStore.selectedNoteId)
+      throw new Error("Unable to edit note title");
+    const note = NoteStore.notes[NoteStore.selectedNoteId];
+    note.title = title;
+    await database.put(note);
+    dispatchEvent(new Event("refresh-client"));
+  } catch (error) {
+    // TODO: show error notification
+    console.error(error);
+  }
 });
 
 window.addEventListener("delete-note", async () => {
-  if (!NoteStore.selectedNoteId) throw new Error("No note selected to delete");
-  const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId];
-  await database.delete(noteToDelete);
-  NoteStore.selectedNoteId = null; // reset selected note as it was deleted
-  dispatchEvent(new Event("refresh-client"));
+  try {
+    if (!NoteStore.selectedNoteId)
+      throw new Error("No note selected to delete");
+    const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId];
+    await database.delete(noteToDelete);
+    NoteStore.selectedNoteId = null; // reset selected note as it was deleted
+    dispatchEvent(new Event("refresh-client"));
+  } catch (error) {
+    // TODO: show error notification
+    console.error(error);
+  }
 });
 
 window.addEventListener("select-note", async (event) => {
-  if (EditorStore.isDirty) await saveNote();
-  const { id } = (event as CustomEvent)?.detail?.note;
-  NoteStore.selectedNoteId = id;
-  dispatchEvent(new Event("refresh-client"));
+  try {
+    if (EditorStore.isDirty) await saveNote();
+    const { id } = (event as CustomEvent)?.detail?.note;
+    NoteStore.selectedNoteId = id;
+    dispatchEvent(new Event("refresh-client"));
+  } catch (error) {
+    // TODO: show error notification
+    console.error(error);
+  }
 });
 
 /**
@@ -110,8 +136,13 @@ window.addEventListener("select-note", async (event) => {
  * client is ready to render.
  */
 window.addEventListener("DOMContentLoaded", async () => {
-  database = new Database();
-  dispatchEvent(new Event("refresh-client"));
+  try {
+    database = new Database();
+    dispatchEvent(new Event("refresh-client"));
+  } catch (error) {
+    // TODO: show error notification
+    console.error(error);
+  }
 });
 
 /**
