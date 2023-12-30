@@ -74,7 +74,7 @@ docker-compose up -d
 
 This will setup the container and the basic admin user and password.
 
-To interact with the CouchDB server and databases while running the container, go to: `http://localhost:5984/_utils/` to open the GUI. Username and password are located in `docker-compose.yaml`
+To interact with the CouchDB server and database while running the container, go to: `http://localhost:5984/_utils/` to open the GUI. Username and password are located in `docker-compose.yaml`
 
 ### Updating Tauri/Rust Cargo packages
 
