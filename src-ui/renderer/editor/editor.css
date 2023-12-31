@@ -36,11 +36,24 @@
   padding-right: 7em;
 }
 
-.code,
 .code-block {
+  display: block;
+  padding: 0.5em;
   background-color: #303030;
   color: white;
-  padding: 0.5em;
   border-radius: 0.3em;
-  margin: 1em;
+  margin: 0.5em;
+}
+
+.task-item {
+  display: flex;
+  list-style: none;
+}
+
+.task-item > label {
+  margin: 0 0.5em;
+}
+
+.task-item > label > input {
+  transform: scale(2);
 }

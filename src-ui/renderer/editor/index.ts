@@ -18,7 +18,6 @@ import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
-import Code from '@tiptap/extension-code'
 import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
 import type { MarkOptions } from 'types'
@@ -53,10 +52,10 @@ async function renderEditor({
       ListItem,
       OrderedList,
       TaskList,
-      TaskItem.configure({ nested: true }),
-      Code.configure({
+      TaskItem.configure({
+        nested: true,
         HTMLAttributes: {
-          class: 'code',
+          class: 'task-item',
         },
       }),
       CodeBlock.configure({
