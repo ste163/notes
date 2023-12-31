@@ -1,4 +1,5 @@
 import { StatusStore } from 'store'
+import pkg from '../../../package.json'
 
 /**
  * Renders footer with latest StatusStore state
@@ -6,8 +7,8 @@ import { StatusStore } from 'store'
 function renderFooter(footerContainer: Element): void {
   const { lastSavedDate } = StatusStore
   footerContainer.innerHTML = `
-  ${lastSavedDate ? `Last saved: ${lastSavedDate}` : ''}
-  `
+  <div>${lastSavedDate ? `Last saved: ${lastSavedDate}` : ''}</div>
+  <div>v${pkg.version}</div>`
 }
 
 // break out into the different sections and render each piece dynamically:
