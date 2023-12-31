@@ -6,7 +6,6 @@ INSERT IMAGE OF APPLICATION HERE
 
 ## TODOs
 
-- Separate build process + deployment of browser-only version and desktop version
 - PouchDb remote
   - make it work + update readme with work (separate repo for docker container?)
 - Tauri version: supports auto-updates

@@ -17,9 +17,6 @@ dependencies:
   '@tiptap/extension-bullet-list':
     specifier: 2.1.13
     version: 2.1.13(@tiptap/core@2.1.13)
-  '@tiptap/extension-code':
-    specifier: 2.1.13
-    version: 2.1.13(@tiptap/core@2.1.13)
   '@tiptap/extension-code-block':
     specifier: 2.1.13
     version: 2.1.13(@tiptap/core@2.1.13)(@tiptap/pm@2.1.13)
@@ -673,14 +670,6 @@ packages:
     dependencies:
       '@tiptap/core': 2.1.13(@tiptap/pm@2.1.13)
       '@tiptap/pm': 2.1.13
-    dev: false
-
-  /@tiptap/extension-code@2.1.13(@tiptap/core@2.1.13):
-    resolution: {integrity: sha512-f5fLYlSgliVVa44vd7lQGvo49+peC+Z2H0Fn84TKNCH7tkNZzouoJsHYn0/enLaQ9Sq+24YPfqulfiwlxyiT8w==}
-    peerDependencies:
-      '@tiptap/core': ^2.0.0
-    dependencies:
-      '@tiptap/core': 2.1.13(@tiptap/pm@2.1.13)
     dev: false
 
   /@tiptap/extension-document@2.1.13(@tiptap/core@2.1.13):

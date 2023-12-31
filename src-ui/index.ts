@@ -132,6 +132,16 @@ window.addEventListener('select-note', async (event) => {
   }
 })
 
+window.addEventListener('open-modal', () => {
+  const closeButton = document.querySelector('#modal-close') as HTMLElement
+  closeButton?.focus()
+  EditorStore.editor?.setEditable(false)
+})
+
+window.addEventListener('close-modal', () => {
+  EditorStore.editor?.setEditable(true)
+})
+
 /**
  * By this point, all events related to running the app have been created:
  * initial state has been setup, DOM has loaded, and

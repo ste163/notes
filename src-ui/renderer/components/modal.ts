@@ -1,3 +1,4 @@
+import { createEvent } from 'event'
 import './modal.css'
 
 /**
@@ -54,17 +55,13 @@ function openModal(
   modal: HTMLElement,
   closeButton: HTMLButtonElement
 ) {
+  createEvent('open-modal').dispatch()
   // Save last focused element outside of modal to restore focus on modal close
   const previouslyFocusedOutsideModalElement =
     document.activeElement as HTMLElement
 
   closeButton.onclick = closeModal
   modalBackdrop.style.display = 'block' // shows modal
-
-  // delaying focus to allow modal to render
-  setTimeout(() => {
-    closeButton.focus() // set focus on close button
-  }, 1)
 
   modal.addEventListener('keydown', trapFocusListener)
   modal.addEventListener('keydown', escapePressListener)
@@ -73,6 +70,7 @@ function openModal(
    * Cleanup listeners and restore focus
    */
   function closeModal() {
+    createEvent('close-modal').dispatch()
     modalBackdrop.style.display = 'none'
     modal.removeEventListener('keydown', trapFocusListener)
     modal.removeEventListener('keydown', escapePressListener)
