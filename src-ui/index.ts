@@ -123,8 +123,11 @@ window.addEventListener('select-note', async (event) => {
 })
 
 window.addEventListener('open-modal', () => {
-  const closeButton = document.querySelector('#modal-close') as HTMLElement
-  closeButton?.focus()
+  setTimeout(() => {
+    // need timeout delay to allow modal to render
+    const closeButton = document.querySelector('#modal-close') as HTMLElement
+    closeButton?.focus()
+  }, 10)
   EditorStore.editor?.setEditable(false)
 })
 
