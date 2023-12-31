@@ -38,11 +38,6 @@ async function renderEditor({
   floatingEditorMenu: Element
   editorContent?: string
 }): Promise<Editor> {
-  // disable the editor when user leaves focus
-  const disableEditor = () => editor.setEditable(false)
-  editorElement.removeEventListener('focusout', disableEditor)
-  editorElement.addEventListener('focusout', disableEditor)
-
   const editor = new Editor({
     element: editorElement,
     extensions: [
@@ -103,10 +98,6 @@ async function renderEditor({
 
   renderTopMenu(topEditorMenu)
   renderFloatingMenu(floatingEditorMenu)
-
-  // only allow the editor to be editable when focused.
-  // fixes issues where the user can type when modals are focused
-  editor.on('focus', () => editor.setEditable(true))
 
   // TODO: only set these IF we're selecting a new note
   // if the same note is active, then we don't want to reset
