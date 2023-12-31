@@ -133,6 +133,8 @@ window.addEventListener('select-note', async (event) => {
 })
 
 window.addEventListener('open-modal', () => {
+  const closeButton = document.querySelector('#modal-close') as HTMLElement
+  closeButton?.focus()
   EditorStore.editor?.setEditable(false)
 })
 
