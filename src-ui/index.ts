@@ -49,7 +49,7 @@ window.addEventListener('refresh-client', async () => {
      * However, if slow downs become noticeable, this would be a place to optimize.
      */
     const sortedNotes = Object.values(NoteStore.notes).sort((a, b) => {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     })
     NoteStore.selectedNoteId = sortedNotes[0]?._id
   }
