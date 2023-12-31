@@ -1,24 +1,14 @@
 /**
  * TODO PRIORITY ORDER
- * - UI/UX polish
- *   - error notification (in footer)
- *   - consistent cross-browser css styling with reset.css
- *   - checkbox styling is wrong
- *   - close/open sidebar and remember state on re-open (local-storage)
- *   - (before web-only release) mobile view support (related to close/open sidebar)
- * - Code Quality (before release):
- *   - clean-up todos
- * - Features: Quality of Life
- *   - delete note confirmation step
- *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
- *   - (later): visual explanation of available shortcuts
  * - REMOTE DB
  *   - setup the remote db that connects to the docker container
- *   - set this up as an "extension"; ie, only ship the remote code if it's the desktop env
- * - DEPLOYMENT
- *   - setup deployment for UI only to browsers (no remote db access)
- *   - setup deployment for tauri app
- * - "Branding"
+ *   - info about it in footer
+ * - FEATURES
+ *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - error notification (in footer)
+ *   - mobile view (sidebar only + selected note only, state lives in URL)
+ *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
+ * - BRANDING
  *  - make favicon
  *  - make icons for desktop
  */
