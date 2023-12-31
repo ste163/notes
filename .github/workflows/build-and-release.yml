@@ -2,8 +2,7 @@ name: "build-and-release"
 on:
   push:
     branches:
-      - main # main for now, but a 'release' branch would be better for manuall approval
-
+      - main # main for now, but a 'release' branch would be better for manual approval
 jobs:
   publish-tauri:
     permissions:
@@ -15,13 +14,13 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: 8
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: install Rust stable
