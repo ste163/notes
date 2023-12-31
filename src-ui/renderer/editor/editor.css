@@ -16,7 +16,7 @@
 
 #editor {
   flex-grow: 1;
-  overflow-y: -webkit-paged-y;
+  overflow-y: auto;
 }
 
 #editor-floating-menu {
@@ -30,8 +30,6 @@
 /* TipTap/ProseMirror specific */
 .ProseMirror {
   outline: none;
-  height: 100%;
-  overflow-y: scroll;
   padding-left: 3em;
   padding-right: 7em;
 }
