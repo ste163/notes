@@ -29,6 +29,7 @@
 
 /* TipTap/ProseMirror specific */
 .ProseMirror {
+  height: 100%;
   max-width: 80em;
   outline: none;
   padding-left: 3em;
