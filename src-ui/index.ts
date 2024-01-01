@@ -1,8 +1,12 @@
 /**
  * TODO PRIORITY ORDER
  * - REMOTE DB
- *   - setup the remote db that connects to the docker container
- *   - info about it in footer
+ *    TODO:
+ *     - Expose the container to the local network only
+ *     - Connect from my local machine to the remote host (on another computer)
+ *     - Once that's done, the UI needs a way for inputting that remote host and updating it.
+ *     - User will also need options to decide how syncing works (remote first, client first, etc.)
+ *     - Give UI information about the remote in the footer
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
