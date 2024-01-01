@@ -6,6 +6,7 @@
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
+ *   - hyperlinks in the editor
  *   - mobile view (sidebar only + selected note only, state lives in URL)
  *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
  * - BRANDING

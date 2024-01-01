@@ -18,9 +18,9 @@ class Database {
    * TODO: for first version, only using the local db.
    * Next version is to hook into a remote db for syncing
    */
-  constructor(remoteUrl?: string) {
+  constructor() {
     PouchDb.plugin(PouchDbFind)
-    this.db = new PouchDb(remoteUrl ?? 'local_db_test')
+    this.db = new PouchDb('http://admin:password@localhost:5984/notes')
     this.db.createIndex({
       index: { fields: ['_id'] },
     })
