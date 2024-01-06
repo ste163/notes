@@ -4,10 +4,10 @@
  *    TODO:
  *     - Expose the container to the local network only - DONE
  *     - Connect from my local machine to the remote host (on another computer) - DONE
- *     - If unable to connect, need to fallback to IndexedDB, need to read PouchDB docs
+ *     - If unable to connect, need to fallback to IndexedDB, need to read PouchDB docs -DONE
  *     - Once that's done, the UI needs a way for inputting that remote host and updating it.
- *     - User will also need options to decide how syncing works (remote first, client first, etc.)
- *     - Give UI information about the remote in the footer
+ *     - Give UI information about the remote in the footer - DONE
+ *     - Handle error states related to db
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
@@ -65,14 +65,15 @@ window.addEventListener('refresh-client', async () => {
   await refreshClient()
 })
 
+window.addEventListener('remote-db-connected', () => {
+  if (StatusStore.isConnectedToRemote) return
+  StatusStore.isConnectedToRemote = true
+  database.setupSyncing()
+})
+
 window.addEventListener('db-sync-paused', (event) => {
   const date = (event as CustomEvent)?.detail?.date
   StatusStore.lastSyncedDate = date
-  // pausing also acts as a successful connection event
-  if (date && !StatusStore.isConnectedToRemote) {
-    StatusStore.isConnectedToRemote = true
-    dispatchEvent(new Event('refresh-client'))
-  }
 })
 
 window.addEventListener('create-note', async (event) => {

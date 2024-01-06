@@ -1,3 +1,10 @@
+import { renderFooter } from 'renderer'
+
+/**
+ * The StatusStore is the only store
+ * that re-renders its component, the footer,
+ * outside of the main refreshClient render loop.
+ */
 interface StatusStore {
   lastSavedDate: null | Date
   lastSyncedDate: null | Date
@@ -17,6 +24,8 @@ const StatusStore = new Proxy(
       if (key === 'lastSavedDate' || key === 'lastSyncedDate')
         value = new Date(value).toLocaleString()
       ;(target[key] as unknown) = value
+      const container = document.querySelector('footer')
+      if (container) renderFooter(container)
       return true
     },
   }

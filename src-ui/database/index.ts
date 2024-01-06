@@ -15,25 +15,57 @@ class Database {
       index: { fields: ['_id'] },
     })
     this.remoteUrl = remoteUrl
-    // setup syncing
-    if (this.remoteUrl)
-      this.db
-        .sync(this.remoteUrl, {
-          live: true,
-          retry: true,
+    if (this.remoteUrl) {
+      /**
+       * Test the connection to the remote url.
+       * If it is connected, then the main process
+       * handles the syncing setup.
+       *
+       * Because this new Pouchdb is not stored or referenced,
+       * it will be cleaned up by the garbage collectors
+       */
+      new PouchDb(this.remoteUrl)
+        .info()
+        .then(() => {
+          // successfully made the connection
+          createEvent('remote-db-connected').dispatch()
         })
-        .on('paused', () => {
-          // paused means replication has completed or connection was lost without an error
-          createEvent('db-sync-paused', { date: new Date() }).dispatch()
+        .catch((error) => {
+          // unable to connect for some reason
+          // TODO:
+          // render, in the footer, a notification icon and error button
+          // that renders a modal with the error message with helpful info
+          // (event on who called it, the actual error message, etc.)
+          console.log('REMOTE CONNECTION ERROR', error)
         })
-        .on('error', (error) => {
-          console.error('remote db sync ERROR event', error)
-        })
+    }
   }
 
-  /**
-   * Creates or updates a note and returns its id
-   */
+  setupSyncing(): void {
+    // NOTE: potentially move this to a syncHandler property.
+    // Probably if i want to stop syncing, because I need a way to stop it.
+    // However, I may be able to call this.db.sync.cancel directly
+    this.db
+      .sync(this.remoteUrl, {
+        live: true,
+        retry: true,
+      })
+      .on('paused', () => {
+        // paused means replication has completed or connection was lost without an error.
+        // emit the date for the 'last synced' date
+        createEvent('db-sync-paused', { date: new Date() }).dispatch()
+      })
+      .on('error', (error) => {
+        console.error('remote db sync ERROR event', error)
+      })
+      .on('denied', (error) => {
+        console.log('denied error', error)
+      })
+      .catch((error) => {
+        console.log('CATCH ERROR', error)
+      })
+  }
+
   async put(note: Partial<Note>): Promise<string> {
     if (note?._id) {
       await this.db.put({
