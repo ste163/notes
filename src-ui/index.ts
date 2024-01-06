@@ -2,12 +2,8 @@
  * TODO PRIORITY ORDER
  * - REMOTE DB
  *    TODO:
- *     - Expose the container to the local network only - DONE
- *     - Connect from my local machine to the remote host (on another computer) - DONE
- *     - If unable to connect, need to fallback to IndexedDB, need to read PouchDB docs -DONE
- *     - Once that's done, the UI needs a way for inputting that remote host and updating it.
- *     - Give UI information about the remote in the footer - DONE
- *     - Handle error states related to db
+ *     - Footer needs a way for inputting that remote host and updating it.
+ *     - Footer UI + handle error states related to db
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
@@ -71,9 +67,13 @@ window.addEventListener('remote-db-connected', () => {
   database.setupSyncing()
 })
 
-window.addEventListener('db-sync-paused', (event) => {
+window.addEventListener('remote-db-sync-paused', (event) => {
   const date = (event as CustomEvent)?.detail?.date
   StatusStore.lastSyncedDate = date
+  // TODO:
+  // this also needs to be stored in local storage
+  // so that we can render that on the chance that we are unable to connect
+  // to the remote, we can still render when the last time was we did successfully connect
 })
 
 window.addEventListener('create-note', async (event) => {
@@ -162,6 +162,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     // TODO
     // read from local storage for the remote url.
     // ask for "username", "password", "host", "port"
+    // and link to couchdb-docker repo for instructions on how to setup
     database = new Database('http://admin:password@192.168.0.16:5984/notes')
     dispatchEvent(new Event('refresh-client'))
   } catch (error) {

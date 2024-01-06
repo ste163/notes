@@ -53,7 +53,7 @@ class Database {
       .on('paused', () => {
         // paused means replication has completed or connection was lost without an error.
         // emit the date for the 'last synced' date
-        createEvent('db-sync-paused', { date: new Date() }).dispatch()
+        createEvent('remote-db-sync-paused', { date: new Date() }).dispatch()
       })
       .on('error', (error) => {
         console.error('remote db sync ERROR event', error)
