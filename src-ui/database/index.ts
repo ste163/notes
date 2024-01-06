@@ -1,29 +1,34 @@
 import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
 import { nanoid } from 'nanoid'
+import { createEvent } from 'event'
 import type { Note } from 'types'
 
-/**
- * Creates the Pouchdb database instance
- * with the methods for interacting with the db
- */
 class Database {
   private db: PouchDB.Database
-  // TODO:
-  // need to read docs on how pouchdb connects to a remote and then export
-  // a method for getting the status information in the Status type
-  // for rendering in footer
+  private remoteUrl: string
 
-  /**
-   * TODO: for first version, only using the local db.
-   * Next version is to hook into a remote db for syncing
-   */
-  constructor() {
+  constructor(remoteUrl: string) {
     PouchDb.plugin(PouchDbFind)
-    this.db = new PouchDb('http://admin:password@localhost:5984/notes')
+    this.db = new PouchDb('notes')
     this.db.createIndex({
       index: { fields: ['_id'] },
     })
+    this.remoteUrl = remoteUrl
+    // setup syncing
+    if (this.remoteUrl)
+      this.db
+        .sync(this.remoteUrl, {
+          live: true,
+          retry: true,
+        })
+        .on('paused', () => {
+          // paused means replication has completed or connection was lost without an error
+          createEvent('db-sync-paused', { date: new Date() }).dispatch()
+        })
+        .on('error', (error) => {
+          console.error('remote db sync ERROR event', error)
+        })
   }
 
   /**

@@ -1,0 +1,28 @@
+footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: small;
+  border-top: var(--outline-color) 0.15em solid;
+  padding: 0.25em 0.5em;
+  height: min-content;
+}
+
+.footer-data-container {
+  display: flex;
+}
+
+.footer-data-container > :first-child {
+  display: flex;
+  margin-right: 0.5em;
+  height: min-content;
+}
+
+.footer-data-container > :first-child > svg {
+  height: 1em;
+  margin-right: 0.5em;
+}
+
+.footer-divider {
+  margin: 0 0.5em;
+  border-left: var(--outline-color) 0.15em solid;
+}

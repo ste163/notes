@@ -75,12 +75,6 @@ li {
 
 footer {
   grid-area: footer;
-  display: flex;
-  justify-content: space-between;
-  font-size: small;
-  border-top: var(--outline-color) 0.15em solid;
-  padding: 0.25em 0.5em;
-  height: min-content;
 }
 
 p {

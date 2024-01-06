@@ -2,8 +2,9 @@
  * TODO PRIORITY ORDER
  * - REMOTE DB
  *    TODO:
- *     - Expose the container to the local network only
- *     - Connect from my local machine to the remote host (on another computer)
+ *     - Expose the container to the local network only - DONE
+ *     - Connect from my local machine to the remote host (on another computer) - DONE
+ *     - If unable to connect, need to fallback to IndexedDB, need to read PouchDB docs
  *     - Once that's done, the UI needs a way for inputting that remote host and updating it.
  *     - User will also need options to decide how syncing works (remote first, client first, etc.)
  *     - Give UI information about the remote in the footer
@@ -62,6 +63,16 @@ window.addEventListener('refresh-client', async () => {
   EditorStore.isDirty = false
 
   await refreshClient()
+})
+
+window.addEventListener('db-sync-paused', (event) => {
+  const date = (event as CustomEvent)?.detail?.date
+  StatusStore.lastSyncedDate = date
+  // pausing also acts as a successful connection event
+  if (date && !StatusStore.isConnectedToRemote) {
+    StatusStore.isConnectedToRemote = true
+    dispatchEvent(new Event('refresh-client'))
+  }
 })
 
 window.addEventListener('create-note', async (event) => {
@@ -147,7 +158,10 @@ window.addEventListener('close-modal', () => {
  */
 window.addEventListener('DOMContentLoaded', async () => {
   try {
-    database = new Database()
+    // TODO
+    // read from local storage for the remote url.
+    // ask for "username", "password", "host", "port"
+    database = new Database('http://admin:password@192.168.0.16:5984/notes')
     dispatchEvent(new Event('refresh-client'))
   } catch (error) {
     // TODO: show error notification

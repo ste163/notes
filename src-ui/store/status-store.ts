@@ -1,27 +1,21 @@
-/**
- * TODO:
- * revisit store once
- * I'm setting up the remote server
- */
 interface StatusStore {
-  // remoteUrl: string;
-  // isConnectedToRemote: boolean;
   lastSavedDate: null | Date
-  // lastSyncedDate: null | Date;
+  lastSyncedDate: null | Date
+  isConnectedToRemote: boolean
   error: string
 }
 
 const StatusStore = new Proxy(
   {
-    // remoteUrl: "",
-    // isConnectedToRemote: false,
     lastSavedDate: null,
-    // lastSyncedDate: null,
+    lastSyncedDate: null,
+    isConnectedToRemote: false,
     error: '',
   },
   {
     set(target: StatusStore, key: keyof StatusStore, value) {
-      if (key === 'lastSavedDate') value = new Date(value).toLocaleString()
+      if (key === 'lastSavedDate' || key === 'lastSyncedDate')
+        value = new Date(value).toLocaleString()
       ;(target[key] as unknown) = value
       return true
     },
