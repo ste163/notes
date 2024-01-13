@@ -1,0 +1,47 @@
+.remote-db-setup-modal section {
+  display: flex;
+  flex-direction: column;
+}
+
+.remote-db-setup-modal h3 {
+  margin: 1.5em 0 0.5em 0;
+}
+
+.remote-db-status-heading {
+  margin-top: 0 !important;
+}
+
+.remote-db-status-logs {
+  height: 1em;
+  background-color: red;
+}
+
+.remote-db-setup-modal form {
+  display: flex;
+  flex-direction: column;
+}
+
+.remote-db-setup-modal form input {
+  margin: 0.25em 0;
+}
+
+.remote-db-setup-modal form button {
+  width: min-content;
+  place-self: end;
+}
+
+.remote-db-status-container {
+  display: flex;
+  align-items: center;
+}
+
+.remote-db-status-icon {
+  height: 2em;
+  width: 2em;
+  margin-right: 0.5em;
+}
+
+.remote-db-status-buttons {
+  margin-top: 1em;
+  place-self: flex-end;
+}

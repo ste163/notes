@@ -4,6 +4,7 @@
  *    TODO:
  *     - Footer needs a way for inputting that remote host and updating it.
  *     - Footer UI + handle error states related to db
+ *     - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect)
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
