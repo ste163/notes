@@ -5,6 +5,8 @@
  *     - Footer needs a way for inputting that remote host and updating it.
  *     - Footer UI + handle error states related to db
  *     - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect)
+ *     - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
+ *          - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
