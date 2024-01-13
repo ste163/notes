@@ -22,7 +22,7 @@ class Database {
        * handles the syncing setup.
        *
        * Because this new Pouchdb is not stored or referenced,
-       * it will be cleaned up by the garbage collectors
+       * it will be cleaned up by the garbage collector.
        */
       new PouchDb(this.remoteUrl)
         .info()
@@ -36,7 +36,7 @@ class Database {
           // render, in the footer, a notification icon and error button
           // that renders a modal with the error message with helpful info
           // (event on who called it, the actual error message, etc.)
-          console.log('REMOTE CONNECTION ERROR', error)
+          console.error('REMOTE CONNECTION ERROR', error)
         })
     }
   }

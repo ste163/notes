@@ -7,6 +7,7 @@
   --background-color: #f0f0e1;
   --outline-color: #1d1d1d;
   --active-color: #b3d4b8;
+  --info-button-hover-color: rgba(128, 128, 128, 0.2);
 
   color: var(--outline-color);
   background-color: var(--background-color);

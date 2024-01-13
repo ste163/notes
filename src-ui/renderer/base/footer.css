@@ -1,5 +1,6 @@
 footer {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   font-size: small;
   border-top: var(--outline-color) 0.15em solid;
@@ -7,22 +8,30 @@ footer {
   height: min-content;
 }
 
+footer button {
+  border: none;
+  padding: 0 0.2em;
+  font-weight: inherit;
+  font-size: inherit;
+}
+
+footer button:hover {
+  background-color: var(--info-button-hover-color);
+}
+
 .footer-data-container {
   display: flex;
+  align-items: center;
 }
 
 .footer-data-container > :first-child {
   display: flex;
-  margin-right: 0.5em;
+  align-items: center;
   height: min-content;
 }
 
-.footer-data-container > :first-child > svg {
-  height: 1em;
-  margin-right: 0.5em;
-}
-
 .footer-divider {
+  height: 1em;
   margin: 0 0.5em;
   border-left: var(--outline-color) 0.15em solid;
 }
