@@ -8,6 +8,10 @@ import type { Note } from 'types'
 
 const DB_NAME = 'notes'
 
+// TODO: these methods will also need to emit events for their completion
+// that way other components can listen for things like "db connected"
+// and can enable and disable buttons/loading states accordingly
+
 class Database {
   private db: PouchDB.Database
   private remoteUrl: string
@@ -105,6 +109,11 @@ class Database {
    */
   async getAll() {
     const { rows } = await this.db.allDocs({
+      // TODO: use the
+      // fields key to include which key:values to return
+      // example:
+      // fields: ['_id', '_rev', 'title', 'createdAt', 'updatedAt']
+      // ALSO sort these by createdAt so that the db does the work
       include_docs: true,
       descending: true,
     })

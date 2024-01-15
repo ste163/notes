@@ -11,6 +11,7 @@
  *          - could include info about the application, its version, its license and the remix icon license
  *     - revisit fetch requests. Initial get should NOT get all note details. Note details should
  *          - only be fetched with the setup of the url: /notes/:id
+ *     - move all console.logs and console.errors to the logger()
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)

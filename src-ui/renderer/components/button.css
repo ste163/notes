@@ -33,3 +33,10 @@ button > span {
 button.isActive {
   background-color: var(--active-color);
 }
+
+button:disabled {
+  background-color: lightgray;
+  border-color: gray;
+  color: gray;
+  cursor: not-allowed;
+}
