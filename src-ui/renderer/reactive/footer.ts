@@ -57,11 +57,8 @@ function renderFooter(footerContainer: Element): void {
     onClick: renderRemoteDbSetupModal,
   })
 
-  const remoteDbContainer = document.querySelector(
-    `#${remoteDbContainerId}`
-  ) as HTMLElement
-
-  remoteDbContainer.appendChild(remoteDbSetupButton)
+  const remoteDbContainer = document.querySelector(`#${remoteDbContainerId}`)
+  remoteDbContainer?.appendChild(remoteDbSetupButton)
 }
 
 export { renderFooter }
