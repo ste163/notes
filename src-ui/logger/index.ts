@@ -1,4 +1,5 @@
 import { renderRemoteDbLogs } from 'renderer/reactive'
+import { StatusStore } from 'store'
 
 const logs: string[] = []
 
@@ -14,8 +15,10 @@ function logger(type: 'info' | 'error', message: string) {
   logs.push(processedMessage)
   if (type === 'info') {
     console.log('logger: ', processedMessage)
+    StatusStore.error = ''
   } else {
     console.error('logger: ', processedMessage)
+    StatusStore.error = processedMessage
   }
 
   /**
