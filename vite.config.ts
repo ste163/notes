@@ -15,6 +15,7 @@ export default defineConfig({
       components: '/src-ui/renderer/components',
       database: '/src-ui/database',
       event: '/src-ui/event',
+      logger: '/src-ui/logger',
       renderer: '/src-ui/renderer',
       store: '/src-ui/store',
       types: '/src-ui/types',

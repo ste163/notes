@@ -7,6 +7,8 @@
  *     - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect)
  *     - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
  *          - could include info about the application, its version, its license and the remix icon license
+ *     - revisit fetch requests. Initial get should NOT get all note details. Note details should
+ *          - only be fetched with the setup of the url: /notes/:id
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
@@ -19,6 +21,7 @@
  */
 
 import { Database } from 'database'
+import { logger } from 'logger'
 import { createEvent } from 'event'
 import { NoteStore, EditorStore, StatusStore } from 'store'
 import { renderBaseElements, renderGetStarted, renderEditor } from 'renderer'
@@ -68,6 +71,20 @@ window.addEventListener('remote-db-connected', () => {
   if (StatusStore.isConnectedToRemote) return
   StatusStore.isConnectedToRemote = true
   database.setupSyncing()
+})
+
+window.addEventListener('remote-db-disconnect', () => {
+  if (!StatusStore.isConnectedToRemote) {
+    logger('info', 'Already disconnected from remote')
+    return
+  }
+  const successfulDisconnect = database.disconnectSyncing()
+  if (successfulDisconnect) {
+    StatusStore.isConnectedToRemote = false
+    logger('info', 'Disconnected from remote database.')
+  } else {
+    logger('error', 'Error disconnecting from remote database.')
+  }
 })
 
 window.addEventListener('remote-db-sync-paused', (event) => {
@@ -164,8 +181,13 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     // TODO
     // read from local storage for the remote url.
-    // ask for "username", "password", "host", "port"
-    // and link to couchdb-docker repo for instructions on how to setup
+
+    const details = window.localStorage.getItem('remote-db-details')
+
+    if (details) {
+      console.log('DB DETAILS', details)
+    }
+
     database = new Database('http://admin:password@192.168.0.16:5984/notes')
     dispatchEvent(new Event('refresh-client'))
   } catch (error) {

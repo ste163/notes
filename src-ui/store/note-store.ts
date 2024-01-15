@@ -12,7 +12,7 @@ const NoteStore = new Proxy(
   },
   {
     set(target: NoteStore, key: keyof NoteStore, value) {
-      ;(target[key] as unknown) = value
+      target[key] = value
       return true
     },
   }

@@ -2,14 +2,17 @@ import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
 import { nanoid } from 'nanoid'
 import { createEvent } from 'event'
+import { logger } from 'logger'
 import type { Note } from 'types'
 
 class Database {
   private db: PouchDB.Database
   private remoteUrl: string
+  private syncHandler: null | PouchDB.Replication.Sync<object>
 
   constructor(remoteUrl: string) {
     PouchDb.plugin(PouchDbFind)
+    this.syncHandler = null
     this.db = new PouchDb('notes')
     this.db.createIndex({
       index: { fields: ['_id'] },
@@ -29,34 +32,29 @@ class Database {
         .then(() => {
           // successfully made the connection
           createEvent('remote-db-connected').dispatch()
+          logger('info', 'Connected to remote database.')
         })
         .catch((error) => {
           // unable to connect for some reason
-          // TODO:
-          // render, in the footer, a notification icon and error button
-          // that renders a modal with the error message with helpful info
-          // (event on who called it, the actual error message, etc.)
-          console.error('REMOTE CONNECTION ERROR', error)
+          logger('error', 'Remote connection error: ' + error.message)
         })
     }
   }
 
-  setupSyncing(): void {
-    // NOTE: potentially move this to a syncHandler property.
-    // Probably if i want to stop syncing, because I need a way to stop it.
-    // However, I may be able to call this.db.sync.cancel directly
-    this.db
-      .sync(this.remoteUrl, {
-        live: true,
-        retry: true,
-      })
+  async setupSyncing(): Promise<void> {
+    this.syncHandler = this.db.sync(this.remoteUrl, {
+      live: true,
+      retry: true,
+    })
+
+    this.syncHandler
       .on('paused', () => {
         // paused means replication has completed or connection was lost without an error.
         // emit the date for the 'last synced' date
         createEvent('remote-db-sync-paused', { date: new Date() }).dispatch()
       })
-      .on('error', (error) => {
-        console.error('remote db sync ERROR event', error)
+      .on('error', (error: unknown | Error) => {
+        logger('error', 'Remote database sync error: ' + JSON.stringify(error))
       })
       .on('denied', (error) => {
         console.log('denied error', error)
@@ -66,6 +64,16 @@ class Database {
       })
   }
 
+  disconnectSyncing(): boolean {
+    if (this.syncHandler) {
+      this.syncHandler.cancel()
+      return true
+    }
+    return false
+  }
+
+  // TODO: maybe better to do .then().catch() as that's what pouchdb usually does?
+  // need to decide best location for consolidated error handling
   async put(note: Partial<Note>): Promise<string> {
     if (note?._id) {
       await this.db.put({
