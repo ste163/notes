@@ -38,8 +38,7 @@ class Database {
           logger('info', 'Connected to remote database.')
         })
         .catch((error) => {
-          // unable to connect for some reason
-          logger('error', 'Remote connection error: ' + error.message)
+          logger('error', 'Remote connection error.', error)
         })
     }
   }
@@ -57,7 +56,7 @@ class Database {
         createEvent('remote-db-sync-paused', { date: new Date() }).dispatch()
       })
       .on('error', (error: unknown | Error) => {
-        logger('error', 'Remote database sync error: ' + JSON.stringify(error))
+        logger('error', 'Remote database sync error.', error)
       })
       .on('denied', (error) => {
         console.log('denied error', error)

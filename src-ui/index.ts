@@ -231,7 +231,7 @@ function setupDatabase() {
     dispatchEvent(new Event('refresh-client'))
   } catch (error) {
     // TODO: show error notification
-    logger('error', 'Error setting up database ' + JSON.stringify(error))
+    logger('error', 'Error setting up database.', error)
   }
 }
 
