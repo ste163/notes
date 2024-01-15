@@ -1,15 +1,16 @@
 import { StatusStore } from 'store'
 import { renderModal } from 'components'
 import { logContainerId } from 'logger'
+import { createEvent } from 'event'
+import { useRemoteDetails } from 'database'
 import { databaseIcon } from '../icons'
 import { renderRemoteDbLogs } from './remote-db-logs'
+import type { RemoteDetails } from 'types'
 import './remote-db-setup-modal.css'
-import { createEvent } from 'event'
 
-// TODO: will probs be an issue:
+// TODO:
 // when a state change occurs, the modal is going to close.
-// I don't want this to happen, so I'll need some kind of state-tracking
-// for opening a modal after a re-render
+// Use url params to track the open/close state
 
 function renderRemoteDbSetupModal() {
   const { isConnectedToRemote, error } = StatusStore
@@ -27,15 +28,15 @@ function renderRemoteDbSetupModal() {
           <h3 class="remote-db-connection-heading">Connection details</h3>
           <form id="remote-db-connection-form">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Username">
+            <input type="text" id="username" name="username" placeholder="admin">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Password">
+            <input type="password" id="password" name="password" placeholder="password">
             <label for="host">Host</label>
-            <input type="text" id="host" name="host" placeholder="Host">
+            <input type="text" id="host" name="host" placeholder="192.168.0.**">
             <label for="port">Port</label>
-            <input type="text" id="port" name="port" placeholder="Port">
+            <input type="text" id="port" name="port" placeholder="5984">
             <div>
-              <button type="submit">Connect</button>
+              <button id="connect-button" type="submit">Connect</button>
               ${
                 isConnectedToRemote
                   ? `<button id="disconnect-button">Disconnect from remote</button>`
@@ -75,11 +76,7 @@ function renderRemoteDbSetupModal() {
                       <span>Not connected to remote database.</span>`
               }
             </div>
-            ${
-              isConnectedToRemote
-                ? `<div id="remote-db-logs" class="code-block"></div>`
-                : ''
-            }
+            <div id="remote-db-logs" class="code-block"></div>
           </div>
         </section>
 
@@ -98,18 +95,53 @@ function renderRemoteDbSetupModal() {
   /**
    * setup listeners for rendered elements
    */
-
   const form = document.querySelector('#remote-db-connection-form')
   form?.addEventListener('submit', (event) => {
     event.preventDefault()
     event.stopPropagation()
   })
 
+  /**
+   * setup inputs
+   */
+  const inputElements = ['username', 'password', 'host', 'port'].map(
+    (input) => {
+      const element = document.querySelector(`#${input}`) as HTMLInputElement
+      if (!element) throw new Error(`Missing input element: ${input}`)
+      return element
+    }
+  )
+
+  const localStorageDetails = useRemoteDetails().get()
+
+  inputElements.forEach((element) => {
+    // if the element id is the same as the key in localStorageDetails
+    // assign the default value to the input
+    if (element.id in localStorageDetails) {
+      element.defaultValue = localStorageDetails[element?.id]
+    }
+  })
+
+  /**
+   * setup buttons
+   */
   const disconnectButton = document.querySelector('#disconnect-button')
   disconnectButton?.addEventListener(
     'click',
     createEvent('remote-db-disconnect').dispatch
   )
+
+  const connectButton = document.querySelector('#connect-button')
+  connectButton?.addEventListener('click', () => {
+    const details = inputElements.reduce((acc, element) => {
+      return {
+        ...acc,
+        [element.id]: element.value,
+      }
+    }, {} as RemoteDetails)
+    useRemoteDetails().set(details)
+    createEvent('remote-db-connect').dispatch()
+  })
 
   const dbLogContainer = document.querySelector(logContainerId)
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer)

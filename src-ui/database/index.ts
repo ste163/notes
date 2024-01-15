@@ -3,7 +3,10 @@ import PouchDbFind from 'pouchdb-find'
 import { nanoid } from 'nanoid'
 import { createEvent } from 'event'
 import { logger } from 'logger'
+import { useRemoteDetails } from './use-remote-details'
 import type { Note } from 'types'
+
+const DB_NAME = 'notes'
 
 class Database {
   private db: PouchDB.Database
@@ -13,7 +16,7 @@ class Database {
   constructor(remoteUrl: string) {
     PouchDb.plugin(PouchDbFind)
     this.syncHandler = null
-    this.db = new PouchDb('notes')
+    this.db = new PouchDb(DB_NAME)
     this.db.createIndex({
       index: { fields: ['_id'] },
     })
@@ -27,7 +30,7 @@ class Database {
        * Because this new Pouchdb is not stored or referenced,
        * it will be cleaned up by the garbage collector.
        */
-      new PouchDb(this.remoteUrl)
+      new PouchDb(`${this.remoteUrl}/${DB_NAME}`)
         .info()
         .then(() => {
           // successfully made the connection
@@ -42,7 +45,7 @@ class Database {
   }
 
   async setupSyncing(): Promise<void> {
-    this.syncHandler = this.db.sync(this.remoteUrl, {
+    this.syncHandler = this.db.sync(`${this.remoteUrl}/${DB_NAME}`, {
       live: true,
       retry: true,
     })
@@ -67,8 +70,10 @@ class Database {
   disconnectSyncing(): boolean {
     if (this.syncHandler) {
       this.syncHandler.cancel()
+      logger('info', 'Disconnected from remote database.')
       return true
     }
+    logger('error', 'Error disconnecting from remote database.')
     return false
   }
 
@@ -126,4 +131,4 @@ class Database {
   }
 }
 
-export { Database }
+export { Database, useRemoteDetails }

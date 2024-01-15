@@ -17,6 +17,7 @@ export default defineConfig({
       event: '/src-ui/event',
       logger: '/src-ui/logger',
       renderer: '/src-ui/renderer',
+      'renderer/reactive': '/src-ui/renderer/reactive',
       store: '/src-ui/store',
       types: '/src-ui/types',
     },

@@ -5,6 +5,8 @@
  *     - Footer needs a way for inputting that remote host and updating it.
  *     - Footer UI + handle error states related to db
  *     - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect)
+ *     - URL param state for: selected note id, whether the remote db modal is open, note details modal open
+ *     - loading states to stop the flashing on screen when connecting after a disconnect
  *     - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
  *          - could include info about the application, its version, its license and the remix icon license
  *     - revisit fetch requests. Initial get should NOT get all note details. Note details should
@@ -19,8 +21,7 @@
  *  - make favicon
  *  - make icons for desktop
  */
-
-import { Database } from 'database'
+import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
 import { createEvent } from 'event'
 import { NoteStore, EditorStore, StatusStore } from 'store'
@@ -73,18 +74,21 @@ window.addEventListener('remote-db-connected', () => {
   database.setupSyncing()
 })
 
+window.addEventListener('remote-db-connect', () => {
+  if (StatusStore.isConnectedToRemote) {
+    logger('info', 'Already connected to remote database.')
+    return
+  }
+  setupDatabase()
+})
+
 window.addEventListener('remote-db-disconnect', () => {
   if (!StatusStore.isConnectedToRemote) {
-    logger('info', 'Already disconnected from remote')
+    logger('info', 'Already disconnected from remote database.')
     return
   }
   const successfulDisconnect = database.disconnectSyncing()
-  if (successfulDisconnect) {
-    StatusStore.isConnectedToRemote = false
-    logger('info', 'Disconnected from remote database.')
-  } else {
-    logger('error', 'Error disconnecting from remote database.')
-  }
+  if (successfulDisconnect) StatusStore.isConnectedToRemote = false
 })
 
 window.addEventListener('remote-db-sync-paused', (event) => {
@@ -178,22 +182,7 @@ window.addEventListener('close-modal', () => {
  * client is ready to render.
  */
 window.addEventListener('DOMContentLoaded', async () => {
-  try {
-    // TODO
-    // read from local storage for the remote url.
-
-    const details = window.localStorage.getItem('remote-db-details')
-
-    if (details) {
-      console.log('DB DETAILS', details)
-    }
-
-    database = new Database('http://admin:password@192.168.0.16:5984/notes')
-    dispatchEvent(new Event('refresh-client'))
-  } catch (error) {
-    // TODO: show error notification
-    console.error(error)
-  }
+  setupDatabase()
 })
 
 /**
@@ -233,6 +222,17 @@ async function refreshClient(): Promise<void> {
     selector: `#${NoteStore.selectedNoteId}-note-select-container`,
     type: 'select-note',
   })
+}
+
+function setupDatabase() {
+  try {
+    const { username, password, host, port } = useRemoteDetails().get()
+    database = new Database(`http://${username}:${password}@${host}:${port}`)
+    dispatchEvent(new Event('refresh-client'))
+  } catch (error) {
+    // TODO: show error notification
+    logger('error', 'Error setting up database ' + JSON.stringify(error))
+  }
 }
 
 async function saveNote() {

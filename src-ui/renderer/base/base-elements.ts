@@ -1,7 +1,7 @@
 import { NoteStore } from 'store'
 import { renderSidebarTopMenu } from './sidebar-top-menu'
 import { renderSidebarNoteList } from './sidebar-note-list'
-import { renderFooter } from './footer'
+import { renderFooter } from 'renderer/reactive'
 
 /**
  * Render the stateless HTML structure for the application.

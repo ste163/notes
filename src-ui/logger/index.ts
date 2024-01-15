@@ -1,9 +1,10 @@
-import { renderRemoteDbLogs } from 'renderer'
+import { renderRemoteDbLogs } from 'renderer/reactive'
 
 const logs: string[] = []
 
 const logContainerId = '#remote-db-logs'
 
+// TODO: logger should probably include a error object?
 function logger(type: 'info' | 'error', message: string) {
   const timestamp = new Date().toLocaleTimeString()
 
@@ -11,7 +12,11 @@ function logger(type: 'info' | 'error', message: string) {
   const processedMessage = timestamp + ` [${type}]` + ': ' + message
 
   logs.push(processedMessage)
-  console.log('logger: ', processedMessage)
+  if (type === 'info') {
+    console.log('logger: ', processedMessage)
+  } else {
+    console.error('logger: ', processedMessage)
+  }
 
   /**
    * Although the logger lives outside of the render functions,
