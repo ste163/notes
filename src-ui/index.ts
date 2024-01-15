@@ -2,16 +2,19 @@
  * TODO PRIORITY ORDER
  * - REMOTE DB
  *    TODO:
- *     - Footer needs a way for inputting that remote host and updating it.
- *     - Footer UI + handle error states related to db
- *     - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect)
+ *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
+ *         - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
+ *            - say that it is connected to local
+ *     - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect) - use new events in the db class
  *     - URL param state for: selected note id, whether the remote db modal is open, note details modal open
  *     - loading states to stop the flashing on screen when connecting after a disconnect
- *     - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
- *          - could include info about the application, its version, its license and the remix icon license
  *     - revisit fetch requests. Initial get should NOT get all note details. Note details should
  *          - only be fetched with the setup of the url: /notes/:id
- *     - move all console.logs and console.errors to the logger()
+ *     - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
+ *          - fetches, errors, saves, deletes, etc.
+ *     - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
+ *          - could include info about the application, its version, its license and the remix icon license
+ *     - fix database modal error styling. Icon shrinks
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
