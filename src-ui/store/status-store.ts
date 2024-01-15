@@ -12,6 +12,8 @@ interface StatusStore {
   isConnectedToRemote: boolean
 }
 
+// TODO: this may need to become:
+// DbStatusStore
 const StatusStore = new Proxy(
   {
     error: '',
