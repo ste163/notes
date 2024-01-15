@@ -63,10 +63,10 @@ class Database {
         logger('error', 'Remote database sync error.', error)
       })
       .on('denied', (error) => {
-        console.log('denied error', error)
+        logger('error', 'Remote database sync denied.', error)
       })
       .catch((error) => {
-        console.log('CATCH ERROR', error)
+        logger('error', 'Remote database catch-all error.', error)
       })
   }
 
@@ -107,6 +107,7 @@ class Database {
   /**
    * Fetches all notes sorted by created_at and returned as Record<id, Note>
    */
+  // TODO: make this a getAllMetadata (as its everything but the documents themselves)
   async getAll() {
     const { rows } = await this.db.allDocs({
       // TODO: use the

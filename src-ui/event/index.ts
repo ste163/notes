@@ -1,3 +1,5 @@
+import { Events } from './events'
+
 /**
  * Creates custom events with messages that can be dispatched when needed
  */
@@ -11,4 +13,4 @@ function createEvent(eventName: string, message?: { [key: string]: unknown }) {
   return { dispatch: () => dispatchEvent(event) }
 }
 
-export { createEvent }
+export { createEvent, Events }
