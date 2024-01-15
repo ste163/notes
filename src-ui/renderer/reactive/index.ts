@@ -1,5 +1,5 @@
 /**
- * Reactive elements made to be re-rendered independently of the main loop
+ * renderer/reactive are elements that render state independently, outside of the main loop
  */
 export { renderFooter } from './footer'
 export { renderRemoteDbLogs } from './remote-db-logs'
