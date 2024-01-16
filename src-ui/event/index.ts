@@ -1,7 +1,9 @@
 export { createEvent } from './create-event'
 export {
+  LifeCycleEvents,
   KeyboardEvents,
+  LoggerEvents,
   ModalEvents,
-  NoteEvents,
   DatabaseEvents,
+  NoteEvents,
 } from './enums'

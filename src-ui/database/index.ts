@@ -1,7 +1,7 @@
 import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
 import { nanoid } from 'nanoid'
-import { createEvent } from 'event'
+import { createEvent, DatabaseEvents } from 'event'
 import { logger } from 'logger'
 import { useRemoteDetails } from './use-remote-details'
 import type { Note } from 'types'
@@ -38,11 +38,11 @@ class Database {
         .info()
         .then(() => {
           // successfully made the connection
-          createEvent('remote-db-connected').dispatch()
+          createEvent(DatabaseEvents.RemoteConnected).dispatch()
           logger('info', 'Connected to remote database.')
         })
-        .catch((error) => {
-          logger('error', 'Remote connection error.', error)
+        .catch(() => {
+          logger('error', 'Remote connection error.')
         })
     }
   }
@@ -57,7 +57,9 @@ class Database {
       .on('paused', () => {
         // paused means replication has completed or connection was lost without an error.
         // emit the date for the 'last synced' date
-        createEvent('remote-db-sync-paused', { date: new Date() }).dispatch()
+        createEvent(DatabaseEvents.RemoteSyncingPaused, {
+          date: new Date(),
+        }).dispatch()
       })
       .on('error', (error: unknown | Error) => {
         logger('error', 'Remote database sync error.', error)
@@ -68,6 +70,8 @@ class Database {
       .catch((error) => {
         logger('error', 'Remote database catch-all error.', error)
       })
+
+    logger('info', 'Syncing with remote database.')
   }
 
   disconnectSyncing(): boolean {

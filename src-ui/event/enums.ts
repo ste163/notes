@@ -1,10 +1,25 @@
+export enum LifeCycleEvents {
+  Refresh = 'refresh-client',
+}
+
 export enum KeyboardEvents {
   Keydown = 'keydown',
+}
+
+export enum LoggerEvents {
+  Update = 'update-logs',
 }
 
 export enum ModalEvents {
   Open = 'open-modal',
   Close = 'close-modal',
+}
+
+export enum DatabaseEvents {
+  RemoteConnect = 'remote-connect',
+  RemoteConnected = 'remote-connected',
+  RemoteSyncingPaused = 'remote-syncing-paused',
+  RemoteDisconnect = 'remote-disconnect',
 }
 
 // TODO: implement:
@@ -24,10 +39,4 @@ export enum NoteEvents {
   Deleted = 'note-deleted',
   Select = 'select-note',
   Selected = 'note-selected',
-}
-
-export enum DatabaseEvents {
-  RemoteConnected = 'remote-connected',
-  RemoteSyncingSetup = 'remote-syncing-setup',
-  RemoteDisconnected = 'remote-disconnected',
 }

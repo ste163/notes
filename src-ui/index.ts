@@ -15,6 +15,8 @@
  *     - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
  *          - could include info about the application, its version, its license and the remix icon license
  *     - fix database modal error styling. Icon shrinks
+ *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
+ *             - the error also gets triggered/logged before vite connects (in the logs)
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - error notification (in footer)
@@ -26,10 +28,23 @@
  *  - make icons for desktop
  */
 import { Database, useRemoteDetails } from 'database'
-import { logger } from 'logger'
-import { KeyboardEvents, ModalEvents, NoteEvents, createEvent } from 'event'
+import { logContainerId, logger } from 'logger'
+import {
+  LifeCycleEvents,
+  KeyboardEvents,
+  LoggerEvents,
+  ModalEvents,
+  DatabaseEvents,
+  NoteEvents,
+  createEvent,
+} from 'event'
 import { NoteStore, EditorStore, StatusStore } from 'store'
-import { renderBaseElements, renderGetStarted, renderEditor } from 'renderer'
+import {
+  renderBaseElements,
+  renderGetStarted,
+  renderEditor,
+  renderRemoteDbLogs,
+} from 'renderer'
 
 let database: Database // not using a Store because the database is only used here
 
@@ -49,7 +64,7 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
 /**
  * App life-cycle events
  */
-window.addEventListener('refresh-client', async () => {
+window.addEventListener(LifeCycleEvents.Refresh, async () => {
   /**
    * Note on sorting:
    * by default it's by created_at,
@@ -72,13 +87,16 @@ window.addEventListener('refresh-client', async () => {
   await refreshClient()
 })
 
-window.addEventListener('remote-db-connected', () => {
+/**
+ * Remote database events
+ */
+window.addEventListener(DatabaseEvents.RemoteConnected, () => {
   if (StatusStore.isConnectedToRemote) return
   StatusStore.isConnectedToRemote = true
   database.setupSyncing()
 })
 
-window.addEventListener('remote-db-connect', () => {
+window.addEventListener(DatabaseEvents.RemoteConnect, () => {
   if (StatusStore.isConnectedToRemote) {
     logger('info', 'Already connected to remote database.')
     return
@@ -86,16 +104,18 @@ window.addEventListener('remote-db-connect', () => {
   setupDatabase()
 })
 
-window.addEventListener('remote-db-disconnect', () => {
+window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
   if (!StatusStore.isConnectedToRemote) {
     logger('info', 'Already disconnected from remote database.')
     return
   }
   const successfulDisconnect = database.disconnectSyncing()
   if (successfulDisconnect) StatusStore.isConnectedToRemote = false
+  // TODO: need to clear the remote details from local storage
+  // so we do not reconnect on refresh
 })
 
-window.addEventListener('remote-db-sync-paused', (event) => {
+window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
   const date = (event as CustomEvent)?.detail?.date
   StatusStore.lastSyncedDate = date
   // TODO:
@@ -104,12 +124,24 @@ window.addEventListener('remote-db-sync-paused', (event) => {
   // to the remote, we can still render when the last time was we did successfully connect
 })
 
+/**
+ * Log events
+ */
+window.addEventListener(LoggerEvents.Update, (event) => {
+  const logs = (event as CustomEvent)?.detail?.logs
+  const dbLogContainer = document.querySelector(logContainerId)
+  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
+})
+
+/**
+ * Note events
+ */
 window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note
     const id = await database.put({ title: note.title, content: '' })
     NoteStore.selectedNoteId = id
-    dispatchEvent(new Event('refresh-client'))
+    dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -119,7 +151,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 window.addEventListener(NoteEvents.Save, async () => {
   try {
     await saveNote()
-    dispatchEvent(new Event('refresh-client'))
+    dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -135,7 +167,7 @@ window.addEventListener(NoteEvents.EditTitle, async (event) => {
     const noteToUpdate = NoteStore.notes[NoteStore.selectedNoteId]
     noteToUpdate.title = title
     await database.put(noteToUpdate)
-    dispatchEvent(new Event('refresh-client'))
+    dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -148,7 +180,7 @@ window.addEventListener(NoteEvents.Delete, async () => {
     const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId]
     await database.delete(noteToDelete)
     NoteStore.selectedNoteId = null // reset selected note as it was deleted
-    dispatchEvent(new Event('refresh-client'))
+    dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -160,13 +192,16 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     if (EditorStore.isDirty) await saveNote()
     const note = (event as CustomEvent)?.detail?.note
     NoteStore.selectedNoteId = note.id
-    dispatchEvent(new Event('refresh-client'))
+    dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
   }
 })
 
+/**
+ * Modal events
+ */
 window.addEventListener(ModalEvents.Open, () => {
   setTimeout(() => {
     // need timeout delay to allow modal to render
@@ -232,7 +267,7 @@ function setupDatabase() {
   try {
     const { username, password, host, port } = useRemoteDetails().get()
     database = new Database(`http://${username}:${password}@${host}:${port}`)
-    dispatchEvent(new Event('refresh-client'))
+    dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
     logger('error', 'Error setting up database.', error)

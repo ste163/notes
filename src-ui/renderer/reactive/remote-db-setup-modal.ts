@@ -1,7 +1,7 @@
 import { StatusStore } from 'store'
 import { renderModal } from 'components'
-import { logContainerId } from 'logger'
-import { createEvent } from 'event'
+import { getLogs, logContainerId } from 'logger'
+import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
 import { databaseIcon } from '../icons'
 import { renderRemoteDbLogs } from './remote-db-logs'
@@ -128,7 +128,7 @@ function renderRemoteDbSetupModal() {
   const disconnectButton = document.querySelector('#disconnect-button')
   disconnectButton?.addEventListener(
     'click',
-    createEvent('remote-db-disconnect').dispatch
+    createEvent(DatabaseEvents.RemoteDisconnect).dispatch
   )
 
   const connectButton = document.querySelector('#connect-button')
@@ -140,11 +140,11 @@ function renderRemoteDbSetupModal() {
       }
     }, {} as RemoteDetails)
     useRemoteDetails().set(details)
-    createEvent('remote-db-connect').dispatch()
+    createEvent(DatabaseEvents.RemoteConnect).dispatch()
   })
 
   const dbLogContainer = document.querySelector(logContainerId)
-  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer)
+  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, getLogs())
 }
 
 export { renderRemoteDbSetupModal }

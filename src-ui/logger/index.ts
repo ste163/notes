@@ -1,5 +1,5 @@
-import { renderRemoteDbLogs } from 'renderer/reactive'
 import { StatusStore } from 'store'
+import { LoggerEvents, createEvent } from 'event'
 
 const logs: string[] = []
 
@@ -36,7 +36,9 @@ function logger(
   if (type === 'info') {
     console.log('logger: ', processedMessage)
     StatusStore.error = ''
-  } else {
+  }
+
+  if (type === 'error') {
     console.error('logger: ', processedMessage)
     StatusStore.error = processedMessage
   }
@@ -44,13 +46,7 @@ function logger(
   // only keep 25 log entries, remove the first item if more than 30
   if (logs.length > 25) logs.shift()
 
-  /**
-   * Although the logger lives outside of the render functions,
-   * by checking for the containers existence in the DOM while logging,
-   * we can have real-time rendering
-   */
-  const container = document.querySelector(logContainerId)
-  if (container) renderRemoteDbLogs(container)
+  createEvent(LoggerEvents.Update, { logs }).dispatch()
 }
 
 export { logger, getLogs, logContainerId }

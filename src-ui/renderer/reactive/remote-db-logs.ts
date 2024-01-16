@@ -1,8 +1,5 @@
-import { getLogs } from 'logger'
-
-function renderRemoteDbLogs(container: Element) {
+function renderRemoteDbLogs(container: Element, logs: string[]) {
   // TODO: based on logs '[type]' assign color coding (errors are an accessible red)
-  const logs = getLogs()
   if (logs.length)
     container.innerHTML = logs
       .map((log) => `<p>${log}</p>`)
