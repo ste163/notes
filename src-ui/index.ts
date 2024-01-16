@@ -27,7 +27,7 @@
  */
 import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
-import { createEvent } from 'event'
+import { KeyboardEvents, ModalEvents, NoteEvents, createEvent } from 'event'
 import { NoteStore, EditorStore, StatusStore } from 'store'
 import { renderBaseElements, renderGetStarted, renderEditor } from 'renderer'
 
@@ -36,7 +36,7 @@ let database: Database // not using a Store because the database is only used he
 /**
  * Keyboard events
  */
-document.addEventListener('keydown', (event) => {
+document.addEventListener(KeyboardEvents.Keydown, (event) => {
   if (event.ctrlKey && event.key === 's') {
     event.preventDefault() // prevent default save behavior
     EditorStore.editor &&
@@ -104,7 +104,7 @@ window.addEventListener('remote-db-sync-paused', (event) => {
   // to the remote, we can still render when the last time was we did successfully connect
 })
 
-window.addEventListener('create-note', async (event) => {
+window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note
     const id = await database.put({ title: note.title, content: '' })
@@ -116,7 +116,7 @@ window.addEventListener('create-note', async (event) => {
   }
 })
 
-window.addEventListener('save-note', async () => {
+window.addEventListener(NoteEvents.Save, async () => {
   try {
     await saveNote()
     dispatchEvent(new Event('refresh-client'))
@@ -126,7 +126,7 @@ window.addEventListener('save-note', async () => {
   }
 })
 
-window.addEventListener('edit-note-title', async (event) => {
+window.addEventListener(NoteEvents.EditTitle, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note
     const { title } = note
@@ -142,7 +142,7 @@ window.addEventListener('edit-note-title', async (event) => {
   }
 })
 
-window.addEventListener('delete-note', async () => {
+window.addEventListener(NoteEvents.Delete, async () => {
   try {
     if (!NoteStore.selectedNoteId) throw new Error('No note selected to delete')
     const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId]
@@ -155,7 +155,7 @@ window.addEventListener('delete-note', async () => {
   }
 })
 
-window.addEventListener('select-note', async (event) => {
+window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     if (EditorStore.isDirty) await saveNote()
     const note = (event as CustomEvent)?.detail?.note
@@ -167,7 +167,7 @@ window.addEventListener('select-note', async (event) => {
   }
 })
 
-window.addEventListener('open-modal', () => {
+window.addEventListener(ModalEvents.Open, () => {
   setTimeout(() => {
     // need timeout delay to allow modal to render
     const closeButton = document.querySelector('#modal-close') as HTMLElement
@@ -176,7 +176,7 @@ window.addEventListener('open-modal', () => {
   EditorStore.editor?.setEditable(false)
 })
 
-window.addEventListener('close-modal', () => {
+window.addEventListener(ModalEvents.Close, () => {
   EditorStore.editor?.setEditable(true)
 })
 
@@ -224,7 +224,7 @@ async function refreshClient(): Promise<void> {
   // set which note in the list is active
   toggleActiveClass({
     selector: `#${NoteStore.selectedNoteId}-note-select-container`,
-    type: 'select-note',
+    type: NoteEvents.Select,
   })
 }
 

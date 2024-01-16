@@ -5,6 +5,17 @@ const logs: string[] = []
 
 const logContainerId = '#remote-db-logs'
 
+/**
+ * Return the latest copy of logs const
+ */
+function getLogs() {
+  return [...logs]
+}
+
+/**
+ * Creates consistent logging and levels for the console
+ * and the remote-db-logs component
+ */
 function logger(
   type: 'info' | 'error',
   message: string,
@@ -21,6 +32,7 @@ function logger(
     (error ? ' ' + 'Original Error: ' + JSON.stringify(error) : '')
 
   logs.push(processedMessage)
+
   if (type === 'info') {
     console.log('logger: ', processedMessage)
     StatusStore.error = ''
@@ -41,4 +53,4 @@ function logger(
   if (container) renderRemoteDbLogs(container)
 }
 
-export { logger, logs, logContainerId }
+export { logger, getLogs, logContainerId }

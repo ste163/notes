@@ -1,3 +1,4 @@
+import { NoteEvents } from 'event'
 import { EditorStore } from 'store'
 import { renderButton } from 'components'
 import { renderNoteDetailsModal } from './note-details-modal'
@@ -201,7 +202,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Save note',
     isInFloatingMenu: false,
-    onClick: () => dispatchEvent(new Event('save-note')),
+    onClick: () => dispatchEvent(new Event(NoteEvents.Save)),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Save note</title>  
