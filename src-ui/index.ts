@@ -4,6 +4,7 @@
  *    - Components only render data from the event that fetches the data and passes it into the components
  *    - This will simplify the main loop and make adding features easier. Potentially will also allow for the removal of state management
  *    - as the passing of data will be handled by the events
+ *    - Potential structure: renderer/reactive (all state-rendered items), renderer/static (static layout), renderer/components (base components, not used outside the renderer)
  *      - RELATED TODOs:
  *        - Revisit fetch requests. GetAll should only get the list of note meta data. Get by Id gets all note details + content
  *        - URL param state for: selected note id
