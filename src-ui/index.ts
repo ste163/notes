@@ -1,25 +1,26 @@
 /**
  * TODO PRIORITY ORDER
- * - REMOTE DB
- *    TODO:
+ *  - Rendering refactor: event-based instead of a 'main refresh loop'.
+ *    - Components only render data from the event that fetches the data and passes it into the components
+ *    - This will simplify the main loop and make adding features easier. Potentially will also allow for the removal of state management
+ *    - as the passing of data will be handled by the events
+ *      - RELATED TODOs:
+ *        - Revisit fetch requests. GetAll should only get the list of note meta data. Get by Id gets all note details + content
+ *        - URL param state for: selected note id
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
- *         - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
- *            - say that it is connected to local
- *     - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect) - use new events in the db class
- *     - URL param state for: selected note id, whether the remote db modal is open, note details modal open
- *     - loading states to stop the flashing on screen when connecting after a disconnect
- *     - revisit fetch requests. Initial get should NOT get all note details. Note details should
- *          - only be fetched with the setup of the url: /notes/:id
- *     - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
- *          - fetches, errors, saves, deletes, etc.
- *     - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
- *          - could include info about the application, its version, its license and the remix icon license
- *     - fix database modal error styling. Icon shrinks
+ *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
+ *       - say that it is connected to local
+ *    - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect) - use new events in the db class
+ *    - loading states to stop the flashing on screen when connecting after a disconnect
+ *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
+ *      - fetches, errors, saves, deletes, etc.
+ *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
+ *      - could include info about the application, its version, its license and the remix icon license
+ *     - BUG: fix database modal error styling. Icon shrinks
  *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *             - the error also gets triggered/logged before vite connects (in the logs)
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
- *   - error notification (in footer)
  *   - hyperlinks in the editor
  *   - mobile view (sidebar only + selected note only, state lives in URL)
  *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
