@@ -17,6 +17,7 @@
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
  *      - could include info about the application, its version, its license and the remix icon license
+ *    - move all Icons into the const as it will make the main files smaller and easier to read
  *     - BUG: fix database modal error styling. Icon shrinks
  *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *             - the error also gets triggered/logged before vite connects (in the logs)
