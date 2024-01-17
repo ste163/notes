@@ -1,28 +1,43 @@
+import { renderFooter, renderRemoteDbSetupModal } from 'renderer/reactive'
+
 /**
- * TODO:
- * revisit store once
- * I'm setting up the remote server
+ * The StatusStore is the only store
+ * that re-renders its component, the footer,
+ * outside of the main refreshClient render loop.
  */
 interface StatusStore {
-  // remoteUrl: string;
-  // isConnectedToRemote: boolean;
-  lastSavedDate: null | Date
-  // lastSyncedDate: null | Date;
   error: string
+  lastSavedDate: null | Date
+  lastSyncedDate: null | Date
+  isConnectedToRemote: boolean
 }
 
+// TODO: this may need to become:
+// DbStatusStore
 const StatusStore = new Proxy(
   {
-    // remoteUrl: "",
-    // isConnectedToRemote: false,
-    lastSavedDate: null,
-    // lastSyncedDate: null,
     error: '',
+    lastSavedDate: null,
+    lastSyncedDate: null,
+    isConnectedToRemote: false,
   },
   {
     set(target: StatusStore, key: keyof StatusStore, value) {
-      if (key === 'lastSavedDate') value = new Date(value).toLocaleString()
+      if (key === 'lastSavedDate' || key === 'lastSyncedDate')
+        value = new Date(value).toLocaleString()
       ;(target[key] as unknown) = value
+
+      // TODO: statusStore will emit an event, status-store-updated
+      // to decouple rendering from the store
+      const footerContainer = document.querySelector('footer')
+      if (footerContainer) renderFooter(footerContainer)
+
+      // TODO/NOTE (rendering is being completely revisited): this doesn't work to re-open the modal on a state change
+      // might be best to make this router/url based. Could be a param option:
+      // ?db-modal=true
+      const isModalRendered = document.querySelector('.remote-db-setup-modal')
+      if (isModalRendered) renderRemoteDbSetupModal()
+
       return true
     },
   }

@@ -12,7 +12,7 @@ const EditorStore = new Proxy(
   },
   {
     set(target: EditorStore, key: keyof EditorStore, value) {
-      ;(target[key] as unknown) = value
+      target[key] = value
       return true
     },
   }

@@ -18,6 +18,8 @@
   border: 0.1em solid var(--outline-color);
   border-radius: 0.25em;
   padding: 1em;
+  max-height: 80vh;
+  overflow-y: scroll;
 }
 
 #modal-header {

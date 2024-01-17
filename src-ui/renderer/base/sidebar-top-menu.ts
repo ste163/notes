@@ -1,4 +1,4 @@
-import { createEvent } from 'event'
+import { NoteEvents, createEvent } from 'event'
 import { renderButton } from 'components'
 import './sidebar-top-menu.css'
 
@@ -61,7 +61,7 @@ function renderNoteInput(container: Element) {
         ) as HTMLInputElement
         const title: string = input?.value
         if (!title) throw new Error('Unable to read title from input')
-        createEvent('create-note', { note: { title } }).dispatch()
+        createEvent(NoteEvents.Create, { note: { title } }).dispatch()
       },
     })
   )
