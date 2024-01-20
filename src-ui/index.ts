@@ -162,7 +162,6 @@ window.addEventListener(NoteEvents.Delete, async () => {
     const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId]
     await database.delete(noteToDelete)
     NoteStore.selectedNoteId = null // reset selected note as it was deleted
-    // TODO: route to '/' because there is no selected note
     dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
