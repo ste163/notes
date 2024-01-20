@@ -7,7 +7,6 @@
  *    - Potential structure: renderer/reactive (all state-rendered items), renderer/static (static layout), renderer/components (base components, not used outside the renderer)
  *      - RELATED TODOs:
  *        - Revisit fetch requests. GetAll should only get the list of note meta data. Get by Id gets all note details + content
- *        - URL param state for: selected note id
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
  *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
  *       - say that it is connected to local
