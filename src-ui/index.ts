@@ -52,19 +52,6 @@ import {
 let database: Database // not using a Store because the database is only used here
 
 /**
- * Keyboard events
- */
-document.addEventListener(KeyboardEvents.Keydown, (event) => {
-  if (event.ctrlKey && event.key === 's') {
-    event.preventDefault() // prevent default save behavior
-    EditorStore.editor &&
-      createEvent('save-note', {
-        note: { content: EditorStore.editor.getHTML() },
-      }).dispatch()
-  }
-})
-
-/**
  * App life-cycle events
  */
 window.addEventListener(LifeCycleEvents.Refresh, async () => {
@@ -74,16 +61,17 @@ window.addEventListener(LifeCycleEvents.Refresh, async () => {
    * but can easily be extended to sort by any note data
    */
   NoteStore.notes = await database.getAll()
-  if (!NoteStore.selectedNoteId) {
-    /**
-     * To start, not calling the db again to get the most recent note.
-     * However, if slow downs become noticeable, this would be a place to optimize.
-     */
-    const sortedNotes = Object.values(NoteStore.notes).sort((a, b) => {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    })
-    NoteStore.selectedNoteId = sortedNotes[0]?._id
+
+  // TODO: make a fetch to getNotById (need to make) and see if it exists
+  // instead of getAll
+  const noteIdFromUrl = window.location.pathname.split('/')[1]
+  if (noteIdFromUrl && NoteStore.notes[noteIdFromUrl]) {
+    NoteStore.selectedNoteId = noteIdFromUrl
+  } else {
+    // set url to '/' to remove bad link
+    window.history.pushState({}, '', '/')
   }
+
   // reset global state
   EditorStore.isDirty = false
 
@@ -125,15 +113,6 @@ window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
   // this also needs to be stored in local storage
   // so that we can render that on the chance that we are unable to connect
   // to the remote, we can still render when the last time was we did successfully connect
-})
-
-/**
- * Log events
- */
-window.addEventListener(LoggerEvents.Update, (event) => {
-  const logs = (event as CustomEvent)?.detail?.logs
-  const dbLogContainer = document.querySelector(logContainerId)
-  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
 })
 
 /**
@@ -183,6 +162,7 @@ window.addEventListener(NoteEvents.Delete, async () => {
     const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId]
     await database.delete(noteToDelete)
     NoteStore.selectedNoteId = null // reset selected note as it was deleted
+    // TODO: route to '/' because there is no selected note
     dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
@@ -216,6 +196,28 @@ window.addEventListener(ModalEvents.Open, () => {
 
 window.addEventListener(ModalEvents.Close, () => {
   EditorStore.editor?.setEditable(true)
+})
+
+/**
+ * Log events
+ */
+window.addEventListener(LoggerEvents.Update, (event) => {
+  const logs = (event as CustomEvent)?.detail?.logs
+  const dbLogContainer = document.querySelector(logContainerId)
+  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
+})
+
+/**
+ * Keyboard events
+ */
+document.addEventListener(KeyboardEvents.Keydown, (event) => {
+  if (event.ctrlKey && event.key === 's') {
+    event.preventDefault() // prevent default save behavior
+    EditorStore.editor &&
+      createEvent('save-note', {
+        note: { content: EditorStore.editor.getHTML() },
+      }).dispatch()
+  }
 })
 
 /**

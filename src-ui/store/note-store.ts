@@ -13,6 +13,13 @@ const NoteStore = new Proxy(
   {
     set(target: NoteStore, key: keyof NoteStore, value) {
       target[key] = value
+
+      if (key === 'selectedNoteId') {
+        const url = value ? `/${value}` : '/'
+        window.history.pushState({}, '', url)
+        // TODO: emit the event for NoteSelected
+      }
+
       return true
     },
   }
