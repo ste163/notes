@@ -1,16 +1,22 @@
-import { NoteStore } from 'store'
 import { createEvent } from 'event'
 import { renderButton } from 'components'
 import './sidebar-note-list.css'
+import type { Notes } from 'types'
 
 /**
  * Renders the note list that can
  * - emit select note event
  * - emit delete note event
  */
-function renderSidebarNoteList(container: Element) {
+function renderSidebarNoteList({
+  container,
+  notes,
+}: {
+  container: Element
+  notes: Notes
+}) {
   container.innerHTML = '' // reset container before rendering
-  Object.values(NoteStore.notes)?.map(({ _id, title, updatedAt }) => {
+  Object.values(notes)?.map(({ _id, title, updatedAt }) => {
     if (!title) throw new Error('Unable to read name from note')
     const selectableNoteButton = renderButton({
       title,

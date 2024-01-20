@@ -27,16 +27,16 @@ import './editor.css'
  * Instantiates the editor and returns the instance.
  */
 async function renderEditor({
-  editorElement,
-  topEditorMenu,
-  floatingEditorMenu,
-  editorContent,
+  content,
 }: {
-  editorElement: Element
-  topEditorMenu: Element
-  floatingEditorMenu: Element
-  editorContent?: string
+  content?: string
 }): Promise<Editor> {
+  const editorElement = document.querySelector('#editor')
+  const topEditorMenu = document.querySelector('#editor-top-menu')
+  const floatingEditorMenu = document.querySelector('#editor-floating-menu')
+  if (!editorElement) throw new Error('Unable to find editor element')
+
+  if (editorElement) editorElement.innerHTML = '' // reset container before rendering
   const editor = new Editor({
     element: editorElement,
     extensions: [
@@ -72,11 +72,11 @@ async function renderEditor({
             : false,
       }),
     ],
-    content: editorContent ?? '<p>Issue selecting note</p>',
+    content: content ?? '<p>Issue selecting note</p>',
     onUpdate: ({ editor }) => {
       if (EditorStore.isDirty) return
       const currentContent = editor.getHTML()
-      EditorStore.isDirty = currentContent !== editorContent
+      EditorStore.isDirty = currentContent !== content
     },
     onTransaction: ({ editor }) => {
       /**
@@ -95,7 +95,7 @@ async function renderEditor({
     },
   })
 
-  renderTopMenu(topEditorMenu)
+  if (topEditorMenu) renderTopMenu(topEditorMenu)
   if (floatingEditorMenu) renderFloatingMenu(floatingEditorMenu)
 
   // TODO: only set these IF we're selecting a new note

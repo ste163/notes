@@ -54,16 +54,14 @@ let database: Database // not using a Store because the database is only used he
 /**
  * App life-cycle events
  */
-window.addEventListener(LifeCycleEvents.Refresh, async () => {
+window.addEventListener(LifeCycleEvents.Init, async () => {
   /**
-   * Note on sorting:
-   * by default it's by created_at,
-   * but can easily be extended to sort by any note data
+   * Initial application state after the database has been setup.
+   * Everything required for running the application at later stages
    */
-  NoteStore.notes = await database.getAll()
 
-  // TODO: make a fetch to getNotById (need to make) and see if it exists
-  // instead of getAll
+  // TODO: this is when the main application loading state is still true (which it defaults to)
+  // until the FetchAllNotes completes
   const noteIdFromUrl = window.location.pathname.split('/')[1]
   if (noteIdFromUrl && NoteStore.notes[noteIdFromUrl]) {
     NoteStore.selectedNoteId = noteIdFromUrl
@@ -72,10 +70,35 @@ window.addEventListener(LifeCycleEvents.Refresh, async () => {
     window.history.pushState({}, '', '/')
   }
 
-  // reset global state
-  EditorStore.isDirty = false
+  // TODO: better handling on resetting the editor.isDirty state
+  // should only happen after a save event
+  // EditorStore.isDirty = false
+  await initClient()
 
-  await refreshClient()
+  // TODO: check the URL, and see if there is any id
+  // if there is, fetch by id at this point to queue up the event
+  createEvent(LifeCycleEvents.FetchAllNotes).dispatch()
+})
+
+window.addEventListener(LifeCycleEvents.FetchAllNotes, async () => {
+  // TODO: loading state = TRUE which will need to render the sidebar loading state
+  // this can be tapped-into the store so it's always handled there?
+  try {
+    const notes = await database.getAll()
+    createEvent(LifeCycleEvents.FetchedAllNotes, { notes }).dispatch()
+  } catch (error) {
+    // TODO: WOULD BE NICE to have a custom eslint rule that does:
+    // - if you are using console.error, say it's an error and say you need to use logger
+    logger('error', 'Error fetching all notes', error)
+  }
+})
+
+window.addEventListener(LifeCycleEvents.FetchedAllNotes, (event) => {
+  const notes = (event as CustomEvent)?.detail?.notes
+  NoteStore.notes = notes
+  const container = document.querySelector('#sidebar-list')
+  // isLoading = false for the sidebar
+  if (container) renderSidebarNoteList({ container, notes })
 })
 
 /**
@@ -93,6 +116,7 @@ window.addEventListener(DatabaseEvents.RemoteConnect, () => {
     return
   }
   setupDatabase()
+  dispatchEvent(new Event(LifeCycleEvents.Init))
 })
 
 window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
@@ -123,7 +147,8 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     const note = (event as CustomEvent)?.detail?.note
     const id = await database.put({ title: note.title, content: '' })
     NoteStore.selectedNoteId = id
-    dispatchEvent(new Event(LifeCycleEvents.Refresh))
+    // TODO: dispatch note created event instead of .init
+    dispatchEvent(new Event(LifeCycleEvents.Init))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -133,7 +158,8 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 window.addEventListener(NoteEvents.Save, async () => {
   try {
     await saveNote()
-    dispatchEvent(new Event(LifeCycleEvents.Refresh))
+    // TODO: dispatch note saved event instead of .init
+    dispatchEvent(new Event(LifeCycleEvents.Init))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -149,7 +175,7 @@ window.addEventListener(NoteEvents.EditTitle, async (event) => {
     const noteToUpdate = NoteStore.notes[NoteStore.selectedNoteId]
     noteToUpdate.title = title
     await database.put(noteToUpdate)
-    dispatchEvent(new Event(LifeCycleEvents.Refresh))
+    dispatchEvent(new Event(LifeCycleEvents.Init))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -162,7 +188,7 @@ window.addEventListener(NoteEvents.Delete, async () => {
     const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId]
     await database.delete(noteToDelete)
     NoteStore.selectedNoteId = null // reset selected note as it was deleted
-    dispatchEvent(new Event(LifeCycleEvents.Refresh))
+    dispatchEvent(new Event(LifeCycleEvents.Init))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -174,7 +200,9 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     if (EditorStore.isDirty) await saveNote()
     const note = (event as CustomEvent)?.detail?.note
     NoteStore.selectedNoteId = note.id
-    dispatchEvent(new Event(LifeCycleEvents.Refresh))
+
+    // TODO: dispatch SelectedNoteEvent
+    dispatchEvent(new Event(LifeCycleEvents.Init))
   } catch (error) {
     // TODO: show error notification
     console.error(error)
@@ -213,7 +241,7 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
   if (event.ctrlKey && event.key === 's') {
     event.preventDefault() // prevent default save behavior
     EditorStore.editor &&
-      createEvent('save-note', {
+      createEvent(NoteEvents.Save, {
         note: { content: EditorStore.editor.getHTML() },
       }).dispatch()
   }
@@ -223,16 +251,31 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
  * By this point, all events related to running the app have been created:
  * initial state has been setup, DOM has loaded, and
  * client is ready to render.
+ *
+ * Setup initial database connecting and application rendering
  */
 window.addEventListener('DOMContentLoaded', async () => {
-  setupDatabase()
+  try {
+    // TODO: skeleton screen UI of the entire application: no data state
+
+    //
+
+    // LOAD the initial layout and components but with all in a loading skeleton state
+    // then conditionally render in elements as their data gets loaded
+    // - fetch all notes: sidebar renders
+    // - if there is an id in the url, fetch by id
+    setupDatabase()
+    dispatchEvent(new Event(LifeCycleEvents.Init))
+  } catch (error) {
+    logger('error', 'Error in initial setup of DOMContentLoaded.', error)
+  }
 })
 
 /**
  * TODO: this will be fully removed and moved to individual events
  * Main app lifecycle, refresh based on latest state
  */
-async function refreshClient(): Promise<void> {
+async function initClient(): Promise<void> {
   /**
    * TODO: will remove this piece as it will be based on events
    * Update state for initial render
@@ -242,44 +285,26 @@ async function refreshClient(): Promise<void> {
       NoteStore.notes[NoteStore.selectedNoteId].updatedAt
   }
 
-  const sidebarListElement = document.querySelector('#sidebar-list')
   const sidebarTopMenuElement = document.querySelector('#sidebar-top-menu')
   const footerElement = document.querySelector('footer')
-  const editorTopMenuElement = document.querySelector('#editor-top-menu')
-  const editorFloatingMenuElement = document.querySelector(
-    '#editor-floating-menu'
-  )
-  const editorElement = document.querySelector('#editor')
-  if (
-    !sidebarListElement ||
-    !sidebarTopMenuElement ||
-    !footerElement ||
-    !editorTopMenuElement ||
-    !editorElement
-  ) {
-    throw new Error('Unable to find all required elements')
-  }
 
-  renderSidebarTopMenu(sidebarTopMenuElement)
-  renderSidebarNoteList(sidebarListElement)
-  renderFooter(footerElement)
+  if (sidebarTopMenuElement) renderSidebarTopMenu(sidebarTopMenuElement)
+  if (footerElement) renderFooter(footerElement)
 
   // no notes or on the '/' home route
   if (!Object.keys(NoteStore.notes).length || !NoteStore.selectedNoteId) {
     StatusStore.lastSavedDate = null
-    renderGetStarted(editorElement)
+    const editorElement = document.querySelector('#editor')
+    if (editorElement) renderGetStarted(editorElement)
     return
   }
 
-  //TODO: move some of these container element passing to inside the editor
   EditorStore.editor = await renderEditor({
-    editorElement: editorElement,
-    topEditorMenu: editorTopMenuElement,
-    floatingEditorMenu: editorFloatingMenuElement as Element,
-    editorContent: NoteStore.notes[NoteStore.selectedNoteId]?.content,
+    content: NoteStore.notes[NoteStore.selectedNoteId]?.content,
   })
 
-  // set which note in the list is active
+  // TODO:
+  // this only runs on a selectNoteEvent
   toggleActiveClass({
     selector: `#${NoteStore.selectedNoteId}-note-select-container`,
     type: NoteEvents.Select,
@@ -290,7 +315,6 @@ function setupDatabase() {
   try {
     const { username, password, host, port } = useRemoteDetails().get()
     database = new Database(`http://${username}:${password}@${host}:${port}`)
-    dispatchEvent(new Event(LifeCycleEvents.Refresh))
   } catch (error) {
     // TODO: show error notification
     logger('error', 'Error setting up database.', error)

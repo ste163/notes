@@ -1,5 +1,7 @@
 export enum LifeCycleEvents {
-  Refresh = 'refresh-client',
+  Init = 'init',
+  FetchAllNotes = 'fetch-all-notes',
+  FetchedAllNotes = 'fetched-all-notes',
 }
 
 export enum KeyboardEvents {

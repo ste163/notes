@@ -24,7 +24,7 @@ const StatusStore = new Proxy(
   {
     set(target: StatusStore, key: keyof StatusStore, value) {
       if (key === 'lastSavedDate' || key === 'lastSyncedDate')
-        value = new Date(value).toLocaleString()
+        value = value ? new Date(value).toLocaleString() : null
       ;(target[key] as unknown) = value
 
       // TODO: statusStore will emit an event, status-store-updated

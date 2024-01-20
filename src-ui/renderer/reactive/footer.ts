@@ -17,27 +17,34 @@ function renderFooter(footerContainer: Element): void {
   // 3 states to handle:
   // - no setup at all for a database -> render based on localStorage db data
   // - setup + not connected
+  // - initial render + loading/attempting to setup syncing
   // - setup + connected (no error)
   // - setup + connected (error has occurred)
 
   footerContainer.innerHTML = `
   <div class='footer-data-container'>
     <div>
-    <div id="${remoteDbContainerId}"></div>
-
+      <div id="${remoteDbContainerId}"></div>
       ${
         lastSyncedDate
-          ? `<div class="footer-divider"></div>
+          ? `
+          <div class="footer-divider"></div>
           <div>
             Last synced: ${lastSyncedDate}
           </div>`
           : ''
       }
     </div>
-    <div class="footer-divider"></div>
-    <div>
-      Document ${lastSavedDate ? `last saved: ${lastSavedDate}` : ''}
-    </div>
+    ${
+      lastSavedDate
+        ? `
+        <div class="footer-divider"></div>
+        <div>
+          Document ${lastSavedDate ? `last saved: ${lastSavedDate}` : ''}
+        </div>
+      `
+        : ''
+    }
   </div>
   <div>
     v${pkg.version}
