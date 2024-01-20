@@ -8,7 +8,8 @@ import './sidebar-note-list.css'
  * - emit select note event
  * - emit delete note event
  */
-function renderSidebarNoteList(sidebarElement: Element) {
+function renderSidebarNoteList(container: Element) {
+  container.innerHTML = '' // reset container before rendering
   Object.values(NoteStore.notes)?.map(({ _id, title, updatedAt }) => {
     if (!title) throw new Error('Unable to read name from note')
     const selectableNoteButton = renderButton({
@@ -29,7 +30,7 @@ function renderSidebarNoteList(sidebarElement: Element) {
     noteSelectContainer.classList.add(containerClass)
     noteSelectContainer.id = `${_id}-${containerClass}`
     noteSelectContainer.appendChild(selectableNoteButton)
-    sidebarElement.append(noteSelectContainer)
+    container.append(noteSelectContainer)
   })
 }
 

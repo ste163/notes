@@ -41,12 +41,13 @@ import {
   createEvent,
 } from 'event'
 import { NoteStore, EditorStore, StatusStore } from 'store'
+import { renderGetStarted, renderEditor } from 'renderer'
 import {
-  renderBaseElements,
-  renderGetStarted,
-  renderEditor,
+  renderFooter,
+  renderSidebarTopMenu,
+  renderSidebarNoteList,
   renderRemoteDbLogs,
-} from 'renderer'
+} from 'renderer/reactive'
 
 let database: Database // not using a Store because the database is only used here
 
@@ -228,34 +229,53 @@ window.addEventListener('DOMContentLoaded', async () => {
 })
 
 /**
+ * TODO: this will be fully removed and moved to individual events
  * Main app lifecycle, refresh based on latest state
  */
 async function refreshClient(): Promise<void> {
   /**
+   * TODO: will remove this piece as it will be based on events
    * Update state for initial render
    */
   if (NoteStore.selectedNoteId) {
     StatusStore.lastSavedDate =
       NoteStore.notes[NoteStore.selectedNoteId].updatedAt
   }
-  const { editorElement, editorTopMenuElement, editorFloatingMenuElement } =
-    renderBaseElements()
 
-  // set main element content based on note state
+  const sidebarListElement = document.querySelector('#sidebar-list')
+  const sidebarTopMenuElement = document.querySelector('#sidebar-top-menu')
+  const footerElement = document.querySelector('footer')
+  const editorTopMenuElement = document.querySelector('#editor-top-menu')
+  const editorFloatingMenuElement = document.querySelector(
+    '#editor-floating-menu'
+  )
+  const editorElement = document.querySelector('#editor')
   if (
-    !Object.keys(NoteStore.notes).length ||
-    !NoteStore.selectedNoteId ||
-    !editorTopMenuElement
+    !sidebarListElement ||
+    !sidebarTopMenuElement ||
+    !footerElement ||
+    !editorTopMenuElement ||
+    !editorElement
   ) {
+    throw new Error('Unable to find all required elements')
+  }
+
+  renderSidebarTopMenu(sidebarTopMenuElement)
+  renderSidebarNoteList(sidebarListElement)
+  renderFooter(footerElement)
+
+  // no notes or on the '/' home route
+  if (!Object.keys(NoteStore.notes).length || !NoteStore.selectedNoteId) {
     StatusStore.lastSavedDate = null
     renderGetStarted(editorElement)
     return
   }
 
+  //TODO: move some of these container element passing to inside the editor
   EditorStore.editor = await renderEditor({
     editorElement: editorElement,
     topEditorMenu: editorTopMenuElement,
-    floatingEditorMenu: editorFloatingMenuElement,
+    floatingEditorMenu: editorFloatingMenuElement as Element,
     editorContent: NoteStore.notes[NoteStore.selectedNoteId]?.content,
   })
 

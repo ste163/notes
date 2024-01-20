@@ -3,13 +3,15 @@ import { renderButton } from 'components'
 import './sidebar-top-menu.css'
 
 /**
- * Renders sidebar without note state: only the title and create note functionality
+ * Render create note button and input
  */
-function renderSidebarTopMenu(sidebarContainer: Element): void {
-  sidebarContainer.appendChild(
+
+function renderSidebarTopMenu(container: Element): void {
+  container.innerHTML = '' // reset container before rendering
+  container.appendChild(
     renderButton({
       title: 'Create note',
-      onClick: () => renderNoteInput(sidebarContainer),
+      onClick: () => renderCreateNoteInput(container),
       html: `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <title>Create note</title>
@@ -21,10 +23,7 @@ function renderSidebarTopMenu(sidebarContainer: Element): void {
   )
 }
 
-/**
- * Renders the note input used only by the sidebar (currently).
- */
-function renderNoteInput(container: Element) {
+function renderCreateNoteInput(container: Element) {
   const inputContainerClass = 'create-note-input-container'
   const checkForAlreadyRenderedInput = () => {
     const isInputAlreadyRendered = document.querySelector(

@@ -96,7 +96,7 @@ async function renderEditor({
   })
 
   renderTopMenu(topEditorMenu)
-  renderFloatingMenu(floatingEditorMenu)
+  if (floatingEditorMenu) renderFloatingMenu(floatingEditorMenu)
 
   // TODO: only set these IF we're selecting a new note
   // if the same note is active, then we don't want to reset
@@ -113,7 +113,8 @@ async function renderEditor({
 /**
  * Instantiates top-menu buttons and organizes them into their container groups
  */
-function renderTopMenu(topEditorMenu: Element) {
+function renderTopMenu(container: Element) {
+  container.innerHTML = '' // reset container before rendering
   const { topEditorMenuButtons } = instantiateEditorButtons()
   // setup editor buttons (bold, italic, etc.)
   topEditorMenuButtons.forEach((button) => {
@@ -126,15 +127,16 @@ function renderTopMenu(topEditorMenu: Element) {
       groupContainer = document.createElement('div')
       groupContainer.id = groupId
     }
-    topEditorMenu.appendChild(groupContainer)
+    container.appendChild(groupContainer)
     groupContainer.appendChild(button)
   })
 }
 
-function renderFloatingMenu(floatingEditorMenuContainer: Element) {
+function renderFloatingMenu(container: Element) {
+  container.innerHTML = '' // reset container before rendering
   const { floatingEditorMenuButtons } = instantiateEditorButtons()
   floatingEditorMenuButtons.forEach((button) => {
-    floatingEditorMenuContainer.appendChild(button)
+    container.appendChild(button)
   })
 }
 
