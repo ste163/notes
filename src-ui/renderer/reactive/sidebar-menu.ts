@@ -39,7 +39,7 @@ function renderSidebarMenu({
     })
   )
 
-  if (isCreatingNote) {
+  if (isCreatingNote || createError) {
     // then the user has interacted with note input, so ensure it renders
     renderCreateNoteInput({
       container,

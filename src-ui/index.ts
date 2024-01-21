@@ -134,8 +134,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     const _id = await database.put({ title, content: '' })
     createEvent(NoteEvents.Created, { _id }).dispatch()
   } catch (error) {
-    // TODO: render error notification inside sidebarMenu?
-    console.error(error)
+    // TODO: render error notification inside sidebarMenu
     renderSidebarMenu({
       isCreatingNote: false,
       noteTitle: title,
