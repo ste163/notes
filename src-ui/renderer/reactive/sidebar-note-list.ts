@@ -9,13 +9,20 @@ import type { Notes } from 'types'
  * - emit delete note event
  */
 function renderSidebarNoteList({
-  container,
+  isLoading,
   notes,
 }: {
-  container: Element
+  isLoading: boolean
   notes: Notes
 }) {
+  const container = document.querySelector('#sidebar-list')
+  if (!container) throw new Error('Unable to find sidebar-list container')
   container.innerHTML = '' // reset container before rendering
+  if (isLoading) {
+    // TODO: skeleton screen
+    container.innerHTML = 'Loading...'
+    return
+  }
   Object.values(notes)?.map(({ _id, title, updatedAt }) => {
     if (!title) throw new Error('Unable to read name from note')
     const selectableNoteButton = renderButton({

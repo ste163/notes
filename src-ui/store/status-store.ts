@@ -29,8 +29,7 @@ const StatusStore = new Proxy(
 
       // TODO: statusStore will emit an event, status-store-updated
       // to decouple rendering from the store
-      const footerContainer = document.querySelector('footer')
-      if (footerContainer) renderFooter(footerContainer)
+      renderFooter()
 
       // TODO/NOTE (rendering is being completely revisited): this doesn't work to re-open the modal on a state change
       // might be best to make this router/url based. Could be a param option:

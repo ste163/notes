@@ -70,10 +70,21 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     window.history.pushState({}, '', '/')
   }
 
+  // TODO: based on the above, we know what the note state is, so after the fetchAllNotes
+  // we need to emit a note-select-event with the id
+
   // TODO: better handling on resetting the editor.isDirty state
   // should only happen after a save event
   // EditorStore.isDirty = false
-  await initClient()
+
+  /**
+   * TODO: do not initialize the rendering of all the components here.
+   * Why? Because on the DOMContentLoaded event, everything has been rendered in the loading = true state
+   * so we only set things to not loading as their async events (fetch requests) complete
+   */
+  renderSidebarTopMenu({ isLoading: false })
+  renderFooter()
+  await renderEditorBody({ isLoading: false })
 
   // TODO: check the URL, and see if there is any id
   // if there is, fetch by id at this point to queue up the event
@@ -81,10 +92,9 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 })
 
 window.addEventListener(LifeCycleEvents.FetchAllNotes, async () => {
-  // TODO: loading state = TRUE which will need to render the sidebar loading state
-  // this can be tapped-into the store so it's always handled there?
   try {
-    const notes = await database.getAll()
+    const notes = await database.getAll() // TODO: get all meta-data only instead of full note content
+    NoteStore.notes = notes // TODO: REMOVE THIS ASAP
     createEvent(LifeCycleEvents.FetchedAllNotes, { notes }).dispatch()
   } catch (error) {
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
@@ -95,10 +105,7 @@ window.addEventListener(LifeCycleEvents.FetchAllNotes, async () => {
 
 window.addEventListener(LifeCycleEvents.FetchedAllNotes, (event) => {
   const notes = (event as CustomEvent)?.detail?.notes
-  NoteStore.notes = notes
-  const container = document.querySelector('#sidebar-list')
-  // isLoading = false for the sidebar
-  if (container) renderSidebarNoteList({ container, notes })
+  renderSidebarNoteList({ isLoading: false, notes })
 })
 
 /**
@@ -166,6 +173,7 @@ window.addEventListener(NoteEvents.Save, async () => {
   }
 })
 
+// TODO: pass the full noteToUpdate object with the new title
 window.addEventListener(NoteEvents.EditTitle, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note
@@ -182,6 +190,7 @@ window.addEventListener(NoteEvents.EditTitle, async (event) => {
   }
 })
 
+// TODO: pass the full note object
 window.addEventListener(NoteEvents.Delete, async () => {
   try {
     if (!NoteStore.selectedNoteId) throw new Error('No note selected to delete')
@@ -200,7 +209,13 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     if (EditorStore.isDirty) await saveNote()
     const note = (event as CustomEvent)?.detail?.note
     NoteStore.selectedNoteId = note.id
+    StatusStore.lastSavedDate = NoteStore?.notes[note?.id]?.updatedAt || null
 
+    // toggle the active css state in the list
+    toggleActiveClass({
+      selector: `#${NoteStore.selectedNoteId}-note-select-container`,
+      type: NoteEvents.Select,
+    })
     // TODO: dispatch SelectedNoteEvent
     dispatchEvent(new Event(LifeCycleEvents.Init))
   } catch (error) {
@@ -258,12 +273,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     // TODO: skeleton screen UI of the entire application: no data state
 
-    //
+    const renderFullScreenLoading = () => {
+      renderSidebarNoteList({ isLoading: true, notes: {} })
+      renderSidebarTopMenu({ isLoading: true })
+    }
+    renderFullScreenLoading()
 
     // LOAD the initial layout and components but with all in a loading skeleton state
     // then conditionally render in elements as their data gets loaded
-    // - fetch all notes: sidebar renders
-    // - if there is an id in the url, fetch by id
     setupDatabase()
     dispatchEvent(new Event(LifeCycleEvents.Init))
   } catch (error) {
@@ -272,42 +289,28 @@ window.addEventListener('DOMContentLoaded', async () => {
 })
 
 /**
- * TODO: this will be fully removed and moved to individual events
- * Main app lifecycle, refresh based on latest state
+ * Decide whether to render the get started page or the editor
+ * TODO: might be best to make the Get started page be the default render content
+ * that is still edit-able, but you can't save it. That way the app state is always initialized in at least some way?
  */
-async function initClient(): Promise<void> {
-  /**
-   * TODO: will remove this piece as it will be based on events
-   * Update state for initial render
-   */
-  if (NoteStore.selectedNoteId) {
-    StatusStore.lastSavedDate =
-      NoteStore.notes[NoteStore.selectedNoteId].updatedAt
-  }
+async function renderEditorBody({ isLoading }: { isLoading: boolean }) {
+  const container = document.querySelector('#editor')
+  if (!container) throw new Error('Unable to find editor container')
 
-  const sidebarTopMenuElement = document.querySelector('#sidebar-top-menu')
-  const footerElement = document.querySelector('footer')
-
-  if (sidebarTopMenuElement) renderSidebarTopMenu(sidebarTopMenuElement)
-  if (footerElement) renderFooter(footerElement)
-
-  // no notes or on the '/' home route
-  if (!Object.keys(NoteStore.notes).length || !NoteStore.selectedNoteId) {
-    StatusStore.lastSavedDate = null
-    const editorElement = document.querySelector('#editor')
-    if (editorElement) renderGetStarted(editorElement)
+  if (isLoading) {
+    container.innerHTML = 'Loading...'
     return
   }
 
+  if (!NoteStore.selectedNoteId) {
+    StatusStore.lastSavedDate = null
+    renderGetStarted(container)
+    return
+  }
+
+  // TODO: pass the note content in
   EditorStore.editor = await renderEditor({
     content: NoteStore.notes[NoteStore.selectedNoteId]?.content,
-  })
-
-  // TODO:
-  // this only runs on a selectNoteEvent
-  toggleActiveClass({
-    selector: `#${NoteStore.selectedNoteId}-note-select-container`,
-    type: NoteEvents.Select,
   })
 }
 
@@ -321,6 +324,7 @@ function setupDatabase() {
   }
 }
 
+// TODO: pass the full note object in
 async function saveNote() {
   if (!NoteStore.selectedNoteId || !EditorStore.editor)
     throw new Error('No note selected to save or no editor instance')

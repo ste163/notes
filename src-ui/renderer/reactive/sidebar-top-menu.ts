@@ -6,7 +6,13 @@ import './sidebar-top-menu.css'
  * Render create note button and input
  */
 
-function renderSidebarTopMenu(container: Element): void {
+function renderSidebarTopMenu({ isLoading }: { isLoading: boolean }): void {
+  const container = document.querySelector('#sidebar-top-menu')
+  if (!container) throw new Error('Unable to find sidebar-top-menu container')
+  if (isLoading) {
+    container.innerHTML = 'Loading...'
+    return
+  }
   container.innerHTML = '' // reset container before rendering
   container.appendChild(
     renderButton({

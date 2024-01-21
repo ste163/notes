@@ -8,9 +8,13 @@ import './footer.css'
 /**
  * Renders footer with latest StatusStore state
  */
-function renderFooter(footerContainer: Element): void {
-  const { lastSavedDate, lastSyncedDate, isConnectedToRemote } = StatusStore
+function renderFooter(): void {
+  // note: footer does not have a top-level loading state because each piece handles its own
 
+  const container = document.querySelector('footer')
+  if (!container) throw new Error('Unable to find footer container')
+
+  const { lastSavedDate, lastSyncedDate, isConnectedToRemote } = StatusStore
   const remoteDbContainerId = 'remote-db-setup-container'
 
   // TODO (and test):
@@ -21,7 +25,7 @@ function renderFooter(footerContainer: Element): void {
   // - setup + connected (no error)
   // - setup + connected (error has occurred)
 
-  footerContainer.innerHTML = `
+  container.innerHTML = `
   <div class='footer-data-container'>
     <div>
       <div id="${remoteDbContainerId}"></div>
