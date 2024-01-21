@@ -1,25 +1,34 @@
 import { NoteEvents, createEvent } from 'event'
 import { renderButton } from 'components'
-import './sidebar-top-menu.css'
+import './sidebar-menu.css'
+
+interface Props {
+  noteTitle?: string
+  isCreatingNote: boolean
+  createError?: string
+}
 
 /**
  * Render create note button and input
  */
-
-function renderSidebarTopMenu({ isLoading }: { isLoading: boolean }): void {
+function renderSidebarMenu({
+  noteTitle,
+  isCreatingNote,
+  createError,
+}: Props): void {
   const container = document.querySelector('#sidebar-top-menu')
   if (!container) throw new Error('Unable to find sidebar-top-menu container')
-  // TODO: this piece is only LOADING if we are creating a note. Otherwise, it's not loading...
-  // so the only async event is the submit event and NOT this piece
-  if (isLoading) {
-    container.innerHTML = 'Loading...'
-    return
-  }
   container.innerHTML = '' // reset container before rendering
   container.appendChild(
     renderButton({
       title: 'Create note',
-      onClick: () => renderCreateNoteInput(container),
+      onClick: () =>
+        renderCreateNoteInput({
+          container,
+          isCreatingNote,
+          noteTitle,
+          createError,
+        }),
       html: `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <title>Create note</title>
@@ -29,10 +38,28 @@ function renderSidebarTopMenu({ isLoading }: { isLoading: boolean }): void {
       `,
     })
   )
+
+  if (isCreatingNote) {
+    // then the user has interacted with note input, so ensure it renders
+    renderCreateNoteInput({
+      container,
+      isCreatingNote,
+      noteTitle,
+      createError,
+    })
+  }
 }
 
-// TODO: implement the create note loading/submitting state and tie it to events
-function renderCreateNoteInput(container: Element) {
+interface InputProps extends Props {
+  container: Element
+}
+
+function renderCreateNoteInput({
+  container,
+  isCreatingNote,
+  noteTitle,
+  createError,
+}: InputProps) {
   const inputContainerClass = 'create-note-input-container'
   const checkForAlreadyRenderedInput = () => {
     const isInputAlreadyRendered = document.querySelector(
@@ -58,21 +85,35 @@ function renderCreateNoteInput(container: Element) {
 
   inputContainer?.appendChild(buttonContainer)
 
+  // in case there is an error, ensure the input value re-renders
+  if (noteTitle) {
+    const inputElement = document.querySelector(`.${noteInputClass}`)
+    inputElement?.setAttribute('value', noteTitle)
+  }
+
+  const saveNoteButton = renderButton({
+    title: 'Save note',
+    html: 'Save',
+    onClick: () => {
+      const input = document.querySelector(
+        `.${noteInputClass}`
+      ) as HTMLInputElement
+      const title: string = input?.value
+      if (!title) throw new Error('Unable to read title from input')
+      createEvent(NoteEvents.Create, { title }).dispatch()
+    },
+  })
+
+  if (isCreatingNote) {
+    saveNoteButton.disabled = isCreatingNote
+  }
+
+  if (createError) {
+    // todo: error rendering if creation fails
+    console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
+  }
   // add the create button to the input container
-  buttonContainer?.appendChild(
-    renderButton({
-      title: 'Save note',
-      html: 'Save',
-      onClick: () => {
-        const input = document.querySelector(
-          `.${noteInputClass}`
-        ) as HTMLInputElement
-        const title: string = input?.value
-        if (!title) throw new Error('Unable to read title from input')
-        createEvent(NoteEvents.Create, { note: { title } }).dispatch()
-      },
-    })
-  )
+  buttonContainer?.appendChild(saveNoteButton)
   buttonContainer?.appendChild(
     renderButton({
       title: 'Cancel creating',
@@ -88,4 +129,4 @@ function renderCreateNoteInput(container: Element) {
   inputElement?.focus()
 }
 
-export { renderSidebarTopMenu }
+export { renderSidebarMenu }

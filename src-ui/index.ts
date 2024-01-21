@@ -2,9 +2,6 @@
  * TODO PRIORITY ORDER
  *  - Rendering refactor: event-based instead of a 'main refresh loop'.
  *    - Components only render data from the event that fetches the data and passes it into the components
- *    - This will simplify the main loop and make adding features easier. Potentially will also allow for the removal of state management
- *    - as the passing of data will be handled by the events
- *    - Potential structure: renderer/reactive (all state-rendered items), renderer/static (static layout), renderer/components (base components, not used outside the renderer)
  *      - RELATED TODOs:
  *        - Revisit fetch requests. GetAll should only get the list of note meta data. Get by Id gets all note details + content
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
@@ -44,26 +41,27 @@ import { EditorStore, StatusStore } from 'store'
 import { renderGetStarted, renderEditor } from 'renderer'
 import {
   renderFooter,
-  renderSidebarTopMenu,
+  renderSidebarMenu,
   renderSidebarNoteList,
   renderRemoteDbLogs,
 } from 'renderer/reactive'
 import type { Note } from 'types'
 
-let database: Database // not using a Store because the database is only used here
+let database: Database
 
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
-    // render base app layout + state with loading on
+    // render base app layout with loading states
+    renderSidebarMenu({ isCreatingNote: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
-    renderSidebarTopMenu({ isLoading: true })
-    renderSidebarTopMenu({ isLoading: false }) // TODO: remove isLoading from this fn
     renderFooter()
 
+    // setup database after app is rendering in loading state
     setupDatabase()
 
     const noteIdFromUrl = window.location.pathname.split('/')[1] ?? ''
 
+    // these events set off the chain renders the app
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(NoteEvents.Select, { _id: noteIdFromUrl }).dispatch()
   } catch (error) {
@@ -168,16 +166,33 @@ window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
 /**
  * Note events
  */
-// window.addEventListener(NoteEvents.Create, async (event) => {
-//   try {
-//     const note = (event as CustomEvent)?.detail?.note
-//     const id = await database.put({ title: note.title, content: '' })
-//     // createdEvent will select the newly created note and turn-off the loading state?
-//   } catch (error) {
-//     // TODO: show error notification
-//     console.error(error)
-//   }
-// })
+window.addEventListener(NoteEvents.Create, async (event) => {
+  const title = (event as CustomEvent)?.detail?.title
+  try {
+    // re-render the sidebar with loading state
+    renderSidebarMenu({
+      isCreatingNote: true,
+      noteTitle: title,
+    })
+    const _id = await database.put({ title, content: '' })
+    createEvent(NoteEvents.Created, { _id }).dispatch()
+  } catch (error) {
+    // TODO: render error notification inside sidebarMenu?
+    console.error(error)
+    renderSidebarMenu({
+      isCreatingNote: false,
+      noteTitle: title,
+      createError: 'Error creating note',
+    })
+  }
+})
+
+window.addEventListener(NoteEvents.Created, async (event) => {
+  renderSidebarMenu({ isCreatingNote: false })
+  const _id = (event as CustomEvent)?.detail?._id
+  createEvent(NoteEvents.Select, { _id }).dispatch()
+  createEvent(NoteEvents.GetAll).dispatch()
+})
 
 // window.addEventListener(NoteEvents.Save, async () => {
 //   try {
@@ -266,7 +281,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 /**
  * Decide whether to render the get started page or the editor
  * TODO: might be best to make the Get started page be the default render content
- * that is still edit-able, but you can't save it. That way the app state is always initialized in at least some way?
+ * that is still edit-able, but you can't save it. That way the app state is always initialized in at least some way.
+ * Will cleanup the need for this weird non-editor state for the app. There should always be an active writing editor
+ * because it's a writing app...
  */
 async function renderEditorBody({
   isLoading,
@@ -298,7 +315,9 @@ async function renderEditorBody({
 function setupDatabase() {
   try {
     const { username, password, host, port } = useRemoteDetails().get()
-    database = new Database(`http://${username}:${password}@${host}:${port}`)
+    database = new Database(
+      username ? `http://${username}:${password}@${host}:${port}` : ''
+    )
   } catch (error) {
     // TODO: show error notification
     logger('error', 'Error setting up database.', error)

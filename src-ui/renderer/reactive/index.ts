@@ -6,5 +6,5 @@
 export { renderFooter } from './footer'
 export { renderRemoteDbLogs } from './remote-db-logs'
 export { renderRemoteDbSetupModal } from './remote-db-setup-modal'
-export { renderSidebarTopMenu } from './sidebar-top-menu'
+export { renderSidebarMenu } from './sidebar-menu'
 export { renderSidebarNoteList } from './sidebar-note-list'

@@ -84,7 +84,7 @@ class Database {
     return false
   }
 
-  // TODO: use attatchments to store legit .html files for each note:
+  // TODO: use attachments to store legit .html files for each note:
   // https://pouchdb.com/guides/attachments.html
   // this way, I can use attachments: false on the getAll query to only get metadata
   // it will potentially be easier to export notes as well, as they're already legit html files
