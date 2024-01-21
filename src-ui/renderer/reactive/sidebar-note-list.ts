@@ -1,4 +1,4 @@
-import { createEvent } from 'event'
+import { NoteEvents, createEvent } from 'event'
 import { renderButton } from 'components'
 import './sidebar-note-list.css'
 import type { Notes } from 'types'
@@ -34,8 +34,7 @@ function renderSidebarNoteList({
           updatedAt
         ).toLocaleString()}</div>
       </div>`,
-      onClick: () =>
-        createEvent('select-note', { note: { id: _id } }).dispatch(),
+      onClick: () => createEvent(NoteEvents.Select, { _id: _id }).dispatch(),
     })
     selectableNoteButton.id = _id
     const noteSelectContainer = document.createElement('div')

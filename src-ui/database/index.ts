@@ -84,8 +84,11 @@ class Database {
     return false
   }
 
-  // TODO: maybe better to do .then().catch() as that's what pouchdb usually does?
-  // need to decide best location for consolidated error handling
+  // TODO: use attatchments to store legit .html files for each note:
+  // https://pouchdb.com/guides/attachments.html
+  // this way, I can use attachments: false on the getAll query to only get metadata
+  // it will potentially be easier to export notes as well, as they're already legit html files
+  // in the database
   async put(note: Partial<Note>): Promise<string> {
     if (note?._id) {
       await this.db.put({
@@ -141,6 +144,19 @@ class Database {
       },
       {} as Record<string, Note>
     )
+  }
+
+  async getById(_id: string): Promise<Note | null> {
+    // id could be an empty string, which is a valid param, but not a valid id
+    if (!_id) return null
+
+    const { docs } = await this.db.find({
+      selector: { _id },
+      limit: 1,
+    })
+
+    if (docs.length) return docs[0] as Note
+    return null
   }
 }
 

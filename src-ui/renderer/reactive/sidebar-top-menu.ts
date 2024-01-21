@@ -9,6 +9,8 @@ import './sidebar-top-menu.css'
 function renderSidebarTopMenu({ isLoading }: { isLoading: boolean }): void {
   const container = document.querySelector('#sidebar-top-menu')
   if (!container) throw new Error('Unable to find sidebar-top-menu container')
+  // TODO: this piece is only LOADING if we are creating a note. Otherwise, it's not loading...
+  // so the only async event is the submit event and NOT this piece
   if (isLoading) {
     container.innerHTML = 'Loading...'
     return
@@ -29,6 +31,7 @@ function renderSidebarTopMenu({ isLoading }: { isLoading: boolean }): void {
   )
 }
 
+// TODO: implement the create note loading/submitting state and tie it to events
 function renderCreateNoteInput(container: Element) {
   const inputContainerClass = 'create-note-input-container'
   const checkForAlreadyRenderedInput = () => {

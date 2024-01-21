@@ -1,8 +1,9 @@
+import type { Note } from 'types'
 import './button.css'
 
 interface Button {
   title: string // accessibility title for button
-  onClick: (args: unknown) => void
+  onClick: (args: Partial<Note> | unknown) => void
   className?: string
   html?: string
   style?: Partial<CSSStyleDeclaration>

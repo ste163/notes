@@ -3,7 +3,7 @@ import { EditorStore } from 'store'
 import { renderButton } from 'components'
 import { renderNoteDetailsModal } from './note-details-modal'
 import type { Button } from 'components'
-import type { MarkOptions } from 'types'
+import type { MarkOptions, Note } from 'types'
 
 interface EditorButton extends Button {
   group: number // used for placing in which div for organization
@@ -213,7 +213,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Note settings',
     isInFloatingMenu: false,
-    onClick: renderNoteDetailsModal,
+    // TODO: FIX
+    onClick: () => renderNoteDetailsModal({} as Note),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Note settings</title>

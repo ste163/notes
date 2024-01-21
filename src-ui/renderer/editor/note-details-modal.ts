@@ -1,6 +1,6 @@
-import { NoteStore } from 'store'
 import { NoteEvents, createEvent } from 'event'
 import { renderButton, renderModal } from 'components'
+import type { Note } from 'types'
 import './note-details-modal.css'
 
 const EDIT_NOTE_TITLE_CONTAINER = 'edit-note-title-container'
@@ -10,11 +10,8 @@ const EDIT_NOTE_TITLE_CONTAINER = 'edit-note-title-container'
 // always render the input but LOCK the 'update' button
 // unless the title has changed and is not empty (similar to remote-db-setup modal)
 
-function renderNoteDetailsModal() {
-  // TODO: pass in note data
-  if (!NoteStore.selectedNoteId) throw new Error('No note selected')
-  const { title, createdAt, updatedAt } =
-    NoteStore.notes[NoteStore.selectedNoteId]
+function renderNoteDetailsModal(note: Note) {
+  const { title, createdAt, updatedAt } = note
   const modalContent = document.createElement('div')
 
   // setup modal structure
