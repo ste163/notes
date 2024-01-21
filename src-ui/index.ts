@@ -69,6 +69,9 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
   }
 })
 
+/**
+ * Note events for fetching, selecting, and CRUD operations
+ */
 window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     renderSidebarNoteList({ isLoading: true, notes: {} })
@@ -120,52 +123,6 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
   }
 })
 
-/**
- * Remote database events
- */
-window.addEventListener(DatabaseEvents.RemoteConnect, () => {
-  if (StatusStore.isConnectedToRemote) {
-    logger('info', 'Already connected to remote database.')
-    return
-  }
-  setupDatabase()
-  // the database emits the DatabaseEvents.RemoteConnected event if it successfully connects
-})
-
-window.addEventListener(DatabaseEvents.RemoteConnected, () => {
-  if (StatusStore.isConnectedToRemote) return
-  StatusStore.isConnectedToRemote = true
-  database.setupSyncing()
-  // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
-  // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
-  createEvent(NoteEvents.GetAll).dispatch()
-  // should we re-select the selected note?
-  // we'd need to SAVE it before changing though
-})
-
-window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
-  if (!StatusStore.isConnectedToRemote) {
-    logger('info', 'Already disconnected from remote database.')
-    return
-  }
-  const successfulDisconnect = database.disconnectSyncing()
-  if (successfulDisconnect) StatusStore.isConnectedToRemote = false
-  // TODO: need to clear the remote details from local storage
-  // so we do not reconnect on refresh
-})
-
-window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
-  const date = (event as CustomEvent)?.detail?.date
-  StatusStore.lastSyncedDate = date
-  // TODO:
-  // this also needs to be stored in local storage
-  // so that we can render that on the chance that we are unable to connect
-  // to the remote, we can still render when the last time was we did successfully connect
-})
-
-/**
- * Note events
- */
 window.addEventListener(NoteEvents.Create, async (event) => {
   const title = (event as CustomEvent)?.detail?.title
   try {
@@ -228,6 +185,49 @@ window.addEventListener(NoteEvents.Created, async (event) => {
 //     console.error(error)
 //   }
 // })
+
+/**
+ * Remote database events
+ */
+window.addEventListener(DatabaseEvents.RemoteConnect, () => {
+  if (StatusStore.isConnectedToRemote) {
+    logger('info', 'Already connected to remote database.')
+    return
+  }
+  setupDatabase()
+  // the database emits the DatabaseEvents.RemoteConnected event if it successfully connects
+})
+
+window.addEventListener(DatabaseEvents.RemoteConnected, () => {
+  if (StatusStore.isConnectedToRemote) return
+  StatusStore.isConnectedToRemote = true
+  database.setupSyncing()
+  // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
+  // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
+  createEvent(NoteEvents.GetAll).dispatch()
+  // should we re-select the selected note?
+  // we'd need to SAVE it before changing though
+})
+
+window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
+  if (!StatusStore.isConnectedToRemote) {
+    logger('info', 'Already disconnected from remote database.')
+    return
+  }
+  const successfulDisconnect = database.disconnectSyncing()
+  if (successfulDisconnect) StatusStore.isConnectedToRemote = false
+  // TODO: need to clear the remote details from local storage
+  // so we do not reconnect on refresh
+})
+
+window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
+  const date = (event as CustomEvent)?.detail?.date
+  StatusStore.lastSyncedDate = date
+  // TODO:
+  // this also needs to be stored in local storage
+  // so that we can render that on the chance that we are unable to connect
+  // to the remote, we can still render when the last time was we did successfully connect
+})
 
 /**
  * Modal events
