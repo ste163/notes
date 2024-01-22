@@ -1,8 +1,8 @@
 import './button.css'
 
-interface Button {
+interface Button<T = unknown> {
   title: string // accessibility title for button
-  onClick: (args: unknown) => void
+  onClick: (args: T) => void
   className?: string
   html?: string
   style?: Partial<CSSStyleDeclaration>

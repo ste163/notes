@@ -4,6 +4,7 @@
  *    - Components only render data from the event that fetches the data and passes it into the components
  *      - RELATED TODOs:
  *        - Revisit fetch requests. GetAll should only get the list of note meta data. Get by Id gets all note details + content
+ *  - Add vitest + testing-library to test it.todos(). The UI is too complex to not have basic unit tests
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
  *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
  *       - say that it is connected to local
@@ -117,7 +118,6 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // if (EditorStore.isDirty) await saveNote(note)
 
     StatusStore.lastSavedDate = note?.updatedAt || null
-
     await renderEditorBody({ isLoading: false, note })
   } catch (error) {
     // TODO: render error that selecting note failed (probably in renderEditorBody!)
@@ -152,16 +152,22 @@ window.addEventListener(NoteEvents.Created, async (event) => {
   createEvent(NoteEvents.GetAll).dispatch()
 })
 
-// window.addEventListener(NoteEvents.Save, async () => {
-//   try {
-//     // TODO GET FROM DETAIL
-//     // await saveNote()
-//     // TODO: dispatch note saved event
-//   } catch (error) {
-//     // TODO: show error notification
-//     console.error(error)
-//   }
-// })
+window.addEventListener(NoteEvents.Save, async (event) => {
+  try {
+    const note = (event as CustomEvent)?.detail?.note as Note
+    await database.put(note)
+    createEvent(NoteEvents.Saved, { note }).dispatch()
+  } catch (error) {
+    logger('error', 'Error saving note.', error)
+  }
+})
+
+window.addEventListener(NoteEvents.Saved, (event) => {
+  const note = (event as CustomEvent)?.detail?.note as Note
+  StatusStore.lastSavedDate = note?.updatedAt || null
+  // ensure rest of state is updated
+  createEvent(NoteEvents.GetAll).dispatch()
+})
 
 // TODO: pass the full noteToUpdate object with the new title
 // window.addEventListener(NoteEvents.EditTitle, async (event) => {
@@ -307,10 +313,7 @@ async function renderEditorBody({
     return
   }
 
-  // TODO: pass the note content in
-  EditorStore.editor = await renderEditor({
-    content: note.content,
-  })
+  EditorStore.editor = await renderEditor(note)
 }
 
 function setupDatabase() {

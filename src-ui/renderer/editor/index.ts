@@ -20,17 +20,13 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
-import type { MarkOptions } from 'types'
+import type { MarkOptions, Note } from 'types'
 import './editor.css'
 
 /**
  * Instantiates the editor and returns the instance.
  */
-async function renderEditor({
-  content,
-}: {
-  content?: string
-}): Promise<Editor> {
+async function renderEditor(note: Note): Promise<Editor> {
   const editorElement = document.querySelector('#editor')
   const topEditorMenu = document.querySelector('#editor-top-menu')
   const floatingEditorMenu = document.querySelector('#editor-floating-menu')
@@ -72,11 +68,11 @@ async function renderEditor({
             : false,
       }),
     ],
-    content: content ?? '<p>Issue selecting note</p>',
+    content: note?.content ?? '<p>Issue selecting note</p>',
     onUpdate: ({ editor }) => {
       if (EditorStore.isDirty) return
       const currentContent = editor.getHTML()
-      EditorStore.isDirty = currentContent !== content
+      EditorStore.isDirty = currentContent !== note?.content
     },
     onTransaction: ({ editor }) => {
       /**
@@ -94,9 +90,8 @@ async function renderEditor({
       })
     },
   })
-
-  if (topEditorMenu) renderTopMenu(topEditorMenu)
-  if (floatingEditorMenu) renderFloatingMenu(floatingEditorMenu)
+  if (topEditorMenu) renderTopMenu(topEditorMenu, note)
+  if (floatingEditorMenu) renderFloatingMenu(floatingEditorMenu, note)
 
   // TODO: only set these IF we're selecting a new note
   // if the same note is active, then we don't want to reset
@@ -113,9 +108,9 @@ async function renderEditor({
 /**
  * Instantiates top-menu buttons and organizes them into their container groups
  */
-function renderTopMenu(container: Element) {
+function renderTopMenu(container: Element, note: Note) {
   container.innerHTML = '' // reset container before rendering
-  const { topEditorMenuButtons } = instantiateEditorButtons()
+  const { topEditorMenuButtons } = instantiateEditorButtons(note)
   // setup editor buttons (bold, italic, etc.)
   topEditorMenuButtons.forEach((button) => {
     // get the button grouping from the data attribute
@@ -132,9 +127,9 @@ function renderTopMenu(container: Element) {
   })
 }
 
-function renderFloatingMenu(container: Element) {
+function renderFloatingMenu(container: Element, note: Note) {
   container.innerHTML = '' // reset container before rendering
-  const { floatingEditorMenuButtons } = instantiateEditorButtons()
+  const { floatingEditorMenuButtons } = instantiateEditorButtons(note)
   floatingEditorMenuButtons.forEach((button) => {
     container.appendChild(button)
   })
