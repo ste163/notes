@@ -171,6 +171,8 @@ window.addEventListener(NoteEvents.Saved, (event) => {
   createEvent(NoteEvents.GetAll).dispatch()
 })
 
+// TODO: also need to refactor details modal and state, along with adding error state and loading state
+// for when we are editing the title
 // TODO: pass the full noteToUpdate object with the new title
 // window.addEventListener(NoteEvents.EditTitle, async (event) => {
 //   try {
