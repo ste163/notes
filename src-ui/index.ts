@@ -52,7 +52,7 @@ let database: Database
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
     // render base app layout with loading states
-    renderSidebarMenu({ isCreatingNote: false })
+    renderSidebarMenu({ isCreateNoteLoading: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
     renderFooter()
 
@@ -78,6 +78,7 @@ window.addEventListener(NoteEvents.GetAll, async () => {
     const notes = await database.getAll() // TODO: get all meta-data only instead of full note content (see PUT in db for notes)
     createEvent(NoteEvents.GotAll, { notes }).dispatch()
   } catch (error) {
+    // TODO: render error in sidebarNoteList
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
     // - if you are using console.error, say it's an error and say you need to use logger
     logger('error', 'Error fetching all notes', error)
@@ -119,6 +120,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
 
     await renderEditorBody({ isLoading: false, note })
   } catch (error) {
+    // TODO: render error that selecting note failed (probably in renderEditorBody!)
     logger('error', 'Error selecting note.', error)
   }
 })
@@ -128,7 +130,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     // re-render the sidebar with loading state
     renderSidebarMenu({
-      isCreatingNote: true,
+      isCreateNoteLoading: true,
       noteTitle: title,
     })
     const _id = await database.put({ title, content: '' })
@@ -136,7 +138,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   } catch (error) {
     // TODO: render error notification inside sidebarMenu
     renderSidebarMenu({
-      isCreatingNote: false,
+      isCreateNoteLoading: false,
       noteTitle: title,
       createError: 'Error creating note',
     })
@@ -144,7 +146,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 })
 
 window.addEventListener(NoteEvents.Created, async (event) => {
-  renderSidebarMenu({ isCreatingNote: false })
+  renderSidebarMenu({ isCreateNoteLoading: false })
   const _id = (event as CustomEvent)?.detail?._id
   createEvent(NoteEvents.Select, { _id }).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()

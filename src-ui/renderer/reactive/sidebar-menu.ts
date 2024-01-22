@@ -4,16 +4,22 @@ import './sidebar-menu.css'
 
 interface Props {
   noteTitle?: string
-  isCreatingNote: boolean
+  isCreateNoteLoading: boolean
   createError?: string
 }
+
+// TODO: testing
+// it.todo('if not loading and no error, render base input')
+// it.todo('if error, render full input and error')
+// it.todo('if isCreateNoteLoading and no error, renders loading spinner on create button + disabled')
+// it.todo('emits create event with title on save button click')
 
 /**
  * Render create note button and input
  */
 function renderSidebarMenu({
   noteTitle,
-  isCreatingNote,
+  isCreateNoteLoading,
   createError,
 }: Props): void {
   const container = document.querySelector('#sidebar-top-menu')
@@ -25,7 +31,7 @@ function renderSidebarMenu({
       onClick: () =>
         renderCreateNoteInput({
           container,
-          isCreatingNote,
+          isCreateNoteLoading,
           noteTitle,
           createError,
         }),
@@ -39,11 +45,11 @@ function renderSidebarMenu({
     })
   )
 
-  if (isCreatingNote || createError) {
+  if (isCreateNoteLoading || createError) {
     // then the user has interacted with note input, so ensure it renders
     renderCreateNoteInput({
       container,
-      isCreatingNote,
+      isCreateNoteLoading,
       noteTitle,
       createError,
     })
@@ -56,7 +62,7 @@ interface InputProps extends Props {
 
 function renderCreateNoteInput({
   container,
-  isCreatingNote,
+  isCreateNoteLoading,
   noteTitle,
   createError,
 }: InputProps) {
@@ -104,8 +110,8 @@ function renderCreateNoteInput({
     },
   })
 
-  if (isCreatingNote) {
-    saveNoteButton.disabled = isCreatingNote
+  if (isCreateNoteLoading) {
+    saveNoteButton.disabled = isCreateNoteLoading
   }
 
   if (createError) {
