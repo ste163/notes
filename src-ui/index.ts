@@ -154,6 +154,7 @@ window.addEventListener(NoteEvents.Created, async (event) => {
 
 window.addEventListener(NoteEvents.Save, async (event) => {
   try {
+    // TODO: ensure the save button cannot be clicked until the promise completes
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.put(note)
     createEvent(NoteEvents.Saved, { note }).dispatch()
@@ -163,6 +164,7 @@ window.addEventListener(NoteEvents.Save, async (event) => {
 })
 
 window.addEventListener(NoteEvents.Saved, (event) => {
+  // TODO: re-enable the save button (but will also need to track this so the user cannot spam super+s)
   const note = (event as CustomEvent)?.detail?.note as Note
   StatusStore.lastSavedDate = note?.updatedAt || null
   // ensure rest of state is updated
@@ -180,18 +182,29 @@ window.addEventListener(NoteEvents.Saved, (event) => {
 //   }
 // })
 
-// TODO: pass the full note object
-// window.addEventListener(NoteEvents.Delete, async () => {
-//   try {
-//     if (!NoteStore.selectedNoteId) throw new Error('No note selected to delete')
-//     const noteToDelete = NoteStore.notes[NoteStore.selectedNoteId]
-//     await database.delete(noteToDelete)
-//     NoteStore.selectedNoteId = null // reset selected note as it was deleted
-//   } catch (error) {
-//     // TODO: show error notification
-//     console.error(error)
-//   }
-// })
+window.addEventListener(NoteEvents.Delete, async (event) => {
+  try {
+    // TODO: disable delete button
+    const note = (event as CustomEvent)?.detail?.note as Note
+    await database.delete(note)
+    createEvent(NoteEvents.Deleted, { note }).dispatch()
+  } catch (error) {
+    // TODO: if error, render the details modal with the error state
+    // TODO: tests and error handling for details modal
+    logger('error', 'Error deleting note.', error)
+  }
+})
+
+window.addEventListener(NoteEvents.Deleted, (event) => {
+  // TODO: consider logging info for all events like deleting and saving?
+  const note = (event as CustomEvent)?.detail?.note as Note
+  logger('info', `Note deleted: ${note.title}`)
+  // TODO: re-enable the delete button? (but the modal will be closed, so probs not)
+  // and close the details modal (how can we handle that?)
+  createEvent(NoteEvents.GetAll).dispatch()
+  // TODO: if on Get Started (which would be better if it lived in the editor and wasn't a page)
+  createEvent(NoteEvents.Select, { _id: '' }).dispatch()
+})
 
 /**
  * Remote database events
@@ -265,12 +278,17 @@ window.addEventListener(LoggerEvents.Update, (event) => {
  * Keyboard events
  */
 document.addEventListener(KeyboardEvents.Keydown, (event) => {
+  // TODO: note sure how to do this, as it will require the current note
+  // which is currently not exposed state, but passed by events.
+  // the keyboard does not have access to the current note, so it will need to fetch it from state.
+  // this should actually trigger a fetch request, reading data from the URL, and pass the full data through
+  // to the save event
   if (event.ctrlKey && event.key === 's') {
     event.preventDefault() // prevent default save behavior
-    EditorStore.editor &&
-      createEvent(NoteEvents.Save, {
-        note: { content: EditorStore.editor.getHTML() },
-      }).dispatch()
+    // EditorStore.editor &&
+    //   createEvent(NoteEvents.Save, {
+    //     note: { content: EditorStore.editor.getHTML() },
+    //   }).dispatch()
   }
 })
 
@@ -323,18 +341,9 @@ function setupDatabase() {
       username ? `http://${username}:${password}@${host}:${port}` : ''
     )
   } catch (error) {
-    // TODO: show error notification
     logger('error', 'Error setting up database.', error)
   }
 }
-
-// async function saveNote(note: Note) {
-//   if (!EditorStore.editor) throw new Error('No editor to save')
-//   const noteToSave = { ...note }
-//   const content = EditorStore.editor.getHTML()
-//   noteToSave.content = content
-//   await database.put(note)
-// }
 
 function toggleActiveClass({
   selector,
