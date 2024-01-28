@@ -18,10 +18,10 @@ Keep the application as simple and easily maintainable as possible by leveraging
 
 ### Decisions for simplicity
 
-- Two main dependencies: [PouchDB](https://pouchdb.com/) (database) and [TipTap](https://tiptap.dev/) (word processor and main state manager).
-- Pure Javascript frontend instead of a UI framework. Because there are so few states to keep track of, I'm using event-based rendering to handle the small amount of states. TipTap handles the majority of the application state (as it is the word processor), so using a framework like React is unnecessary at this point. The main events are related to CRUD and handling database connections, which are small enough for a hand-rolled solution.
+- Two main dependencies: [PouchDB](https://pouchdb.com/) (database with remote-syncing) and [TipTap](https://tiptap.dev/) (word processor and main state manager).
+- Pure Javascript frontend instead of a UI framework. Because there are so few states to keep track of, I'm using event-based rendering. TipTap handles the majority of the application state (as it is the word processor), so using a framework like React is unnecessary at this point. The main events are related to CRUD and handling database connections, which are few enough for a hand-rolled solution.
 
-### Cloud syncing support
+### Remote (cloud) syncing support
 
 PouchDb works locally using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) or remotely using [CouchDB](https://couchdb.apache.org/). A separate repo contains all the information for setting up the remote CouchDB server specifically for this application use: [couchdb-docker](https://github.com/ste163/couchdb-docker).
 
@@ -44,9 +44,9 @@ flowchart LR
   A <-- Sync changes --> B
 ```
 
-# Local development setup
+# For development
 
-## Install
+## Installation
 
 - [pnpm](https://pnpm.io/)
 - [Tauri](https://tauri.app/) (follow their setup instructions)
@@ -57,7 +57,7 @@ From the project's root, run:
 pnpm i
 ```
 
-After installation is complete, start the application with
+### Running
 
 ```bash
 # Run only the UI for the browser
@@ -77,6 +77,11 @@ pnpm start:dev:tauri
 cd src-tauri
 cargo update
 ```
+
+### Commits to `main`
+
+- Trigger re-build of Github Pages
+- Triggers Tauri build
 
 # credits: Remix Icons
 
