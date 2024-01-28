@@ -81,7 +81,7 @@ cargo update
 ### Commits to `main`
 
 - Trigger re-build of Github Pages
-- Triggers Tauri build
+- Trigger Tauri build
 
 # credits: Remix Icons
 
