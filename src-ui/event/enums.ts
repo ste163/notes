@@ -1,5 +1,6 @@
+// TODO: potentially get rid of LifeCycleEvents
 export enum LifeCycleEvents {
-  Refresh = 'refresh-client',
+  Init = 'init',
 }
 
 export enum KeyboardEvents {
@@ -22,21 +23,17 @@ export enum DatabaseEvents {
   RemoteDisconnect = 'remote-disconnect',
 }
 
-// TODO: implement:
-// - created
-// - saved
-// - title-edited
-// - deleted
-// - selected
 export enum NoteEvents {
+  GetAll = 'get-all-notes',
+  GotAll = 'got-all-notes',
+  Select = 'select-note',
+  Selected = 'note-selected',
   Create = 'create-note',
   Created = 'note-created',
   Save = 'save-note',
   Saved = 'note-saved',
   EditTitle = 'edit-note-title',
-  TitleEdited = 'note-title-edited',
+  EditedTitle = 'note-title-edited',
   Delete = 'delete-note',
   Deleted = 'note-deleted',
-  Select = 'select-note',
-  Selected = 'note-selected',
 }

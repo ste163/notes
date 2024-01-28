@@ -20,23 +20,31 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
-import type { MarkOptions } from 'types'
+import type { MarkOptions, Note } from 'types'
 import './editor.css'
 
 /**
  * Instantiates the editor and returns the instance.
  */
 async function renderEditor({
-  editorElement,
-  topEditorMenu,
-  floatingEditorMenu,
-  editorContent,
+  note,
+  isLoading,
 }: {
-  editorElement: Element
-  topEditorMenu: Element
-  floatingEditorMenu: Element
-  editorContent?: string
-}): Promise<Editor> {
+  note: Note | null
+  isLoading: boolean
+}): Promise<Editor | void> {
+  const editorElement = document.querySelector('#editor')
+  const topEditorMenu = document.querySelector('#editor-top-menu')
+  const floatingEditorMenu = document.querySelector('#editor-floating-menu')
+  if (!editorElement) throw new Error('Unable to find editor element')
+
+  if (editorElement) editorElement.innerHTML = '' // reset container before rendering
+
+  if (isLoading) {
+    editorElement.innerHTML = 'Loading...'
+    return
+  }
+
   const editor = new Editor({
     element: editorElement,
     extensions: [
@@ -72,11 +80,13 @@ async function renderEditor({
             : false,
       }),
     ],
-    content: editorContent ?? '<p>Issue selecting note</p>',
+    content:
+      note?.content ??
+      `<h1>Get started</h1><p>Create a note from the sidebar.</p>`,
     onUpdate: ({ editor }) => {
       if (EditorStore.isDirty) return
       const currentContent = editor.getHTML()
-      EditorStore.isDirty = currentContent !== editorContent
+      EditorStore.isDirty = currentContent !== note?.content
     },
     onTransaction: ({ editor }) => {
       /**
@@ -94,9 +104,13 @@ async function renderEditor({
       })
     },
   })
+  if (topEditorMenu) renderTopMenu(topEditorMenu, note)
+  if (floatingEditorMenu) renderFloatingMenu(floatingEditorMenu, note)
 
-  renderTopMenu(topEditorMenu)
-  renderFloatingMenu(floatingEditorMenu)
+  /**
+   * If no note was passed in, then we're rendering the Get started content
+   */
+  if (!note) editor.setEditable(false)
 
   // TODO: only set these IF we're selecting a new note
   // if the same note is active, then we don't want to reset
@@ -113,10 +127,12 @@ async function renderEditor({
 /**
  * Instantiates top-menu buttons and organizes them into their container groups
  */
-function renderTopMenu(topEditorMenu: Element) {
-  const { topEditorMenuButtons } = instantiateEditorButtons()
+function renderTopMenu(container: Element, note: Note | null) {
+  container.innerHTML = '' // reset container before rendering
+  const { topEditorMenuButtons } = instantiateEditorButtons(note)
   // setup editor buttons (bold, italic, etc.)
   topEditorMenuButtons.forEach((button) => {
+    if (!note) button.disabled = true // rendering Get Started, disable editing
     // get the button grouping from the data attribute
     const group = button.dataset.group
     if (!group) throw new Error('Top menu button is not assigned to a group')
@@ -126,15 +142,16 @@ function renderTopMenu(topEditorMenu: Element) {
       groupContainer = document.createElement('div')
       groupContainer.id = groupId
     }
-    topEditorMenu.appendChild(groupContainer)
+    container.appendChild(groupContainer)
     groupContainer.appendChild(button)
   })
 }
 
-function renderFloatingMenu(floatingEditorMenuContainer: Element) {
-  const { floatingEditorMenuButtons } = instantiateEditorButtons()
+function renderFloatingMenu(container: Element, note: Note | null) {
+  container.innerHTML = '' // reset container before rendering
+  const { floatingEditorMenuButtons } = instantiateEditorButtons(note)
   floatingEditorMenuButtons.forEach((button) => {
-    floatingEditorMenuContainer.appendChild(button)
+    container.appendChild(button)
   })
 }
 
@@ -168,4 +185,3 @@ function toggleActiveEditorClass({
 }
 
 export { renderEditor }
-export { instantiateEditorButtons } from './editor-buttons'

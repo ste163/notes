@@ -1,9 +1,9 @@
-import { NoteEvents } from 'event'
+import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
 import { renderButton } from 'components'
-import { renderNoteDetailsModal } from './note-details-modal'
+import { renderNoteDetailsModal } from 'renderer/reactive'
 import type { Button } from 'components'
-import type { MarkOptions } from 'types'
+import type { MarkOptions, Note } from 'types'
 
 interface EditorButton extends Button {
   group: number // used for placing in which div for organization
@@ -202,7 +202,14 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Save note',
     isInFloatingMenu: false,
-    onClick: () => dispatchEvent(new Event(NoteEvents.Save)),
+    onClick: (arg) => {
+      if (typeof arg === 'object' && arg !== null) {
+        const note = arg as Note
+        const noteToSave = { ...note }
+        noteToSave.content = EditorStore.editor?.getHTML() ?? note?.content
+        createEvent(NoteEvents.Save, { note: noteToSave }).dispatch()
+      }
+    },
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Save note</title>  
@@ -213,7 +220,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Note settings',
     isInFloatingMenu: false,
-    onClick: renderNoteDetailsModal,
+    onClick: (note) => renderNoteDetailsModal(note as Note),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Note settings</title>
@@ -227,7 +234,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
  * generates button instances depending on menu location.
  * This is not concerned with what happens to these buttons, only their creation
  */
-function instantiateEditorButtons() {
+function instantiateEditorButtons(note: Note | null) {
   const topEditorMenuButtons: HTMLButtonElement[] = []
   const floatingEditorMenuButtons: HTMLButtonElement[] = []
 
@@ -238,7 +245,7 @@ function instantiateEditorButtons() {
           title: button.title,
           html: button.html,
           className: button.className ?? '',
-          onClick: button.onClick,
+          onClick: () => button.onClick(note),
         })
       )
 
@@ -247,7 +254,7 @@ function instantiateEditorButtons() {
       title: button.title,
       html: button.html,
       className: button.className ?? '',
-      onClick: button.onClick,
+      onClick: () => button.onClick(note),
     })
     renderedButton.dataset.group = button.group.toString()
     topEditorMenuButtons.push(renderedButton)

@@ -29,6 +29,8 @@ PouchDb works locally using the browser's [IndexedDB](https://developer.mozilla.
 
 ### Application structure and data-flow
 
+TODO: revisit this as it has changed with the event-based rendering of state-based components
+
 This structure allows for multiple clients to stay in-sync.
 
 ```mermaid

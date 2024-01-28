@@ -8,7 +8,36 @@
     <title>notes</title>
     <script type="module" src="./src-ui/index.ts" defer></script>
   </head>
-  <body></body>
+  <body>
+    <div id="modal-backdrop" tabindex="-1" readonly="readonly">
+      <div
+        id="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        tabindex="-1"
+        readonly="readonly"
+      >
+        <div role="document">
+          <header id="modal-header">
+            <h2 id="modal-title">Title</h2>
+            <button id="modal-close"></button>
+          </header>
+          <div id="modal-content"></div>
+        </div>
+      </div>
+    </div>
+    <div id="sidebar">
+      <div id="sidebar-top-menu"></div>
+      <div id="sidebar-list"></div>
+    </div>
+    <main>
+      <div id="editor-top-menu"></div>
+      <div id="editor-floating-menu"></div>
+      <div id="editor"></div>
+    </main>
+    <footer></footer>
+  </body>
   <script>
     /**
      * Required for old PouchDb dependency that does not work well with new build tools
