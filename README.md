@@ -6,45 +6,42 @@ TODO: INSERT IMAGE OF APPLICATION HERE
 
 ## TODOs
 
-- Cleanup missing features and bugs (listed in index.ts)
-- properly credit remix icons
-- Tauri version: supports auto-updates
 - Basic unit tests run on push + on PR
+- Cleanup missing features and bugs (listed in index.ts)
+- Test Tauri version: supports auto-updates
 
 ## Application Architecture
 
 ### Goal
 
-Keep the application as simple and easily maintainable as possible. Leverage only a handful of well-vetted dependencies.
+Keep the application as simple and easily maintainable as possible by leveraging only a handful of well-maintained dependencies.
 
 ### Decisions for simplicity
 
-- Two main dependencies: [PouchDB](https://pouchdb.com/) and [TipTap](https://tiptap.dev/) (word processor).
-- Pure Javascript frontend instead of a UI framework. The application works as a light wrapper (a note list for selecting the active note) around TipTap to connect the database and writing editor states. Because TipTap handles the main UI state, including a major framework like Vue or React is not necessary yet.
-- Using the [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) approach for global state across components.
+- Two main dependencies: [PouchDB](https://pouchdb.com/) (database) and [TipTap](https://tiptap.dev/) (word processor and main state manager).
+- Pure Javascript frontend instead of a UI framework. Because there are so few states to keep track of, I'm using event-based rendering to handle the small amount of states. TipTap handles the majority of the application state (as it is the word processor), so using a framework like React is unnecessary at this point. The main events are related to CRUD and handling database connections, which are small enough for a hand-rolled solution.
 
-### CouchDB Docker Container
+### Cloud syncing support
 
-PouchDb works locally using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) or remotely using [CouchDB](https://couchdb.apache.org/). A separate repo contains all the information for setting up the remote CouchDB server: [couchdb-docker](https://github.com/ste163/couchdb-docker).
+PouchDb works locally using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) or remotely using [CouchDB](https://couchdb.apache.org/). A separate repo contains all the information for setting up the remote CouchDB server specifically for this application use: [couchdb-docker](https://github.com/ste163/couchdb-docker).
 
-### Application structure and data-flow
+### Application data flow
 
-TODO: revisit this as it has changed with the event-based rendering of state-based components
-
-This structure allows for multiple clients to stay in-sync.
+This application structure allows for real-time data syncing and a React/SPA-like user experience but with pure Javascript.
 
 ```mermaid
-flowchart TD
-    subgraph Docker Container
-      C[(PouchDb instance)]
+flowchart LR
+    subgraph Optional Docker Container
+      A[(PouchDb instance)]
     end
-    subgraph Client - browser or tauri desktop application
-      A[(IndexedDB)]
-      A -- Render editor with data from db --> B[UI and TipTap]
-      B -- On update/delete event, store changes --> A
+
+    subgraph Client - browser or tauri-based desktop application
+      B[(IndexedDB)]
+      D[Database API] <-- Requests --> C[Window object event manager]
+      D <-- CRUD --> B
+      C <-- Events --> E([Rendered View])
     end
-  A -- Sync changes --> C
-  C -- Sync changes --> A
+  A <-- Sync changes --> B
 ```
 
 # Local development setup
@@ -54,12 +51,24 @@ flowchart TD
 - [pnpm](https://pnpm.io/)
 - [Tauri](https://tauri.app/) (follow their setup instructions)
 
-## Run
-
 From the project's root, run:
 
 ```bash
 pnpm i
+```
+
+After installation is complete, start the application with
+
+```bash
+# Run only the UI for the browser
+pnpm start:dev:ui
+```
+
+or
+
+```bash
+# Run desktop application through tauri
+pnpm start:dev:tauri
 ```
 
 ### Updating Tauri/Rust Cargo packages
