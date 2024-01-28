@@ -1,10 +1,5 @@
 import { renderFooter, renderRemoteDbSetupModal } from 'renderer/reactive'
 
-/**
- * The StatusStore is the only store
- * that re-renders its component, the footer,
- * outside of the main refreshClient render loop.
- */
 interface StatusStore {
   error: string
   lastSavedDate: null | Date

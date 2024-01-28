@@ -45,6 +45,8 @@ import {
   renderSidebarMenu,
   renderSidebarNoteList,
   renderRemoteDbLogs,
+  renderNoteDetailsModal,
+  renderRemoteDbSetupModal,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -87,7 +89,14 @@ window.addEventListener(NoteEvents.GetAll, async () => {
 
 window.addEventListener(NoteEvents.GotAll, (event) => {
   const notes = (event as CustomEvent)?.detail?.notes
+  const { id } = getUrlData()
+
   renderSidebarNoteList({ isLoading: false, notes })
+  if (id)
+    toggleActiveClass({
+      selector: `#${id}-note-select-container`,
+      type: NoteEvents.Select,
+    })
 })
 
 window.addEventListener(NoteEvents.Select, async (event) => {
@@ -108,22 +117,33 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
 
     // setup url routing based on the note
     note
-      ? setUrl({ relativeUrl: `/${note?._id}` })
+      ? setUrl({ relativeUrl: `/${note?._id}`, params })
       : setUrl({ relativeUrl: '/', params })
 
+    // update styling for the selected note in list
     toggleActiveClass({
       selector: `#${note?._id}-note-select-container`,
       type: NoteEvents.Select,
     })
-
-    // ALSO: check URL for any modal params. If there are, then open the specific modal
-    // otherwise, close any open modals
 
     // TODO: revisit isDirty saving on a changed note event
     // if (EditorStore.isDirty) await saveNote(note)
 
     StatusStore.lastSavedDate = note?.updatedAt || null
     await renderNoteEditor({ isLoading: false, note })
+
+    // based on URL params, render dialogs
+    // note: this could potentially be moved to a `ModalEvents.Open` with which modal to render passed in
+    switch (params?.dialog) {
+      case 'details':
+        note && renderNoteDetailsModal(note)
+        break
+      case 'database':
+        renderRemoteDbSetupModal()
+        break
+      default:
+        break
+    }
   } catch (error) {
     // TODO: render error that selecting note failed (probably passing the error into the editor body)
     logger('error', 'Error selecting note.', error)
@@ -207,6 +227,11 @@ window.addEventListener(NoteEvents.Deleted, (event) => {
   const note = (event as CustomEvent)?.detail?.note as Note
   logger('info', `Note deleted: ${note.title}`)
   // TODO: re-enable the delete button? (but the modal will be closed, so probs not)
+
+  // clear the url dialog param
+  setUrl({ relativeUrl: `/${note._id}`, params: null })
+
+  createEvent(ModalEvents.Close).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()
   createEvent(NoteEvents.Select, { _id: '' }).dispatch()
 })
@@ -256,6 +281,8 @@ window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
 
 /**
  * Modal events
+ *
+ * This are more specific to handling application state and less so on handling rendering
  */
 window.addEventListener(ModalEvents.Open, (event) => {
   // Trap focus inside the modal, disable editor, and set URL params
@@ -274,19 +301,9 @@ window.addEventListener(ModalEvents.Open, (event) => {
 
 window.addEventListener(ModalEvents.Close, () => {
   // If there is a selected note, enable the editor after modal closes
-  const { id, params } = getUrlData()
+  const { id } = getUrlData()
   if (id) EditorStore.editor?.setEditable(true)
-
-  // remove any params that are not the dialog
-  const updatedParams = Object.keys(params).reduce(
-    (acc, key) => {
-      if (key !== 'dialog') acc[key] = params[key]
-      return acc
-    },
-    {} as Record<string, string>
-  )
-
-  setUrl({ relativeUrl: `/${id}`, params: updatedParams })
+  setUrl({ relativeUrl: `/${id}`, params: null })
 })
 
 /**

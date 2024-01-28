@@ -77,18 +77,27 @@ function openModal(
   modal.addEventListener('keydown', trapFocusListener)
   modal.addEventListener('keydown', escapePressListener)
 
+  // Allows for closing the modal by any other event
+  window.addEventListener(ModalEvents.Close, closeModalFromEvent)
+
   /**
    * Cleanup listeners and restore focus
    */
   function closeModal(classList?: string) {
-    createEvent(ModalEvents.Close).dispatch()
     if (classList) modal.classList.remove(classList)
     modalBackdrop.style.display = 'none'
     modal.removeEventListener('keydown', trapFocusListener)
     modal.removeEventListener('keydown', escapePressListener)
+    window.removeEventListener(ModalEvents.Close, closeModalFromEvent)
 
     if (previouslyFocusedOutsideModalElement)
       previouslyFocusedOutsideModalElement?.focus()
+
+    // This event is to relay that the modal has been closed
+    // so application state can be updated.
+    // Whether the closing was done by the modal itself or another component
+    // does not matter.
+    createEvent(ModalEvents.Close).dispatch()
   }
 
   function trapFocusListener(event: KeyboardEvent) {
@@ -97,6 +106,10 @@ function openModal(
 
   function escapePressListener(event: KeyboardEvent) {
     if (event.key === 'Escape') closeModal(classList)
+  }
+
+  function closeModalFromEvent() {
+    closeModal(classList)
   }
 }
 
