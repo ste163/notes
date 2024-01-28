@@ -1,6 +1,6 @@
 # notes
 
-A minimal note-taking application for Linux, Mac, Windows, and browsers. Supports cloud syncing through [PouchDb](https://pouchdb.com/). For a simple, self-hosted remote database setup, see the [couchdb-docker repo](https://github.com/ste163/couchdb-docker).
+A minimal note-taking application for Linux, Mac, Windows, and browsers. Supports cloud syncing through [PouchDB](https://pouchdb.com/). For a simple, self-hosted remote database setup, see the [couchdb-docker repo](https://github.com/ste163/couchdb-docker).
 
 TODO: INSERT IMAGE OF APPLICATION HERE
 
@@ -23,7 +23,7 @@ Keep the application as simple and easily maintainable as possible by leveraging
 
 ### Remote (cloud) syncing support
 
-PouchDb works locally using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) or remotely using [CouchDB](https://couchdb.apache.org/). A separate repo contains all the information for setting up the remote CouchDB server specifically for this application use: [couchdb-docker](https://github.com/ste163/couchdb-docker).
+PouchDB works locally using the browser's [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) or remotely using [CouchDB](https://couchdb.apache.org/). A separate repo contains all the information for setting up the remote CouchDB server, specifically for Notes: [couchdb-docker](https://github.com/ste163/couchdb-docker).
 
 ### Application data flow
 
