@@ -4,6 +4,7 @@
  *    - Components only render data from the event that fetches the data and passes it into the components
  *      - RELATED TODOs:
  *        - Revisit fetch requests. GetAll should only get the list of note meta data. Get by Id gets all note details + content
+ *        - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Add vitest + testing-library to test it.todos(). The UI is too complex to not have basic unit tests
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
  *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
@@ -27,8 +28,6 @@
  *  - make favicon
  *  - make icons for desktop
  */
-import { Database, useRemoteDetails } from 'database'
-import { logContainerId, logger } from 'logger'
 import {
   LifeCycleEvents,
   KeyboardEvents,
@@ -38,14 +37,16 @@ import {
   NoteEvents,
   createEvent,
 } from 'event'
+import { Database, useRemoteDetails } from 'database'
+import { logContainerId, logger } from 'logger'
 import { EditorStore, StatusStore } from 'store'
-import { renderGetStarted, renderEditor } from 'renderer'
 import {
   renderFooter,
   renderSidebarMenu,
   renderSidebarNoteList,
   renderRemoteDbLogs,
 } from 'renderer/reactive'
+import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
 
 let database: Database
@@ -59,12 +60,10 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 
     // setup database after app is rendering in loading state
     setupDatabase()
-
-    const noteIdFromUrl = window.location.pathname.split('/')[1] ?? ''
-
-    // these events set off the chain renders the app
+    const { id } = getUrlData()
+    // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
-    createEvent(NoteEvents.Select, { _id: noteIdFromUrl }).dispatch()
+    createEvent(NoteEvents.Select, { _id: id }).dispatch()
   } catch (error) {
     logger('error', 'Error in LifeCycleEvents.Init.', error)
   }
@@ -93,10 +92,13 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
 
 window.addEventListener(NoteEvents.Select, async (event) => {
   const noteId = (event as CustomEvent)?.detail?._id ?? ''
-  await renderEditorBody({ isLoading: true, note: null })
+  await renderNoteEditor({ isLoading: true, note: null })
   createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
 })
 
+/**
+ * Selected that handles fetching and rendering of the main editor body
+ */
 window.addEventListener(NoteEvents.Selected, async (event) => {
   try {
     const noteId = (event as CustomEvent)?.detail?._id ?? ''
@@ -114,13 +116,16 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
       type: NoteEvents.Select,
     })
 
+    // ALSO: check URL for any modal params. If there are, then open the specific modal
+    // otherwise, close any open modals
+
     // TODO: revisit isDirty saving on a changed note event
     // if (EditorStore.isDirty) await saveNote(note)
 
     StatusStore.lastSavedDate = note?.updatedAt || null
-    await renderEditorBody({ isLoading: false, note })
+    await renderNoteEditor({ isLoading: false, note })
   } catch (error) {
-    // TODO: render error that selecting note failed (probably in renderEditorBody!)
+    // TODO: render error that selecting note failed (probably passing the error into the editor body)
     logger('error', 'Error selecting note.', error)
   }
 })
@@ -202,9 +207,7 @@ window.addEventListener(NoteEvents.Deleted, (event) => {
   const note = (event as CustomEvent)?.detail?.note as Note
   logger('info', `Note deleted: ${note.title}`)
   // TODO: re-enable the delete button? (but the modal will be closed, so probs not)
-  // and close the details modal (how can we handle that?)
   createEvent(NoteEvents.GetAll).dispatch()
-  // TODO: if on Get Started (which would be better if it lived in the editor and wasn't a page)
   createEvent(NoteEvents.Select, { _id: '' }).dispatch()
 })
 
@@ -261,10 +264,13 @@ window.addEventListener(ModalEvents.Open, () => {
     closeButton?.focus()
   }, 10)
   EditorStore.editor?.setEditable(false)
+  // setup the URL state?
 })
 
 window.addEventListener(ModalEvents.Close, () => {
-  EditorStore.editor?.setEditable(true)
+  const { id } = getUrlData()
+  if (id) EditorStore.editor?.setEditable(true)
+  // clear URL state?
 })
 
 /**
@@ -295,45 +301,27 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
 })
 
 /**
- * By this point, all events related to running the app have been created:
- * initial state has been setup, DOM has loaded, and
- * client is ready to render.
- *
- * Setup initial database connecting and application rendering
+ * By this point, all events related to running the app have been created,
+ * and the client is ready to be initialized
  */
 window.addEventListener('DOMContentLoaded', async () => {
   dispatchEvent(new Event(LifeCycleEvents.Init))
 })
 
 /**
- * Decide whether to render the get started page or the editor
- * TODO: might be best to make the Get started page be the default render content
- * that is still edit-able, but you can't save it. That way the app state is always initialized in at least some way.
- * Will cleanup the need for this weird non-editor state for the app. There should always be an active writing editor
- * because it's a writing app...
+ * Renders the editor and updates store state
+ * TODO: see if we can remove this function
  */
-async function renderEditorBody({
+async function renderNoteEditor({
   isLoading,
   note,
 }: {
   isLoading: boolean
   note: Note | null
 }) {
-  const container = document.querySelector('#editor')
-  if (!container) throw new Error('Unable to find editor container')
-
-  if (isLoading) {
-    container.innerHTML = 'Loading...'
-    return
-  }
-
-  if (!note?._id) {
-    StatusStore.lastSavedDate = null
-    renderGetStarted(container)
-    return
-  }
-
-  EditorStore.editor = await renderEditor(note)
+  const editor = await renderEditor({ note, isLoading })
+  if (editor) EditorStore.editor = editor
+  if (!note) StatusStore.lastSavedDate = null
 }
 
 function setupDatabase() {
@@ -366,5 +354,12 @@ function toggleActiveClass({
     elementToActivate?.classList.add(activeType)
   } catch (error) {
     console.error(error)
+  }
+}
+
+function getUrlData() {
+  const id = window.location.pathname.split('/')[1] ?? ''
+  return {
+    id,
   }
 }

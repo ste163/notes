@@ -1,5 +1,7 @@
 import type { Editor } from '@tiptap/core'
 
+// TODO: revisit the editorStore.
+// it may not be needed
 interface EditorStore {
   editor: null | Editor
   isDirty: boolean

@@ -1,7 +1,7 @@
 import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
 import { renderButton } from 'components'
-import { renderNoteDetailsModal } from './note-details-modal'
+import { renderNoteDetailsModal } from 'renderer/reactive'
 import type { Button } from 'components'
 import type { MarkOptions, Note } from 'types'
 
