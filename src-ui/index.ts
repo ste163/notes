@@ -24,6 +24,7 @@
  *   - hyperlinks in the editor
  *   - mobile view (sidebar only + selected note only, state lives in URL)
  *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
+ *   - Clean-up: Modal naming to Dialog for consistency (ARIA uses Dialog)
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
@@ -112,7 +113,6 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
   try {
     const noteId = (event as CustomEvent)?.detail?._id ?? ''
     const note = await database.getById(noteId)
-
     const { params } = getUrlData()
 
     // setup url routing based on the note
@@ -199,15 +199,31 @@ window.addEventListener(NoteEvents.Saved, (event) => {
 // TODO: also need to refactor details modal and state, along with adding error state and loading state
 // for when we are editing the title
 // TODO: pass the full noteToUpdate object with the new title
-// window.addEventListener(NoteEvents.EditTitle, async (event) => {
-//   try {
-//     const note = (event as CustomEvent)?.detail?.note as Note
-//     await database.put(note)
-//   } catch (error) {
-//     // TODO: show error notification
-//     console.error(error)
-//   }
-// })
+window.addEventListener(NoteEvents.EditTitle, async (event) => {
+  try {
+    const note = (event as CustomEvent)?.detail?.note as Note
+    // TODO:
+    // DISABLE the submit button
+    // set state to LOADING
+    await database.put(note)
+    createEvent(NoteEvents.EditedTitle, { note }).dispatch()
+  } catch (error) {
+    // TODO: show error notification
+    // re-enable the form
+    console.error(error)
+  }
+})
+
+window.addEventListener(NoteEvents.EditedTitle, (event) => {
+  const note = (event as CustomEvent)?.detail?.note as Note
+
+  // TODO: do not emit the .Select event again, but instead
+  // re-render ONLY the open modal with the new state.
+  // That way we re-trigger less rendering of the entire application, which is uneeded
+  createEvent(NoteEvents.Select, { _id: note._id }).dispatch() // re-fetch full note data
+
+  createEvent(NoteEvents.GetAll).dispatch() // re-fetch meta-data for list
+})
 
 window.addEventListener(NoteEvents.Delete, async (event) => {
   try {

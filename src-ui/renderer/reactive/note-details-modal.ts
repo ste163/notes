@@ -9,6 +9,8 @@ const EDIT_NOTE_TITLE_CONTAINER = 'edit-note-title-container'
 // remove the idea of the 'edit' and 'locked' states.
 // always render the input but LOCK the 'update' button
 // unless the title has changed and is not empty (similar to remote-db-setup modal)
+// ONCE THAT WORKS
+// - add in the disabled/loading state for when requests are in-flight (this will be used for both TITLE and DELETE)
 
 function renderNoteDetailsModal(note: Note) {
   const { title, createdAt, updatedAt } = note
@@ -51,7 +53,7 @@ function renderNoteDetailsModal(note: Note) {
   // setup title-edit section
   const container = document.querySelector('#title-edit')
   if (!container) throw new Error('Missing title edit container')
-  renderTitleEdit(container, title)
+  renderTitleEdit(container, title, note)
 }
 
 function resetTitleEditContainer() {
@@ -66,7 +68,7 @@ function resetTitleEditContainer() {
   return container
 }
 
-function renderTitleEdit(container: Element, title: string) {
+function renderTitleEdit(container: Element, title: string, note: Note) {
   const titleContainer = resetTitleEditContainer()
   titleContainer.style.display = 'flex'
   titleContainer.style.alignItems = 'center'
@@ -84,7 +86,7 @@ function renderTitleEdit(container: Element, title: string) {
         <path d="M15.7279 9.57627L14.3137 8.16206L5 17.4758V18.89H6.41421L15.7279 9.57627ZM17.1421 8.16206L18.5563 6.74785L17.1421 5.33363L15.7279 6.74785L17.1421 8.16206ZM7.24264 20.89H3V16.6473L16.435 3.21231C16.8256 2.82179 17.4587 2.82179 17.8492 3.21231L20.6777 6.04074C21.0682 6.43126 21.0682 7.06443 20.6777 7.45495L7.24264 20.89Z"></path>
       </svg>`,
       onClick: () => {
-        renderTitleInput(container, title)
+        renderTitleInput(container, title, note)
       },
       style: {
         marginLeft: '0.5em',
@@ -95,7 +97,7 @@ function renderTitleEdit(container: Element, title: string) {
   container.append(titleContainer)
 }
 
-function renderTitleInput(container: Element, title: string) {
+function renderTitleInput(container: Element, title: string, note: Note) {
   const titleContainer = resetTitleEditContainer()
 
   const inputClass = 'edit-note-input'
@@ -121,7 +123,8 @@ function renderTitleInput(container: Element, title: string) {
         ) as HTMLInputElement
         const title: string = input?.value
         if (!title) throw new Error('Unable to read title from input')
-        createEvent(NoteEvents.EditTitle, { note: { title } }).dispatch()
+        const updatedNote = { ...note, title }
+        createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
       },
       style: {
         marginRight: '0.5em',
@@ -133,7 +136,7 @@ function renderTitleInput(container: Element, title: string) {
       title: 'Cancel title edit',
       html: 'Cancel',
       onClick: () => {
-        renderTitleEdit(container, title)
+        renderTitleEdit(container, title, note)
       },
     })
   )
