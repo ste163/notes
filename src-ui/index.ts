@@ -1,16 +1,12 @@
 /**
  * TODO PRIORITY ORDER
- *  - Rendering refactor: event-based instead of a 'main refresh loop'.
- *    - Components only render data from the event that fetches the data and passes it into the components
- *      - RELATED TODOs:
- *        - Revisit fetch requests. GetAll should only get the list of note meta data. Get by Id gets all note details + content
- *        - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
- *  - Add vitest + testing-library to test it.todos(). The UI is too complex to not have basic unit tests
+ *  - GetAll should only get the list of note meta data (everything but note content).
+ *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
+ *  - Add vitest + testing-library to test it.todos() and add error handling. The UI is too complex now to not have tests
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
  *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
  *       - say that it is connected to local
- *    - Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect) - use new events in the db class
- *    - loading states to stop the flashing on screen when connecting after a disconnect
+ *    - (test this) Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect) - use new events in the db class
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
