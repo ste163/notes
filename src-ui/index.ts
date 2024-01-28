@@ -104,12 +104,12 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     const noteId = (event as CustomEvent)?.detail?._id ?? ''
     const note = await database.getById(noteId)
 
-    // update url state to the valid id, if available
-    if (note) {
-      window.history.pushState({}, '', `/${note?._id ?? noteId}`)
-    } else {
-      window.history.pushState({}, '', '/')
-    }
+    const { params } = getUrlData()
+
+    // setup url routing based on the note
+    note
+      ? setUrl({ relativeUrl: `/${note?._id}` })
+      : setUrl({ relativeUrl: '/', params })
 
     toggleActiveClass({
       selector: `#${note?._id}-note-select-container`,
@@ -257,20 +257,36 @@ window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
 /**
  * Modal events
  */
-window.addEventListener(ModalEvents.Open, () => {
+window.addEventListener(ModalEvents.Open, (event) => {
+  // Trap focus inside the modal, disable editor, and set URL params
   setTimeout(() => {
     // need timeout delay to allow modal to render
     const closeButton = document.querySelector('#modal-close') as HTMLElement
     closeButton?.focus()
   }, 10)
+
+  const dialogTitle = (event as CustomEvent)?.detail?.param as string
+  const { id } = getUrlData()
+  setUrl({ relativeUrl: `/${id}`, params: { dialog: dialogTitle } })
+
   EditorStore.editor?.setEditable(false)
-  // setup the URL state?
 })
 
 window.addEventListener(ModalEvents.Close, () => {
-  const { id } = getUrlData()
+  // If there is a selected note, enable the editor after modal closes
+  const { id, params } = getUrlData()
   if (id) EditorStore.editor?.setEditable(true)
-  // clear URL state?
+
+  // remove any params that are not the dialog
+  const updatedParams = Object.keys(params).reduce(
+    (acc, key) => {
+      if (key !== 'dialog') acc[key] = params[key]
+      return acc
+    },
+    {} as Record<string, string>
+  )
+
+  setUrl({ relativeUrl: `/${id}`, params: updatedParams })
 })
 
 /**
@@ -359,7 +375,29 @@ function toggleActiveClass({
 
 function getUrlData() {
   const id = window.location.pathname.split('/')[1] ?? ''
+  const searchParams = new URLSearchParams(window.location.search)
+  const params: Record<string, string> = {}
+  searchParams.forEach((value, key) => {
+    params[key] = value
+  })
   return {
     id,
+    params,
+  }
+}
+
+function setUrl({
+  relativeUrl,
+  params,
+}: {
+  relativeUrl?: string
+  params?: Record<'dialog', string> | null
+}) {
+  try {
+    const url = new URL(relativeUrl ?? '/', window.location.origin)
+    url.search = params ? new URLSearchParams(params).toString() : ''
+    window.history.replaceState({}, '', url.toString())
+  } catch (error) {
+    logger('error', 'Error setting URL.', error)
   }
 }

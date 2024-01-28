@@ -89,6 +89,7 @@ function renderRemoteDbSetupModal() {
   renderModal({
     title: 'Remote Database',
     content: modalContent,
+    url: 'database',
     classList: 'remote-db-setup-modal',
   })
 

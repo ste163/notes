@@ -4,14 +4,20 @@ import './modal.css'
 /**
  * Renders a modal with the given title and content.
  * Handles open and close events along with trapping focus inside the modal
+ *
+ * @param title - Modal title
+ * @param content - Modal content of any html element
+ * @param url - Url param for this modal
  */
 function renderModal({
   title,
   content,
+  url,
   classList,
 }: {
   title: string
   content: HTMLElement
+  url: string
   classList?: string
 }) {
   const modalBackdrop = document.getElementById('modal-backdrop')
@@ -48,7 +54,7 @@ function renderModal({
   }
 
   modalContent.appendChild(content)
-  openModal(modalBackdrop, modal, modalCloseButton)
+  openModal(modalBackdrop, modal, modalCloseButton, url, classList)
 }
 
 /**
@@ -57,14 +63,15 @@ function renderModal({
 function openModal(
   modalBackdrop: HTMLElement,
   modal: HTMLElement,
-  closeButton: HTMLButtonElement
+  closeButton: HTMLButtonElement,
+  url: string,
+  classList?: string
 ) {
-  createEvent(ModalEvents.Open).dispatch()
+  createEvent(ModalEvents.Open, { param: url }).dispatch()
   // Save last focused element outside of modal to restore focus on modal close
   const previouslyFocusedOutsideModalElement =
     document.activeElement as HTMLElement
-
-  closeButton.onclick = closeModal
+  closeButton.onclick = () => closeModal(classList)
   modalBackdrop.style.display = 'block' // shows modal
 
   modal.addEventListener('keydown', trapFocusListener)
@@ -73,8 +80,9 @@ function openModal(
   /**
    * Cleanup listeners and restore focus
    */
-  function closeModal() {
+  function closeModal(classList?: string) {
     createEvent(ModalEvents.Close).dispatch()
+    if (classList) modal.classList.remove(classList)
     modalBackdrop.style.display = 'none'
     modal.removeEventListener('keydown', trapFocusListener)
     modal.removeEventListener('keydown', escapePressListener)
@@ -88,7 +96,7 @@ function openModal(
   }
 
   function escapePressListener(event: KeyboardEvent) {
-    if (event.key === 'Escape') closeModal()
+    if (event.key === 'Escape') closeModal(classList)
   }
 }
 

@@ -31,9 +31,9 @@ const StatusStore = new Proxy(
       // to decouple rendering from the store
       renderFooter()
 
-      // TODO/NOTE (rendering is being completely revisited): this doesn't work to re-open the modal on a state change
-      // might be best to make this router/url based. Could be a param option:
-      // ?db-modal=true
+      // TODO (rendering is being completely revisited):
+      // this doesn't work to re-open the modal on a state change
+      // MAKE MODALS RENDER ON ROUTER STATE
       const isModalRendered = document.querySelector('.remote-db-setup-modal')
       if (isModalRendered) renderRemoteDbSetupModal()
 

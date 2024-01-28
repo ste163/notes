@@ -45,6 +45,7 @@ function renderNoteDetailsModal(note: Note) {
   renderModal({
     title: 'Details',
     content: modalContent,
+    url: 'details',
   })
 
   // setup title-edit section
