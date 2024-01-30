@@ -79,7 +79,7 @@ function renderCreateNoteInput({
   checkForAlreadyRenderedInput()
   const input = `
       <div class="${inputContainerClass}">
-        <input class="note-input" title="Input note title" placeholder="Note title" />
+        <input class="note-input" title="Note title" placeholder="Note title" />
       </div>
     `
   container.insertAdjacentHTML('beforeend', input)

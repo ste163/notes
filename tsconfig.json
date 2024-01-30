@@ -13,6 +13,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
+    "skipLibCheck": true,
     "paths": {
       "components": ["./src-ui/renderer/components"],
       "database": ["./src-ui/database"],
@@ -25,4 +26,5 @@
     },
   },
   "include": ["./src-ui"],
+  "exclude": ["node_modules", "dist", "./src-tauri"],
 }
