@@ -39,7 +39,7 @@ import { logContainerId, logger } from 'logger'
 import { EditorStore, StatusStore } from 'store'
 import {
   renderFooter,
-  renderSidebarMenu,
+  renderSidebarCreateNote,
   renderSidebarNoteList,
   renderRemoteDbLogs,
   renderNoteDetailsModal,
@@ -53,7 +53,7 @@ let database: Database
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
     // render base app layout with loading states
-    renderSidebarMenu({ isCreateNoteLoading: false })
+    renderSidebarCreateNote({ isCreateNoteLoading: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
     renderFooter()
 
@@ -150,7 +150,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   const title = (event as CustomEvent)?.detail?.title
   try {
     // re-render the sidebar with loading state
-    renderSidebarMenu({
+    renderSidebarCreateNote({
       isCreateNoteLoading: true,
       noteTitle: title,
     })
@@ -158,7 +158,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     createEvent(NoteEvents.Created, { _id }).dispatch()
   } catch (error) {
     // TODO: render error notification inside sidebarMenu
-    renderSidebarMenu({
+    renderSidebarCreateNote({
       isCreateNoteLoading: false,
       noteTitle: title,
       createError: 'Error creating note',
@@ -167,7 +167,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 })
 
 window.addEventListener(NoteEvents.Created, async (event) => {
-  renderSidebarMenu({ isCreateNoteLoading: false })
+  renderSidebarCreateNote({ isCreateNoteLoading: false })
   const _id = (event as CustomEvent)?.detail?._id
   createEvent(NoteEvents.Select, { _id }).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()

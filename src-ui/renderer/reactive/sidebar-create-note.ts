@@ -1,6 +1,6 @@
 import { NoteEvents, createEvent } from 'event'
 import { renderButton } from 'components'
-import './sidebar-menu.css'
+import './sidebar-create-note.css'
 
 interface Props {
   noteTitle?: string
@@ -16,8 +16,10 @@ interface Props {
 
 /**
  * Render create note button and input
+ * inside the sidebar. Note: could pass in
+ * the container to allow for reusing the component
  */
-function renderSidebarMenu({
+function renderSidebarCreateNote({
   noteTitle,
   isCreateNoteLoading,
   createError,
@@ -115,7 +117,7 @@ function renderCreateNoteInput({
   }
 
   if (createError) {
-    // todo: error rendering if creation fails
+    // TODO: error rendering if creation fails
     console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
   }
   // add the create button to the input container
@@ -135,4 +137,4 @@ function renderCreateNoteInput({
   inputElement?.focus()
 }
 
-export { renderSidebarMenu }
+export { renderSidebarCreateNote }
