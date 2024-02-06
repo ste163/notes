@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { Window } from 'happy-dom'
 import { within } from '@testing-library/dom'
+import userEvent from '@testing-library/user-event'
 import { renderSidebarCreateNote } from './sidebar-create-note'
 
 // TODO: probably move this to a test-util
@@ -8,18 +9,18 @@ import { renderSidebarCreateNote } from './sidebar-create-note'
 // can pass in component, props, an optional containerId, and then return the within function for full access
 
 /**
- * Creates a simulated window and document
- * to render the component within
+ * Render a component and its props
+ * in a simulated window and document
  *
- * @param props any optional object
+ * @param renderFunction component's render function
+ * @param props component's props
  * @returns the "within" instance from testing-library/dom for this component
  * that allows for destructuring the getByRole, queryByRole, etc.
  */
-const renderComponent = (props?: {
-  noteTitle?: string
-  isCreateNoteLoading?: boolean
-  createError?: string
-}) => {
+const renderComponent = <T extends { [key: string]: unknown }>(
+  renderFunction: (props: T) => void,
+  props: T
+) => {
   /**
    * Setup the context for the component to render within
    */
@@ -32,17 +33,14 @@ const renderComponent = (props?: {
   globalThis.window.document.body.innerHTML =
     '<div id="sidebar-top-menu"></div>'
 
-  renderSidebarCreateNote({
-    noteTitle: props?.noteTitle ?? '',
-    isCreateNoteLoading: props?.isCreateNoteLoading ?? false,
-    createError: props?.createError ?? '',
-  })
+  renderFunction(props)
 
   return within(window.document.body as unknown as HTMLElement)
 }
 
 describe('create-note', () => {
   it('throws error if container is not found', () => {
+    // TODO: use the render abstraction once its done
     try {
       renderSidebarCreateNote({
         noteTitle: '',
@@ -56,26 +54,39 @@ describe('create-note', () => {
     }
   })
 
-  it.todo('if error, render full input and the error')
+  it.todo('if create error, render full input and the error')
 
   it.todo(
     'renders loading state if isCreateNoteLoading and no error'
     // ensure the save not button is disabled (and maybe also the cancel button?)
   )
 
+  it.todo('renders the loading state and spinner if error is passed in')
+
   it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
-    const { getByRole, queryByRole } = renderComponent()
+    const { getByRole, queryByRole } = renderComponent(
+      renderSidebarCreateNote,
+      {
+        noteTitle: '',
+        isCreateNoteLoading: false,
+        createError: '',
+      }
+    )
 
     const createButton = getByRole('button', { name: 'Create' })
-    createButton.click()
+    await userEvent.click(createButton)
     const input = getByRole('textbox', { name: 'Note title' })
     expect(input).toBeDefined()
+
     // clicking the cancel button should remove the input
     const cancelButton = getByRole('button', { name: 'Cancel' })
-    // TODO: if I can actually do the entire user interact this way,
-    // then remove userEvent to remove dependencies
-    cancelButton.click()
+
+    await userEvent.click(cancelButton)
     expect(queryByRole('textbox', { name: 'Note title' })).toBeNull()
+
+    // user can enter note, and submit event is called with title
+    createButton.click()
+    await userEvent.type(input, 'My new note')
 
     // TODO: emits the event when save button clicked
   })

@@ -8,12 +8,6 @@ interface Props {
   createError?: string
 }
 
-// TODO: testing
-// it.todo('if not loading and no error, render base input')
-// it.todo('if error, render full input and error')
-// it.todo('if isCreateNoteLoading and no error, renders loading spinner on create button + disabled')
-// it.todo('emits create event with title on save button click')
-
 /**
  * Render create note button and input
  * inside the sidebar. Note: could pass in
