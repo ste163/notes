@@ -38,10 +38,10 @@ class Database {
         .then(() => {
           // successfully made the connection
           createEvent(DatabaseEvents.RemoteConnected).dispatch()
-          logger('info', 'Connected to remote database.')
+          logger.logInfo('Connected to remote database.')
         })
-        .catch(() => {
-          logger('error', 'Remote connection error.')
+        .catch((error) => {
+          logger.logError('Remote connection error.', error)
         })
     }
   }
@@ -61,25 +61,25 @@ class Database {
         }).dispatch()
       })
       .on('error', (error: unknown | Error) => {
-        logger('error', 'Remote database sync error.', error)
+        logger.logError('Remote database sync error.', error)
       })
       .on('denied', (error) => {
-        logger('error', 'Remote database sync denied.', error)
+        logger.logError('Remote database sync denied.', error)
       })
       .catch((error) => {
-        logger('error', 'Remote database catch-all error.', error)
+        logger.logError('Remote database catch-all error.', error)
       })
 
-    logger('info', 'Syncing with remote database.')
+    logger.logInfo('Syncing with remote database.')
   }
 
   disconnectSyncing(): boolean {
     if (this.syncHandler) {
       this.syncHandler.cancel()
-      logger('info', 'Disconnected from remote database.')
+      logger.logInfo('Disconnected from remote database.')
       return true
     }
-    logger('error', 'Error disconnecting from remote database.')
+    logger.logError('Error disconnecting from remote database.')
     return false
   }
 

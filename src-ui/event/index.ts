@@ -6,4 +6,5 @@ export {
   ModalEvents,
   DatabaseEvents,
   NoteEvents,
+  StatusStoreEvents,
 } from './enums'

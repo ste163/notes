@@ -34,8 +34,7 @@ function useRemoteDetails() {
     set: (details: RemoteDetails) => {
       const isValidRemote = isRemoteDetails(details)
       if (!isValidRemote) {
-        logger(
-          'error',
+        logger.logError(
           'Invalid remote details. Attempted to set with: ' +
             JSON.stringify(details)
         )

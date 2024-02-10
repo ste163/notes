@@ -1,6 +1,6 @@
 import { StatusStore } from 'store'
 import { renderModal } from 'components'
-import { getLogs, logContainerId } from 'logger'
+import { logger, logContainerId } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
 import { databaseIcon } from '../icons'
@@ -145,7 +145,7 @@ function renderRemoteDbSetupModal() {
   })
 
   const dbLogContainer = document.querySelector(logContainerId)
-  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, getLogs())
+  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logger.getLogs())
 }
 
 export { renderRemoteDbSetupModal }

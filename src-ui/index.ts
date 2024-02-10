@@ -33,6 +33,7 @@ import {
   DatabaseEvents,
   NoteEvents,
   createEvent,
+  StatusStoreEvents,
 } from 'event'
 import { Database, useRemoteDetails } from 'database'
 import { logContainerId, logger } from 'logger'
@@ -64,7 +65,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(NoteEvents.Select, { _id: id }).dispatch()
   } catch (error) {
-    logger('error', 'Error in LifeCycleEvents.Init.', error)
+    logger.logError('Error in LifeCycleEvents.Init.', error)
   }
 })
 
@@ -80,7 +81,7 @@ window.addEventListener(NoteEvents.GetAll, async () => {
     // TODO: render error in sidebarNoteList
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
     // - if you are using console.error, say it's an error and say you need to use logger
-    logger('error', 'Error fetching all notes', error)
+    logger.logError('Error fetching all notes', error)
   }
 })
 
@@ -142,7 +143,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     }
   } catch (error) {
     // TODO: render error that selecting note failed (probably passing the error into the editor body)
-    logger('error', 'Error selecting note.', error)
+    logger.logError('Error selecting note.', error)
   }
 })
 
@@ -180,7 +181,7 @@ window.addEventListener(NoteEvents.Save, async (event) => {
     await database.put(note)
     createEvent(NoteEvents.Saved, { note }).dispatch()
   } catch (error) {
-    logger('error', 'Error saving note.', error)
+    logger.logError('Error saving note.', error)
   }
 })
 
@@ -230,14 +231,14 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
   } catch (error) {
     // TODO: if error, render the details modal with the error state
     // TODO: tests and error handling for details modal
-    logger('error', 'Error deleting note.', error)
+    logger.logError('Error deleting note.', error)
   }
 })
 
 window.addEventListener(NoteEvents.Deleted, (event) => {
   // TODO: consider logging info for all events like deleting and saving?
   const note = (event as CustomEvent)?.detail?.note as Note
-  logger('info', `Note deleted: ${note.title}`)
+  logger.logInfo(`Note deleted: ${note.title}`)
   // TODO: re-enable the delete button? (but the modal will be closed, so probs not)
 
   // clear the url dialog param
@@ -253,7 +254,7 @@ window.addEventListener(NoteEvents.Deleted, (event) => {
  */
 window.addEventListener(DatabaseEvents.RemoteConnect, () => {
   if (StatusStore.isConnectedToRemote) {
-    logger('info', 'Already connected to remote database.')
+    logger.logInfo('Already connected to remote database.')
     return
   }
   setupDatabase()
@@ -273,7 +274,7 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
 
 window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
   if (!StatusStore.isConnectedToRemote) {
-    logger('info', 'Already disconnected from remote database.')
+    logger.logInfo('Already disconnected from remote database.')
     return
   }
   const successfulDisconnect = database.disconnectSyncing()
@@ -316,6 +317,14 @@ window.addEventListener(ModalEvents.Close, () => {
   const { id } = getUrlData()
   if (id) EditorStore.editor?.setEditable(true)
   setUrl({ relativeUrl: `/${id}`, params: null })
+})
+
+/**
+ * Status Store events
+ */
+window.addEventListener(StatusStoreEvents.Update, () => {
+  // re-render the footer with the latest state
+  renderFooter()
 })
 
 /**
@@ -376,7 +385,7 @@ function setupDatabase() {
       username ? `http://${username}:${password}@${host}:${port}` : ''
     )
   } catch (error) {
-    logger('error', 'Error setting up database.', error)
+    logger.logError('Error setting up database.', error)
   }
 }
 
@@ -427,6 +436,6 @@ function setUrl({
     url.search = params ? new URLSearchParams(params).toString() : ''
     window.history.replaceState({}, '', url.toString())
   } catch (error) {
-    logger('error', 'Error setting URL.', error)
+    logger.logError('Error setting URL.', error)
   }
 }

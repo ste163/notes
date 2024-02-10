@@ -1,10 +1,12 @@
 import { describe, it, vi, expect } from 'vitest'
 import { useRemoteDetails } from './use-remote-details'
-import * as exports from 'logger'
+import { logger } from 'logger'
 import type { RemoteDetails } from 'types'
 
+vi.mock('logger')
+
 describe('use-remote-details', () => {
-  const loggerSpy = vi.spyOn(exports, 'logger').mockImplementation(vi.fn())
+  vi.mocked(logger.logError).mockImplementation(vi.fn())
   const getSpy = vi.spyOn(Storage.prototype, 'getItem')
   const setSpy = vi.spyOn(Storage.prototype, 'setItem')
 
@@ -45,7 +47,7 @@ describe('use-remote-details', () => {
     const { set } = useRemoteDetails()
     const details = { db: 'test' } as unknown as RemoteDetails
     expect(set(details)).toBeUndefined()
-    expect(loggerSpy).toHaveBeenCalledOnce()
+    expect(logger.logError).toHaveBeenCalledOnce()
     expect(setSpy).not.toHaveBeenCalledWith(
       'remote-db-details',
       JSON.stringify(details)
