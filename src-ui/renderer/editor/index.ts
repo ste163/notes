@@ -1,7 +1,8 @@
 import { EditorStore } from 'store'
 import {
   BUTTON_CONFIGURATION,
-  instantiateEditorButtons,
+  instantiateTopMenuButtons,
+  instantiateFloatingMenuButtons,
 } from './editor-buttons'
 import { Editor } from '@tiptap/core'
 import FloatingMenu from '@tiptap/extension-floating-menu'
@@ -129,9 +130,9 @@ async function renderEditor({
  */
 function renderTopMenu(container: Element, note: Note | null) {
   container.innerHTML = '' // reset container before rendering
-  const { topEditorMenuButtons } = instantiateEditorButtons(note)
+  const buttons = instantiateTopMenuButtons(note)
   // setup editor buttons (bold, italic, etc.)
-  topEditorMenuButtons.forEach((button) => {
+  buttons.forEach((button) => {
     if (!note) button.disabled = true // rendering Get Started, disable editing
     // get the button grouping from the data attribute
     const group = button.dataset.group
@@ -149,8 +150,8 @@ function renderTopMenu(container: Element, note: Note | null) {
 
 function renderFloatingMenu(container: Element, note: Note | null) {
   container.innerHTML = '' // reset container before rendering
-  const { floatingEditorMenuButtons } = instantiateEditorButtons(note)
-  floatingEditorMenuButtons.forEach((button) => {
+  const buttons = instantiateFloatingMenuButtons(note)
+  buttons.forEach((button) => {
     container.appendChild(button)
   })
 }
