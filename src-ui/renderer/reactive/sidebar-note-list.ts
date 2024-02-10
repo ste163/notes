@@ -4,9 +4,12 @@ import './sidebar-note-list.css'
 import type { Notes } from 'types'
 
 /**
- * Renders the note list that can
- * - emit select note event
- * - emit delete note event
+ * Renders list of notes in sidebar
+ * and clicking them emits selected event
+ *
+ * @param isLoading boolean
+ * @param notes Notes object
+ * @returns void
  */
 function renderSidebarNoteList({
   isLoading,

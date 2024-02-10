@@ -14,7 +14,7 @@ interface Button<T = unknown> {
 const instantiateButton = (button: Button) => {
   const element = document.createElement('button')
   element.title = button.title
-  element.onclick = (args) => button.onClick(args)
+  element.onclick = button.onClick
   if (button.className) element.className = button.className
   if (button.html) element.innerHTML = button.html
   if (button.style) {
