@@ -64,14 +64,11 @@ describe('create-note', () => {
       createError: 'Error',
     })
 
-    // TODO: need to get the testing-library expects (toHaveValue()
     // input renders with title
-    expect(
-      getByRole('textbox', { name: 'Note title' }).getAttribute('value')
-    ).toBe(TITLE)
+    expect(getByRole('textbox', { name: 'Note title' })).toHaveValue(TITLE)
 
     // check that buttons are not disabled
-    // expect(getByRole('button', { name: 'Save' })).not.toBeDisabled()
+    expect(getByRole('button', { name: 'Save' })).not.toBeDisabled()
 
     // TODO: the error message renders (once I get the error message setup)
   })
