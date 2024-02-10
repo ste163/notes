@@ -113,13 +113,13 @@ function renderRemoteDbSetupModal() {
     }
   )
 
-  const localStorageDetails = useRemoteDetails().get()
+  const details = useRemoteDetails().get()
 
   inputElements.forEach((element) => {
-    // if the element id is the same as the key in localStorageDetails
+    // if the element id is the same as the key in details
     // assign the default value to the input
-    if (element.id in localStorageDetails) {
-      element.defaultValue = localStorageDetails[element?.id]
+    if (element.id in details) {
+      element.defaultValue = details[element?.id]
     }
   })
 
