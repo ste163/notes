@@ -1,12 +1,15 @@
 import { NoteEvents, createEvent } from 'event'
-import { renderButton } from 'components'
+import { instantiateButton } from 'components'
 import './sidebar-note-list.css'
 import type { Notes } from 'types'
 
 /**
- * Renders the note list that can
- * - emit select note event
- * - emit delete note event
+ * Renders list of notes in sidebar
+ * and clicking them emits selected event
+ *
+ * @param isLoading boolean
+ * @param notes Notes object
+ * @returns void
  */
 function renderSidebarNoteList({
   isLoading,
@@ -23,9 +26,9 @@ function renderSidebarNoteList({
     container.innerHTML = 'Loading...'
     return
   }
-  Object.values(notes)?.map(({ _id, title, updatedAt }) => {
-    if (!title) throw new Error('Unable to read name from note')
-    const selectableNoteButton = renderButton({
+  const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
+    instantiateButton({
+      id: _id,
       title,
       html: `
       <div>
@@ -36,13 +39,14 @@ function renderSidebarNoteList({
       </div>`,
       onClick: () => createEvent(NoteEvents.Select, { _id: _id }).dispatch(),
     })
-    selectableNoteButton.id = _id
-    const noteSelectContainer = document.createElement('div')
-    const containerClass = 'note-select-container'
-    noteSelectContainer.classList.add(containerClass)
-    noteSelectContainer.id = `${_id}-${containerClass}`
-    noteSelectContainer.appendChild(selectableNoteButton)
-    container.append(noteSelectContainer)
+  )
+  noteButtons?.forEach((b) => {
+    // setup container for button and append to sidebar
+    const buttonContainer = document.createElement('div')
+    buttonContainer.classList.add('note-select-container')
+    buttonContainer.id = `${b.id}-${'note-select-container'}`
+    buttonContainer.appendChild(b)
+    container.appendChild(buttonContainer)
   })
 }
 

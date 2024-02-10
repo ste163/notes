@@ -1,4 +1,5 @@
-import { renderFooter, renderRemoteDbSetupModal } from 'renderer/reactive'
+import { renderRemoteDbSetupModal } from 'renderer/reactive'
+import { createEvent, StatusStoreEvents } from 'event'
 
 interface StatusStore {
   error: string
@@ -22,9 +23,7 @@ const StatusStore = new Proxy(
         value = value ? new Date(value).toLocaleString() : null
       ;(target[key] as unknown) = value
 
-      // TODO: statusStore will emit an event, status-store-updated
-      // to decouple rendering from the store
-      renderFooter()
+      createEvent(StatusStoreEvents.Update).dispatch()
 
       // TODO (rendering is being completely revisited):
       // this doesn't work to re-open the modal on a state change

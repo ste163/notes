@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -10,6 +11,10 @@ export default defineConfig({
     port: 1420,
     strictPort: true,
   },
+  test: {
+    environment: 'happy-dom',
+    setupFiles: ['./vitest-setup.ts'],
+  },
   resolve: {
     alias: {
       components: '/src-ui/renderer/components',
@@ -20,6 +25,7 @@ export default defineConfig({
       'renderer/reactive': '/src-ui/renderer/reactive',
       store: '/src-ui/store',
       types: '/src-ui/types',
+      'test-utils': '/src-ui/test-utils',
     },
   },
   // to make use of `TAURI_DEBUG` and other env variables

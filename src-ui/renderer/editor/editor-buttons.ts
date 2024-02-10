@@ -1,6 +1,6 @@
 import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
-import { renderButton } from 'components'
+import { instantiateButton } from 'components'
 import { renderNoteDetailsModal } from 'renderer/reactive'
 import type { Button } from 'components'
 import type { MarkOptions, Note } from 'types'
@@ -229,41 +229,32 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
   },
 ]
 
-/**
- * Reads editor button config and
- * generates button instances depending on menu location.
- * This is not concerned with what happens to these buttons, only their creation
- */
-function instantiateEditorButtons(note: Note | null) {
-  const topEditorMenuButtons: HTMLButtonElement[] = []
-  const floatingEditorMenuButtons: HTMLButtonElement[] = []
-
-  BUTTON_CONFIGURATION.forEach((button: EditorButton) => {
-    if (button.isInFloatingMenu)
-      floatingEditorMenuButtons.push(
-        renderButton({
-          title: button.title,
-          html: button.html,
-          className: button.className ?? '',
-          onClick: () => button.onClick(note),
-        })
-      )
-
-    // add data-group attribute for grouping buttons into containers
-    const renderedButton = renderButton({
-      title: button.title,
-      html: button.html,
-      className: button.className ?? '',
-      onClick: () => button.onClick(note),
+function instantiateTopMenuButtons(note: Note | null) {
+  return BUTTON_CONFIGURATION.filter((b) => !b.isInFloatingMenu).map((b) => {
+    const button = instantiateButton({
+      title: b.title,
+      html: b.html,
+      className: b.className ?? '',
+      onClick: () => b.onClick(note),
     })
-    renderedButton.dataset.group = button.group.toString()
-    topEditorMenuButtons.push(renderedButton)
+    button.dataset.group = b.group.toString()
+    return button
   })
-
-  return {
-    topEditorMenuButtons,
-    floatingEditorMenuButtons,
-  }
 }
 
-export { BUTTON_CONFIGURATION, instantiateEditorButtons }
+function instantiateFloatingMenuButtons(note: Note | null) {
+  return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) =>
+    instantiateButton({
+      title: b.title,
+      html: b.html,
+      className: b.className ?? '',
+      onClick: () => b.onClick(note),
+    })
+  )
+}
+
+export {
+  BUTTON_CONFIGURATION,
+  instantiateTopMenuButtons,
+  instantiateFloatingMenuButtons,
+}

@@ -1,8 +1,9 @@
 import './button.css'
 
 interface Button<T = unknown> {
-  title: string // accessibility title for button
+  title: string // accessibility title
   onClick: (args: T) => void
+  id?: string
   className?: string
   html?: string
   style?: Partial<CSSStyleDeclaration>
@@ -11,10 +12,11 @@ interface Button<T = unknown> {
 /**
  * Generic function for creating button elements
  */
-const renderButton = (button: Button) => {
+const instantiateButton = (button: Button) => {
   const element = document.createElement('button')
   element.title = button.title
-  element.onclick = (args) => button.onClick(args)
+  element.onclick = button.onClick
+  if (button.id) element.setAttribute('id', button.id)
   if (button.className) element.className = button.className
   if (button.html) element.innerHTML = button.html
   if (button.style) {
@@ -28,5 +30,5 @@ const renderButton = (button: Button) => {
   return element
 }
 
-export { renderButton }
+export { instantiateButton }
 export type { Button }

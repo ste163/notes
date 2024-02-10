@@ -1,6 +1,6 @@
 import { StatusStore } from 'store'
 import { renderModal } from 'components'
-import { getLogs, logContainerId } from 'logger'
+import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
 import { databaseIcon } from '../icons'
@@ -113,13 +113,13 @@ function renderRemoteDbSetupModal() {
     }
   )
 
-  const localStorageDetails = useRemoteDetails().get()
+  const details = useRemoteDetails().get()
 
   inputElements.forEach((element) => {
-    // if the element id is the same as the key in localStorageDetails
+    // if the element id is the same as the key in details
     // assign the default value to the input
-    if (element.id in localStorageDetails) {
-      element.defaultValue = localStorageDetails[element?.id]
+    if (element.id in details) {
+      element.defaultValue = details[element?.id]
     }
   })
 
@@ -144,8 +144,8 @@ function renderRemoteDbSetupModal() {
     createEvent(DatabaseEvents.RemoteConnect).dispatch()
   })
 
-  const dbLogContainer = document.querySelector(logContainerId)
-  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, getLogs())
+  const dbLogContainer = document.querySelector('#remote-db-logs')
+  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logger.getLogs())
 }
 
 export { renderRemoteDbSetupModal }
