@@ -11,7 +11,7 @@ interface Button<T = unknown> {
 /**
  * Generic function for creating button elements
  */
-const renderButton = (button: Button) => {
+const instantiateButton = (button: Button) => {
   const element = document.createElement('button')
   element.title = button.title
   element.onclick = (args) => button.onClick(args)
@@ -28,5 +28,5 @@ const renderButton = (button: Button) => {
   return element
 }
 
-export { renderButton }
+export { instantiateButton }
 export type { Button }

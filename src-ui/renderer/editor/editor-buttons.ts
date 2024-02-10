@@ -1,6 +1,6 @@
 import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
-import { renderButton } from 'components'
+import { instantiateButton } from 'components'
 import { renderNoteDetailsModal } from 'renderer/reactive'
 import type { Button } from 'components'
 import type { MarkOptions, Note } from 'types'
@@ -231,7 +231,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
 
 function instantiateTopMenuButtons(note: Note | null) {
   return BUTTON_CONFIGURATION.filter((b) => !b.isInFloatingMenu).map((b) => {
-    const button = renderButton({
+    const button = instantiateButton({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
@@ -244,7 +244,7 @@ function instantiateTopMenuButtons(note: Note | null) {
 
 function instantiateFloatingMenuButtons(note: Note | null) {
   return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) =>
-    renderButton({
+    instantiateButton({
       title: b.title,
       html: b.html,
       className: b.className ?? '',

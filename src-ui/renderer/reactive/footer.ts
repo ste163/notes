@@ -1,5 +1,5 @@
 import { StatusStore } from 'store'
-import { renderButton } from 'components'
+import { instantiateButton } from 'components'
 import { renderRemoteDbSetupModal } from './remote-db-setup-modal'
 import { databaseIcon } from '../icons'
 import pkg from '../../../package.json'
@@ -57,7 +57,7 @@ function renderFooter(): void {
   /**
    * Add dynamic sections to footer
    */
-  const remoteDbSetupButton = renderButton({
+  const remoteDbSetupButton = instantiateButton({
     title: 'Setup remote database',
     html: `
       ${databaseIcon}

@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { renderButton } from 'components'
+import { instantiateButton } from 'components'
 import './sidebar-create-note.css'
 
 interface Props {
@@ -22,7 +22,7 @@ function renderSidebarCreateNote({
   if (!container) throw new Error('Unable to find sidebar-top-menu container')
   container.innerHTML = '' // reset container before rendering
   container.appendChild(
-    renderButton({
+    instantiateButton({
       title: 'Create note',
       onClick: () =>
         renderCreateNoteInput({
@@ -93,7 +93,7 @@ function renderCreateNoteInput({
     inputElement?.setAttribute('value', noteTitle)
   }
 
-  const saveNoteButton = renderButton({
+  const saveNoteButton = instantiateButton({
     title: 'Save note',
     html: 'Save',
     onClick: () => {
@@ -106,8 +106,15 @@ function renderCreateNoteInput({
     },
   })
 
+  const cancelButton = instantiateButton({
+    title: 'Cancel',
+    html: 'Cancel',
+    onClick: checkForAlreadyRenderedInput,
+  })
+
   if (isCreateNoteLoading) {
     saveNoteButton.disabled = isCreateNoteLoading
+    cancelButton.disabled = isCreateNoteLoading
   }
 
   if (createError) {
@@ -116,13 +123,7 @@ function renderCreateNoteInput({
   }
   // add the create button to the input container
   buttonContainer?.appendChild(saveNoteButton)
-  buttonContainer?.appendChild(
-    renderButton({
-      title: 'Cancel creating',
-      html: 'Cancel',
-      onClick: checkForAlreadyRenderedInput,
-    })
-  )
+  buttonContainer?.appendChild(cancelButton)
 
   const inputElement = document.querySelector(
     `.${noteInputClass}`

@@ -73,12 +73,20 @@ describe('create-note', () => {
     // TODO: the error message renders (once I get the error message setup)
   })
 
-  it.todo(
-    'renders loading state if loading and not the error'
-    // ensure the save not button is disabled (AND the cancel button!)
-  )
+  it('renders loading state if loading is true and never the error', () => {
+    const { getByRole } = renderComponent(renderSidebarCreateNote, {
+      noteTitle: TITLE,
+      isCreateNoteLoading: true,
+      createError: 'Error',
+    })
 
-  it.todo('renders the loading state and spinner if error is passed in')
+    // input renders with title
+    expect(getByRole('textbox', { name: 'Note title' })).toHaveValue(TITLE)
+
+    // check that buttons are disabled
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Cancel' })).toBeDisabled()
+  })
 
   it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
     const eventSpy = vi.spyOn(event, 'createEvent')

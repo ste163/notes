@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { renderButton, renderModal } from 'components'
+import { instantiateButton, renderModal } from 'components'
 import type { Note } from 'types'
 import './note-details-modal.css'
 
@@ -29,7 +29,7 @@ function renderNoteDetailsModal(note: Note) {
 
   // add delete button
   modalContent.appendChild(
-    renderButton({
+    instantiateButton({
       title: 'Delete note',
       html: `  
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -78,7 +78,7 @@ function renderTitleEdit(container: Element, title: string, note: Note) {
 
   titleContainer.appendChild(titleSpan)
   titleContainer.appendChild(
-    renderButton({
+    instantiateButton({
       title: 'Edit note title',
       html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@ function renderTitleInput(container: Element, title: string, note: Note) {
   buttonContainer.style.marginTop = '0.5em'
 
   buttonContainer.appendChild(
-    renderButton({
+    instantiateButton({
       title: 'Save title',
       html: 'Save',
       onClick: () => {
@@ -132,7 +132,7 @@ function renderTitleInput(container: Element, title: string, note: Note) {
     })
   )
   buttonContainer.appendChild(
-    renderButton({
+    instantiateButton({
       title: 'Cancel title edit',
       html: 'Cancel',
       onClick: () => {
