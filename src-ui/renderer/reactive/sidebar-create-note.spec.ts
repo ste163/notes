@@ -2,7 +2,9 @@ import { describe, it, expect, vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
 import { renderSidebarCreateNote } from './sidebar-create-note'
-import * as event from 'event'
+import { NoteEvents, createEvent } from 'event'
+
+vi.mock('event')
 
 const title = 'Note title'
 const containerId = 'sidebar-top-menu'
@@ -62,8 +64,6 @@ describe('create-note', () => {
   })
 
   it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
-    const eventSpy = vi.spyOn(event, 'createEvent')
-
     const { getByRole, queryByRole } = renderComponent(
       containerId,
       renderSidebarCreateNote,
@@ -88,7 +88,7 @@ describe('create-note', () => {
     createButton.click()
     await userEvent.type(input, title)
     await userEvent.click(getByRole('button', { name: 'Save' }))
-    expect(eventSpy).toHaveBeenCalledWith(event.NoteEvents.Create, {
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Create, {
       title,
     })
   })

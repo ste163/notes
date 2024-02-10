@@ -27,8 +27,7 @@ function renderSidebarNoteList({
     return
   }
   Object.values(notes)?.map(({ _id, title, updatedAt }) => {
-    if (!title) throw new Error('Unable to read name from note')
-    const selectableNoteButton = instantiateButton({
+    const button = instantiateButton({
       title,
       html: `
       <div>
@@ -39,12 +38,12 @@ function renderSidebarNoteList({
       </div>`,
       onClick: () => createEvent(NoteEvents.Select, { _id: _id }).dispatch(),
     })
-    selectableNoteButton.id = _id
+    button.id = _id
     const noteSelectContainer = document.createElement('div')
     const containerClass = 'note-select-container'
     noteSelectContainer.classList.add(containerClass)
     noteSelectContainer.id = `${_id}-${containerClass}`
-    noteSelectContainer.appendChild(selectableNoteButton)
+    noteSelectContainer.appendChild(button)
     container.append(noteSelectContainer)
   })
 }
