@@ -1,9 +1,6 @@
 import { StatusStore } from 'store'
 import { LoggerEvents, createEvent } from 'event'
 
-// TODO: may not want this here as it tightly couples?
-const logContainerId = '#remote-db-logs'
-
 class Logger {
   private logs: string[] = []
 
@@ -72,4 +69,4 @@ class Logger {
 
 const logger = new Logger()
 
-export { logger, logContainerId }
+export { logger }

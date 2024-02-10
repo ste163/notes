@@ -1,6 +1,6 @@
 import { StatusStore } from 'store'
 import { renderModal } from 'components'
-import { logger, logContainerId } from 'logger'
+import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
 import { databaseIcon } from '../icons'
@@ -144,7 +144,7 @@ function renderRemoteDbSetupModal() {
     createEvent(DatabaseEvents.RemoteConnect).dispatch()
   })
 
-  const dbLogContainer = document.querySelector(logContainerId)
+  const dbLogContainer = document.querySelector('#remote-db-logs')
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logger.getLogs())
 }
 

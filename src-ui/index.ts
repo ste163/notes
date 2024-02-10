@@ -36,7 +36,7 @@ import {
   StatusStoreEvents,
 } from 'event'
 import { Database, useRemoteDetails } from 'database'
-import { logContainerId, logger } from 'logger'
+import { logger } from 'logger'
 import { EditorStore, StatusStore } from 'store'
 import {
   renderFooter,
@@ -332,7 +332,7 @@ window.addEventListener(StatusStoreEvents.Update, () => {
  */
 window.addEventListener(LoggerEvents.Update, (event) => {
   const logs = (event as CustomEvent)?.detail?.logs
-  const dbLogContainer = document.querySelector(logContainerId)
+  const dbLogContainer = document.querySelector('#remote-db-logs')
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
 })
 
