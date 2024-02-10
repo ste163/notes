@@ -16,6 +16,7 @@ const instantiateButton = (button: Button) => {
   const element = document.createElement('button')
   element.title = button.title
   element.onclick = button.onClick
+  if (button.id) element.setAttribute('id', button.id)
   if (button.className) element.className = button.className
   if (button.html) element.innerHTML = button.html
   if (button.style) {

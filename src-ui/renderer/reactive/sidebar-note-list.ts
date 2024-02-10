@@ -26,9 +26,8 @@ function renderSidebarNoteList({
     container.innerHTML = 'Loading...'
     return
   }
-  const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) => {
-    // for each note, setup the button and its container div
-    const button = instantiateButton({
+  const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
+    instantiateButton({
       id: _id,
       title,
       html: `
@@ -40,14 +39,15 @@ function renderSidebarNoteList({
       </div>`,
       onClick: () => createEvent(NoteEvents.Select, { _id: _id }).dispatch(),
     })
+  )
+  noteButtons?.forEach((b) => {
+    // setup container for button and append to sidebar
     const buttonContainer = document.createElement('div')
     buttonContainer.classList.add('note-select-container')
-    buttonContainer.id = `${_id}-${'note-select-container'}`
-    buttonContainer.appendChild(button)
-    return buttonContainer
+    buttonContainer.id = `${b.id}-${'note-select-container'}`
+    buttonContainer.appendChild(b)
+    container.appendChild(buttonContainer)
   })
-  // add each button to sidebar container
-  noteButtons?.forEach((button) => container.appendChild(button))
 }
 
 export { renderSidebarNoteList }
