@@ -46,9 +46,9 @@ describe('create-note', () => {
     // TODO: use the render abstraction once its done
     try {
       renderSidebarCreateNote({
-        noteTitle: '',
-        isCreateNoteLoading: false,
-        createError: '',
+        title: '',
+        isSavingNote: false,
+        error: '',
       })
     } catch (error) {
       expect((error as Error).message).toBe(
@@ -59,9 +59,9 @@ describe('create-note', () => {
 
   it('if create error, render full input and the error', () => {
     const { getByRole } = renderComponent(renderSidebarCreateNote, {
-      noteTitle: TITLE,
-      isCreateNoteLoading: false,
-      createError: 'Error',
+      title: TITLE,
+      isSavingNote: false,
+      error: 'Error',
     })
 
     // input renders with title
@@ -75,9 +75,9 @@ describe('create-note', () => {
 
   it('renders loading state if loading is true and never the error', () => {
     const { getByRole } = renderComponent(renderSidebarCreateNote, {
-      noteTitle: TITLE,
-      isCreateNoteLoading: true,
-      createError: 'Error',
+      title: TITLE,
+      isSavingNote: true,
+      error: 'Error',
     })
 
     // input renders with title
@@ -94,9 +94,9 @@ describe('create-note', () => {
     const { getByRole, queryByRole } = renderComponent(
       renderSidebarCreateNote,
       {
-        noteTitle: '',
-        isCreateNoteLoading: false,
-        createError: '',
+        title: '',
+        isSavingNote: false,
+        error: '',
       }
     )
 

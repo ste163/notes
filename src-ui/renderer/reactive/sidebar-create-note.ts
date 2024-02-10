@@ -3,9 +3,13 @@ import { instantiateButton } from 'components'
 import './sidebar-create-note.css'
 
 interface Props {
-  noteTitle?: string
-  isCreateNoteLoading: boolean
-  createError?: string
+  title?: string
+  isSavingNote: boolean
+  error?: string
+}
+
+interface InputProps extends Props {
+  container: Element
 }
 
 /**
@@ -13,11 +17,7 @@ interface Props {
  * inside the sidebar. Note: could pass in
  * the container to allow for reusing the component
  */
-function renderSidebarCreateNote({
-  noteTitle,
-  isCreateNoteLoading,
-  createError,
-}: Props): void {
+function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
   const container = document.querySelector('#sidebar-top-menu')
   if (!container) throw new Error('Unable to find sidebar-top-menu container')
   container.innerHTML = '' // reset container before rendering
@@ -25,11 +25,11 @@ function renderSidebarCreateNote({
     instantiateButton({
       title: 'Create note',
       onClick: () =>
-        renderCreateNoteInput({
+        renderInput({
           container,
-          isCreateNoteLoading,
-          noteTitle,
-          createError,
+          isSavingNote,
+          title,
+          error,
         }),
       html: `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -41,95 +41,63 @@ function renderSidebarCreateNote({
     })
   )
 
-  if (isCreateNoteLoading || createError) {
+  if (isSavingNote || error)
     // then the user has interacted with note input, so ensure it renders
-    renderCreateNoteInput({
+    renderInput({
       container,
-      isCreateNoteLoading,
-      noteTitle,
-      createError,
+      isSavingNote,
+      title,
+      error,
     })
-  }
 }
 
-interface InputProps extends Props {
-  container: Element
-}
-
-function renderCreateNoteInput({
-  container,
-  isCreateNoteLoading,
-  noteTitle,
-  createError,
-}: InputProps) {
+function renderInput({ container, isSavingNote, title, error }: InputProps) {
   const inputContainerClass = 'create-note-input-container'
-  const checkForAlreadyRenderedInput = () => {
-    const isInputAlreadyRendered = document.querySelector(
-      `.${inputContainerClass}`
-    )
-    if (isInputAlreadyRendered) {
-      isInputAlreadyRendered.remove()
-      return
-    }
-  }
-  checkForAlreadyRenderedInput()
-  const input = `
-      <div class="${inputContainerClass}">
-        <input class="note-input" title="Note title" placeholder="Note title" />
-      </div>
-    `
-  container.insertAdjacentHTML('beforeend', input)
-  const inputContainer = document.querySelector(`.${inputContainerClass}`)
   const noteInputClass = 'note-input'
+  // reset input container before rendering
+  document.querySelector(`.${inputContainerClass}`)?.remove()
 
-  const buttonContainer = document.createElement('div')
-  buttonContainer.className = 'note-input-buttons'
+  const inputHtml = `
+      <div class="${inputContainerClass}">
+        <input class="${noteInputClass}" title="Note title" placeholder="Note title" />
+        <div class="note-input-buttons"></div>
+      </div>`
+  // add input to DOM. Need to insert as its HTML and not a real element
+  container.insertAdjacentHTML('beforeend', inputHtml)
 
-  inputContainer?.appendChild(buttonContainer)
+  const input = document.querySelector(`.${noteInputClass}`) as HTMLInputElement
+  input?.setAttribute('value', title ?? '')
 
-  // in case there is an error, ensure the input value re-renders
-  if (noteTitle) {
-    const inputElement = document.querySelector(`.${noteInputClass}`)
-    inputElement?.setAttribute('value', noteTitle)
-  }
-
-  const saveNoteButton = instantiateButton({
+  const saveButton = instantiateButton({
     title: 'Save note',
     html: 'Save',
     onClick: () => {
-      const input = document.querySelector(
-        `.${noteInputClass}`
-      ) as HTMLInputElement
       const title: string = input?.value
       if (!title) throw new Error('Unable to read title from input')
       createEvent(NoteEvents.Create, { title }).dispatch()
     },
   })
-
   const cancelButton = instantiateButton({
     title: 'Cancel',
     html: 'Cancel',
-    onClick: checkForAlreadyRenderedInput,
+    onClick: () => document.querySelector(`.${inputContainerClass}`)?.remove(),
   })
 
-  if (isCreateNoteLoading) {
-    saveNoteButton.disabled = isCreateNoteLoading
-    cancelButton.disabled = isCreateNoteLoading
+  if (isSavingNote) {
+    saveButton.disabled = isSavingNote
+    cancelButton.disabled = isSavingNote
   }
 
-  if (createError) {
+  if (error) {
     // TODO: error rendering if creation fails
     console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
   }
   // add the create button to the input container
-  buttonContainer?.appendChild(saveNoteButton)
+  const buttonContainer = document.querySelector('.note-input-buttons')
+  buttonContainer?.appendChild(saveButton)
   buttonContainer?.appendChild(cancelButton)
-
-  const inputElement = document.querySelector(
-    `.${noteInputClass}`
-  ) as HTMLElement
-
-  inputElement?.focus()
+  // accessibility focus
+  input?.focus()
 }
 
 export { renderSidebarCreateNote }

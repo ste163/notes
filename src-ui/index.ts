@@ -53,7 +53,7 @@ let database: Database
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
     // render base app layout with loading states
-    renderSidebarCreateNote({ isCreateNoteLoading: false })
+    renderSidebarCreateNote({ isSavingNote: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
     renderFooter()
 
@@ -151,23 +151,23 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     // re-render the sidebar with loading state
     renderSidebarCreateNote({
-      isCreateNoteLoading: true,
-      noteTitle: title,
+      isSavingNote: true,
+      title: title,
     })
     const _id = await database.put({ title, content: '' })
     createEvent(NoteEvents.Created, { _id }).dispatch()
   } catch (error) {
     // TODO: render error notification inside sidebarMenu
     renderSidebarCreateNote({
-      isCreateNoteLoading: false,
-      noteTitle: title,
-      createError: 'Error creating note',
+      isSavingNote: false,
+      title: title,
+      error: 'Error creating note',
     })
   }
 })
 
 window.addEventListener(NoteEvents.Created, async (event) => {
-  renderSidebarCreateNote({ isCreateNoteLoading: false })
+  renderSidebarCreateNote({ isSavingNote: false, error: '' })
   const _id = (event as CustomEvent)?.detail?._id
   createEvent(NoteEvents.Select, { _id }).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()
