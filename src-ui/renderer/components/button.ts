@@ -3,6 +3,7 @@ import './button.css'
 interface Button<T = unknown> {
   title: string // accessibility title for button
   onClick: (args: T) => void
+  id?: string
   className?: string
   html?: string
   style?: Partial<CSSStyleDeclaration>
