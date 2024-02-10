@@ -1,6 +1,8 @@
 import { logger } from 'logger'
 import type { RemoteDetails } from 'types'
 
+const key = 'remote-db-details'
+
 /**
  * Runtime validation to ensure the local storage result is the valid structure
  */
@@ -17,7 +19,7 @@ function isRemoteDetails(detail: RemoteDetails): detail is RemoteDetails {
 function useRemoteDetails() {
   return {
     get: () => {
-      const details = window.localStorage.getItem('remote-db-details')
+      const details = window.localStorage.getItem(key)
       const parsed = details ? JSON.parse(details) : {}
       const isValidRemote = isRemoteDetails(parsed)
       return isValidRemote
@@ -39,7 +41,7 @@ function useRemoteDetails() {
         )
         return
       }
-      window.localStorage.setItem('remote-db-details', JSON.stringify(details))
+      window.localStorage.setItem(key, JSON.stringify(details))
     },
   }
 }
