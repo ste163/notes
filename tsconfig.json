@@ -23,8 +23,9 @@
       "renderer/reactive": ["./src-ui/renderer/reactive"],
       "store": ["./src-ui/store"],
       "types": ["./src-ui/types"],
+      "test-utils": ["./src-ui/test-utils"],
     },
   },
   "include": ["./src-ui", "./vitest-setup.ts"],
-  "exclude": ["node_modules", "dist", "./src-tauri"],
+  "exclude": ["node_modules", "dist", "./src-tauri", "./src-ui/test-utils"],
 }

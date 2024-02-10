@@ -25,6 +25,7 @@ export default defineConfig({
       'renderer/reactive': '/src-ui/renderer/reactive',
       store: '/src-ui/store',
       types: '/src-ui/types',
+      'test-utils': '/src-ui/test-utils',
     },
   },
   // to make use of `TAURI_DEBUG` and other env variables
