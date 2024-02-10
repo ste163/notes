@@ -2,7 +2,7 @@ import { StatusStore } from 'store'
 import { LoggerEvents, createEvent } from 'event'
 
 class Logger {
-  private logs: string[] = []
+  private logs: string[]
 
   constructor() {
     this.logs = []
@@ -35,6 +35,7 @@ class Logger {
   private setMostRecentStatusStoreError(log: string) {
     StatusStore.error = log
   }
+
   private addToLogs(log: string) {
     this.logs.push(log)
     // only keep 25 log entries, remove the first item if more than 30
