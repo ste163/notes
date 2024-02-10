@@ -3,6 +3,7 @@ import { LoggerEvents, createEvent } from 'event'
 
 const logs: string[] = []
 
+// TODO: may not want this here as it tightly couples?
 const logContainerId = '#remote-db-logs'
 
 /**
