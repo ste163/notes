@@ -43,7 +43,7 @@ import {
   renderSidebarCreateNote,
   renderSidebarNoteList,
   renderRemoteDbLogs,
-  renderNoteDetailsModal,
+  renderNoteDetailsDialog,
   renderRemoteDbSetupModal,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
@@ -133,7 +133,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // note: this could potentially be moved to a `ModalEvents.Open` with which modal to render passed in
     switch (params?.dialog) {
       case 'details':
-        note && renderNoteDetailsModal(note)
+        note && renderNoteDetailsDialog(note)
         break
       case 'database':
         renderRemoteDbSetupModal()

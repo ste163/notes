@@ -1,7 +1,7 @@
 import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
 import { instantiateButton } from 'components'
-import { renderNoteDetailsModal } from 'renderer/reactive'
+import { renderNoteDetailsDialog } from 'renderer/reactive'
 import type { Button } from 'components'
 import type { MarkOptions, Note } from 'types'
 
@@ -220,7 +220,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Note settings',
     isInFloatingMenu: false,
-    onClick: (note) => renderNoteDetailsModal(note as Note),
+    onClick: (note) => renderNoteDetailsDialog(note as Note),
     html: `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <title>Note settings</title>

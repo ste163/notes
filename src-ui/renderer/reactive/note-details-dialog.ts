@@ -1,13 +1,13 @@
 import { NoteEvents, createEvent } from 'event'
 import { instantiateButton, renderModal } from 'components'
 import type { Note } from 'types'
-import './note-details-modal.css'
+import './note-details-dialog.css'
 
 // TODO:
 // - add in the disabled/loading state for when requests are in-flight (this will be used for both TITLE and DELETE)
 // - add delete confirmation input (type note title to confirm delete)
 
-function renderNoteDetailsModal(note: Note) {
+function renderNoteDetailsDialog(note: Note) {
   const { createdAt, updatedAt } = note
   const modalContent = document.createElement('div')
 
@@ -108,4 +108,4 @@ function instantiateInputAndButton(note: Note) {
   return { input, button }
 }
 
-export { renderNoteDetailsModal }
+export { renderNoteDetailsDialog }

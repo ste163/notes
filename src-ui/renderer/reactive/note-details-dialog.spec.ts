@@ -1,15 +1,15 @@
 import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
-import { renderNoteDetailsModal } from './note-details-modal'
+import { renderNoteDetailsDialog } from './note-details-dialog'
 import { NoteEvents, createEvent } from 'event'
 import type { Note } from 'types'
 
 vi.mock('event')
 
 const createdAt = new Date()
-// Ensure 'updatedAt' is later than 'createdAt' by adding time
-const updatedAt = new Date(createdAt.getTime() + 1000 * 60 * 60) // adds one hour
+// Ensure 'updatedAt' is later than 'createdAt' by adding an hour
+const updatedAt = new Date(createdAt.getTime() + 1000 * 60 * 60)
 
 const note: Note = {
   _id: 'note-id',
@@ -23,10 +23,10 @@ const note: Note = {
 // TODO (after refactoring, add the feature):
 // clicking the DELETE opens an input that requires you to type confirm
 // and only if that is inputted, can you click the confirm button (becomes enabled)
-describe('note-details-modal', () => {
+describe('note-details-dialog', () => {
   it('renders details modal with note state and can emit delete event on delete', async () => {
     const { getByRole, getByText } = renderComponent({
-      renderComponent: renderNoteDetailsModal,
+      renderComponent: renderNoteDetailsDialog,
       props: note,
     })
 
@@ -54,7 +54,7 @@ describe('note-details-modal', () => {
     const newTitle = 'New title!'
 
     const { getByRole } = renderComponent({
-      renderComponent: renderNoteDetailsModal,
+      renderComponent: renderNoteDetailsDialog,
       props: note,
     })
 
