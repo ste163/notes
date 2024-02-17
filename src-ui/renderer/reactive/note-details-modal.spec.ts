@@ -50,11 +50,34 @@ describe('note-details-modal', () => {
     expect(createEvent).toHaveBeenCalledWith(NoteEvents.Delete, { note })
   })
 
-  it.todo(
-    'renders detail modal and updating title emits update event'
-    // TODO:
-    // rewrite modal to always have the input rendered with the title and allow updating it
-    // the UPDATE button needs to be disabled if: note title is the same or empty
-    // there will not be a cancel button, just the modal's close button
-  )
+  // TODO (after refactoring, add the feature):
+  // the UPDATE button needs to be disabled if: note title is the same or empty
+  // there will not be a cancel button, just the modal's close button
+  it('title input is disabled unless changed, and can emit update event', async () => {
+    const newTitle = 'New title!'
+
+    const { getByRole } = renderComponent({
+      renderComponent: renderNoteDetailsModal,
+      props: note,
+    })
+
+    const titleInput = getByRole('textbox', { name: 'Edit note title' })
+    const saveButton = getByRole('button', { name: 'Save' })
+
+    // save button is disabled if title is unchanged
+    // expect(saveButton).toBeDisabled()
+
+    // if the title input is empty, save button is disabled
+    await userEvent.clear(titleInput)
+    // expect(saveButton).toBeDisabled()
+
+    await userEvent.type(titleInput, newTitle)
+    expect(saveButton).not.toBeDisabled()
+
+    // clicking save button emits update event
+    await userEvent.click(saveButton)
+    expect(createEvent).toHaveBeenCalledWith(NoteEvents.EditTitle, {
+      note: { ...note, title: newTitle },
+    })
+  })
 })
