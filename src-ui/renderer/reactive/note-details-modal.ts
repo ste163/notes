@@ -8,7 +8,7 @@ import './note-details-modal.css'
 // - add in the disabled/loading state for when requests are in-flight (this will be used for both TITLE and DELETE)
 
 function renderNoteDetailsModal(note: Note) {
-  const { title, createdAt, updatedAt } = note
+  const { createdAt, updatedAt } = note
   const modalContent = document.createElement('div')
 
   // setup modal structure
@@ -48,49 +48,79 @@ function renderNoteDetailsModal(note: Note) {
   // setup title-edit section
   const container = document.querySelector('#title-edit')
   if (!container) throw new Error('Missing title edit container')
-  renderTitleInput(container, title, note)
+  renderTitleEdit(container, note)
 }
 
-function renderTitleInput(container: Element, title: string, note: Note) {
-  const titleContainer = document.createElement('div')
-
+/**
+ * Renders title input and save button into container
+ *
+ * @param container to place input
+ * @param note Note
+ */
+function renderTitleEdit(container: Element, note: Note) {
   const inputClass = 'edit-note-input'
-  const input = `
-      <input class="${inputClass}" title="Edit note title" placeholder="Note title" value="${title}" />`
 
-  titleContainer.innerHTML = input
-
-  container.appendChild(titleContainer)
-
+  const inputAndButtonContainer = document.createElement('div')
   const buttonContainer = document.createElement('div')
-
   buttonContainer.style.display = 'flex'
   buttonContainer.style.marginTop = '0.5em'
 
-  buttonContainer.appendChild(
-    instantiateButton({
-      title: 'Save title',
-      html: 'Save',
-      // TODO: track disabled state for the button on every input change
-      // so I'll need to setup a listener for the input and button
-      onClick: () => {
-        const input = document.querySelector(
-          `.${inputClass}`
-        ) as HTMLInputElement
-        const title: string = input?.value
-        if (!title) throw new Error('Unable to read title from input')
-        const updatedNote = { ...note, title }
-        createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
-      },
-      style: {
-        marginRight: '0.5em',
-      },
-    })
-  )
+  buttonContainer.appendChild(instantiateSaveButton(note, inputClass))
+  inputAndButtonContainer.appendChild(instantiateInput(note.title, inputClass))
+  inputAndButtonContainer.appendChild(buttonContainer)
+  container.appendChild(inputAndButtonContainer)
 
-  titleContainer.appendChild(buttonContainer)
   const inputElement = document.querySelector(`.${inputClass}`) as HTMLElement
   inputElement?.focus()
+}
+
+/**
+ * Instantiates the input element and sets up event listener
+ *
+ * @param title Note title as input value
+ * @param inputClass class name for input
+ * @returns Input element
+ */
+function instantiateInput(title: string, inputClass: string) {
+  const input = document.createElement('input')
+  input.className = inputClass
+  input.title = 'Edit note title'
+  input.placeholder = 'Note title'
+  input.value = title
+  return input
+}
+
+/**
+ * Instantiates save button and sets up event listeners
+ * for the note input
+ *
+ * @param note Note
+ * @param inputClass used for getting the note input on save
+ * @returns Button
+ */
+
+// NOTE/TODO: inputClass will probably be removed
+// because the event will be sending the input value to the button
+// (potentially)
+function instantiateSaveButton(note: Note, inputClass: string) {
+  const button = instantiateButton({
+    title: 'Save title',
+    html: 'Save',
+    // TODO: track disabled state for the button on every input change
+    // so I'll need to setup a listener for the input and button
+    onClick: () => {
+      const input = document.querySelector(`.${inputClass}`) as HTMLInputElement
+      const title: string = input?.value
+      if (!title) throw new Error('Unable to read title from input')
+      const updatedNote = { ...note, title }
+      createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
+    },
+    style: {
+      marginRight: '0.5em',
+    },
+  })
+
+  return button
 }
 
 export { renderNoteDetailsModal }
