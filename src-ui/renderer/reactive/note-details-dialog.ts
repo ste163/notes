@@ -7,18 +7,19 @@ import './note-details-dialog.css'
 // - add in the disabled/loading state for when requests are in-flight (this will be used for both TITLE and DELETE)
 // - add delete confirmation input (type note title to confirm delete)
 
-// IN-FLIGHT REQUEST DISABLING APPROACH: (probably means tests need to spyOn instead of mock
-// that, or we use a higher level of integration testing to test the entire flow)
+// TO HANDLE THE DISABLING OF BUTTONS WHILE IN FLIGHT:
+// I ran into too many issues trying to listen to events
+// because events go up and not down. I cannot add a listener
+// to the delete button to disable it when the delete event is called.
+// So I either have to re-render the component with the delete state
+// Or manually have an updateState function. However, I still need to
+// have the latest note passed in so that everything can stay in-sync,
+// at which point, I have to re-render the component anyway.
 //
-// setup eventListeners for the buttons for:
-// if EditTitle is triggered, disable the button
-// if TitleEdited is triggered, enable the button.
-// HOWEVER: what if the request fails? What event gets triggered?
-// THIS SHOULD NOT HAPPEN: pouchdb saves to indexdb first. Only error could be quota limits
-// not network.
-//
-// Why do I not want to do it prop based? It's more re-rendering of the entire component
-// instead of modifying rendered state!
+// SOLUTION: just re-render the component with latest note state
+// and disable the buttons.
+// Then when the request completes, re-render with enabled buttons
+// and latest note state
 
 function renderNoteDetailsDialog(note: Note) {
   const { createdAt, updatedAt } = note
