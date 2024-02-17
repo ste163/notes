@@ -50,9 +50,6 @@ describe('note-details-modal', () => {
     expect(createEvent).toHaveBeenCalledWith(NoteEvents.Delete, { note })
   })
 
-  // TODO (after refactoring, add the feature):
-  // the UPDATE button needs to be disabled if: note title is the same or empty
-  // there will not be a cancel button, just the modal's close button
   it('title input is disabled unless changed, and can emit update event', async () => {
     const newTitle = 'New title!'
 
@@ -65,12 +62,18 @@ describe('note-details-modal', () => {
     const saveButton = getByRole('button', { name: 'Save' })
 
     // save button is disabled if title is unchanged
-    // expect(saveButton).toBeDisabled()
+    expect(saveButton).toBeDisabled()
 
     // if the title input is empty, save button is disabled
     await userEvent.clear(titleInput)
-    // expect(saveButton).toBeDisabled()
+    expect(saveButton).toBeDisabled()
 
+    // if the title input is changed back to the initial title, save button is disabled
+    await userEvent.type(titleInput, note.title)
+    expect(saveButton).toBeDisabled()
+
+    // clearing and setting a new title enables save button
+    await userEvent.clear(titleInput)
     await userEvent.type(titleInput, newTitle)
     expect(saveButton).not.toBeDisabled()
 

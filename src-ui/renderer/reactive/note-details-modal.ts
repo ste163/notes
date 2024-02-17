@@ -4,8 +4,8 @@ import type { Note } from 'types'
 import './note-details-modal.css'
 
 // TODO:
-// - disable the button if you remove the entire title or if the title is unchanged
 // - add in the disabled/loading state for when requests are in-flight (this will be used for both TITLE and DELETE)
+// - add delete confirmation input (type note title to confirm delete)
 
 function renderNoteDetailsModal(note: Note) {
   const { createdAt, updatedAt } = note
@@ -46,9 +46,7 @@ function renderNoteDetailsModal(note: Note) {
   })
 
   // setup title-edit section
-  const container = document.querySelector('#title-edit')
-  if (!container) throw new Error('Missing title edit container')
-  renderTitleEdit(container, note)
+  renderTitleEdit(document.querySelector('#title-edit') as Element, note)
 }
 
 /**
@@ -57,70 +55,57 @@ function renderNoteDetailsModal(note: Note) {
  * @param container to place input
  * @param note Note
  */
-function renderTitleEdit(container: Element, note: Note) {
-  const inputClass = 'edit-note-input'
-
-  const inputAndButtonContainer = document.createElement('div')
+function renderTitleEdit(titleEditContainer: Element, note: Note) {
+  const parentContainer = document.createElement('div')
   const buttonContainer = document.createElement('div')
   buttonContainer.style.display = 'flex'
   buttonContainer.style.marginTop = '0.5em'
 
-  buttonContainer.appendChild(instantiateSaveButton(note, inputClass))
-  inputAndButtonContainer.appendChild(instantiateInput(note.title, inputClass))
-  inputAndButtonContainer.appendChild(buttonContainer)
-  container.appendChild(inputAndButtonContainer)
+  const { input, button } = instantiateInputAndButton(note)
 
-  const inputElement = document.querySelector(`.${inputClass}`) as HTMLElement
-  inputElement?.focus()
+  buttonContainer.appendChild(button)
+  parentContainer.appendChild(input)
+  parentContainer.appendChild(buttonContainer)
+  titleEditContainer.appendChild(parentContainer)
 }
 
 /**
- * Instantiates the input element and sets up event listener
- *
- * @param title Note title as input value
- * @param inputClass class name for input
- * @returns Input element
- */
-function instantiateInput(title: string, inputClass: string) {
-  const input = document.createElement('input')
-  input.className = inputClass
-  input.title = 'Edit note title'
-  input.placeholder = 'Note title'
-  input.value = title
-  return input
-}
-
-/**
- * Instantiates save button and sets up event listeners
- * for the note input
+ * Instantiate input and button, and sets up
+ * event listeners to track input value and disabled states
  *
  * @param note Note
- * @param inputClass used for getting the note input on save
- * @returns Button
  */
+function instantiateInputAndButton(note: Note) {
+  let inputValue = note.title
 
-// NOTE/TODO: inputClass will probably be removed
-// because the event will be sending the input value to the button
-// (potentially)
-function instantiateSaveButton(note: Note, inputClass: string) {
+  // setup input
+  const input = document.createElement('input')
+  input.title = 'Edit note title'
+  input.placeholder = 'Note title'
+  input.value = inputValue
+
+  // setup button
   const button = instantiateButton({
     title: 'Save title',
     html: 'Save',
-    // TODO: track disabled state for the button on every input change
-    // so I'll need to setup a listener for the input and button
-    onClick: () => {
-      const input = document.querySelector(`.${inputClass}`) as HTMLInputElement
-      const title: string = input?.value
-      if (!title) throw new Error('Unable to read title from input')
-      const updatedNote = { ...note, title }
-      createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
-    },
+    disabled: note.title === inputValue,
     style: {
       marginRight: '0.5em',
     },
+    onClick: () => {
+      if (!inputValue) throw new Error('Unable to read input value')
+      const updatedNote = { ...note, title: inputValue }
+      createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
+    },
   })
 
-  return button
+  // on input value change, update value and button disabled state
+  input.addEventListener('input', (event) => {
+    inputValue = (event.target as HTMLInputElement).value
+    button.disabled = note.title === inputValue || !inputValue.trim()
+  })
+
+  return { input, button }
 }
 
 export { renderNoteDetailsModal }
