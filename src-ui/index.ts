@@ -1,5 +1,10 @@
 /**
  * TODO PRIORITY ORDER
+ * BIG NOTE ON DATA SAVING:
+ *  - pouchdb saves to disk first, AND THEN the remote
+ *  - this means that there is very little chance of a failure
+ *  - at the saving-step. We can almost always assume those will be successful
+ * ***
  *  - GetAll should only get the list of note meta data (everything but note content).
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Add vitest + testing-library to test it.todos() and add error handling. The UI is too complex now to not have tests
@@ -90,6 +95,7 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
   const { id } = getUrlData()
 
   renderSidebarNoteList({ isLoading: false, notes })
+
   if (id)
     toggleActiveClass({
       selector: `#${id}-note-select-container`,
@@ -193,9 +199,6 @@ window.addEventListener(NoteEvents.Saved, (event) => {
   createEvent(NoteEvents.GetAll).dispatch()
 })
 
-// TODO: also need to refactor details modal and state, along with adding error state and loading state
-// for when we are editing the title
-// TODO: pass the full noteToUpdate object with the new title
 window.addEventListener(NoteEvents.EditTitle, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note

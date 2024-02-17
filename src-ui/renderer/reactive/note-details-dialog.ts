@@ -7,6 +7,19 @@ import './note-details-dialog.css'
 // - add in the disabled/loading state for when requests are in-flight (this will be used for both TITLE and DELETE)
 // - add delete confirmation input (type note title to confirm delete)
 
+// IN-FLIGHT REQUEST DISABLING APPROACH: (probably means tests need to spyOn instead of mock
+// that, or we use a higher level of integration testing to test the entire flow)
+//
+// setup eventListeners for the buttons for:
+// if EditTitle is triggered, disable the button
+// if TitleEdited is triggered, enable the button.
+// HOWEVER: what if the request fails? What event gets triggered?
+// THIS SHOULD NOT HAPPEN: pouchdb saves to indexdb first. Only error could be quota limits
+// not network.
+//
+// Why do I not want to do it prop based? It's more re-rendering of the entire component
+// instead of modifying rendered state!
+
 function renderNoteDetailsDialog(note: Note) {
   const { createdAt, updatedAt } = note
   const modalContent = document.createElement('div')
