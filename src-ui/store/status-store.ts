@@ -10,6 +10,9 @@ interface StatusStore {
 
 // TODO: this may need to become:
 // DbStatusStore
+// or even better:
+// move it just to the event and have the event handle
+// the processing of data and rendering
 const StatusStore = new Proxy(
   {
     error: '',
@@ -23,7 +26,7 @@ const StatusStore = new Proxy(
         value = value ? new Date(value).toLocaleString() : null
       ;(target[key] as unknown) = value
 
-      createEvent(StatusStoreEvents.Update).dispatch()
+      createEvent(StatusStoreEvents.Update)?.dispatch()
 
       // TODO (rendering is being completely revisited):
       // this doesn't work to re-open the modal on a state change

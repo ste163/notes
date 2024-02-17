@@ -29,7 +29,7 @@ class Logger {
   }
 
   private emitUpdate() {
-    createEvent(LoggerEvents.Update, { logs: this.getLogs() }).dispatch()
+    createEvent(LoggerEvents.Update, { logs: this.getLogs() })?.dispatch()
   }
 
   private setMostRecentStatusStoreError(log: string) {
