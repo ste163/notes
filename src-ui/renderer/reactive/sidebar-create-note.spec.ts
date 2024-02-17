@@ -7,15 +7,18 @@ import { NoteEvents, createEvent } from 'event'
 vi.mock('event')
 
 const title = 'Note title'
-const containerId = 'sidebar-top-menu'
 
 describe('create-note', () => {
   it('throws error if container is not found', () => {
     try {
-      renderComponent('', renderSidebarCreateNote, {
-        title: '',
-        isSavingNote: false,
-        error: '',
+      renderComponent({
+        containerId: '',
+        renderComponent: renderSidebarCreateNote,
+        props: {
+          title: '',
+          isSavingNote: false,
+          error: '',
+        },
       })
     } catch (error) {
       expect((error as Error).message).toBe(
@@ -25,15 +28,14 @@ describe('create-note', () => {
   })
 
   it('if create error, render full input and the error', () => {
-    const { getByRole } = renderComponent(
-      containerId,
-      renderSidebarCreateNote,
-      {
+    const { getByRole } = renderComponent({
+      renderComponent: renderSidebarCreateNote,
+      props: {
         title,
         isSavingNote: false,
         error: 'Error',
-      }
-    )
+      },
+    })
 
     // input renders with title
     expect(getByRole('textbox', { name: 'Note title' })).toHaveValue(title)
@@ -45,15 +47,14 @@ describe('create-note', () => {
   })
 
   it('renders loading state if loading is true and never the error', () => {
-    const { getByRole } = renderComponent(
-      containerId,
-      renderSidebarCreateNote,
-      {
+    const { getByRole } = renderComponent({
+      renderComponent: renderSidebarCreateNote,
+      props: {
         title,
         isSavingNote: true,
         error: 'Error',
-      }
-    )
+      },
+    })
 
     // input renders with title
     expect(getByRole('textbox', { name: 'Note title' })).toHaveValue(title)
@@ -64,15 +65,14 @@ describe('create-note', () => {
   })
 
   it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
-    const { getByRole, queryByRole } = renderComponent(
-      containerId,
-      renderSidebarCreateNote,
-      {
+    const { getByRole, queryByRole } = renderComponent({
+      renderComponent: renderSidebarCreateNote,
+      props: {
         title: '',
         isSavingNote: false,
         error: '',
-      }
-    )
+      },
+    })
 
     // renders input on create click
     const createButton = getByRole('button', { name: 'Create' })
