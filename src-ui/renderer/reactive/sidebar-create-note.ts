@@ -9,7 +9,7 @@ interface Props {
 }
 
 interface InputProps extends Props {
-  parentContainer: Element
+  menuContainer: Element
 }
 
 function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
@@ -22,7 +22,7 @@ function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
       title: 'Create note',
       onClick: () =>
         renderInput({
-          parentContainer: container,
+          menuContainer: container,
           isSavingNote,
           title,
           error,
@@ -40,7 +40,7 @@ function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
   if (isSavingNote || error)
     // then the user has interacted with note input, so ensure it renders
     renderInput({
-      parentContainer: container,
+      menuContainer: container,
       isSavingNote,
       title,
       error,
@@ -48,30 +48,53 @@ function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
 }
 
 function renderInput({
-  parentContainer,
+  menuContainer,
   isSavingNote,
   title,
   error,
 }: InputProps) {
-  const inputContainerClass = 'create-note-input-container'
-  const buttonContainerClass = 'note-input-buttons'
-  // reset input container before rendering
-  document.querySelector(`.${inputContainerClass}`)?.remove()
+  const inputAndButtonContainerClass = 'create-note-input-container'
+  // reset container before rendering (in case already rendered)
+  document.querySelector(`.${inputAndButtonContainerClass}`)?.remove()
 
-  const childContainer = document.createElement('div')
-  childContainer.classList.add(inputContainerClass)
+  const { saveButton, cancelButton, input } = instantiateInputAndButtons(
+    title,
+    inputAndButtonContainerClass
+  )
 
-  const inputContainer = document.createElement('div')
-  inputContainer.classList.add(inputContainerClass)
+  if (isSavingNote) {
+    saveButton.disabled = isSavingNote
+    cancelButton.disabled = isSavingNote
+  }
+
+  if (error) {
+    // TODO: error rendering if creation fails
+    console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
+  }
+
+  // create containers and add to DOM
+  const inputAndButtonContainer = document.createElement('div')
+  inputAndButtonContainer.classList.add(inputAndButtonContainerClass)
 
   const buttonContainer = document.createElement('div')
-  buttonContainer.classList.add(buttonContainerClass)
+  buttonContainer.classList.add('note-input-buttons')
+  buttonContainer.appendChild(saveButton)
+  buttonContainer.appendChild(cancelButton)
 
-  childContainer.appendChild(inputContainer)
-  childContainer.appendChild(buttonContainer)
+  // add instantiated elements to DOM
+  inputAndButtonContainer.appendChild(input)
+  inputAndButtonContainer.appendChild(buttonContainer)
 
-  parentContainer.appendChild(childContainer)
+  menuContainer.appendChild(inputAndButtonContainer)
 
+  // accessibility focus
+  input?.focus()
+}
+
+function instantiateInputAndButtons(
+  title: string | undefined,
+  containerClass: string
+) {
   const input = instantiateInput({
     title: 'Note title',
     placeholder: 'Note title',
@@ -91,24 +114,9 @@ function renderInput({
   const cancelButton = instantiateButton({
     title: 'Cancel',
     html: 'Cancel',
-    onClick: () => document.querySelector(`.${inputContainerClass}`)?.remove(),
+    onClick: () => document.querySelector(`.${containerClass}`)?.remove(),
   })
-
-  if (isSavingNote) {
-    saveButton.disabled = isSavingNote
-    cancelButton.disabled = isSavingNote
-  }
-
-  if (error) {
-    // TODO: error rendering if creation fails
-    console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
-  }
-  // add instantiated elements to DOM
-  inputContainer.appendChild(input)
-  buttonContainer.appendChild(saveButton)
-  buttonContainer.appendChild(cancelButton)
-  // accessibility focus
-  input?.focus()
+  return { saveButton, cancelButton, input }
 }
 
 export { renderSidebarCreateNote }
