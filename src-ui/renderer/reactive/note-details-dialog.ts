@@ -55,7 +55,7 @@ function renderNoteDetailsDialog(note: Note) {
  * @param note Note
  */
 function renderTitleEdit(titleEditContainer: Element, note: Note) {
-  const parentContainer = document.createElement('div')
+  const inputAndButtonContainer = document.createElement('div')
   const buttonContainer = document.createElement('div')
   buttonContainer.style.display = 'flex'
   buttonContainer.style.marginTop = '0.5em'
@@ -63,9 +63,9 @@ function renderTitleEdit(titleEditContainer: Element, note: Note) {
   const { inputContainer, button } = instantiateInputAndButton(note)
 
   buttonContainer.appendChild(button)
-  parentContainer.appendChild(inputContainer)
-  parentContainer.appendChild(buttonContainer)
-  titleEditContainer.appendChild(parentContainer)
+  inputAndButtonContainer.appendChild(inputContainer)
+  inputAndButtonContainer.appendChild(buttonContainer)
+  titleEditContainer.appendChild(inputAndButtonContainer)
 }
 
 /**
