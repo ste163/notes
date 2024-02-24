@@ -52,12 +52,12 @@ function renderInput({
   title,
   error,
 }: InputProps) {
-  const inputAndButtonContainerClass = 'create-note-input-container'
+  const inputAndButtonContainerId = 'create-note-input-container'
   // reset container before rendering (in case already rendered)
-  document.querySelector(`.${inputAndButtonContainerClass}`)?.remove()
+  document.querySelector(`#${inputAndButtonContainerId}`)?.remove()
 
   const { saveButton, cancelButton, inputContainer, input } =
-    instantiateInputAndButtons(title, inputAndButtonContainerClass)
+    instantiateInputAndButtons(title, inputAndButtonContainerId)
 
   if (isSavingNote) {
     saveButton.disabled = isSavingNote
@@ -71,7 +71,7 @@ function renderInput({
 
   // create containers, set styles, and add to DOM
   const inputAndButtonContainer = document.createElement('div')
-  inputAndButtonContainer.classList.add(inputAndButtonContainerClass)
+  inputAndButtonContainer.id = inputAndButtonContainerId
   inputAndButtonContainer.style.display = 'flex'
   inputAndButtonContainer.style.flexDirection = 'column'
 
@@ -96,7 +96,7 @@ function renderInput({
 
 function instantiateInputAndButtons(
   title: string | undefined,
-  containerClass: string
+  containerToRemoveId: string
 ) {
   const { input, inputContainer } = instantiateInput({
     id: 'create-note',
@@ -118,7 +118,7 @@ function instantiateInputAndButtons(
   const cancelButton = instantiateButton({
     title: 'Cancel',
     html: 'Cancel',
-    onClick: () => document.querySelector(`.${containerClass}`)?.remove(),
+    onClick: () => document.querySelector(`#${containerToRemoveId}`)?.remove(),
   })
   return { saveButton, cancelButton, inputContainer, input }
 }
