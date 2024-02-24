@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { instantiateButton, renderModal } from 'components'
+import { instantiateButton, instantiateInput, renderModal } from 'components'
 import type { Note } from 'types'
 import './note-details-dialog.css'
 
@@ -92,13 +92,12 @@ function renderTitleEdit(titleEditContainer: Element, note: Note) {
 function instantiateInputAndButton(note: Note) {
   let inputValue = note.title
 
-  // setup input
-  const input = document.createElement('input')
-  input.title = 'Edit note title'
-  input.placeholder = 'Note title'
-  input.value = inputValue
+  const input = instantiateInput({
+    title: 'Edit note title',
+    placeholder: 'Note title',
+    value: inputValue,
+  })
 
-  // setup button
   const button = instantiateButton({
     title: 'Save title',
     html: 'Save',
