@@ -20,7 +20,7 @@ const note: Note = {
   content: 'Note content',
 }
 
-// TODO (after refactoring, add the feature):
+// TODO
 // clicking the DELETE opens an input that requires you to type confirm
 // and only if that is inputted, can you click the confirm button (becomes enabled)
 describe('note-details-dialog', () => {

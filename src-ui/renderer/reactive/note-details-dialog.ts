@@ -4,22 +4,7 @@ import type { Note } from 'types'
 import './note-details-dialog.css'
 
 // TODO:
-// - add in the disabled/loading state for when requests are in-flight (this will be used for both TITLE and DELETE)
 // - add delete confirmation input (type note title to confirm delete)
-
-// TO HANDLE THE DISABLING OF BUTTONS WHILE IN FLIGHT:
-// I ran into too many issues trying to listen to events
-// because events go up and not down. I cannot add a listener
-// to the delete button to disable it when the delete event is called.
-// So I either have to re-render the component with the delete state
-// Or manually have an updateState function. However, I still need to
-// have the latest note passed in so that everything can stay in-sync,
-// at which point, I have to re-render the component anyway.
-//
-// SOLUTION: just re-render the component with latest note state
-// and disable the buttons.
-// Then when the request completes, re-render with enabled buttons
-// and latest note state
 
 function renderNoteDetailsDialog(note: Note) {
   const { createdAt, updatedAt } = note
