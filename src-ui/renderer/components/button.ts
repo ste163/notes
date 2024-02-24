@@ -7,6 +7,7 @@ interface Button<T = unknown> {
   className?: string
   html?: string
   style?: Partial<CSSStyleDeclaration>
+  disabled?: boolean
 }
 
 /**
@@ -18,6 +19,7 @@ const instantiateButton = (button: Button) => {
   element.onclick = button.onClick
   if (button.id) element.setAttribute('id', button.id)
   if (button.className) element.className = button.className
+  if (button.disabled) element.setAttribute('disabled', 'true')
   if (button.html) element.innerHTML = button.html
   if (button.style) {
     for (const key in button.style) {

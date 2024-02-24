@@ -1,6 +1,11 @@
 import { ModalEvents, createEvent } from 'event'
 import './modal.css'
 
+// NEEDS TESTS AND TO BE REFACTORED
+// as it's complex with opening/closing
+// and how the modal events relate to the main application state
+// ie (who controls who as they both can control each other)
+
 /**
  * Renders a modal with the given title and content.
  * Handles open and close events along with trapping focus inside the modal
@@ -67,7 +72,7 @@ function openModal(
   url: string,
   classList?: string
 ) {
-  createEvent(ModalEvents.Open, { param: url }).dispatch()
+  createEvent(ModalEvents.Open, { param: url })?.dispatch()
   // Save last focused element outside of modal to restore focus on modal close
   const previouslyFocusedOutsideModalElement =
     document.activeElement as HTMLElement
@@ -97,7 +102,7 @@ function openModal(
     // so application state can be updated.
     // Whether the closing was done by the modal itself or another component
     // does not matter.
-    createEvent(ModalEvents.Close).dispatch()
+    createEvent(ModalEvents.Close)?.dispatch()
   }
 
   function trapFocusListener(event: KeyboardEvent) {

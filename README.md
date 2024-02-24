@@ -6,7 +6,6 @@ TODO: INSERT IMAGE OF APPLICATION HERE
 
 ## TODOs
 
-- Basic unit tests run on push + on PR
 - Cleanup missing features and bugs (listed in index.ts)
 - Test Tauri version: supports auto-updates
 

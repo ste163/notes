@@ -84,13 +84,6 @@ p {
   margin: 0;
 }
 
-input {
-  font-size: small;
-  max-width: intrinsic;
-  border: var(--outline-color) 0.15em solid;
-  padding: 0.5em;
-}
-
 #sidebar {
   border-right: var(--outline-color) 0.15em solid;
   grid-area: sidebar;

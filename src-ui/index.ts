@@ -1,12 +1,19 @@
 /**
  * TODO PRIORITY ORDER
+ * BIG NOTE ON DATA SAVING:
+ *  - pouchdb saves to disk first, AND THEN the remote
+ *  - this means that there is very little chance of a failure
+ *  - at the saving-step. We can almost always assume those will be successful
+ *  - as the network requests occurs after the local save, not going to disable inputs
+ * ***
+ *  - BUG: need to add ENV config for the URL. Github pages is not working
+ *    because its baseUrl is /notes but I overwrite it to /:id instead of /env.baseUrl/myStuff
  *  - GetAll should only get the list of note meta data (everything but note content).
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Add vitest + testing-library to test it.todos() and add error handling. The UI is too complex now to not have tests
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
  *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
  *       - say that it is connected to local
- *    - (test this) Disable buttons when requests are in-flight (only for: save, create, delete, connect to db, disconnect) - use new events in the db class
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
@@ -43,7 +50,7 @@ import {
   renderSidebarCreateNote,
   renderSidebarNoteList,
   renderRemoteDbLogs,
-  renderNoteDetailsModal,
+  renderNoteDetailsDialog,
   renderRemoteDbSetupModal,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
@@ -90,6 +97,7 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
   const { id } = getUrlData()
 
   renderSidebarNoteList({ isLoading: false, notes })
+
   if (id)
     toggleActiveClass({
       selector: `#${id}-note-select-container`,
@@ -133,7 +141,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // note: this could potentially be moved to a `ModalEvents.Open` with which modal to render passed in
     switch (params?.dialog) {
       case 'details':
-        note && renderNoteDetailsModal(note)
+        note && renderNoteDetailsDialog(note)
         break
       case 'database':
         renderRemoteDbSetupModal()
@@ -193,9 +201,6 @@ window.addEventListener(NoteEvents.Saved, (event) => {
   createEvent(NoteEvents.GetAll).dispatch()
 })
 
-// TODO: also need to refactor details modal and state, along with adding error state and loading state
-// for when we are editing the title
-// TODO: pass the full noteToUpdate object with the new title
 window.addEventListener(NoteEvents.EditTitle, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note
@@ -414,10 +419,13 @@ function toggleActiveClass({
 function getUrlData() {
   const id = window.location.pathname.split('/')[1] ?? ''
   const searchParams = new URLSearchParams(window.location.search)
-  const params: Record<string, string> = {}
-  searchParams.forEach((value, key) => {
-    params[key] = value
-  })
+  const params = Array.from(searchParams).reduce(
+    (acc, [key, value]) => {
+      acc[key] = value
+      return acc
+    },
+    {} as Record<string, string>
+  )
   return {
     id,
     params,

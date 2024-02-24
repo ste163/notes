@@ -7,12 +7,18 @@ import type { Notes } from 'types'
 
 vi.mock('event')
 
+const containerId = 'sidebar-list' // TODO: rename to component name
+
 describe('sidebar-note-list', () => {
   it('throws error if unable to find container', () => {
     try {
-      renderComponent('', renderSidebarNoteList, {
-        isLoading: false,
-        notes: {},
+      renderComponent({
+        containerId: '',
+        renderComponent: renderSidebarNoteList,
+        props: {
+          isLoading: false,
+          notes: {},
+        },
       })
     } catch (error) {
       expect((error as Error).message).toBe(
@@ -22,27 +28,27 @@ describe('sidebar-note-list', () => {
   })
 
   it('renders loading while loading', () => {
-    const { getByText } = renderComponent(
-      'sidebar-list',
-      renderSidebarNoteList,
-      {
+    const { getByText } = renderComponent({
+      containerId,
+      renderComponent: renderSidebarNoteList,
+      props: {
         isLoading: true,
         notes: {},
-      }
-    )
+      },
+    })
 
     expect(getByText('Loading...')).toBeInTheDocument()
   })
 
   it('renders no notes if no notes are present', () => {
-    const { queryByRole } = renderComponent(
-      'sidebar-list',
-      renderSidebarNoteList,
-      {
+    const { queryByRole } = renderComponent({
+      containerId,
+      renderComponent: renderSidebarNoteList,
+      props: {
         isLoading: false,
         notes: {},
-      }
-    )
+      },
+    })
     // notes are rendered as buttons
     expect(queryByRole('button')).toBeNull()
   })
@@ -64,14 +70,14 @@ describe('sidebar-note-list', () => {
         content: '',
       },
     }
-    const { getAllByRole } = renderComponent(
-      'sidebar-list',
-      renderSidebarNoteList,
-      {
+    const { getAllByRole } = renderComponent({
+      containerId,
+      renderComponent: renderSidebarNoteList,
+      props: {
         isLoading: false,
         notes,
-      }
-    )
+      },
+    })
 
     // notes are rendered as buttons
     const buttons = getAllByRole('button')
