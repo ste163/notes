@@ -5,6 +5,8 @@
  *  - this means that there is very little chance of a failure
  *  - at the saving-step. We can almost always assume those will be successful
  * ***
+ *  - BUG: need to add ENV config for the URL. Github pages is not working
+ *    because its baseUrl is /notes but I overwrite it to /:id instead of /env.baseUrl/myStuff
  *  - GetAll should only get the list of note meta data (everything but note content).
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Add vitest + testing-library to test it.todos() and add error handling. The UI is too complex now to not have tests

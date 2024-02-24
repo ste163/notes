@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { instantiateButton } from 'components'
+import { instantiateButton, instantiateInput } from 'components'
 import './sidebar-create-note.css'
 
 interface Props {
@@ -9,19 +9,20 @@ interface Props {
 }
 
 interface InputProps extends Props {
-  container: Element
+  parentContainer: Element
 }
 
 function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
   const container = document.querySelector('#sidebar-top-menu')
   if (!container) throw new Error('Unable to find sidebar-top-menu container')
   container.innerHTML = '' // reset container before rendering
+  // render Create button that will always be present in the menu
   container.appendChild(
     instantiateButton({
       title: 'Create note',
       onClick: () =>
         renderInput({
-          container,
+          parentContainer: container,
           isSavingNote,
           title,
           error,
@@ -39,29 +40,43 @@ function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
   if (isSavingNote || error)
     // then the user has interacted with note input, so ensure it renders
     renderInput({
-      container,
+      parentContainer: container,
       isSavingNote,
       title,
       error,
     })
 }
 
-function renderInput({ container, isSavingNote, title, error }: InputProps) {
+function renderInput({
+  parentContainer,
+  isSavingNote,
+  title,
+  error,
+}: InputProps) {
   const inputContainerClass = 'create-note-input-container'
-  const noteInputClass = 'note-input'
+  const buttonContainerClass = 'note-input-buttons'
   // reset input container before rendering
   document.querySelector(`.${inputContainerClass}`)?.remove()
 
-  const inputHtml = `
-      <div class="${inputContainerClass}">
-        <input class="${noteInputClass}" title="Note title" placeholder="Note title" />
-        <div class="note-input-buttons"></div>
-      </div>`
-  // add input to DOM. Need to insert as its HTML and not a real element
-  container.insertAdjacentHTML('beforeend', inputHtml)
+  const childContainer = document.createElement('div')
+  childContainer.classList.add(inputContainerClass)
 
-  const input = document.querySelector(`.${noteInputClass}`) as HTMLInputElement
-  input?.setAttribute('value', title ?? '')
+  const inputContainer = document.createElement('div')
+  inputContainer.classList.add(inputContainerClass)
+
+  const buttonContainer = document.createElement('div')
+  buttonContainer.classList.add(buttonContainerClass)
+
+  childContainer.appendChild(inputContainer)
+  childContainer.appendChild(buttonContainer)
+
+  parentContainer.appendChild(childContainer)
+
+  const input = instantiateInput({
+    title: 'Note title',
+    placeholder: 'Note title',
+    value: title,
+  })
 
   const saveButton = instantiateButton({
     title: 'Save note',
@@ -72,6 +87,7 @@ function renderInput({ container, isSavingNote, title, error }: InputProps) {
       createEvent(NoteEvents.Create, { title }).dispatch()
     },
   })
+
   const cancelButton = instantiateButton({
     title: 'Cancel',
     html: 'Cancel',
@@ -87,10 +103,10 @@ function renderInput({ container, isSavingNote, title, error }: InputProps) {
     // TODO: error rendering if creation fails
     console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
   }
-  // add the create button to the input container
-  const buttonContainer = document.querySelector('.note-input-buttons')
-  buttonContainer?.appendChild(saveButton)
-  buttonContainer?.appendChild(cancelButton)
+  // add instantiated elements to DOM
+  inputContainer.appendChild(input)
+  buttonContainer.appendChild(saveButton)
+  buttonContainer.appendChild(cancelButton)
   // accessibility focus
   input?.focus()
 }

@@ -4,4 +4,5 @@
  */
 export { renderModal } from './modal'
 export { instantiateButton } from './button'
+export { instantiateInput } from './input'
 export type { Button } from './button'
