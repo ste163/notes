@@ -1,6 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
 import { instantiateButton, instantiateInput } from 'components'
-import './sidebar-create-note.css'
 
 interface Props {
   title?: string
@@ -57,10 +56,8 @@ function renderInput({
   // reset container before rendering (in case already rendered)
   document.querySelector(`.${inputAndButtonContainerClass}`)?.remove()
 
-  const { saveButton, cancelButton, input } = instantiateInputAndButtons(
-    title,
-    inputAndButtonContainerClass
-  )
+  const { saveButton, cancelButton, inputContainer, input } =
+    instantiateInputAndButtons(title, inputAndButtonContainerClass)
 
   if (isSavingNote) {
     saveButton.disabled = isSavingNote
@@ -72,17 +69,23 @@ function renderInput({
     console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
   }
 
-  // create containers and add to DOM
+  // create containers, set styles, and add to DOM
   const inputAndButtonContainer = document.createElement('div')
   inputAndButtonContainer.classList.add(inputAndButtonContainerClass)
+  inputAndButtonContainer.style.display = 'flex'
+  inputAndButtonContainer.style.flexDirection = 'column'
+
+  inputContainer.style.marginBottom = '0.5em'
+  inputContainer.style.marginTop = '0.5em'
 
   const buttonContainer = document.createElement('div')
+  buttonContainer.style.display = 'flex'
+  buttonContainer.style.justifyContent = 'space-between'
   buttonContainer.classList.add('note-input-buttons')
   buttonContainer.appendChild(saveButton)
   buttonContainer.appendChild(cancelButton)
 
-  // add instantiated elements to DOM
-  inputAndButtonContainer.appendChild(input)
+  inputAndButtonContainer.appendChild(inputContainer)
   inputAndButtonContainer.appendChild(buttonContainer)
 
   menuContainer.appendChild(inputAndButtonContainer)
@@ -95,7 +98,8 @@ function instantiateInputAndButtons(
   title: string | undefined,
   containerClass: string
 ) {
-  const input = instantiateInput({
+  const { input, inputContainer } = instantiateInput({
+    id: 'create-note',
     title: 'Note title',
     placeholder: 'Note title',
     value: title,
@@ -116,7 +120,7 @@ function instantiateInputAndButtons(
     html: 'Cancel',
     onClick: () => document.querySelector(`.${containerClass}`)?.remove(),
   })
-  return { saveButton, cancelButton, input }
+  return { saveButton, cancelButton, inputContainer, input }
 }
 
 export { renderSidebarCreateNote }

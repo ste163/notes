@@ -4,3 +4,13 @@ input {
   border: var(--outline-color) 0.15em solid;
   padding: 0.5em;
 }
+
+.input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-container > label {
+  font-size: small;
+  margin-bottom: 0.5em;
+}

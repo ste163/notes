@@ -75,10 +75,10 @@ function renderTitleEdit(titleEditContainer: Element, note: Note) {
   buttonContainer.style.display = 'flex'
   buttonContainer.style.marginTop = '0.5em'
 
-  const { input, button } = instantiateInputAndButton(note)
+  const { inputContainer, button } = instantiateInputAndButton(note)
 
   buttonContainer.appendChild(button)
-  parentContainer.appendChild(input)
+  parentContainer.appendChild(inputContainer)
   parentContainer.appendChild(buttonContainer)
   titleEditContainer.appendChild(parentContainer)
 }
@@ -92,15 +92,16 @@ function renderTitleEdit(titleEditContainer: Element, note: Note) {
 function instantiateInputAndButton(note: Note) {
   let inputValue = note.title
 
-  const input = instantiateInput({
-    title: 'Edit note title',
+  const { input, inputContainer } = instantiateInput({
+    id: 'update-title',
+    title: 'Update note title',
     placeholder: 'Note title',
     value: inputValue,
   })
 
   const button = instantiateButton({
-    title: 'Save title',
-    html: 'Save',
+    title: 'Update title',
+    html: 'Update',
     disabled: note.title === inputValue,
     style: {
       marginRight: '0.5em',
@@ -118,7 +119,7 @@ function instantiateInputAndButton(note: Note) {
     button.disabled = note.title === inputValue || !inputValue.trim()
   })
 
-  return { input, button }
+  return { inputContainer, button }
 }
 
 export { renderNoteDetailsDialog }

@@ -31,7 +31,7 @@ describe('note-details-dialog', () => {
     })
 
     // note title renders in input
-    expect(getByRole('textbox', { name: 'Edit note title' })).toHaveValue(
+    expect(getByRole('textbox', { name: 'Update note title' })).toHaveValue(
       note.title
     )
 
@@ -58,27 +58,27 @@ describe('note-details-dialog', () => {
       props: note,
     })
 
-    const titleInput = getByRole('textbox', { name: 'Edit note title' })
-    const saveButton = getByRole('button', { name: 'Save' })
+    const titleInput = getByRole('textbox', { name: 'Update note title' })
+    const updateButton = getByRole('button', { name: 'Update' })
 
-    // save button is disabled if title is unchanged
-    expect(saveButton).toBeDisabled()
+    // update button is disabled if title is unchanged
+    expect(updateButton).toBeDisabled()
 
-    // if the title input is empty, save button is disabled
+    // if the title input is empty, update button is disabled
     await userEvent.clear(titleInput)
-    expect(saveButton).toBeDisabled()
+    expect(updateButton).toBeDisabled()
 
-    // if the title input is changed back to the initial title, save button is disabled
+    // if the title input is changed back to the initial title, update button is disabled
     await userEvent.type(titleInput, note.title)
-    expect(saveButton).toBeDisabled()
+    expect(updateButton).toBeDisabled()
 
-    // clearing and setting a new title enables save button
+    // clearing and setting a new title enables update button
     await userEvent.clear(titleInput)
     await userEvent.type(titleInput, newTitle)
-    expect(saveButton).not.toBeDisabled()
+    expect(updateButton).not.toBeDisabled()
 
-    // clicking save button emits update event
-    await userEvent.click(saveButton)
+    // clicking update button emits update event
+    await userEvent.click(updateButton)
     expect(createEvent).toHaveBeenCalledWith(NoteEvents.EditTitle, {
       note: { ...note, title: newTitle },
     })
