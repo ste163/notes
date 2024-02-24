@@ -419,10 +419,13 @@ function toggleActiveClass({
 function getUrlData() {
   const id = window.location.pathname.split('/')[1] ?? ''
   const searchParams = new URLSearchParams(window.location.search)
-  const params: Record<string, string> = {}
-  searchParams.forEach((value, key) => {
-    params[key] = value
-  })
+  const params = Array.from(searchParams).reduce(
+    (acc, [key, value]) => {
+      acc[key] = value
+      return acc
+    },
+    {} as Record<string, string>
+  )
   return {
     id,
     params,
