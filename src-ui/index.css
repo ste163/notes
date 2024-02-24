@@ -84,6 +84,14 @@ p {
   margin: 0;
 }
 
+em {
+  font-style: italic;
+}
+
+strong {
+  font-weight: bold;
+}
+
 #sidebar {
   border-right: var(--outline-color) 0.15em solid;
   grid-area: sidebar;
