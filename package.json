@@ -4,8 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build:ui": "tsc && vite build",
-    "start:dev:ui": "vite",
+    "build:ui": "tsc && vite build --mode web",
+    "build:ui:desktop": "tsc && vite build --mode desktop",
+    "start:dev:ui:web": "vite --mode web",
+    "start:dev:ui:desktop": "vite --mode desktop",
     "start:dev:tauri": "tauri dev",
     "start:preview:ui": "pnpm run build:ui && vite preview",
     "test": "vitest --watch=false",

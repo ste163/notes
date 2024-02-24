@@ -6,8 +6,6 @@
  *  - at the saving-step. We can almost always assume those will be successful
  *  - as the network requests occurs after the local save, not going to disable inputs
  * ***
- *  - BUG: need to add ENV config for the URL. Github pages is not working
- *    because its baseUrl is /notes but I overwrite it to /:id instead of /env.baseUrl/myStuff
  *  - GetAll should only get the list of note meta data (everything but note content).
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Add vitest + testing-library to test it.todos() and add error handling. The UI is too complex now to not have tests
@@ -55,6 +53,7 @@ import {
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
+import { config } from './config'
 
 let database: Database
 
@@ -122,8 +121,8 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
 
     // setup url routing based on the note
     note
-      ? setUrl({ relativeUrl: `/${note?._id}`, params })
-      : setUrl({ relativeUrl: '/', params })
+      ? setUrl({ relativeUrl: `${config.BASE_URL}${note?._id}`, params })
+      : setUrl({ relativeUrl: config.BASE_URL, params })
 
     // update styling for the selected note in list
     toggleActiveClass({
@@ -247,7 +246,7 @@ window.addEventListener(NoteEvents.Deleted, (event) => {
   // TODO: re-enable the delete button? (but the modal will be closed, so probs not)
 
   // clear the url dialog param
-  setUrl({ relativeUrl: `/${note._id}`, params: null })
+  setUrl({ relativeUrl: `${config.BASE_URL}${note._id}`, params: null })
 
   createEvent(ModalEvents.Close).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()
@@ -312,7 +311,10 @@ window.addEventListener(ModalEvents.Open, (event) => {
 
   const dialogTitle = (event as CustomEvent)?.detail?.param as string
   const { id } = getUrlData()
-  setUrl({ relativeUrl: `/${id}`, params: { dialog: dialogTitle } })
+  setUrl({
+    relativeUrl: `${config.BASE_URL}${id}`,
+    params: { dialog: dialogTitle },
+  })
 
   EditorStore.editor?.setEditable(false)
 })
@@ -321,7 +323,7 @@ window.addEventListener(ModalEvents.Close, () => {
   // If there is a selected note, enable the editor after modal closes
   const { id } = getUrlData()
   if (id) EditorStore.editor?.setEditable(true)
-  setUrl({ relativeUrl: `/${id}`, params: null })
+  setUrl({ relativeUrl: `${config.BASE_URL}${id}`, params: null })
 })
 
 /**
@@ -440,7 +442,12 @@ function setUrl({
   params?: Record<'dialog', string> | null
 }) {
   try {
-    const url = new URL(relativeUrl ?? '/', window.location.origin)
+    const baseUrl =
+      config.BASE_URL === '/' ? window.location.origin + relativeUrl : null
+    const url = new URL(
+      baseUrl ? baseUrl : relativeUrl ?? config.BASE_URL,
+      window.location.origin
+    )
     url.search = params ? new URLSearchParams(params).toString() : ''
     window.history.replaceState({}, '', url.toString())
   } catch (error) {

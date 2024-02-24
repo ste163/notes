@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeDevCommand": "pnpm start:dev:ui",
-    "beforeBuildCommand": "pnpm build:ui",
+    "beforeDevCommand": "pnpm start:dev:ui:desktop",
+    "beforeBuildCommand": "pnpm build:ui:desktop",
     "devPath": "http://localhost:1420",
     "distDir": "../dist",
     "withGlobalTauri": true
