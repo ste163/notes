@@ -1,6 +1,6 @@
 /**
- * renderer/components are fully reusable, atomic UI elements only.
- * These are used to build the renderer/base and renderer/reactive elements.
+ * renderer/components are fully reusable, atomic UI components only.
+ * These are used to build renderer/reactive components.
  */
 export { renderModal } from './modal'
 export { instantiateButton } from './button'
