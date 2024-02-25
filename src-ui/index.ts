@@ -66,10 +66,10 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 
     // setup database after app is rendering in loading state
     setupDatabase()
-    const { id } = getUrlData()
+    const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
-    createEvent(NoteEvents.Select, { _id: id }).dispatch()
+    createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)
   }
@@ -93,13 +93,13 @@ window.addEventListener(NoteEvents.GetAll, async () => {
 
 window.addEventListener(NoteEvents.GotAll, (event) => {
   const notes = (event as CustomEvent)?.detail?.notes
-  const { id } = getUrlData()
+  const { noteId } = getUrlParams()
 
   renderSidebarNoteList({ isLoading: false, notes })
 
-  if (id)
+  if (noteId)
     toggleActiveClass({
-      selector: `#${id}-note-select-container`,
+      selector: `#${noteId}-note-select-container`,
       type: NoteEvents.Select,
     })
 })
@@ -115,14 +115,11 @@ window.addEventListener(NoteEvents.Select, async (event) => {
  */
 window.addEventListener(NoteEvents.Selected, async (event) => {
   try {
-    const noteId = (event as CustomEvent)?.detail?._id ?? ''
-    const note = await database.getById(noteId)
-    const { params } = getUrlData()
-
+    const eventNoteId = (event as CustomEvent)?.detail?._id ?? ''
+    const note = await database.getById(eventNoteId)
+    const { noteId, dialog } = getUrlParams()
     // setup url routing based on the note
-    note
-      ? setUrl({ relativeUrl: `${config.BASE_URL}${note?._id}`, params })
-      : setUrl({ relativeUrl: config.BASE_URL, params })
+    note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
 
     // update styling for the selected note in list
     toggleActiveClass({
@@ -138,7 +135,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
 
     // based on URL params, render dialogs
     // note: this could potentially be moved to a `ModalEvents.Open` with which modal to render passed in
-    switch (params?.dialog) {
+    switch (dialog) {
       case 'details':
         note && renderNoteDetailsDialog(note)
         break
@@ -243,10 +240,9 @@ window.addEventListener(NoteEvents.Deleted, (event) => {
   // TODO: consider logging info for all events like deleting and saving?
   const note = (event as CustomEvent)?.detail?.note as Note
   logger.logInfo(`Note deleted: ${note.title}`)
-  // TODO: re-enable the delete button? (but the modal will be closed, so probs not)
 
   // clear the url dialog param
-  setUrl({ relativeUrl: `${config.BASE_URL}${note._id}`, params: null })
+  setUrl({})
 
   createEvent(ModalEvents.Close).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()
@@ -310,20 +306,17 @@ window.addEventListener(ModalEvents.Open, (event) => {
   }, 10)
 
   const dialogTitle = (event as CustomEvent)?.detail?.param as string
-  const { id } = getUrlData()
-  setUrl({
-    relativeUrl: `${config.BASE_URL}${id}`,
-    params: { dialog: dialogTitle },
-  })
+  const { noteId } = getUrlParams()
+  setUrl({ noteId, dialog: dialogTitle })
 
   EditorStore.editor?.setEditable(false)
 })
 
 window.addEventListener(ModalEvents.Close, () => {
   // If there is a selected note, enable the editor after modal closes
-  const { id } = getUrlData()
-  if (id) EditorStore.editor?.setEditable(true)
-  setUrl({ relativeUrl: `${config.BASE_URL}${id}`, params: null })
+  const { noteId } = getUrlParams()
+  if (noteId) EditorStore.editor?.setEditable(true)
+  setUrl({ noteId })
 })
 
 /**
@@ -418,8 +411,7 @@ function toggleActiveClass({
   }
 }
 
-function getUrlData() {
-  const id = window.location.pathname.split('/')[1] ?? ''
+function getUrlParams() {
   const searchParams = new URLSearchParams(window.location.search)
   const params = Array.from(searchParams).reduce(
     (acc, [key, value]) => {
@@ -429,25 +421,34 @@ function getUrlData() {
     {} as Record<string, string>
   )
   return {
-    id,
-    params,
+    dialog: params.dialog,
+    noteId: params.noteId,
   }
 }
 
 function setUrl({
-  relativeUrl,
-  params,
+  noteId = '',
+  dialog = '',
 }: {
-  relativeUrl?: string
-  params?: Record<'dialog', string> | null
+  noteId?: string
+  dialog?: string
 }) {
   try {
-    const baseUrl =
-      config.BASE_URL === '/' ? window.location.origin + relativeUrl : null
     const url = new URL(
-      baseUrl ? baseUrl : relativeUrl ?? config.BASE_URL,
+      config.BASE_URL === '/' ? window.location.origin : config.BASE_URL,
       window.location.origin
     )
+    const allowedParams = ['noteId', 'dialog']
+    // only prepare to set defined, allowed params
+    const params = allowedParams.reduce(
+      (acc, key) => {
+        if (key === 'noteId' && noteId) acc[key] = noteId
+        if (key === 'dialog' && dialog) acc[key] = dialog
+        return acc
+      },
+      {} as Record<string, string>
+    )
+
     url.search = params ? new URLSearchParams(params).toString() : ''
     window.history.replaceState({}, '', url.toString())
   } catch (error) {
