@@ -24,7 +24,7 @@ export const codeBlockIcon = `
 
 export const closeIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <title>Close Modal</title>
+    <title>Close</title>
     <path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path>
   </svg>`
 
@@ -36,13 +36,13 @@ export const databaseIcon = `
 
 export const deleteIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <title>Delete note</title>
+    <title>Delete</title>
     <path d="M17 6H22V8H20V21C20 21.5523 19.5523 22 19 22H5C4.44772 22 4 21.5523 4 21V8H2V6H7V3C7 2.44772 7.44772 2 8 2H16C16.5523 2 17 2.44772 17 3V6ZM18 8H6V20H18V8ZM13.4142 13.9997L15.182 15.7675L13.7678 17.1817L12 15.4139L10.2322 17.1817L8.81802 15.7675L10.5858 13.9997L8.81802 12.232L10.2322 10.8178L12 12.5855L13.7678 10.8178L15.182 12.232L13.4142 13.9997ZM9 4V6H15V4H9Z"></path>
   </svg>`
 
 export const errorIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <title>Error icon</title>
+    <title>Error</title>
     <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM11 15H13V17H11V15ZM11 7H13V13H11V7Z"></path>
   </svg>`
 
@@ -84,7 +84,7 @@ export const redoIcon = `
 
 export const saveIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <title>Save note</title>  
+    <title>Save</title>  
     <path d="M7 19V13H17V19H19V7.82843L16.1716 5H5V19H7ZM4 3H17L21 7V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V4C3 3.44772 3.44772 3 4 3ZM9 15V19H15V15H9Z"></path>
   </svg>`
 
@@ -102,7 +102,7 @@ export const strikeIcon = `
 
 export const successIcon = `
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <title>Success icon</title>
+    <title>Success</title>
     <path d="M12 1L20.2169 2.82598C20.6745 2.92766 21 3.33347 21 3.80217V13.7889C21 15.795 19.9974 17.6684 18.3282 18.7812L12 23L5.6718 18.7812C4.00261 17.6684 3 15.795 3 13.7889V3.80217C3 3.33347 3.32553 2.92766 3.78307 2.82598L12 1ZM12 3.04879L5 4.60434V13.7889C5 15.1263 5.6684 16.3752 6.7812 17.1171L12 20.5963L17.2188 17.1171C18.3316 16.3752 19 15.1263 19 13.7889V4.60434L12 3.04879ZM16.4524 8.22183L17.8666 9.63604L11.5026 16L7.25999 11.7574L8.67421 10.3431L11.5019 13.1709L16.4524 8.22183Z"></path>
   </svg>`
 
