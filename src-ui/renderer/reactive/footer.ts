@@ -49,19 +49,18 @@ function renderFooter(): void {
   /**
    * Add dynamic sections to footer
    */
-  const remoteDbSetupButton = instantiateButton({
-    title: 'Setup remote database',
-    html: `
-      ${databaseIcon}
-      <span>
-        ${isConnectedToRemote ? 'Connected' : 'Not connected'}
-      </span>
-      `,
-    onClick: renderRemoteDbSetupModal,
-  })
-
-  const remoteDbContainer = document.querySelector(`#${remoteDbContainerId}`)
-  remoteDbContainer?.appendChild(remoteDbSetupButton)
+  document.querySelector(`#${remoteDbContainerId}`)?.appendChild(
+    instantiateButton({
+      title: 'Setup remote database',
+      html: `
+        ${databaseIcon}
+        <span>
+          ${isConnectedToRemote ? 'Connected' : 'Not connected'}
+        </span>
+        `,
+      onClick: renderRemoteDbSetupModal,
+    })
+  )
 }
 
 export { renderFooter }
