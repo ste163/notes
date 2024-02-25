@@ -18,7 +18,7 @@ class Database {
     this.syncHandler = null
     this.db = new PouchDb(config.DATABASE_NAME)
     this.db.createIndex({
-      index: { fields: ['_id'] },
+      index: { fields: ['createdAt'] },
     })
     this.remoteUrl = remoteUrl
     if (this.remoteUrl) {
@@ -125,45 +125,35 @@ class Database {
   }
 
   /**
-   * Fetches all notes sorted by created_at
+   * Fetches all note metadata sorted by createdAt
    * @returns {Promise<Record<string, Note>>} - A record of notes with their ids as keys
    */
   async getAll(): Promise<Record<string, Note>> {
-    const { rows } = await this.db.allDocs({
-      include_docs: true,
-      descending: true,
-      // by default, pouchDb does not include attachments,
-      // but will include attachment metadata
+    const { docs } = await this.db.find({
+      selector: {
+        createdAt: { $exists: true },
+      },
+      fields: ['_id', 'title', 'createdAt', 'updatedAt'],
+      sort: [{ createdAt: 'asc' }],
     })
-
-    // TODO: update the fetch do sort by createdAt from the start.
-    // let the API do the heavy lifting.
-    // will probably need to set keys and use pouchdb-find
-    rows.sort((a, b) => {
-      return (
-        new Date((a?.doc as Note)?.createdAt).getTime() -
-        new Date((b?.doc as Note)?.createdAt).getTime()
-      )
-    })
-
-    return rows.reduce(
-      (acc, { doc }) => {
-        const noteDoc = doc as Note
-        if (!noteDoc.title)
-          // pouchdb always returns a language query doc;
-          // ignore that and only return real notes
-          return acc
-        acc[noteDoc._id] = noteDoc
-        return acc
+    return docs.reduce(
+      (acc, note) => {
+        return {
+          ...acc,
+          [note._id]: note as Note,
+        }
       },
       {} as Record<string, Note>
     )
   }
 
+  /**
+   * Fetch all note data and its content
+   *
+   * @param _id string
+   * @returns Note | null
+   */
   async getById(_id: string): Promise<Note | null> {
-    // id could be an empty string, which is a valid param, but not a valid id
-    if (!_id) return null
-
     const { docs } = await this.db.find({
       selector: { _id },
       limit: 1,
