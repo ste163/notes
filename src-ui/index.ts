@@ -7,11 +7,11 @@
  *  - at the saving-step. We can almost always assume those will be successful
  *  - as the network requests occurs after the local save, not going to disable inputs
  * ***
+ *  - move all icons to the const
+ *  - footer tests + refactor
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
- *  - Add vitest + testing-library to test it.todos() and add error handling.
- *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
- *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
- *       - say that it is connected to local
+ *  - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error' button that open db modal
+ *  - db dialog modal: needs tests + showing if connected to local only or remote
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
