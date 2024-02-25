@@ -8,7 +8,7 @@
  * ***
  *  - GetAll should only get the list of note meta data (everything but note content).
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
- *  - Add vitest + testing-library to test it.todos() and add error handling. The UI is too complex now to not have tests
+ *  - Add vitest + testing-library to test it.todos() and add error handling.
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
  *       - this will open the database modal (rename to be either Remote or Local). If not connected to a remote,
  *       - say that it is connected to local
@@ -180,7 +180,6 @@ window.addEventListener(NoteEvents.Created, async (event) => {
 
 window.addEventListener(NoteEvents.Save, async (event) => {
   try {
-    // TODO: ensure the save button cannot be clicked until the promise completes
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.put(note)
     createEvent(NoteEvents.Saved, { note }).dispatch()
@@ -190,7 +189,6 @@ window.addEventListener(NoteEvents.Save, async (event) => {
 })
 
 window.addEventListener(NoteEvents.Saved, (event) => {
-  // TODO: re-enable the save button (but will also need to track this so the user cannot spam super+s)
   const note = (event as CustomEvent)?.detail?.note as Note
   StatusStore.lastSavedDate = note?.updatedAt || null
   // ensure rest of state is updated
@@ -200,9 +198,6 @@ window.addEventListener(NoteEvents.Saved, (event) => {
 window.addEventListener(NoteEvents.EditTitle, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note
-    // TODO:
-    // DISABLE the submit button
-    // set state to LOADING
     await database.put(note)
     createEvent(NoteEvents.EditedTitle, { note }).dispatch()
   } catch (error) {
@@ -225,7 +220,6 @@ window.addEventListener(NoteEvents.EditedTitle, (event) => {
 
 window.addEventListener(NoteEvents.Delete, async (event) => {
   try {
-    // TODO: disable delete button
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.delete(note)
     createEvent(NoteEvents.Deleted, { note }).dispatch()
@@ -237,13 +231,11 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
 })
 
 window.addEventListener(NoteEvents.Deleted, (event) => {
-  // TODO: consider logging info for all events like deleting and saving?
   const note = (event as CustomEvent)?.detail?.note as Note
   logger.logInfo(`Note deleted: ${note.title}`)
-
   // clear the url dialog param
   setUrl({})
-
+  // trigger events to reset state
   createEvent(ModalEvents.Close).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()
   createEvent(NoteEvents.Select, { _id: '' }).dispatch()
