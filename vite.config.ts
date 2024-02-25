@@ -17,6 +17,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      config: '/src-ui/config',
       components: '/src-ui/renderer/components',
       database: '/src-ui/database',
       event: '/src-ui/event',

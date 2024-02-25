@@ -8,16 +8,13 @@ import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'types'
 import './remote-db-setup-modal.css'
 
-// TODO:
-// when a state change occurs, the modal is going to close.
-// Use url params to track the open/close state
-
 function renderRemoteDbSetupModal() {
   const { isConnectedToRemote, error } = StatusStore
 
   const modalContent = document.createElement('div')
 
   // TODO:
+  // manually test:
   // test that if i disconnect from 1 database
   // and connect to a brand new one
   // that all my data from my local is synced to the new remote.

@@ -1,3 +1,4 @@
+import { config } from 'config'
 import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
 import { nanoid } from 'nanoid'
@@ -5,11 +6,7 @@ import { createEvent, DatabaseEvents } from 'event'
 import { logger } from 'logger'
 import type { Note } from 'types'
 
-const DB_NAME = 'notes'
-
-// TODO: these methods will also need to emit events for their completion
-// that way other components can listen for things like "db connected"
-// and can enable and disable buttons/loading states accordingly
+const attachmentId = 'content.html'
 
 class Database {
   private db: PouchDB.Database
@@ -19,7 +16,7 @@ class Database {
   constructor(remoteUrl: string) {
     PouchDb.plugin(PouchDbFind)
     this.syncHandler = null
-    this.db = new PouchDb(DB_NAME)
+    this.db = new PouchDb(config.DATABASE_NAME)
     this.db.createIndex({
       index: { fields: ['_id'] },
     })
@@ -33,7 +30,7 @@ class Database {
        * Because this new Pouchdb is not stored or referenced,
        * it will be cleaned up by the garbage collector.
        */
-      new PouchDb(`${this.remoteUrl}/${DB_NAME}`)
+      new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
         .info()
         .then(() => {
           // successfully made the connection
@@ -47,10 +44,13 @@ class Database {
   }
 
   async setupSyncing(): Promise<void> {
-    this.syncHandler = this.db.sync(`${this.remoteUrl}/${DB_NAME}`, {
-      live: true,
-      retry: true,
-    })
+    this.syncHandler = this.db.sync(
+      `${this.remoteUrl}/${config.DATABASE_NAME}`,
+      {
+        live: true,
+        retry: true,
+      }
+    )
 
     this.syncHandler
       .on('paused', () => {
@@ -83,26 +83,40 @@ class Database {
     return false
   }
 
-  // TODO: use attachments to store legit .html files for each note:
-  // https://pouchdb.com/guides/attachments.html
-  // this way, I can use attachments: false on the getAll query to only get metadata
-  // it will potentially be easier to export notes as well, as they're already legit html files
-  // in the database
   async put(note: Partial<Note>): Promise<string> {
     if (note?._id) {
+      // then this is an update event on an existing note
       await this.db.put({
-        ...note,
+        _id: note._id,
+        _rev: note._rev,
+        title: note.title,
+        // note HTML is saved as an attachment html file
+        _attachments: {
+          [attachmentId]: {
+            content_type: 'text/html',
+            data: new Blob([note.content ?? ''], { type: 'text/html' }),
+          },
+        },
+        createdAt: note.createdAt,
         updatedAt: new Date(),
       })
       return note._id
     }
 
+    // then this is a new note
     const { id } = await this.db.put({
-      ...note,
       _id: `id${nanoid()}`,
+      title: note.title ?? 'ERROR: no title',
+      _attachments: {
+        [attachmentId]: {
+          content_type: 'text/html',
+          data: new Blob([''], { type: 'text/html' }),
+        },
+      },
       createdAt: new Date(),
       updatedAt: new Date(),
-    } as Note)
+    })
+
     return id
   }
 
@@ -111,34 +125,35 @@ class Database {
   }
 
   /**
-   * Fetches all notes sorted by created_at and returned as Record<id, Note>
+   * Fetches all notes sorted by created_at
+   * @returns {Promise<Record<string, Note>>} - A record of notes with their ids as keys
    */
-  // TODO: make this a getAllMetadata (as its everything but the documents themselves)
-  async getAll() {
+  async getAll(): Promise<Record<string, Note>> {
     const { rows } = await this.db.allDocs({
-      // TODO: use the
-      // fields key to include which key:values to return
-      // example:
-      // fields: ['_id', '_rev', 'title', 'createdAt', 'updatedAt']
-      // ALSO sort these by createdAt so that the db does the work
       include_docs: true,
       descending: true,
+      // by default, pouchDb does not include attachments,
+      // but will include attachment metadata
     })
 
     // TODO: update the fetch do sort by createdAt from the start.
-    // let the API do the heavy lifting
+    // let the API do the heavy lifting.
+    // will probably need to set keys and use pouchdb-find
     rows.sort((a, b) => {
       return (
-        new Date((a.doc as Note).createdAt).getTime() -
-        new Date((b.doc as Note).createdAt).getTime()
+        new Date((a?.doc as Note)?.createdAt).getTime() -
+        new Date((b?.doc as Note)?.createdAt).getTime()
       )
     })
 
     return rows.reduce(
       (acc, { doc }) => {
-        if (!(doc as Note).title) return acc // pouchdb always returns a language query doc, ignore that and only return real notes
-        const note = doc as Note
-        acc[note._id] = note
+        const noteDoc = doc as Note
+        if (!noteDoc.title)
+          // pouchdb always returns a language query doc;
+          // ignore that and only return real notes
+          return acc
+        acc[noteDoc._id] = noteDoc
         return acc
       },
       {} as Record<string, Note>
@@ -154,8 +169,19 @@ class Database {
       limit: 1,
     })
 
-    if (docs.length) return docs[0] as Note
-    return null
+    if (!docs.length) {
+      logger.logError(`No note found with id: ${_id}`)
+      return null
+    }
+
+    const note = docs[0] as Note
+    const attachment = (await this.db.getAttachment(
+      note._id,
+      attachmentId
+    )) as unknown as Blob // in browser, it's a Blob; in Node it's a Buffer
+    note.content = await attachment?.text()
+
+    return note
   }
 }
 
