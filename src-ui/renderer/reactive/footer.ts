@@ -17,14 +17,6 @@ function renderFooter(): void {
   const { lastSavedDate, lastSyncedDate, isConnectedToRemote } = StatusStore
   const remoteDbContainerId = 'remote-db-setup-container'
 
-  // TODO (and test):
-  // 3 states to handle:
-  // - no setup at all for a database -> render based on localStorage db data
-  // - setup + not connected
-  // - initial render + loading/attempting to setup syncing
-  // - setup + connected (no error)
-  // - setup + connected (error has occurred)
-
   container.innerHTML = `
   <div class='footer-data-container'>
     <div>

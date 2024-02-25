@@ -7,6 +7,8 @@ TODO: INSERT IMAGE OF APPLICATION HERE
 ## TODOs
 
 - Cleanup missing features and bugs (listed in index.ts)
+- Github action to build & test just the ui (no tauri)
+  - runs on push/commit
 - Test Tauri version: supports auto-updates
 
 ## Application Architecture
