@@ -1,12 +1,12 @@
 /**
  * TODO PRIORITY ORDER
- * BIG NOTE ON DATA SAVING:
+ * ***
+ * DATA SAVING:
  *  - pouchdb saves to disk first, AND THEN the remote
  *  - this means that there is very little chance of a failure
  *  - at the saving-step. We can almost always assume those will be successful
  *  - as the network requests occurs after the local save, not going to disable inputs
  * ***
- *  - GetAll should only get the list of note meta data (everything but note content).
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Add vitest + testing-library to test it.todos() and add error handling.
  *     - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error, view more' button
@@ -81,7 +81,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     renderSidebarNoteList({ isLoading: true, notes: {} })
-    const notes = await database.getAll() // TODO: get all meta-data only instead of full note content (see PUT in db for notes)
+    const notes = await database.getAll()
     createEvent(NoteEvents.GotAll, { notes }).dispatch()
   } catch (error) {
     // TODO: render error in sidebarNoteList
