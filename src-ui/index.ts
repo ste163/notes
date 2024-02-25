@@ -30,6 +30,7 @@
  *  - make favicon
  *  - make icons for desktop
  */
+import { config } from 'config'
 import {
   LifeCycleEvents,
   KeyboardEvents,
@@ -53,7 +54,6 @@ import {
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
-import { config } from './config'
 
 let database: Database
 

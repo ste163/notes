@@ -15,6 +15,7 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
     "paths": {
+      "config": ["./src-ui/config"],
       "components": ["./src-ui/renderer/components"],
       "database": ["./src-ui/database"],
       "event": ["./src-ui/event"],

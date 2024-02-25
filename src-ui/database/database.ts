@@ -1,11 +1,10 @@
+import { config } from 'config'
 import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
 import { nanoid } from 'nanoid'
 import { createEvent, DatabaseEvents } from 'event'
 import { logger } from 'logger'
 import type { Note } from 'types'
-
-const DB_NAME = 'notes'
 
 // TODO: these methods will also need to emit events for their completion
 // that way other components can listen for things like "db connected"
@@ -19,7 +18,7 @@ class Database {
   constructor(remoteUrl: string) {
     PouchDb.plugin(PouchDbFind)
     this.syncHandler = null
-    this.db = new PouchDb(DB_NAME)
+    this.db = new PouchDb(config.DATABASE_NAME)
     this.db.createIndex({
       index: { fields: ['_id'] },
     })
@@ -33,7 +32,7 @@ class Database {
        * Because this new Pouchdb is not stored or referenced,
        * it will be cleaned up by the garbage collector.
        */
-      new PouchDb(`${this.remoteUrl}/${DB_NAME}`)
+      new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
         .info()
         .then(() => {
           // successfully made the connection
@@ -47,10 +46,13 @@ class Database {
   }
 
   async setupSyncing(): Promise<void> {
-    this.syncHandler = this.db.sync(`${this.remoteUrl}/${DB_NAME}`, {
-      live: true,
-      retry: true,
-    })
+    this.syncHandler = this.db.sync(
+      `${this.remoteUrl}/${config.DATABASE_NAME}`,
+      {
+        live: true,
+        retry: true,
+      }
+    )
 
     this.syncHandler
       .on('paused', () => {
