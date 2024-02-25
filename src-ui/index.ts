@@ -105,7 +105,8 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
 })
 
 window.addEventListener(NoteEvents.Select, async (event) => {
-  const noteId = (event as CustomEvent)?.detail?._id ?? ''
+  const noteId: string = (event as CustomEvent)?.detail?._id
+  if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
   await renderNoteEditor({ isLoading: true, note: null })
   createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
 })
@@ -116,6 +117,8 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 window.addEventListener(NoteEvents.Selected, async (event) => {
   try {
     const eventNoteId = (event as CustomEvent)?.detail?._id ?? ''
+    if (!eventNoteId)
+      throw new Error('No noteId provided to NoteEvents.Selected')
     const note = await database.getById(eventNoteId)
     const { noteId, dialog } = getUrlParams()
     // setup url routing based on the note
