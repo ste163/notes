@@ -7,7 +7,6 @@
  *  - at the saving-step. We can almost always assume those will be successful
  *  - as the network requests occurs after the local save, not going to disable inputs
  * ***
- *  - move all icons to the const
  *  - footer tests + refactor
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error' button that open db modal
