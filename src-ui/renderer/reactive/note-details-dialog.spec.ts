@@ -46,7 +46,7 @@ describe('note-details-dialog', () => {
     ).toBeInTheDocument()
 
     // delete button is rendered
-    await userEvent.click(getByRole('button', { name: 'Delete' }))
+    await userEvent.click(getByRole('button', { name: 'Delete Delete' }))
     expect(createEvent).toHaveBeenCalledWith(NoteEvents.Delete, { note })
   })
 
