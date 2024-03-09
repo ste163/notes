@@ -1,7 +1,7 @@
 import { StatusStore } from 'store'
 import { instantiateButton } from 'components'
 import { renderRemoteDbSetupModal } from './remote-db-setup-modal'
-import { databaseIcon } from '../icons'
+import { databaseIcon } from 'icons'
 import pkg from '../../../package.json'
 import './footer.css'
 

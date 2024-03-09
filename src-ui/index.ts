@@ -1,15 +1,8 @@
 /**
  * TODO PRIORITY ORDER
- * ***
- * DATA SAVING:
- *  - pouchdb saves to disk first, AND THEN the remote
- *  - this means that there is very little chance of a failure
- *  - at the saving-step. We can almost always assume those will be successful
- *  - as the network requests occurs after the local save, not going to disable inputs
- * ***
  *  - footer tests + refactor
- *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error' button that open db modal
+ *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - db dialog modal: needs tests + showing if connected to local only or remote
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.

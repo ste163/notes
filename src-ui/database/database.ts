@@ -6,6 +6,18 @@ import { createEvent, DatabaseEvents } from 'event'
 import { logger } from 'logger'
 import type { Note } from 'types'
 
+/**
+ * Note on PouchDB data saving:
+ * PouchDB first saves to disk and then the remote
+ * Because of this, there should be very little chance
+ * of data loss or failures. The most likely failure should be
+ * network syncing issues, which will get resolved eventually
+ * during re-connections.
+ *
+ * Because of this local-first approach, I am not locking
+ * inputs during save events.
+ */
+
 const attachmentId = 'content.html'
 
 class Database {
