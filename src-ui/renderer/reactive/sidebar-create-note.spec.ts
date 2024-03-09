@@ -75,7 +75,7 @@ describe('create-note', () => {
     })
 
     // renders input on create click
-    const createButton = getByRole('button', { name: 'Create' })
+    const createButton = getByRole('button', { name: 'Add Create' })
     await userEvent.click(createButton)
     const input = getByRole('textbox', { name: 'Note title' })
 

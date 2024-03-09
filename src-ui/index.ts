@@ -104,10 +104,14 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
 })
 
 window.addEventListener(NoteEvents.Select, async (event) => {
-  const noteId: string = (event as CustomEvent)?.detail?._id
-  if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
-  await renderNoteEditor({ isLoading: true, note: null })
-  createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
+  try {
+    const noteId: string = (event as CustomEvent)?.detail?._id
+    if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
+    await renderNoteEditor({ isLoading: true, note: null })
+    createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
+  } catch (error) {
+    logger.logError('Error selecting note.', error)
+  }
 })
 
 /**
