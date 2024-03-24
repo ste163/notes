@@ -7,12 +7,11 @@ vi.mock('logger')
 
 describe('use-remote-details', () => {
   vi.mocked(logger.logError).mockImplementation(vi.fn())
-  const getSpy = vi.spyOn(Storage.prototype, 'getItem')
-  const setSpy = vi.spyOn(Storage.prototype, 'setItem')
+  const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
+  const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
   it('get details returns default object if no details', () => {
-    const { get } = useRemoteDetails()
-    expect(get()).toEqual({
+    expect(useRemoteDetails().get()).toEqual({
       username: '',
       password: '',
       host: '',
@@ -21,9 +20,8 @@ describe('use-remote-details', () => {
   })
 
   it('get details returns default object if it is invalid', () => {
-    getSpy.mockReturnValue(JSON.stringify({ db: 'test' }))
-    const { get } = useRemoteDetails()
-    expect(get()).toEqual({
+    localStorageGetSpy.mockReturnValue(JSON.stringify({ db: 'test' }))
+    expect(useRemoteDetails().get()).toEqual({
       username: '',
       password: '',
       host: '',
@@ -38,9 +36,8 @@ describe('use-remote-details', () => {
       host: 'host',
       port: 'port',
     }
-    getSpy.mockReturnValue(JSON.stringify(details))
-    const { get } = useRemoteDetails()
-    expect(get()).toEqual(details)
+    localStorageGetSpy.mockReturnValue(JSON.stringify(details))
+    expect(useRemoteDetails().get()).toEqual(details)
   })
 
   it('set details returns undefined if details are not valid', () => {
@@ -48,7 +45,7 @@ describe('use-remote-details', () => {
     const details = { db: 'test' } as unknown as RemoteDetails
     expect(set(details)).toBeUndefined()
     expect(logger.logError).toHaveBeenCalledOnce()
-    expect(setSpy).not.toHaveBeenCalledWith(
+    expect(localStorageSetSpy).not.toHaveBeenCalledWith(
       'remote-db-details',
       JSON.stringify(details)
     )
@@ -63,7 +60,7 @@ describe('use-remote-details', () => {
       port: 'port',
     }
     expect(set(details)).toBeUndefined()
-    expect(setSpy).toHaveBeenCalledWith(
+    expect(localStorageSetSpy).toHaveBeenCalledWith(
       'remote-db-details',
       JSON.stringify(details)
     )
