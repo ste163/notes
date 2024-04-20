@@ -1,4 +1,4 @@
-import { renderRemoteDbSetupModal } from 'renderer/reactive'
+import { renderRemoteDbSetupDialog } from 'renderer/reactive'
 import { createEvent, StatusStoreEvents } from 'event'
 
 interface StatusStore {
@@ -32,7 +32,7 @@ const StatusStore = new Proxy(
       // this doesn't work to re-open the modal on a state change
       // MAKE MODALS RENDER ON ROUTER STATE
       const isModalRendered = document.querySelector('.remote-db-setup-modal')
-      if (isModalRendered) renderRemoteDbSetupModal()
+      if (isModalRendered) renderRemoteDbSetupDialog()
 
       return true
     },

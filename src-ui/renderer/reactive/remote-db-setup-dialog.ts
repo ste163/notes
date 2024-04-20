@@ -6,12 +6,12 @@ import { useRemoteDetails } from 'database'
 import { databaseIcon, errorIcon, successIcon } from 'icons'
 import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'types'
-import './remote-db-setup-modal.css'
+import './remote-db-setup-dialog.css'
 
-function renderRemoteDbSetupModal() {
+function renderRemoteDbSetupDialog() {
   const { isConnectedToRemote, error } = StatusStore
 
-  const modalContent = document.createElement('div')
+  const dialogContent = document.createElement('div')
 
   // TODO:
   // manually test:
@@ -19,7 +19,7 @@ function renderRemoteDbSetupModal() {
   // and connect to a brand new one
   // that all my data from my local is synced to the new remote.
 
-  modalContent.innerHTML = `
+  dialogContent.innerHTML = `
       <div class='remote-db-setup-container'>
         <section>
           <h3 class="remote-db-connection-heading">Connection details</h3>
@@ -79,7 +79,7 @@ function renderRemoteDbSetupModal() {
 
   renderModal({
     title: 'Remote Database',
-    content: modalContent,
+    content: dialogContent,
     url: 'database',
     classList: 'remote-db-setup-modal',
   })
@@ -139,4 +139,4 @@ function renderRemoteDbSetupModal() {
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logger.getLogs())
 }
 
-export { renderRemoteDbSetupModal }
+export { renderRemoteDbSetupDialog }

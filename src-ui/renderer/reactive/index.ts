@@ -5,7 +5,7 @@
  */
 export { renderFooter } from './footer'
 export { renderRemoteDbLogs } from './remote-db-logs'
-export { renderRemoteDbSetupModal } from './remote-db-setup-modal'
+export { renderRemoteDbSetupDialog } from './remote-db-setup-dialog'
 export { renderSidebarCreateNote } from './sidebar-create-note'
 export { renderSidebarNoteList } from './sidebar-note-list'
 export { renderNoteDetailsDialog } from './note-details-dialog'

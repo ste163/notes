@@ -42,7 +42,7 @@ import {
   renderSidebarNoteList,
   renderRemoteDbLogs,
   renderNoteDetailsDialog,
-  renderRemoteDbSetupModal,
+  renderRemoteDbSetupDialog,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -139,7 +139,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
         note && renderNoteDetailsDialog(note)
         break
       case 'database':
-        renderRemoteDbSetupModal()
+        renderRemoteDbSetupDialog()
         break
       default:
         break
@@ -315,7 +315,10 @@ window.addEventListener(ModalEvents.Close, () => {
  */
 window.addEventListener(StatusStoreEvents.Update, () => {
   // re-render the footer with the latest state
-  renderFooter()
+  renderFooter() // TODO: not to render
+  // the entire footer again, but only the items that change
+  // on a status store event update
+  // (ideally, only those piece that updated based on the event)
 })
 
 /**

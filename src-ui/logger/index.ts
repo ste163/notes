@@ -8,7 +8,7 @@ class Logger {
     this.logs = []
   }
 
-  private formatLog({
+  private format({
     message,
     type,
     error,
@@ -48,7 +48,7 @@ class Logger {
   }
 
   public logInfo(message: string) {
-    const formattedLog = this.formatLog({ message, type: 'info' })
+    const formattedLog = this.format({ message, type: 'info' })
     console.log(formattedLog)
     this.addToLogs(formattedLog)
     this.setMostRecentStatusStoreError('')
@@ -57,7 +57,7 @@ class Logger {
   public logError(message: string, error?: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : JSON.stringify(error)
-    const formattedLog = this.formatLog({
+    const formattedLog = this.format({
       message,
       type: 'error',
       error: error ? errorMessage : '',

@@ -24,14 +24,21 @@ footer button:hover {
   align-items: center;
 }
 
-.footer-data-container > :first-child {
+.footer-data-container div {
   display: flex;
   align-items: center;
-  height: min-content;
 }
 
 .footer-divider {
   height: 1em;
-  margin: 0 0.5em;
+}
+
+.footer-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
   border-left: var(--outline-color) 0.15em solid;
+  transform: translateX(-50%);
 }

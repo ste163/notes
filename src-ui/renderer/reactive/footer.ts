@@ -1,6 +1,6 @@
 import { StatusStore } from 'store'
 import { instantiateButton } from 'components'
-import { renderRemoteDbSetupModal } from './remote-db-setup-modal'
+import { renderRemoteDbSetupDialog } from './remote-db-setup-dialog'
 import { databaseIcon } from 'icons'
 import pkg from '../../../package.json'
 import './footer.css'
@@ -15,52 +15,62 @@ function renderFooter(): void {
   if (!container) throw new Error('Unable to find footer container')
 
   const { lastSavedDate, lastSyncedDate, isConnectedToRemote } = StatusStore
-  const remoteDbContainerId = 'remote-db-setup-container'
 
   container.innerHTML = `
   <div class='footer-data-container'>
-    <div>
-      <div id="${remoteDbContainerId}"></div>
-      ${
-        lastSyncedDate
-          ? `
-          <div class="footer-divider"></div>
-          <div>
-            Last synced: ${lastSyncedDate}
-          </div>`
-          : ''
-      }
-    </div>
-    ${
-      lastSavedDate
-        ? `
-        <div class="footer-divider"></div>
-        <div>
-          Document ${lastSavedDate ? `last saved: ${lastSavedDate}` : ''}
-        </div>
-      `
-        : ''
-    }
+    <div id="remote-db-setup-container"></div>
+    <div id="last-sync-date"></div>
+    <div id="last-save-date"></div>
   </div>
-  <div>
-    v${pkg.version}
-  </div>`
+  <div>v${pkg.version}</div>`
 
-  /**
-   * Add dynamic sections to footer
-   */
-  document.querySelector(`#${remoteDbContainerId}`)?.appendChild(
-    instantiateButton({
-      title: 'Setup remote database',
-      html: `
-        ${databaseIcon}
-        <span>
-          ${isConnectedToRemote ? 'Connected' : 'Not connected'}
-        </span>
-        `,
-      onClick: renderRemoteDbSetupModal,
-    })
+  if (lastSyncedDate) renderLastSyncDate(lastSyncedDate)
+  if (lastSavedDate) renderLastSavedDate(lastSavedDate)
+
+  function renderRemoteDbButtonDialog() {
+    document.querySelector(`#remote-db-setup-container`)?.appendChild(
+      instantiateButton({
+        title: 'Setup remote database',
+        html: `
+          ${databaseIcon}
+          <span>
+            ${isConnectedToRemote ? 'Connected' : 'Not connected'}
+          </span>
+          `,
+        onClick: renderRemoteDbSetupDialog,
+      })
+    )
+  }
+
+  renderRemoteDbButtonDialog()
+}
+
+function createDivider() {
+  const parent = document.createElement('div')
+  parent.style.position = 'relative'
+  parent.style.margin = '0 0.5rem'
+  const divider = document.createElement('div')
+  divider.classList.add('footer-divider')
+  parent.appendChild(divider)
+  return parent
+}
+
+function renderLastSavedDate(lastSavedDate: Date) {
+  const span = document.createElement('span')
+  span.appendChild(
+    document.createTextNode(`Document  last saved: ${lastSavedDate}`)
   )
+  const container = document.querySelector('#last-save-date')
+  container?.appendChild(createDivider())
+  container?.appendChild(span)
+}
+
+function renderLastSyncDate(lastSyncedDate: Date) {
+  const span = document.createElement('span')
+  span.appendChild(document.createTextNode(`Last synced: ${lastSyncedDate}`))
+  const container = document.querySelector('#last-sync-date')
+  container?.appendChild(createDivider())
+  container?.appendChild(span)
 }
 
 export { renderFooter }
