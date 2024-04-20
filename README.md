@@ -38,7 +38,7 @@ flowchart LR
 
     subgraph Client - browser or tauri-based desktop application
       B[(IndexedDB)]
-      D[Database API] <-- Requests --> C[Window object event manager]
+      D[Database API] <-- Requests --> C[Event manager]
       D <-- CRUD --> B
       C <-- Events --> E([Rendered View])
     end
