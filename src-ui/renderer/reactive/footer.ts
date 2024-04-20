@@ -31,16 +31,6 @@ function renderFooter(): void {
   renderRemoteDbButtonDialog(isConnectedToRemote)
 }
 
-function renderFooterLastSavedDate(date: string | null) {
-  const container = document.querySelector('#last-save-date')
-  if (container) container.innerHTML = ''
-  if (!date) return // then keep the container cleared
-  const span = document.createElement('span')
-  span.appendChild(document.createTextNode(`Document  last saved: ${date}`))
-  container?.appendChild(createDivider())
-  container?.appendChild(span)
-}
-
 function renderRemoteDbButtonDialog(isConnected: boolean) {
   document.querySelector(`#remote-db-setup-container`)?.appendChild(
     instantiateButton({
@@ -54,6 +44,17 @@ function renderRemoteDbButtonDialog(isConnected: boolean) {
       onClick: renderRemoteDbSetupDialog,
     })
   )
+}
+
+// TODO: move lastSavedDate and LastSyncDate into a single function
+function renderFooterLastSavedDate(date: string | null) {
+  const container = document.querySelector('#last-save-date')
+  if (container) container.innerHTML = ''
+  if (!date) return // then keep the container cleared
+  const span = document.createElement('span')
+  span.appendChild(document.createTextNode(`Document  last saved: ${date}`))
+  container?.appendChild(createDivider())
+  container?.appendChild(span)
 }
 
 function renderLastSyncDate(lastSyncedDate: Date) {

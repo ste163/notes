@@ -88,6 +88,9 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
   const notes = (event as CustomEvent)?.detail?.notes
   const { noteId } = getUrlParams()
 
+  // TODO: if no notes, then emit a new event
+  // to handle that state so that we can reset the UI
+
   renderSidebarNoteList({ isLoading: false, notes })
 
   if (noteId)
@@ -371,7 +374,6 @@ async function renderNoteEditor({
 }) {
   const editor = await renderEditor({ note, isLoading })
   if (editor) EditorStore.editor = editor
-  if (!note) renderFooterLastSavedDate(null)
 }
 
 function setupDatabase() {
