@@ -95,7 +95,8 @@ class Database {
     return false
   }
 
-  async put(note: Partial<Note>): Promise<string> {
+  async put(note: Partial<Note>): Promise<{ id: string; updatedAt: Date }> {
+    const date = new Date()
     if (note?._id) {
       // then this is an update event on an existing note
       await this.db.put({
@@ -110,11 +111,10 @@ class Database {
           },
         },
         createdAt: note.createdAt,
-        updatedAt: new Date(),
+        updatedAt: date,
       })
-      return note._id
+      return { id: note._id, updatedAt: date }
     }
-
     // then this is a new note
     const { id } = await this.db.put({
       _id: `id${nanoid()}`,
@@ -125,11 +125,10 @@ class Database {
           data: new Blob([''], { type: 'text/html' }),
         },
       },
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: date,
+      updatedAt: date,
     })
-
-    return id
+    return { id, updatedAt: date }
   }
 
   async delete(note: Note) {
@@ -146,7 +145,7 @@ class Database {
         createdAt: { $exists: true },
       },
       fields: ['_id', 'title', 'createdAt', 'updatedAt'],
-      sort: [{ createdAt: 'asc' }],
+      sort: [{ createdAt: 'desc' }],
     })
     return docs.reduce(
       (acc, note) => {

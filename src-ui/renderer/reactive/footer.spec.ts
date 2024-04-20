@@ -1,5 +1,9 @@
 import { describe, it } from 'vitest'
 
+// TODO: will need to revisit testing approach
+// because the footer contains independent components.
+// Potentially build out a full mock footer to test all the scenarios
+
 describe('footer', () => {
   it.todo('renders only the db setup and version when no data')
 

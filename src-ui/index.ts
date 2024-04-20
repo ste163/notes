@@ -43,6 +43,7 @@ import {
   renderRemoteDbLogs,
   renderNoteDetailsDialog,
   renderRemoteDbSetupDialog,
+  renderFooterLastSavedDate,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -129,7 +130,9 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // TODO: revisit isDirty saving on a changed note event
     // if (EditorStore.isDirty) await saveNote(note)
 
-    StatusStore.lastSavedDate = note?.updatedAt || null
+    if (note?.updatedAt)
+      renderFooterLastSavedDate(new Date(note.updatedAt).toLocaleString())
+
     await renderNoteEditor({ isLoading: false, note })
 
     // based on URL params, render dialogs
@@ -180,8 +183,8 @@ window.addEventListener(NoteEvents.Created, async (event) => {
 window.addEventListener(NoteEvents.Save, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note
-    await database.put(note)
-    createEvent(NoteEvents.Saved, { note }).dispatch()
+    const { updatedAt } = await database.put(note)
+    createEvent(NoteEvents.Saved, { note: { ...note, updatedAt } }).dispatch()
   } catch (error) {
     logger.logError('Error saving note.', error)
   }
@@ -189,7 +192,8 @@ window.addEventListener(NoteEvents.Save, async (event) => {
 
 window.addEventListener(NoteEvents.Saved, (event) => {
   const note = (event as CustomEvent)?.detail?.note as Note
-  StatusStore.lastSavedDate = note?.updatedAt || null
+  console.log('UPDATE')
+  renderFooterLastSavedDate(new Date(note?.updatedAt ?? '').toLocaleString())
   // ensure rest of state is updated
   createEvent(NoteEvents.GetAll).dispatch()
 })
@@ -314,11 +318,9 @@ window.addEventListener(ModalEvents.Close, () => {
  * Status Store events
  */
 window.addEventListener(StatusStoreEvents.Update, () => {
-  // re-render the footer with the latest state
-  renderFooter() // TODO: not to render
-  // the entire footer again, but only the items that change
-  // on a status store event update
-  // (ideally, only those piece that updated based on the event)
+  // TODO: REMOVE THIS EVENT ENTIRELY AS IT CAUSES RE-RENDERING ISSUES
+  // Only render the items that change when they change instead of hiding
+  // the changes through the status store that causes unneccessary re-renders
 })
 
 /**
@@ -369,7 +371,7 @@ async function renderNoteEditor({
 }) {
   const editor = await renderEditor({ note, isLoading })
   if (editor) EditorStore.editor = editor
-  if (!note) StatusStore.lastSavedDate = null
+  if (!note) renderFooterLastSavedDate(null)
 }
 
 function setupDatabase() {
