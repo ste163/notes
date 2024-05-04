@@ -195,7 +195,6 @@ window.addEventListener(NoteEvents.Save, async (event) => {
 
 window.addEventListener(NoteEvents.Saved, (event) => {
   const note = (event as CustomEvent)?.detail?.note as Note
-  console.log('UPDATE')
   renderFooterLastSavedDate(new Date(note?.updatedAt ?? '').toLocaleString())
   // ensure rest of state is updated
   createEvent(NoteEvents.GetAll).dispatch()

@@ -98,10 +98,11 @@ class Database {
   async put(note: Partial<Note>): Promise<{ id: string; updatedAt: Date }> {
     const date = new Date()
     if (note?._id) {
-      // then this is an update event on an existing note
+      // is an update event
+      const lastSavedVersion = await this.getById(note._id) // always get latest _rev
       await this.db.put({
         _id: note._id,
-        _rev: note._rev,
+        _rev: lastSavedVersion?._rev,
         title: note.title,
         // note HTML is saved as an attachment html file
         _attachments: {
