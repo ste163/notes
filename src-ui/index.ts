@@ -1,6 +1,7 @@
 /**
  * TODO PRIORITY ORDER
  *  - footer tests + refactor
+ *  - CONSIDERATION: classes for the main components: Sidebar and then Sidebar.renderCreateNote(), Sidebar.renderList
  *  - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error' button that open db modal
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - db dialog modal: needs tests + showing if connected to local only or remote
@@ -73,7 +74,6 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
  */
 window.addEventListener(NoteEvents.GetAll, async () => {
   try {
-    renderSidebarNoteList({ isLoading: true, notes: {} })
     const notes = await database.getAll()
     createEvent(NoteEvents.GotAll, { notes }).dispatch()
   } catch (error) {

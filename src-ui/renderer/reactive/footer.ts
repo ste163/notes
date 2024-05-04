@@ -5,6 +5,14 @@ import { databaseIcon } from 'icons'
 import pkg from '../../../package.json'
 import './footer.css'
 
+// TODO:
+// consider a class-based approach where we export a the instantiated class
+// that contains the basic html structure and the render methods
+// so that in Index.ts
+// we call Footer.renderLastSyncDate()
+// Footer.renderLastSavedDate(), etc.
+// instead of exporting all these methods with renderFooterEtc()
+
 /**
  * Renders base footer
  */
