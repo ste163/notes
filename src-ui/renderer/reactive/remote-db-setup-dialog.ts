@@ -1,4 +1,3 @@
-import { StatusStore } from 'store'
 import { renderModal } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
@@ -8,8 +7,16 @@ import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'types'
 import './remote-db-setup-dialog.css'
 
-function renderRemoteDbSetupDialog() {
-  const { isConnectedToRemote, error } = StatusStore
+function renderRemoteDbSetupDialog({
+  isConnectedToRemote,
+  error,
+}: {
+  isConnectedToRemote: boolean
+  error: string
+}) {
+  // TODO: refactor
+  // TODO: needs to know about the db connection state
+  // and any major error states
 
   const dialogContent = document.createElement('div')
 

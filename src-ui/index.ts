@@ -1,7 +1,6 @@
 /**
  * TODO PRIORITY ORDER
  *  - footer tests + refactor
- *  - CONSIDERATION: classes for the main components: Sidebar and then Sidebar.renderCreateNote(), Sidebar.renderList
  *  - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error' button that open db modal
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - db dialog modal: needs tests + showing if connected to local only or remote
@@ -32,19 +31,17 @@ import {
   DatabaseEvents,
   NoteEvents,
   createEvent,
-  StatusStoreEvents,
 } from 'event'
 import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
-import { EditorStore, StatusStore } from 'store'
+import { EditorStore } from 'store'
 import {
-  renderFooter,
+  footer,
   renderSidebarCreateNote,
   renderSidebarNoteList,
   renderRemoteDbLogs,
   renderNoteDetailsDialog,
   renderRemoteDbSetupDialog,
-  renderFooterLastSavedDate,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -56,14 +53,14 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     // render base app layout with loading states
     renderSidebarCreateNote({ isSavingNote: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
-    renderFooter()
+    footer.renderRemoteDb(false)
 
     // setup database after app is rendering in loading state
     setupDatabase()
     const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
-    createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
+    if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)
   }
@@ -134,7 +131,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // if (EditorStore.isDirty) await saveNote(note)
 
     if (note?.updatedAt)
-      renderFooterLastSavedDate(new Date(note.updatedAt).toLocaleString())
+      footer.renderLastSaved(new Date(note.updatedAt).toLocaleString())
 
     await renderNoteEditor({ isLoading: false, note })
 
@@ -145,7 +142,10 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
         note && renderNoteDetailsDialog(note)
         break
       case 'database':
-        renderRemoteDbSetupDialog()
+        // BUG: this does not actually render based on the isConnected state
+        // coming from the db. We need to have this state accessible somehow
+        // to render this dialog properly
+        renderRemoteDbSetupDialog({ isConnectedToRemote: false, error: '' })
         break
       default:
         break
@@ -195,7 +195,7 @@ window.addEventListener(NoteEvents.Save, async (event) => {
 
 window.addEventListener(NoteEvents.Saved, (event) => {
   const note = (event as CustomEvent)?.detail?.note as Note
-  renderFooterLastSavedDate(new Date(note?.updatedAt ?? '').toLocaleString())
+  footer.renderLastSaved(new Date(note?.updatedAt ?? '').toLocaleString())
   // ensure rest of state is updated
   createEvent(NoteEvents.GetAll).dispatch()
 })
@@ -250,17 +250,13 @@ window.addEventListener(NoteEvents.Deleted, (event) => {
  * Remote database events
  */
 window.addEventListener(DatabaseEvents.RemoteConnect, () => {
-  if (StatusStore.isConnectedToRemote) {
-    logger.logInfo('Already connected to remote database.')
-    return
-  }
+  // TODO: only connect if not already connected
   setupDatabase()
   // the database emits the DatabaseEvents.RemoteConnected event if it successfully connects
 })
 
 window.addEventListener(DatabaseEvents.RemoteConnected, () => {
-  if (StatusStore.isConnectedToRemote) return
-  StatusStore.isConnectedToRemote = true
+  footer.renderRemoteDb(true)
   database.setupSyncing()
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
@@ -270,19 +266,15 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
 })
 
 window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
-  if (!StatusStore.isConnectedToRemote) {
-    logger.logInfo('Already disconnected from remote database.')
-    return
-  }
   const successfulDisconnect = database.disconnectSyncing()
-  if (successfulDisconnect) StatusStore.isConnectedToRemote = false
+  if (successfulDisconnect) footer.renderRemoteDb(false)
   // TODO: need to clear the remote details from local storage
   // so we do not reconnect on refresh
 })
 
 window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
   const date = (event as CustomEvent)?.detail?.date
-  StatusStore.lastSyncedDate = date
+  footer.renderLastSynced(new Date(date).toLocaleString())
   // TODO:
   // this also needs to be stored in local storage
   // so that we can render that on the chance that we are unable to connect
@@ -314,15 +306,6 @@ window.addEventListener(ModalEvents.Close, () => {
   const { noteId } = getUrlParams()
   if (noteId) EditorStore.editor?.setEditable(true)
   setUrl({ noteId })
-})
-
-/**
- * Status Store events
- */
-window.addEventListener(StatusStoreEvents.Update, () => {
-  // TODO: REMOVE THIS EVENT ENTIRELY AS IT CAUSES RE-RENDERING ISSUES
-  // Only render the items that change when they change instead of hiding
-  // the changes through the status store that causes unneccessary re-renders
 })
 
 /**

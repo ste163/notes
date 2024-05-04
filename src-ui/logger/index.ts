@@ -1,4 +1,3 @@
-import { StatusStore } from 'store'
 import { LoggerEvents, createEvent } from 'event'
 
 class Logger {
@@ -32,10 +31,6 @@ class Logger {
     createEvent(LoggerEvents.Update, { logs: this.getLogs() })?.dispatch()
   }
 
-  private setMostRecentStatusStoreError(log: string) {
-    StatusStore.error = log
-  }
-
   private addToLogs(log: string) {
     this.logs.push(log)
     // only keep 25 log entries, remove the first item if more than 30
@@ -51,7 +46,6 @@ class Logger {
     const formattedLog = this.format({ message, type: 'info' })
     console.log(formattedLog)
     this.addToLogs(formattedLog)
-    this.setMostRecentStatusStoreError('')
   }
 
   public logError(message: string, error?: unknown) {
@@ -64,7 +58,6 @@ class Logger {
     })
     console.error(formattedLog)
     this.addToLogs(formattedLog)
-    this.setMostRecentStatusStoreError(formattedLog)
   }
 }
 

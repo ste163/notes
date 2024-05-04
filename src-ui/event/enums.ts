@@ -11,10 +11,6 @@ export enum LoggerEvents {
   Update = 'update-logs',
 }
 
-export enum StatusStoreEvents {
-  Update = 'status-store-updated',
-}
-
 export enum ModalEvents {
   Open = 'open-modal',
   Close = 'close-modal',
