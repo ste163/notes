@@ -9,6 +9,7 @@
   --active-color: #b3d4b8;
   --info-button-hover-color: rgba(128, 128, 128, 0.2);
   --code-block-color: #303030;
+  --error-color: rgb(252, 148, 148);
 
   color: var(--outline-color);
   background-color: var(--background-color);

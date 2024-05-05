@@ -1,7 +1,5 @@
 /**
  * TODO PRIORITY ORDER
- *  - footer tests + refactor
- *  - Footer UI + handle error states related to db: show a new section in red with an icon and 'Error' button that open db modal
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - db dialog modal: needs tests + showing if connected to local only or remote
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions

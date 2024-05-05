@@ -16,12 +16,28 @@ describe('footer', () => {
     expect(queryByText('Last saved')).toBeNull()
   })
 
-  it.todo('does not render error alert button if no error passed in')
+  it('does not render error alert button if no error passed in', () => {
+    const { queryByRole } = renderComponent({
+      renderComponent: footer.init,
+    })
+    footer.renderAlert('')
+    expect(queryByRole('button', { name: 'Error Error' })).toBeNull()
+  })
 
-  it.todo(
-    'renders error alert button and opens dialog'
-    // TODO: need to code this feature first
-  )
+  it('renders error alert button and opens dialog', async () => {
+    const { getByRole, getByText } = renderComponent({
+      renderComponent: footer.init,
+    })
+    footer.renderAlert('Error message')
+    await userEvent.click(getByRole('button', { name: 'Error Error' }))
+    // TODO/NOTE: this is not super accurate with current dialog implementation
+    // because it always exists in the DOM.
+    // A better way will be to conditionally render dialog based on state
+    expect(getByRole('dialog')).toBeInTheDocument()
+    // this is the text of the dialog. Once the dialog is refactored
+    // this line should be removed to isolate the test more from the dialog component
+    expect(getByText('Connection details')).toBeInTheDocument()
+  })
 
   it('renders not connected db status and opens dialog on click', async () => {
     const { getByText, queryByText, getByRole } = renderComponent({

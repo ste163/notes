@@ -1,6 +1,6 @@
 import { instantiateButton } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
-import { databaseIcon } from 'icons'
+import { databaseIcon, errorIcon } from 'icons'
 import pkg from '../../../../package.json'
 import './footer.css'
 
@@ -31,8 +31,10 @@ class Footer {
         <div id="footer-last-sync"></div>
         <div id="footer-last-save"></div>
       </div>
-      <div id="footer-alert"></div>
-      <div>v${pkg.version}</div>`
+      <div class='footer-status-container'>
+        <div id="footer-alert"></div>
+        <div>v${pkg.version}</div>
+      </div>`
   }
 
   public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
@@ -79,18 +81,17 @@ class Footer {
       container?.appendChild(
         instantiateButton({
           title: 'Setup remote database',
-          // TODO: look for an alert icon
-          // and style with a reddish color
+          className: 'footer-alert',
           html: `
-          ${databaseIcon}
+          ${errorIcon} 
           <span>
-            Alert
+            Error
           </span>
           `,
           onClick: () =>
             renderRemoteDbDialog({
               // TODO this should come from some state NOT passed in like this
-              isConnectedToRemote: true,
+              isConnectedToRemote: true, // because this isn't valid
               error: message,
             }),
         })
