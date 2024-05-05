@@ -18,11 +18,11 @@ type Props = { [key: string]: unknown } | unknown
 function renderComponent<T extends Props>({
   containerId,
   renderComponent,
-  props,
+  props = {} as T,
 }: {
   containerId?: string
   renderComponent: (props: T) => void
-  props: T
+  props?: T
 }) {
   const window = new Window()
   globalThis.window = window as Window & typeof globalThis.window

@@ -9,10 +9,7 @@ export enum KeyboardEvents {
 
 export enum LoggerEvents {
   Update = 'update-logs',
-}
-
-export enum StatusStoreEvents {
-  Update = 'status-store-updated',
+  Error = 'error-logged',
 }
 
 export enum ModalEvents {

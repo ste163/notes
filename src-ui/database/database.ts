@@ -6,6 +6,18 @@ import { createEvent, DatabaseEvents } from 'event'
 import { logger } from 'logger'
 import type { Note } from 'types'
 
+/**
+ * Note on PouchDB data saving:
+ * PouchDB first saves to disk and then the remote
+ * Because of this, there should be very little chance
+ * of data loss or failures. The most likely failure should be
+ * network syncing issues, which will get resolved eventually
+ * during re-connections.
+ *
+ * Because of this local-first approach, I am not locking
+ * inputs during save events.
+ */
+
 const attachmentId = 'content.html'
 
 class Database {
@@ -83,12 +95,14 @@ class Database {
     return false
   }
 
-  async put(note: Partial<Note>): Promise<string> {
+  async put(note: Partial<Note>): Promise<{ id: string; updatedAt: Date }> {
+    const date = new Date()
     if (note?._id) {
-      // then this is an update event on an existing note
+      // is an update event
+      const lastSavedVersion = await this.getById(note._id) // always get latest _rev
       await this.db.put({
         _id: note._id,
-        _rev: note._rev,
+        _rev: lastSavedVersion?._rev,
         title: note.title,
         // note HTML is saved as an attachment html file
         _attachments: {
@@ -98,11 +112,10 @@ class Database {
           },
         },
         createdAt: note.createdAt,
-        updatedAt: new Date(),
+        updatedAt: date,
       })
-      return note._id
+      return { id: note._id, updatedAt: date }
     }
-
     // then this is a new note
     const { id } = await this.db.put({
       _id: `id${nanoid()}`,
@@ -113,11 +126,10 @@ class Database {
           data: new Blob([''], { type: 'text/html' }),
         },
       },
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: date,
+      updatedAt: date,
     })
-
-    return id
+    return { id, updatedAt: date }
   }
 
   async delete(note: Note) {
@@ -134,7 +146,7 @@ class Database {
         createdAt: { $exists: true },
       },
       fields: ['_id', 'title', 'createdAt', 'updatedAt'],
-      sort: [{ createdAt: 'asc' }],
+      sort: [{ createdAt: 'desc' }],
     })
     return docs.reduce(
       (acc, note) => {

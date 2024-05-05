@@ -1,4 +1,3 @@
-import { StatusStore } from 'store'
 import { LoggerEvents, createEvent } from 'event'
 
 class Logger {
@@ -8,7 +7,7 @@ class Logger {
     this.logs = []
   }
 
-  private formatLog({
+  private format({
     message,
     type,
     error,
@@ -32,8 +31,8 @@ class Logger {
     createEvent(LoggerEvents.Update, { logs: this.getLogs() })?.dispatch()
   }
 
-  private setMostRecentStatusStoreError(log: string) {
-    StatusStore.error = log
+  private emitError(message: string) {
+    createEvent(LoggerEvents.Error, { message })?.dispatch()
   }
 
   private addToLogs(log: string) {
@@ -48,23 +47,22 @@ class Logger {
   }
 
   public logInfo(message: string) {
-    const formattedLog = this.formatLog({ message, type: 'info' })
+    const formattedLog = this.format({ message, type: 'info' })
     console.log(formattedLog)
     this.addToLogs(formattedLog)
-    this.setMostRecentStatusStoreError('')
   }
 
   public logError(message: string, error?: unknown) {
     const errorMessage =
       error instanceof Error ? error.message : JSON.stringify(error)
-    const formattedLog = this.formatLog({
+    const formattedLog = this.format({
       message,
       type: 'error',
       error: error ? errorMessage : '',
     })
     console.error(formattedLog)
     this.addToLogs(formattedLog)
-    this.setMostRecentStatusStoreError(formattedLog)
+    this.emitError(message)
   }
 }
 

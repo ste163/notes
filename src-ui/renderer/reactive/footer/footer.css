@@ -19,19 +19,37 @@ footer button:hover {
   background-color: var(--info-button-hover-color);
 }
 
-.footer-data-container {
+.footer-data-container,
+.footer-status-container {
   display: flex;
   align-items: center;
 }
 
-.footer-data-container > :first-child {
+.footer-data-container div {
   display: flex;
   align-items: center;
-  height: min-content;
+}
+
+.footer-alert {
+  margin-right: 1em;
+  font-weight: bold;
+  background-color: var(--error-color);
+}
+
+.footer-alert:hover {
+  background-color: var(--error-color);
 }
 
 .footer-divider {
   height: 1em;
-  margin: 0 0.5em;
+}
+
+.footer-divider::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: 100%;
   border-left: var(--outline-color) 0.15em solid;
+  transform: translateX(-50%);
 }

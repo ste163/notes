@@ -7,6 +7,8 @@ TODO: INSERT IMAGE OF APPLICATION HERE
 ## TODOs
 
 - Cleanup missing features and bugs (listed in index.ts)
+- Github action to build & test just the ui (no tauri)
+  - runs on push/commit
 - Test Tauri version: supports auto-updates
 
 ## Application Architecture
@@ -36,7 +38,7 @@ flowchart LR
 
     subgraph Client - browser or tauri-based desktop application
       B[(IndexedDB)]
-      D[Database API] <-- Requests --> C[Window object event manager]
+      D[Database API] <-- Requests --> C[Event manager]
       D <-- CRUD --> B
       C <-- Events --> E([Rendered View])
     end
