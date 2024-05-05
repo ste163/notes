@@ -1,7 +1,7 @@
 /**
  * TODO PRIORITY ORDER
- *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *  - db dialog modal: needs tests + showing if connected to local only or remote
+ *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
