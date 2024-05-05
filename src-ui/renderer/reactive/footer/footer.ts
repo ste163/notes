@@ -4,7 +4,6 @@ import { databaseIcon, errorIcon } from 'icons'
 import pkg from '../../../../package.json'
 import './footer.css'
 
-// TODO: new feature: error alert if an error is caught
 class Footer {
   constructor() {
     this.init()
