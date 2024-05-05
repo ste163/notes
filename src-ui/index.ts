@@ -295,6 +295,14 @@ window.addEventListener(ModalEvents.Open, (event) => {
   }, 10)
 
   const dialogTitle = (event as CustomEvent)?.detail?.param as string
+
+  // TODO: dialog titles need to be a const so I can do safer checks.
+  // should come from the dialog Class
+  if (dialogTitle === 'database') {
+    // clear the footer's alert state
+    footer.renderAlert('')
+  }
+
   const { noteId } = getUrlParams()
   setUrl({ noteId, dialog: dialogTitle })
 
@@ -315,6 +323,11 @@ window.addEventListener(LoggerEvents.Update, (event) => {
   const logs = (event as CustomEvent)?.detail?.logs
   const dbLogContainer = document.querySelector('#remote-db-logs')
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
+})
+
+window.addEventListener(LoggerEvents.Error, (event) => {
+  const message = (event as CustomEvent)?.detail?.message
+  if (message) footer.renderAlert(message)
 })
 
 /**

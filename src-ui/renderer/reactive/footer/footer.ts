@@ -28,9 +28,10 @@ class Footer {
     container.innerHTML = `
       <div class='footer-data-container'>
         <div id="remote-db-setup-container"></div>
-        <div id="last-sync-date"></div>
-        <div id="last-save-date"></div>
+        <div id="footer-last-sync"></div>
+        <div id="footer-last-save"></div>
       </div>
+      <div id="footer-alert"></div>
       <div>v${pkg.version}</div>`
   }
 
@@ -57,7 +58,7 @@ class Footer {
 
   public renderLastSaved(date: string | null) {
     this.renderDateSection({
-      selector: '#last-save-date',
+      selector: '#footer-last-save',
       date,
       label: 'Last saved',
     })
@@ -65,10 +66,35 @@ class Footer {
 
   public renderLastSynced(date: string | null) {
     this.renderDateSection({
-      selector: '#last-sync-date',
+      selector: '#footer-last-sync',
       date,
       label: 'Last synced',
     })
+  }
+
+  public renderAlert(message: string) {
+    const container = document.querySelector('#footer-alert')
+    if (container) container.innerHTML = ''
+    if (message)
+      container?.appendChild(
+        instantiateButton({
+          title: 'Setup remote database',
+          // TODO: look for an alert icon
+          // and style with a reddish color
+          html: `
+          ${databaseIcon}
+          <span>
+            Alert
+          </span>
+          `,
+          onClick: () =>
+            renderRemoteDbDialog({
+              // TODO this should come from some state NOT passed in like this
+              isConnectedToRemote: true,
+              error: message,
+            }),
+        })
+      )
   }
 
   private renderDateSection({

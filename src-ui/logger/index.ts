@@ -31,6 +31,10 @@ class Logger {
     createEvent(LoggerEvents.Update, { logs: this.getLogs() })?.dispatch()
   }
 
+  private emitError(message: string) {
+    createEvent(LoggerEvents.Error, { message })?.dispatch()
+  }
+
   private addToLogs(log: string) {
     this.logs.push(log)
     // only keep 25 log entries, remove the first item if more than 30
@@ -58,6 +62,7 @@ class Logger {
     })
     console.error(formattedLog)
     this.addToLogs(formattedLog)
+    this.emitError(message)
   }
 }
 

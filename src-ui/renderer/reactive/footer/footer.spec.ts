@@ -16,8 +16,10 @@ describe('footer', () => {
     expect(queryByText('Last saved')).toBeNull()
   })
 
+  it.todo('does not render error alert button if no error passed in')
+
   it.todo(
-    'renders error alert and dialog on click'
+    'renders error alert button and opens dialog'
     // TODO: need to code this feature first
   )
 
