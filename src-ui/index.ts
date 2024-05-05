@@ -40,8 +40,8 @@ import {
   renderSidebarCreateNote,
   renderSidebarNoteList,
   renderRemoteDbLogs,
-  renderNoteDetailsDialog,
   renderRemoteDbDialog,
+  renderNoteDetailsDialog,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -53,7 +53,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     // render base app layout with loading states
     renderSidebarCreateNote({ isSavingNote: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
-    footer.renderRemoteDb(false)
+    footer.renderRemoteDb({ isConnected: false })
 
     // setup database after app is rendering in loading state
     setupDatabase()
@@ -256,7 +256,7 @@ window.addEventListener(DatabaseEvents.RemoteConnect, () => {
 })
 
 window.addEventListener(DatabaseEvents.RemoteConnected, () => {
-  footer.renderRemoteDb(true)
+  footer.renderRemoteDb({ isConnected: true })
   database.setupSyncing()
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
@@ -267,7 +267,7 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
 
 window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
-  if (successfulDisconnect) footer.renderRemoteDb(false)
+  if (successfulDisconnect) footer.renderRemoteDb({ isConnected: false })
   // TODO: need to clear the remote details from local storage
   // so we do not reconnect on refresh
 })

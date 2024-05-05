@@ -4,10 +4,27 @@ import { databaseIcon } from 'icons'
 import pkg from '../../../../package.json'
 import './footer.css'
 
+// TODO: new feature: error alert if an error is caught
 class Footer {
   constructor() {
+    this.init()
+  }
+
+  /**
+   * Allows for re-rendering the footer
+   */
+  public init() {
     const container = document.querySelector('footer')
-    if (!container) throw new Error('Unable to find footer container')
+    if (!container) {
+      /**
+       * Not throwing an error because tests would break.
+       * If the footer isn't found, then the index.html
+       * is broken, and that issue would be caught sooner
+       */
+      console.warn('Footer container not found')
+      return
+    }
+    container.innerHTML = '' // reset container
     container.innerHTML = `
       <div class='footer-data-container'>
         <div id="remote-db-setup-container"></div>
@@ -17,7 +34,7 @@ class Footer {
       <div>v${pkg.version}</div>`
   }
 
-  public renderRemoteDb(isConnected: boolean) {
+  public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
     const container = document.querySelector('#remote-db-setup-container')
     if (container) container.innerHTML = ''
     container?.appendChild(
