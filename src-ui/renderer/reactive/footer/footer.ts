@@ -1,7 +1,7 @@
 import { instantiateButton } from 'components'
-import { renderRemoteDbSetupDialog } from './remote-db-setup-dialog'
+import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
 import { databaseIcon } from 'icons'
-import pkg from '../../../package.json'
+import pkg from '../../../../package.json'
 import './footer.css'
 
 class Footer {
@@ -30,7 +30,7 @@ class Footer {
           </span>
           `,
         onClick: () =>
-          renderRemoteDbSetupDialog({
+          renderRemoteDbDialog({
             isConnectedToRemote: isConnected,
             error: '',
           }),

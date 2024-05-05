@@ -5,9 +5,9 @@ import { useRemoteDetails } from 'database'
 import { databaseIcon, errorIcon, successIcon } from 'icons'
 import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'types'
-import './remote-db-setup-dialog.css'
+import './remote-db-dialog.css'
 
-function renderRemoteDbSetupDialog({
+function renderRemoteDbDialog({
   isConnectedToRemote,
   error,
 }: {
@@ -146,4 +146,4 @@ function renderRemoteDbSetupDialog({
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logger.getLogs())
 }
 
-export { renderRemoteDbSetupDialog }
+export { renderRemoteDbDialog }

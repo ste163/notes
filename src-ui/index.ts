@@ -41,7 +41,7 @@ import {
   renderSidebarNoteList,
   renderRemoteDbLogs,
   renderNoteDetailsDialog,
-  renderRemoteDbSetupDialog,
+  renderRemoteDbDialog,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -145,7 +145,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
         // BUG: this does not actually render based on the isConnected state
         // coming from the db. We need to have this state accessible somehow
         // to render this dialog properly
-        renderRemoteDbSetupDialog({ isConnectedToRemote: false, error: '' })
+        renderRemoteDbDialog({ isConnectedToRemote: false, error: '' })
         break
       default:
         break
