@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-// import userEvent from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
 import { footer } from './footer'
 import pkg from '../../../../package.json'
@@ -16,16 +16,76 @@ describe('footer', () => {
     expect(queryByText('Last saved')).toBeNull()
   })
 
-  // add the error section after tests + refactoring are in-place
-  it.todo('renders not connected db status and opens dialog on click')
+  it.todo(
+    'renders error alert and dialog on click'
+    // TODO: need to code this feature first
+  )
 
-  it.todo('renders connected db status and opens dialog on click')
+  it('renders not connected db status and opens dialog on click', async () => {
+    const { getByText, queryByText, getByRole } = renderComponent({
+      renderComponent: footer.init,
+    })
+    footer.renderRemoteDb({ isConnected: false })
+    expect(queryByText('Connected')).toBeNull()
+    expect(getByText('Not connected')).toBeInTheDocument()
+    await userEvent.click(getByText('Not connected'))
+    // TODO/NOTE: this is not super accurate with current dialog implementation
+    // because it always exists in the DOM.
+    // A better way will be to conditionally render dialog based on state
+    expect(getByRole('dialog')).toBeInTheDocument()
+    // this is the text of the dialog. Once the dialog is refactored
+    // this line should be removed to isolate the test more from the dialog component
+    expect(getByText('Connection details')).toBeInTheDocument()
+  })
 
-  it.todo('does not render last saved date if null')
+  it('renders connected db status and opens dialog on click', async () => {
+    const { getByText, queryByText, getByRole } = renderComponent({
+      renderComponent: footer.init,
+    })
+    footer.renderRemoteDb({ isConnected: true })
+    expect(queryByText('Not connected')).toBeNull()
+    expect(getByText('Connected')).toBeInTheDocument()
+    await userEvent.click(getByText('Connected'))
+    // TODO/NOTE: this is not super accurate with current dialog implementation
+    // because it always exists in the DOM.
+    // A better way will be to conditionally render dialog based on state
+    expect(getByRole('dialog')).toBeInTheDocument()
+    // this is the text of the dialog. Once the dialog is refactored
+    // this line should be removed to isolate the test more from the dialog component
+    expect(getByText('Connection details')).toBeInTheDocument()
+  })
 
-  it.todo('renders last saved date if provided')
+  it('does not render last saved date if null', () => {
+    const { queryByText } = renderComponent({
+      renderComponent: footer.init,
+    })
+    footer.renderLastSaved(null)
+    expect(queryByText('Last saved')).toBeNull()
+  })
 
-  it.todo('does not render last sync date if null')
+  it('renders last saved date if provided', () => {
+    const { getByText } = renderComponent({
+      renderComponent: footer.init,
+    })
+    const date = new Date().toLocaleString()
+    footer.renderLastSaved(date)
+    expect(getByText(`Last saved: ${date}`)).toBeInTheDocument()
+  })
 
-  it.todo('renders last sync date')
+  it('does not render last sync date if null', () => {
+    const { queryByText } = renderComponent({
+      renderComponent: footer.init,
+    })
+    footer.renderLastSynced(null)
+    expect(queryByText('Last synced')).toBeNull()
+  })
+
+  it('renders last sync date', () => {
+    const { getByText } = renderComponent({
+      renderComponent: footer.init,
+    })
+    const date = new Date().toLocaleString()
+    footer.renderLastSynced(date)
+    expect(getByText(`Last synced: ${date}`)).toBeInTheDocument()
+  })
 })
