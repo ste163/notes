@@ -3,7 +3,7 @@
  * These are used to build renderer/reactive components.
  */
 
-// TODO make these all classes
+// TODO consider moving all to Classes
 export { renderDialog } from './dialog'
 export { instantiateButton } from './button'
 export { instantiateInput } from './input'

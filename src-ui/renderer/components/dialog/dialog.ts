@@ -8,6 +8,23 @@ import './dialog.css'
 // ie (who controls who as they both can control each other)
 
 /**
+ * To break the dialog out:
+ * it includes a renderDialog function
+ * that checks the HTML was generated (can be removed by the class instantionation)
+ * and then sets content and THEN opens it.
+ *
+ * The other functions are to handle the navigation when the dialog is open
+ * But these should simply call events to the main application instead of ALSO
+ * calling legit functions.
+ *
+ * This function should only say "Hey, open me!" (with this data as something optional)
+ * or "Hey, close me!"
+ *
+ * Then the tests are for rendering that the content is there
+ * and that the events are called correctly
+ */
+
+/**
  * Renders a dialog with the given title and content.
  * Handles open and close events along with trapping focus inside the dialog
  *
