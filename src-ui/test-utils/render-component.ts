@@ -2,7 +2,6 @@ import { resolve } from 'path'
 import { readFileSync } from 'fs'
 import { Window } from 'happy-dom'
 import { within } from '@testing-library/dom'
-import { dialog } from '../renderer/components/dialog'
 
 type Props = { [key: string]: unknown } | unknown
 
@@ -32,13 +31,6 @@ function renderComponent<T extends Props>({
   globalThis.window.document.body.innerHTML = containerId
     ? `<div id="${containerId}"></div>`
     : getIndexBodyContent()
-
-  /**
-   * Dialog needs to be re-initialized
-   * because it is a singleton that runs
-   * before renderComponent
-   */
-  if (!containerId) dialog.init()
 
   renderComponent(props)
 
