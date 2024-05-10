@@ -1,4 +1,4 @@
-import { renderModal } from 'components'
+import { renderDialog } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
@@ -84,11 +84,11 @@ function renderRemoteDbDialog({
         </section>
       </div>`
 
-  renderModal({
+  renderDialog({
     title: 'Remote Database',
     content: dialogContent,
     url: 'database',
-    classList: 'remote-db-setup-modal',
+    classList: 'remote-db-setup-dialog',
   })
 
   /**

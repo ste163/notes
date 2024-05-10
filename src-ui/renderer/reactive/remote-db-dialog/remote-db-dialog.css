@@ -1,9 +1,9 @@
-.remote-db-setup-modal section {
+.remote-db-setup-dialog section {
   display: flex;
   flex-direction: column;
 }
 
-.remote-db-setup-modal h3 {
+.remote-db-setup-dialog h3 {
   margin: 1.5em 0 0.5em 0;
 }
 
@@ -11,20 +11,20 @@
   margin-top: 0 !important;
 }
 
-.remote-db-setup-modal form {
+.remote-db-setup-dialog form {
   display: flex;
   flex-direction: column;
 }
 
-.remote-db-setup-modal form input {
+.remote-db-setup-dialog form input {
   margin: 0.25em 0;
 }
 
-.remote-db-setup-modal form label {
+.remote-db-setup-dialog form label {
   margin: 0.5em 0 0 0;
 }
 
-.remote-db-setup-modal form > div {
+.remote-db-setup-dialog form > div {
   display: flex;
   justify-content: space-between;
   margin-top: 0.5em;

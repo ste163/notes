@@ -3,7 +3,7 @@ export {
   LifeCycleEvents,
   KeyboardEvents,
   LoggerEvents,
-  ModalEvents,
+  DialogEvents,
   DatabaseEvents,
   NoteEvents,
 } from './enums'

@@ -1,4 +1,4 @@
-#modal-backdrop {
+#dialog-backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,7 +9,7 @@
   display: none;
 }
 
-#modal {
+#dialog {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -22,14 +22,14 @@
   overflow-y: scroll;
 }
 
-#modal-header {
+#dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5em;
 }
 
-#modal-header > button {
+#dialog-header > button {
   place-self: flex-start;
   margin: 0;
   padding: 1em 0.75em;
@@ -37,11 +37,11 @@
   border: none;
 }
 
-#modal-header > button:hover {
+#dialog-header > button:hover {
   background-color: transparent;
 }
 
-#modal-title {
+#dialog-title {
   margin: 0;
   margin-right: 1em;
 }

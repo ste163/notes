@@ -9,24 +9,24 @@
     <script type="module" src="./src-ui/index.ts" defer></script>
   </head>
   <body>
-    <div id="modal-backdrop" tabindex="-1" readonly="readonly">
-      <!-- IDEALLY: all the modal divs inside modal-backdrop
-      get moved to the MODAL component (also, call it
+    <div id="dialog-backdrop" tabindex="-1" readonly="readonly">
+      <!-- IDEALLY: all the dialog divs inside dialog-backdrop
+      get moved to the dialog component (also, call it
       dialog to match the aria role) -->
       <div
-        id="modal"
+        id="dialog"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-title"
+        aria-labelledby="dialog-title"
         tabindex="-1"
         readonly="readonly"
       >
         <div role="document">
-          <header id="modal-header">
-            <h2 id="modal-title">Title</h2>
-            <button id="modal-close"></button>
+          <header id="dialog-header">
+            <h2 id="dialog-title">Title</h2>
+            <button id="dialog-close"></button>
           </header>
-          <div id="modal-content"></div>
+          <div id="dialog-content"></div>
         </div>
       </div>
     </div>

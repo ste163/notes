@@ -1,13 +1,13 @@
 /**
  * TODO PRIORITY ORDER
- *  - db dialog modal: needs tests + showing if connected to local only or remote
+ *  - db dialog: needs tests + showing if connected to local only or remote
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
- *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a modal in the footer
+ *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the footer
  *      - could include info about the application, its version, its license and the remix icon license
  *     - BUG: floating menu disappears after selecting a note (its only on the first render)
- *     - BUG: fix database modal error styling. Icon shrinks
+ *     - BUG: fix database dialog error styling. Icon shrinks
  *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *             - the error also gets triggered/logged before vite connects (in the logs)
  * - FEATURES
@@ -15,7 +15,6 @@
  *   - hyperlinks in the editor
  *   - mobile view (sidebar only + selected note only, state lives in URL)
  *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
- *   - Clean-up: Modal naming to Dialog for consistency (ARIA uses Dialog)
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
@@ -25,7 +24,7 @@ import {
   LifeCycleEvents,
   KeyboardEvents,
   LoggerEvents,
-  ModalEvents,
+  DialogEvents,
   DatabaseEvents,
   NoteEvents,
   createEvent,
@@ -134,7 +133,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     await renderNoteEditor({ isLoading: false, note })
 
     // based on URL params, render dialogs
-    // note: this could potentially be moved to a `ModalEvents.Open` with which modal to render passed in
+    // note: this could potentially be moved to a `DialogEvents.Open` with which dialog to render passed in
     switch (dialog) {
       case 'details':
         note && renderNoteDetailsDialog(note)
@@ -214,7 +213,7 @@ window.addEventListener(NoteEvents.EditedTitle, (event) => {
   const note = (event as CustomEvent)?.detail?.note as Note
 
   // TODO: do not emit the .Select event again, but instead
-  // re-render ONLY the open modal with the new state.
+  // re-render ONLY the open dialog with the new state.
   // That way we re-trigger less rendering of the entire application, which is uneeded
   createEvent(NoteEvents.Select, { _id: note._id }).dispatch() // re-fetch full note data
 
@@ -227,8 +226,8 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
     await database.delete(note)
     createEvent(NoteEvents.Deleted, { note }).dispatch()
   } catch (error) {
-    // TODO: if error, render the details modal with the error state
-    // TODO: tests and error handling for details modal
+    // TODO: if error, render the details dialog with the error state
+    // TODO: tests and error handling for details dialog
     logger.logError('Error deleting note.', error)
   }
 })
@@ -239,7 +238,7 @@ window.addEventListener(NoteEvents.Deleted, (event) => {
   // clear the url dialog param
   setUrl({})
   // trigger events to reset state
-  createEvent(ModalEvents.Close).dispatch()
+  createEvent(DialogEvents.Close).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()
   createEvent(NoteEvents.Select, { _id: '' }).dispatch()
 })
@@ -280,15 +279,15 @@ window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
 })
 
 /**
- * Modal events
+ * Dialog events
  *
  * This are more specific to handling application state and less so on handling rendering
  */
-window.addEventListener(ModalEvents.Open, (event) => {
-  // Trap focus inside the modal, disable editor, and set URL params
+window.addEventListener(DialogEvents.Open, (event) => {
+  // Trap focus inside the dialog, disable editor, and set URL params
   setTimeout(() => {
-    // need timeout delay to allow modal to render
-    const closeButton = document.querySelector('#modal-close') as HTMLElement
+    // need timeout delay to allow dialog to render
+    const closeButton = document.querySelector('#dialog-close') as HTMLElement
     closeButton?.focus()
   }, 10)
 
@@ -307,8 +306,8 @@ window.addEventListener(ModalEvents.Open, (event) => {
   EditorStore.editor?.setEditable(false)
 })
 
-window.addEventListener(ModalEvents.Close, () => {
-  // If there is a selected note, enable the editor after modal closes
+window.addEventListener(DialogEvents.Close, () => {
+  // If there is a selected note, enable the editor after dialog closes
   const { noteId } = getUrlParams()
   if (noteId) EditorStore.editor?.setEditable(true)
   setUrl({ noteId })

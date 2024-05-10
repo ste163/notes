@@ -12,9 +12,9 @@ export enum LoggerEvents {
   Error = 'error-logged',
 }
 
-export enum ModalEvents {
-  Open = 'open-modal',
-  Close = 'close-modal',
+export enum DialogEvents {
+  Open = 'open-dialog',
+  Close = 'close-dialog',
 }
 
 export enum DatabaseEvents {

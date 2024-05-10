@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { instantiateButton, instantiateInput, renderModal } from 'components'
+import { instantiateButton, instantiateInput, renderDialog } from 'components'
 import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
@@ -9,10 +9,10 @@ import './note-details-dialog.css'
 
 function renderNoteDetailsDialog(note: Note) {
   const { createdAt, updatedAt } = note
-  const modalContent = document.createElement('div')
+  const dialogContent = document.createElement('div')
 
-  // setup modal structure
-  modalContent.innerHTML = `
+  // setup dialog structure
+  dialogContent.innerHTML = `
     <div class='note-details-container'>
       <h3>Title</h3>
       <div id="title-edit"></div>
@@ -23,7 +23,7 @@ function renderNoteDetailsDialog(note: Note) {
     </div>`
 
   // add delete button
-  modalContent.appendChild(
+  dialogContent.appendChild(
     instantiateButton({
       title: 'Delete note',
       html: `  
@@ -36,9 +36,9 @@ function renderNoteDetailsDialog(note: Note) {
     })
   )
 
-  renderModal({
+  renderDialog({
     title: 'Details',
-    content: modalContent,
+    content: dialogContent,
     url: 'details',
   })
 
