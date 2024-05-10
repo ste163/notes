@@ -1,3 +1,11 @@
-//
-// todo: renders content and calls open event when opened
-// todo: calls close event when closed
+import { describe, it } from 'vitest'
+
+describe('dialog', () => {
+  it.todo('renders content')
+  it.todo(
+    'calls close event when closed'
+    // close button click
+    // escape press
+  )
+  it.todo('calls open event when opened')
+})
