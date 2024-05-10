@@ -24,6 +24,43 @@ import './dialog.css'
  * and that the events are called correctly
  */
 
+class Dialog {
+  constructor() {
+    this.init()
+  }
+
+  public init() {
+    const container = document.querySelector('dialog-backdrop')
+    if (!container) {
+      /**
+       * Not throwing an error because tests would break.
+       * If element isn't found, index.html is broken,
+       * which would be caught sooner
+       */
+      console.warn('Dialog container not found')
+      return
+    }
+    container.innerHTML = '' // reset container
+    container.innerHTML = `
+    <div
+      id="dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dialog-title"
+      tabindex="-1"
+      readonly="readonly"
+    >
+      <div role="document">
+        <header id="dialog-header">
+          <h2 id="dialog-title">Title</h2>
+          <button id="dialog-close"></button>
+        </header>
+        <div id="dialog-content"></div>
+      </div>
+    </div>`
+  }
+}
+
 /**
  * Renders a dialog with the given title and content.
  * Handles open and close events along with trapping focus inside the dialog
@@ -155,4 +192,4 @@ function trapFocus(container: HTMLElement, event: KeyboardEvent) {
   }
 }
 
-export { renderDialog }
+export { Dialog, renderDialog }

@@ -4,7 +4,7 @@
  */
 
 // TODO consider moving all to Classes
-export { renderDialog } from './dialog'
+export { Dialog, renderDialog } from './dialog'
 export { instantiateButton } from './button'
 export { instantiateInput } from './input'
 export type { Button } from './button'
