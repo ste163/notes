@@ -15,17 +15,22 @@ import './dialog.css'
  * and that the events are called correctly
  */
 
-class Dialog {
-  // TODO
-  // instead of passing a bunch of props around
-  // assign the variables here
+// TODO: bug fix
+// if the backdrop is selected, then the escape press should close dialog
 
+class Dialog {
   private classList: string
   private url: string
+  private dialog: HTMLDivElement | null
+  private dialogBackdrop: HTMLElement | null // THIS CONTAINS EVERY ELEMENT: potentially could grab the dialog and close from this?
+  private closeButton: HTMLButtonElement | null
 
   constructor() {
     this.classList = ''
     this.url = ''
+    this.dialog = null
+    this.dialogBackdrop = null
+    this.closeButton = null
     this.init()
   }
 
@@ -59,6 +64,12 @@ class Dialog {
       </div>
     </div>`
 
+    this.dialogBackdrop = dialogBackdrop
+    this.dialog = dialogBackdrop.querySelector('#dialog') as HTMLDivElement
+    this.closeButton = dialogBackdrop.querySelector(
+      '#dialog-close'
+    ) as HTMLButtonElement
+
     body.firstChild
       ? body.insertBefore(dialogBackdrop, body.firstChild)
       : body.appendChild(dialogBackdrop)
@@ -68,16 +79,15 @@ class Dialog {
    * TODO:
    * Split out into separate functions based on events
    */
-  private open(
-    dialogBackdrop: HTMLElement,
-    dialog: HTMLElement,
-    closeButton: HTMLButtonElement
-  ) {
+  private open() {
+    const dialog = this.dialog as HTMLDivElement
+    const dialogBackdrop = this.dialogBackdrop as HTMLElement
+    const classList = this.classList
     createEvent(DialogEvents.Open, { param: this.url })?.dispatch()
     // Save last focused element outside of dialog to restore focus on dialog close
     const previouslyFocusedOutsideDialogElement =
       document.activeElement as HTMLElement
-    closeButton.onclick = () => closeDialog(this.classList)
+    this.closeButton!.onclick = () => closeDialog()
     dialogBackdrop.style.display = 'block' // shows dialog
 
     dialog.addEventListener('keydown', trapFocusListener)
@@ -89,7 +99,7 @@ class Dialog {
     /**
      * Cleanup listeners and restore focus
      */
-    function closeDialog(classList?: string) {
+    function closeDialog() {
       if (classList) dialog.classList.remove(classList)
       dialogBackdrop.style.display = 'none'
       dialog.removeEventListener('keydown', trapFocusListener)
@@ -134,33 +144,19 @@ class Dialog {
     this.init() // reset instance whenever content changes
     this.url = url
 
-    const dialogBackdrop = document.getElementById('dialog-backdrop')
-    const dialog = document.getElementById('dialog')
-    const dialogCloseButton = document.getElementById(
-      'dialog-close'
-    ) as HTMLButtonElement
-    const dialogContent = document.getElementById('dialog-content')
-
     if (classList) {
       this.classList = classList
-      dialog?.classList.add(classList)
+      this.dialog?.classList.add(classList)
     }
 
+    this.closeButton!.innerHTML = closeIcon
     document.getElementById('dialog-title')!.innerText = title
-    dialogCloseButton.innerHTML = closeIcon
-
-    dialogContent!.appendChild(content)
+    document.getElementById('dialog-content')!.appendChild(content)
 
     // TODO: move openDialog out to a separate function
     // ALSO: setContent DOES NOT CALL OPEN
     // a separate function is dialog.open
-
-    // ALSO, the open function should NOT pass elements in. These elements should be private vars
-    this.open(
-      dialogBackdrop as HTMLElement,
-      dialog as HTMLElement,
-      dialogCloseButton
-    )
+    this.open()
   }
 }
 
