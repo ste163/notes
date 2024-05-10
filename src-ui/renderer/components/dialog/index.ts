@@ -1,0 +1,1 @@
+export { renderDialog } from './dialog'
