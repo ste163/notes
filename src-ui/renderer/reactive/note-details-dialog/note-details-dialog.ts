@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { instantiateButton, instantiateInput, renderDialog } from 'components'
+import { instantiateButton, instantiateInput, dialog } from 'components'
 import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
@@ -36,7 +36,7 @@ function renderNoteDetailsDialog(note: Note) {
     })
   )
 
-  renderDialog({
+  dialog.setContent({
     title: 'Details',
     content: dialogContent,
     url: 'details',

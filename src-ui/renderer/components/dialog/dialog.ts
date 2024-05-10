@@ -2,17 +2,7 @@ import { DialogEvents, createEvent } from 'event'
 import { closeIcon } from 'icons'
 import './dialog.css'
 
-// NEEDS TESTS AND TO BE REFACTORED
-// as it's complex with opening/closing
-// and how the dialog events relate to the main application state
-// ie (who controls who as they both can control each other)
-
 /**
- * To break the dialog out:
- * it includes a renderDialog function
- * that checks the HTML was generated (can be removed by the class instantionation)
- * and then sets content and THEN opens it.
- *
  * The other functions are to handle the navigation when the dialog is open
  * But these should simply call events to the main application instead of ALSO
  * calling legit functions.
@@ -30,18 +20,18 @@ class Dialog {
   }
 
   public init() {
-    const container = document.querySelector('dialog-backdrop')
-    if (!container) {
-      /**
-       * Not throwing an error because tests would break.
-       * If element isn't found, index.html is broken,
-       * which would be caught sooner
-       */
-      console.warn('Dialog container not found')
-      return
-    }
-    container.innerHTML = '' // reset container
-    container.innerHTML = `
+    const body = document.body
+
+    const dialogBackdrop = document.createElement('div')
+    // this approach could support multiple dialogs
+    // however, that is not implemented, and would require
+    // unique ids per dialog
+    dialogBackdrop.id = 'dialog-backdrop'
+    dialogBackdrop.tabIndex = -1
+    dialogBackdrop.setAttribute('readonly', 'readonly')
+
+    dialogBackdrop.innerHTML = ''
+    dialogBackdrop.innerHTML = `
     <div
       id="dialog"
       role="dialog"
@@ -58,59 +48,60 @@ class Dialog {
         <div id="dialog-content"></div>
       </div>
     </div>`
-  }
-}
 
-/**
- * Renders a dialog with the given title and content.
- * Handles open and close events along with trapping focus inside the dialog
- *
- * @param title - Dialog title
- * @param content - Dialog content of any html element
- * @param url - Url param for this dialog
- */
-function renderDialog({
-  title,
-  content,
-  url,
-  classList,
-}: {
-  title: string
-  content: HTMLElement
-  url: string
-  classList?: string
-}) {
-  const dialogBackdrop = document.getElementById('dialog-backdrop')
-  const dialog = document.getElementById('dialog')
-  const dialogCloseButton = document.getElementById(
-    'dialog-close'
-  ) as HTMLButtonElement
-  const dialogTitle = document.getElementById('dialog-title')
-  const dialogContent = document.getElementById('dialog-content')
-
-  if (
-    !dialogBackdrop ||
-    !dialog ||
-    !dialogCloseButton ||
-    !dialogTitle ||
-    !dialogContent
-  )
-    throw new Error('dialog missing required element')
-
-  if (classList) dialog.classList.add(classList)
-
-  dialogTitle.innerText = title
-
-  dialogCloseButton.innerHTML = closeIcon
-
-  // Remove any existing children in dialogContent
-  // to clear its state
-  while (dialogContent.firstChild) {
-    dialogContent.removeChild(dialogContent.firstChild)
+    body.firstChild
+      ? body.insertBefore(dialogBackdrop, body.firstChild)
+      : body.appendChild(dialogBackdrop)
   }
 
-  dialogContent.appendChild(content)
-  openDialog(dialogBackdrop, dialog, dialogCloseButton, url, classList)
+  public setContent({
+    title,
+    content,
+    url,
+    classList,
+  }: {
+    title: string
+    content: HTMLElement
+    url: string
+    classList?: string
+  }) {
+    const dialogBackdrop = document.getElementById('dialog-backdrop')
+    const dialog = document.getElementById('dialog')
+    const dialogCloseButton = document.getElementById(
+      'dialog-close'
+    ) as HTMLButtonElement
+    const dialogTitle = document.getElementById('dialog-title')
+    const dialogContent = document.getElementById('dialog-content')
+
+    if (
+      !dialogBackdrop ||
+      !dialog ||
+      !dialogCloseButton ||
+      !dialogTitle ||
+      !dialogContent
+    )
+      throw new Error('dialog missing required element')
+
+    if (classList) dialog.classList.add(classList)
+
+    dialogTitle.innerText = title
+
+    dialogCloseButton.innerHTML = closeIcon
+
+    // Remove any existing children in dialogContent
+    // to clear its state
+    while (dialogContent.firstChild) {
+      dialogContent.removeChild(dialogContent.firstChild)
+    }
+
+    dialogContent.appendChild(content)
+
+    // TODO: move openDialog out to a separate function
+    openDialog(dialogBackdrop, dialog, dialogCloseButton, url, classList)
+  }
+
+  // need functions for opening dialog
+  // and close dialog
 }
 
 /**
@@ -192,4 +183,6 @@ function trapFocus(container: HTMLElement, event: KeyboardEvent) {
   }
 }
 
-export { Dialog, renderDialog }
+const dialog = new Dialog()
+
+export { dialog }
