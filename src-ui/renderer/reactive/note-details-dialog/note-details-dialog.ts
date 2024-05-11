@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { Dialog, Button, instantiateInput } from 'components'
+import { Dialog, Button, Input } from 'components'
 import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
@@ -82,12 +82,14 @@ function renderTitleEdit(titleEditContainer: Element, note: Note) {
 function instantiateInputAndButton(note: Note) {
   let inputValue = note.title
 
-  const { input, inputContainer } = instantiateInput({
+  const inputInstance = new Input({
     id: 'update-title',
     title: 'Update note title',
     placeholder: 'Note title',
     value: inputValue,
   })
+
+  const input = inputInstance.getInput()
 
   const button = new Button({
     title: 'Update title',
@@ -109,7 +111,7 @@ function instantiateInputAndButton(note: Note) {
     button.disabled = note.title === inputValue || !inputValue.trim()
   })
 
-  return { inputContainer, button }
+  return { inputContainer: inputInstance.getContainer(), button }
 }
 
 export { renderNoteDetailsDialog }

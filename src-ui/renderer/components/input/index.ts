@@ -1,1 +1,1 @@
-export { instantiateInput } from './input'
+export { Input } from './input'

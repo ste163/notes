@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { Button, instantiateInput } from 'components'
+import { Button, Input } from 'components'
 import { addNoteIcon } from 'icons'
 
 interface Props {
@@ -96,14 +96,17 @@ function instantiateInputAndButtons(
   title: string | undefined,
   containerToRemoveId: string
 ) {
-  const { input, inputContainer } = instantiateInput({
+  const inputInstance = new Input({
     id: 'create-note',
     title: 'Note title',
     placeholder: 'Note title',
     value: title,
   })
+  const input = inputInstance.getInput()
 
   return {
+    input,
+    inputContainer: inputInstance.getContainer(),
     saveButton: new Button({
       title: 'Save note',
       html: 'Save',
@@ -119,8 +122,6 @@ function instantiateInputAndButtons(
       onClick: () =>
         document.querySelector(`#${containerToRemoveId}`)?.remove(),
     }).getElement(),
-    inputContainer,
-    input,
   }
 }
 
