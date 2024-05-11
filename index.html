@@ -9,27 +9,6 @@
     <script type="module" src="./src-ui/index.ts" defer></script>
   </head>
   <body>
-    <div id="modal-backdrop" tabindex="-1" readonly="readonly">
-      <!-- IDEALLY: all the modal divs inside modal-backdrop
-      get moved to the MODAL component (also, call it
-      dialog to match the aria role) -->
-      <div
-        id="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-        tabindex="-1"
-        readonly="readonly"
-      >
-        <div role="document">
-          <header id="modal-header">
-            <h2 id="modal-title">Title</h2>
-            <button id="modal-close"></button>
-          </header>
-          <div id="modal-content"></div>
-        </div>
-      </div>
-    </div>
     <div id="sidebar">
       <!-- TODO, these can be instantiated in sidebar class similar to footer -->
       <div id="sidebar-top-menu"></div>

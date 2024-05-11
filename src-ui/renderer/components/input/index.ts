@@ -1,0 +1,1 @@
+export { instantiateInput } from './input'

@@ -17,8 +17,8 @@ class Footer {
     if (!container) {
       /**
        * Not throwing an error because tests would break.
-       * If the footer isn't found, then the index.html
-       * is broken, and that issue would be caught sooner
+       * If element isn't found, index.html is broken,
+       * which would be caught sooner
        */
       console.warn('Footer container not found')
       return

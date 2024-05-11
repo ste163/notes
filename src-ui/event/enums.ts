@@ -12,9 +12,9 @@ export enum LoggerEvents {
   Error = 'error-logged',
 }
 
-export enum ModalEvents {
-  Open = 'open-modal',
-  Close = 'close-modal',
+export enum DialogEvents {
+  Opened = 'opened-dialog',
+  Closed = 'closed-dialog',
 }
 
 export enum DatabaseEvents {
@@ -34,7 +34,5 @@ export enum NoteEvents {
   Save = 'save-note',
   Saved = 'note-saved',
   EditTitle = 'edit-note-title',
-  EditedTitle = 'note-title-edited',
   Delete = 'delete-note',
-  Deleted = 'note-deleted',
 }
