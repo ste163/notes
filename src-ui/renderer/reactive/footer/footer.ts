@@ -5,9 +5,6 @@ import pkg from '../../../../package.json'
 import './footer.css'
 
 class Footer {
-  /**
-   * Allows for re-rendering the footer
-   */
   public render() {
     const container = document.querySelector('footer')
     if (!container) throw new Error('Footer container not found')
