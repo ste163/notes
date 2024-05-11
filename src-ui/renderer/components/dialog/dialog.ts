@@ -25,9 +25,6 @@ class Dialog {
     closeButton.onclick = () => this.close()
   }
 
-  /**
-   * Initialize a unique dialog element
-   */
   public init() {
     const dialogBackdrop = document.createElement('div')
     dialogBackdrop.id = `dialog-backdrop-${this.id}`
