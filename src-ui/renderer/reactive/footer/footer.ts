@@ -1,4 +1,4 @@
-import { instantiateButton } from 'components'
+import { Button } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
 import { databaseIcon, errorIcon } from 'icons'
 import pkg from '../../../../package.json'
@@ -40,20 +40,20 @@ class Footer {
     const container = document.querySelector('#remote-db-setup-container')
     if (container) container.innerHTML = ''
     container?.appendChild(
-      instantiateButton({
+      new Button({
         title: 'Setup remote database',
         html: `
-          ${databaseIcon}
-          <span>
-            ${isConnected ? 'Connected' : 'Not connected'}
-          </span>
-          `,
+        ${databaseIcon}
+        <span>
+          ${isConnected ? 'Connected' : 'Not connected'}
+        </span>
+        `,
         onClick: () =>
           renderRemoteDbDialog({
             isConnectedToRemote: isConnected,
             error: '',
           }),
-      })
+      }).getElement()
     )
   }
 
@@ -78,22 +78,22 @@ class Footer {
     if (container) container.innerHTML = ''
     if (message)
       container?.appendChild(
-        instantiateButton({
+        new Button({
           title: 'Setup remote database',
           className: 'footer-alert',
           html: `
-          ${errorIcon} 
-          <span>
-            Error
-          </span>
-          `,
+        ${errorIcon} 
+        <span>
+          Error
+        </span>
+        `,
           onClick: () =>
             renderRemoteDbDialog({
               // TODO this should come from some state NOT passed in like this
               isConnectedToRemote: true, // because this isn't valid
               error: message,
             }),
-        })
+        }).getElement()
       )
   }
 

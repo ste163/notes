@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { Dialog, instantiateButton, instantiateInput } from 'components'
+import { Dialog, Button, instantiateInput } from 'components'
 import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
@@ -27,18 +27,17 @@ function renderNoteDetailsDialog(note: Note) {
     </div>`
 
   // add delete button
-  dialogContent.appendChild(
-    instantiateButton({
-      title: 'Delete note',
-      html: `  
-        ${deleteIcon}
-        <span>Delete</span>`,
-      onClick: () => createEvent(NoteEvents.Delete, { note }).dispatch(),
-      style: {
-        marginTop: '1em',
-      },
-    })
-  )
+  const button = new Button({
+    title: 'Delete note',
+    html: `  
+      ${deleteIcon}
+      <span>Delete</span>`,
+    onClick: () => createEvent(NoteEvents.Delete, { note }).dispatch(),
+    style: {
+      marginTop: '1em',
+    },
+  })
+  dialogContent.appendChild(button.getElement())
 
   const dialog = new Dialog()
 
@@ -90,7 +89,7 @@ function instantiateInputAndButton(note: Note) {
     value: inputValue,
   })
 
-  const button = instantiateButton({
+  const button = new Button({
     title: 'Update title',
     html: 'Update',
     disabled: note.title === inputValue,
@@ -102,7 +101,7 @@ function instantiateInputAndButton(note: Note) {
       const updatedNote = { ...note, title: inputValue }
       createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
     },
-  })
+  }).getElement()
 
   // on input value change, update value and button disabled state
   input.addEventListener('input', (event) => {

@@ -1,8 +1,7 @@
 import './button.css'
-
-interface Button<T = unknown> {
+interface ButtonOptions<T = unknown> {
   title: string // accessibility title
-  onClick: (args: T) => void
+  onClick: (args: T | MouseEvent) => void
   id?: string
   className?: string
   html?: string
@@ -10,27 +9,31 @@ interface Button<T = unknown> {
   disabled?: boolean
 }
 
-/**
- * Generic function for creating button elements
- */
-const instantiateButton = (button: Button) => {
-  const element = document.createElement('button')
-  element.title = button.title
-  element.onclick = button.onClick
-  if (button.id) element.setAttribute('id', button.id)
-  if (button.className) element.className = button.className
-  if (button.disabled) element.setAttribute('disabled', 'true')
-  if (button.html) element.innerHTML = button.html
-  if (button.style) {
-    for (const key in button.style) {
-      if (button.style.hasOwnProperty(key)) {
-        const style = button.style[key]
-        if (style) element.style[key] = style
+class Button<T = unknown> {
+  private element: HTMLButtonElement
+
+  constructor(options: ButtonOptions<T>) {
+    this.element = document.createElement('button')
+    this.element.title = options.title
+    this.element.onclick = options.onClick
+    if (options.id) this.element.setAttribute('id', options.id)
+    if (options.className) this.element.className = options.className
+    if (options.disabled) this.element.setAttribute('disabled', 'true')
+    if (options.html) this.element.innerHTML = options.html
+    if (options.style) {
+      for (const key in options.style) {
+        if (options.style.hasOwnProperty(key)) {
+          const style = options.style[key]
+          if (style) this.element.style[key] = style
+        }
       }
     }
   }
-  return element
+
+  public getElement(): HTMLButtonElement {
+    return this.element
+  }
 }
 
-export { instantiateButton }
-export type { Button }
+export { Button }
+export type { ButtonOptions }

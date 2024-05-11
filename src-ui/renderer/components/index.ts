@@ -3,6 +3,6 @@
  * These are used to build renderer/reactive components.
  */
 export { Dialog } from './dialog'
-export { instantiateButton } from './button'
+export { Button } from './button'
 export { instantiateInput } from './input'
-export type { Button } from './button'
+export type { ButtonOptions } from './button'

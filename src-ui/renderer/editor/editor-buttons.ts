@@ -1,6 +1,6 @@
 import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
-import { instantiateButton } from 'components'
+import { Button } from 'components'
 import { renderNoteDetailsDialog } from 'renderer/reactive'
 import {
   boldIcon,
@@ -19,10 +19,10 @@ import {
   underlineIcon,
   undoIcon,
 } from 'icons'
-import type { Button } from 'components'
+import type { ButtonOptions } from 'components'
 import type { MarkOptions, Note } from 'types'
 
-interface EditorButton extends Button {
+interface EditorButton extends ButtonOptions {
   group: number // used for placing in which div for organization
   isInFloatingMenu: boolean
   markName?: string // used for toggling css
@@ -188,12 +188,13 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
 
 function instantiateTopMenuButtons(note: Note | null) {
   return BUTTON_CONFIGURATION.filter((b) => !b.isInFloatingMenu).map((b) => {
-    const button = instantiateButton({
+    const button = new Button({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
       onClick: () => b.onClick(note),
-    })
+    }).getElement()
+
     button.dataset.group = b.group.toString()
     return button
   })
@@ -201,12 +202,12 @@ function instantiateTopMenuButtons(note: Note | null) {
 
 function instantiateFloatingMenuButtons(note: Note | null) {
   return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) =>
-    instantiateButton({
+    new Button({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
       onClick: () => b.onClick(note),
-    })
+    }).getElement()
   )
 }
 
