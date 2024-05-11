@@ -102,9 +102,6 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     const noteId: string = (event as CustomEvent)?.detail?._id
     if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
 
-    // This causes a bug with the update note title. Because we do not FETCH
-    // byId on select. WHy? Idk
-
     await renderNoteEditor({ isLoading: true, note: null })
     createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
   } catch (error) {
