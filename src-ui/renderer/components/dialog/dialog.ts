@@ -8,8 +8,7 @@ class Dialog {
   private id: string = nanoid()
   private url: string = ''
   private dialog: HTMLDivElement
-  private dialogBackdrop: HTMLElement // THIS CONTAINS EVERY ELEMENT: potentially could grab the dialog and close from this?
-  private closeButton: HTMLButtonElement
+  private dialogBackdrop: HTMLElement
   private previouslyFocusedOutsideElement: HTMLElement | null = null
 
   constructor() {
@@ -19,14 +18,11 @@ class Dialog {
     this.dialogBackdrop = document.querySelector(
       `#dialog-backdrop-${this.id}`
     ) as HTMLDivElement
-    this.closeButton = document.querySelector(
+    const closeButton = document.querySelector(
       `#dialog-close-${this.id}`
     ) as HTMLButtonElement
 
-    if (!this.dialog || !this.dialogBackdrop || !this.closeButton)
-      throw new Error('Dialog elements not found')
-
-    this.closeButton.onclick = () => this.close()
+    closeButton.onclick = () => this.close()
   }
 
   /**
