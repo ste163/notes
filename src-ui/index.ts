@@ -135,7 +135,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     await renderNoteEditor({ isLoading: false, note })
 
     // based on URL params, render dialogs
-    // note: this could potentially be moved to a `DialogEvents.Opened` with which dialog to render passed in --- GOOD IDEA!
+    // TODO: use consts
     switch (dialog) {
       case 'details':
         note && renderNoteDetailsDialog(note)
