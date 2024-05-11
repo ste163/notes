@@ -1,4 +1,4 @@
-import { dialog } from 'components'
+import { Dialog } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
@@ -84,12 +84,16 @@ function renderRemoteDbDialog({
         </section>
       </div>`
 
+  const dialog = new Dialog()
+
   dialog.setContent({
     title: 'Remote Database',
     content: dialogContent,
     url: 'database',
     classList: 'remote-db-setup-dialog',
   })
+
+  dialog.open()
 
   /**
    * setup listeners for rendered elements

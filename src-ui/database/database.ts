@@ -55,7 +55,7 @@ class Database {
     }
   }
 
-  async setupSyncing(): Promise<void> {
+  public async setupSyncing(): Promise<void> {
     this.syncHandler = this.db.sync(
       `${this.remoteUrl}/${config.DATABASE_NAME}`,
       {
@@ -85,7 +85,7 @@ class Database {
     logger.logInfo('Syncing with remote database.')
   }
 
-  disconnectSyncing(): boolean {
+  public disconnectSyncing(): boolean {
     if (this.syncHandler) {
       this.syncHandler.cancel()
       logger.logInfo('Disconnected from remote database.')
@@ -95,7 +95,9 @@ class Database {
     return false
   }
 
-  async put(note: Partial<Note>): Promise<{ id: string; updatedAt: Date }> {
+  public async put(
+    note: Partial<Note>
+  ): Promise<{ id: string; updatedAt: Date }> {
     const date = new Date()
     if (note?._id) {
       // is an update event
@@ -132,7 +134,7 @@ class Database {
     return { id, updatedAt: date }
   }
 
-  async delete(note: Note) {
+  public async delete(note: Note) {
     if (note._rev) await this.db.remove({ _id: note._id, _rev: note._rev })
   }
 
@@ -140,7 +142,7 @@ class Database {
    * Fetches all note metadata sorted by createdAt
    * @returns {Promise<Record<string, Note>>} - A record of notes with their ids as keys
    */
-  async getAll(): Promise<Record<string, Note>> {
+  public async getAll(): Promise<Record<string, Note>> {
     const { docs } = await this.db.find({
       selector: {
         createdAt: { $exists: true },
@@ -165,7 +167,7 @@ class Database {
    * @param _id string
    * @returns Note | null
    */
-  async getById(_id: string): Promise<Note | null> {
+  public async getById(_id: string): Promise<Note | null> {
     const { docs } = await this.db.find({
       selector: { _id },
       limit: 1,

@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { instantiateButton, instantiateInput, dialog } from 'components'
+import { Dialog, instantiateButton, instantiateInput } from 'components'
 import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
@@ -36,11 +36,15 @@ function renderNoteDetailsDialog(note: Note) {
     })
   )
 
+  const dialog = new Dialog()
+
   dialog.setContent({
     title: 'Details',
     content: dialogContent,
     url: 'details',
   })
+
+  dialog.open()
 
   // setup title-edit section
   renderTitleEdit(document.querySelector('#title-edit') as Element, note)
