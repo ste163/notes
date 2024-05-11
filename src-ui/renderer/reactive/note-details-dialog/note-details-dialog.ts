@@ -4,6 +4,10 @@ import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
 
+// TODO: refactor into a class
+// then export the singleton with a way to reset itself (like the footer)
+// this way it will be easier to manage state
+
 // TODO:
 // - add delete confirmation input (type note title to confirm delete)
 

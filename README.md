@@ -17,10 +17,10 @@ TODO: INSERT IMAGE OF APPLICATION HERE
 
 Keep the application as simple and easily maintainable as possible by leveraging only a handful of well-maintained dependencies.
 
-### Decisions for simplicity
+### Package decisions
 
 - Two main dependencies: [PouchDB](https://pouchdb.com/) (database with remote-syncing) and [TipTap](https://tiptap.dev/) (word processor and main state manager).
-- Pure Javascript frontend instead of a UI framework. Because there are so few states to keep track of, I'm using event-based rendering. TipTap handles the majority of the application state (as it is the word processor), so using a framework like React is unnecessary at this point. The main events are related to CRUD and handling database connections, which are few enough for a hand-rolled solution.
+- Pure Javascript frontend instead of a UI framework (because they update way too often). TipTap handles the majority of the application state (as it is the word processor), so using a framework like React, Vue, or Svelte is unnecessary at this point. The main events are related to CRUD and handling database connections, which are few enough that a hand-rolled solution is easier to work with and keep updated.
 
 ### Remote (cloud) syncing support
 

@@ -100,6 +100,10 @@ window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     const noteId: string = (event as CustomEvent)?.detail?._id
     if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
+
+    // This causes a bug with the update note title. Because we do not FETCH
+    // byId on select. WHy? Idk
+
     await renderNoteEditor({ isLoading: true, note: null })
     createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
   } catch (error) {
@@ -139,6 +143,11 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // TODO: use consts
     switch (dialog) {
       case 'details':
+        // TODO: only render if a dialog is NOT already rendered
+        // Could fix this by making it be a class that gets reinstantated?
+        // then I can reset it all state how I choose.
+        // Why? Because there should be MANY instances of dialogs.
+        // but only ONE instance of THIS dialog.
         note && renderNoteDetailsDialog(note)
         break
       case 'database':
