@@ -103,6 +103,5 @@ class NoteDetailsDialog {
 }
 
 const noteDetailsDialog = new NoteDetailsDialog()
-console.log('INSTANCE', noteDetailsDialog.render)
 
 export { noteDetailsDialog }
