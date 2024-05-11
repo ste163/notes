@@ -2,6 +2,7 @@
  * TODO PRIORITY ORDER
  *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
+ *  - github action to run tests and require them to pass before merging. Only run builds if tests pass
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
@@ -40,7 +41,7 @@ import {
   renderSidebarNoteList,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
-  renderNoteDetailsDialog,
+  noteDetailsDialog,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -52,6 +53,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     // render base app layout with loading states
     renderSidebarCreateNote({ isSavingNote: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
+    footer.render()
     footer.renderRemoteDb({ isConnected: false })
 
     // setup database after app is rendering in loading state
@@ -100,6 +102,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     const noteId: string = (event as CustomEvent)?.detail?._id
     if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
+
     await renderNoteEditor({ isLoading: true, note: null })
     createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
   } catch (error) {
@@ -139,7 +142,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // TODO: use consts
     switch (dialog) {
       case 'details':
-        note && renderNoteDetailsDialog(note)
+        note && noteDetailsDialog.render(note)
         break
       case 'database':
         // BUG: this does not actually render based on the isConnected state

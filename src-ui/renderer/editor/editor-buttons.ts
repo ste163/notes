@@ -1,7 +1,7 @@
 import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
-import { instantiateButton } from 'components'
-import { renderNoteDetailsDialog } from 'renderer/reactive'
+import { Button } from 'components'
+import { noteDetailsDialog } from 'renderer/reactive'
 import {
   boldIcon,
   bulletListIcon,
@@ -19,10 +19,10 @@ import {
   underlineIcon,
   undoIcon,
 } from 'icons'
-import type { Button } from 'components'
+import type { ButtonOptions } from 'components'
 import type { MarkOptions, Note } from 'types'
 
-interface EditorButton extends Button {
+interface EditorButton extends ButtonOptions {
   group: number // used for placing in which div for organization
   isInFloatingMenu: boolean
   markName?: string // used for toggling css
@@ -181,19 +181,20 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Note settings',
     isInFloatingMenu: false,
-    onClick: (note) => renderNoteDetailsDialog(note as Note),
+    onClick: (note) => noteDetailsDialog.render(note as Note),
     html: settingsIcon,
   },
 ]
 
 function instantiateTopMenuButtons(note: Note | null) {
   return BUTTON_CONFIGURATION.filter((b) => !b.isInFloatingMenu).map((b) => {
-    const button = instantiateButton({
+    const button = new Button({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
       onClick: () => b.onClick(note),
-    })
+    }).getElement()
+
     button.dataset.group = b.group.toString()
     return button
   })
@@ -201,12 +202,12 @@ function instantiateTopMenuButtons(note: Note | null) {
 
 function instantiateFloatingMenuButtons(note: Note | null) {
   return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) =>
-    instantiateButton({
+    new Button({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
       onClick: () => b.onClick(note),
-    })
+    }).getElement()
   )
 }
 

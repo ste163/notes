@@ -1,5 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { instantiateButton, instantiateInput } from 'components'
+import { Button, Input } from 'components'
 import { addNoteIcon } from 'icons'
 
 interface Props {
@@ -18,7 +18,7 @@ function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
   container.innerHTML = '' // reset container before rendering
   // render Create button that will always be present in the menu
   container.appendChild(
-    instantiateButton({
+    new Button({
       title: 'Create note',
       onClick: () =>
         renderInput({
@@ -28,10 +28,10 @@ function renderSidebarCreateNote({ title, isSavingNote, error }: Props): void {
           error,
         }),
       html: `
-        ${addNoteIcon}
-        <span>Create<span/>
-      `,
-    })
+      ${addNoteIcon}
+      <span>Create<span/>
+    `,
+    }).getElement()
   )
 
   if (isSavingNote || error)
@@ -96,29 +96,33 @@ function instantiateInputAndButtons(
   title: string | undefined,
   containerToRemoveId: string
 ) {
-  const { input, inputContainer } = instantiateInput({
+  const inputInstance = new Input({
     id: 'create-note',
     title: 'Note title',
     placeholder: 'Note title',
     value: title,
   })
+  const input = inputInstance.getInput()
 
-  const saveButton = instantiateButton({
-    title: 'Save note',
-    html: 'Save',
-    onClick: () => {
-      const title: string = input?.value
-      if (!title) throw new Error('Unable to read title from input')
-      createEvent(NoteEvents.Create, { title }).dispatch()
-    },
-  })
-
-  const cancelButton = instantiateButton({
-    title: 'Cancel',
-    html: 'Cancel',
-    onClick: () => document.querySelector(`#${containerToRemoveId}`)?.remove(),
-  })
-  return { saveButton, cancelButton, inputContainer, input }
+  return {
+    input,
+    inputContainer: inputInstance.getContainer(),
+    saveButton: new Button({
+      title: 'Save note',
+      html: 'Save',
+      onClick: () => {
+        const title: string = input?.value
+        if (!title) throw new Error('Unable to read title from input')
+        createEvent(NoteEvents.Create, { title }).dispatch()
+      },
+    }).getElement(),
+    cancelButton: new Button({
+      title: 'Cancel',
+      html: 'Cancel',
+      onClick: () =>
+        document.querySelector(`#${containerToRemoveId}`)?.remove(),
+    }).getElement(),
+  }
 }
 
 export { renderSidebarCreateNote }

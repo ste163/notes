@@ -1,112 +1,107 @@
 import { NoteEvents, createEvent } from 'event'
-import { Dialog, instantiateButton, instantiateInput } from 'components'
+import { Dialog, Button, Input } from 'components'
 import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
 
-// TODO:
+// TODO (later):
 // - add delete confirmation input (type note title to confirm delete)
 
-function renderNoteDetailsDialog(note: Note) {
-  const { createdAt, updatedAt } = note
-  const dialogContent = document.createElement('div')
+class NoteDetailsDialog {
+  private note: Note | null = null
+  private dialog: Dialog | null = null
 
-  // setup dialog structure
-  dialogContent.innerHTML = `
-    <div class='note-details-container'>
-      <h3>Title</h3>
-      <div id="title-edit"></div>
-      <h3>Created at</h3>
-      <div>${new Date(createdAt).toLocaleString()}</div>
-      <h3>Last updated at</h3>
-      <div>${new Date(updatedAt).toLocaleString()}</div>
-    </div>`
+  public render(note: Note) {
+    this.reset()
+    this.note = note
+    const { createdAt, updatedAt } = this.note
+    const dialogContent = document.createElement('div')
 
-  // add delete button
-  dialogContent.appendChild(
-    instantiateButton({
-      title: 'Delete note',
-      html: `  
-        ${deleteIcon}
-        <span>Delete</span>`,
-      onClick: () => createEvent(NoteEvents.Delete, { note }).dispatch(),
-      style: {
-        marginTop: '1em',
-      },
+    dialogContent.innerHTML = `
+      <div class='note-details-container'>
+        <h3>Title</h3>
+        <div id="title-edit"></div>
+        <h3>Created at</h3>
+        <div>${new Date(createdAt).toLocaleString()}</div>
+        <h3>Last updated at</h3>
+        <div>${new Date(updatedAt).toLocaleString()}</div>
+      </div>`
+
+    dialogContent.appendChild(
+      new Button({
+        title: 'Delete note',
+        html: `${deleteIcon}<span>Delete</span>`,
+        onClick: () =>
+          createEvent(NoteEvents.Delete, { note: this.note }).dispatch(),
+        style: { marginTop: '1em' },
+      }).getElement()
+    )
+
+    this.dialog = new Dialog()
+    this.dialog.setContent({
+      title: 'Details',
+      content: dialogContent,
+      url: 'details',
     })
-  )
+    this.dialog.open()
 
-  const dialog = new Dialog()
+    this.renderTitleEdit(document.querySelector('#title-edit') as Element)
+  }
 
-  dialog.setContent({
-    title: 'Details',
-    content: dialogContent,
-    url: 'details',
-  })
+  private reset() {
+    if (this.dialog) this.dialog.close()
+  }
 
-  dialog.open()
+  private renderTitleEdit(titleEditContainer: Element) {
+    const inputAndButtonContainer = document.createElement('div')
+    const buttonContainer = document.createElement('div')
+    buttonContainer.style.display = 'flex'
+    buttonContainer.style.marginTop = '0.5em'
 
-  // setup title-edit section
-  renderTitleEdit(document.querySelector('#title-edit') as Element, note)
+    const { inputContainer, button } = this.instantiateInputAndButton()
+
+    buttonContainer.appendChild(button)
+    inputAndButtonContainer.appendChild(inputContainer)
+    inputAndButtonContainer.appendChild(buttonContainer)
+    titleEditContainer.appendChild(inputAndButtonContainer)
+  }
+
+  private instantiateInputAndButton() {
+    if (!this.note) throw new Error('Note not set')
+    let inputValue = this.note.title
+
+    const inputInstance = new Input({
+      id: 'update-title',
+      title: 'Update note title',
+      placeholder: 'Note title',
+      value: inputValue,
+    })
+
+    const input = inputInstance.getInput()
+
+    const button = new Button({
+      title: 'Update title',
+      html: 'Update',
+      disabled: this.note.title === inputValue,
+      style: { marginRight: '0.5em' },
+      onClick: () => {
+        if (!inputValue) throw new Error('Unable to read input value')
+        const updatedNote = { ...this.note, title: inputValue }
+        createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
+      },
+    }).getElement()
+
+    // on input value change, update value and button disabled state
+    input.addEventListener('input', (event) => {
+      if (!this.note) throw new Error('Note not set')
+      inputValue = (event.target as HTMLInputElement).value
+      button.disabled = this.note.title === inputValue || !inputValue.trim()
+    })
+
+    return { inputContainer: inputInstance.getContainer(), button }
+  }
 }
 
-/**
- * Renders title input and save button into container
- *
- * @param container to place input
- * @param note Note
- */
-function renderTitleEdit(titleEditContainer: Element, note: Note) {
-  const inputAndButtonContainer = document.createElement('div')
-  const buttonContainer = document.createElement('div')
-  buttonContainer.style.display = 'flex'
-  buttonContainer.style.marginTop = '0.5em'
+const noteDetailsDialog = new NoteDetailsDialog()
 
-  const { inputContainer, button } = instantiateInputAndButton(note)
-
-  buttonContainer.appendChild(button)
-  inputAndButtonContainer.appendChild(inputContainer)
-  inputAndButtonContainer.appendChild(buttonContainer)
-  titleEditContainer.appendChild(inputAndButtonContainer)
-}
-
-/**
- * Instantiate input and button, and sets up
- * event listeners to track input value and disabled states
- *
- * @param note Note
- */
-function instantiateInputAndButton(note: Note) {
-  let inputValue = note.title
-
-  const { input, inputContainer } = instantiateInput({
-    id: 'update-title',
-    title: 'Update note title',
-    placeholder: 'Note title',
-    value: inputValue,
-  })
-
-  const button = instantiateButton({
-    title: 'Update title',
-    html: 'Update',
-    disabled: note.title === inputValue,
-    style: {
-      marginRight: '0.5em',
-    },
-    onClick: () => {
-      if (!inputValue) throw new Error('Unable to read input value')
-      const updatedNote = { ...note, title: inputValue }
-      createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
-    },
-  })
-
-  // on input value change, update value and button disabled state
-  input.addEventListener('input', (event) => {
-    inputValue = (event.target as HTMLInputElement).value
-    button.disabled = note.title === inputValue || !inputValue.trim()
-  })
-
-  return { inputContainer, button }
-}
-
-export { renderNoteDetailsDialog }
+export { noteDetailsDialog }

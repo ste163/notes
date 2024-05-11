@@ -1,2 +1,2 @@
-export { instantiateButton } from './button'
-export type { Button } from './button'
+export { Button } from './button'
+export type { ButtonOptions } from './button'

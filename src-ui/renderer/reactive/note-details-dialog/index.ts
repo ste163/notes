@@ -1,1 +1,1 @@
-export { renderNoteDetailsDialog } from './note-details-dialog'
+export { noteDetailsDialog } from './note-details-dialog'

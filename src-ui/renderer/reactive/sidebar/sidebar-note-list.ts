@@ -1,7 +1,7 @@
 import { NoteEvents, createEvent } from 'event'
-import { instantiateButton } from 'components'
-import './sidebar-note-list.css'
+import { Button } from 'components'
 import type { Notes } from 'types'
+import './sidebar-note-list.css'
 
 /**
  * Renders list of notes in sidebar
@@ -27,9 +27,9 @@ function renderSidebarNoteList({
     return
   }
   const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
-    instantiateButton({
-      id: _id,
-      title,
+    new Button({
+      title: 'Select note',
+      onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
       html: `
       <div>
         <div>${title}</div>
@@ -37,8 +37,7 @@ function renderSidebarNoteList({
           updatedAt
         ).toLocaleString()}</div>
       </div>`,
-      onClick: () => createEvent(NoteEvents.Select, { _id: _id }).dispatch(),
-    })
+    }).getElement()
   )
   noteButtons?.forEach((b) => {
     // setup container for button and append to sidebar

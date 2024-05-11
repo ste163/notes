@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
-import { renderNoteDetailsDialog } from './note-details-dialog'
+import { noteDetailsDialog } from './note-details-dialog'
 import { NoteEvents, createEvent } from 'event'
 import type { Note } from 'types'
 
@@ -26,7 +26,7 @@ const note: Note = {
 describe('note-details-dialog', () => {
   it('renders details dialog with note state and can emit delete event on delete', async () => {
     const { getByRole, getByText } = renderComponent({
-      renderComponent: renderNoteDetailsDialog,
+      renderComponent: noteDetailsDialog.render.bind(noteDetailsDialog),
       props: note,
     })
 
@@ -54,7 +54,7 @@ describe('note-details-dialog', () => {
     const newTitle = 'New title!'
 
     const { getByRole } = renderComponent({
-      renderComponent: renderNoteDetailsDialog,
+      renderComponent: noteDetailsDialog.render.bind(noteDetailsDialog),
       props: note,
     })
 

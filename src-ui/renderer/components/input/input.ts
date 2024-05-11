@@ -1,35 +1,45 @@
 import './input.css'
 
-interface Props {
+interface InputOptions {
   id: string
   title: string
   placeholder: string
   value?: string
 }
 
-function instantiateInput({ id, title, placeholder, value }: Props) {
-  const container = document.createElement('div')
-  container.classList.add('input-container')
+class Input {
+  private container: HTMLDivElement
+  private input: HTMLInputElement
+  private label: HTMLLabelElement
 
-  const label = document.createElement('label')
-  label.textContent = title
-  label.htmlFor = id
-  container.appendChild(label)
+  constructor({ id, title, placeholder, value }: InputOptions) {
+    this.container = document.createElement('div')
+    this.container.classList.add('input-container')
 
-  const input = document.createElement('input')
-  input.id = id
-  input.title = title
-  input.placeholder = placeholder
-  input.value = value ?? ''
+    this.label = document.createElement('label')
+    this.label.textContent = title
+    this.label.htmlFor = id
+    this.container.appendChild(this.label)
 
-  container.appendChild(label)
-  container.appendChild(input)
+    this.input = document.createElement('input')
+    this.input.id = id
+    this.input.title = title
+    this.input.placeholder = placeholder
+    this.input.value = value ?? ''
+    this.container.appendChild(this.input)
+  }
 
-  return {
-    inputContainer: container,
-    input,
-    label,
+  public getContainer(): HTMLDivElement {
+    return this.container
+  }
+
+  public getInput(): HTMLInputElement {
+    return this.input
+  }
+
+  public getLabel(): HTMLLabelElement {
+    return this.label
   }
 }
 
-export { instantiateInput }
+export { Input }
