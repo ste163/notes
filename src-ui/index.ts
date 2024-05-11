@@ -41,7 +41,7 @@ import {
   renderSidebarNoteList,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
-  renderNoteDetailsDialog,
+  noteDetailsDialog,
 } from 'renderer/reactive'
 import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
@@ -149,7 +149,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
         // then I can reset it all state how I choose.
         // Why? Because there should be MANY instances of dialogs.
         // but only ONE instance of THIS dialog.
-        note && renderNoteDetailsDialog(note)
+        note && noteDetailsDialog.render(note)
         break
       case 'database':
         // BUG: this does not actually render based on the isConnected state

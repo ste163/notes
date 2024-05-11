@@ -1,7 +1,7 @@
 import { NoteEvents, createEvent } from 'event'
 import { EditorStore } from 'store'
 import { Button } from 'components'
-import { renderNoteDetailsDialog } from 'renderer/reactive'
+import { noteDetailsDialog } from 'renderer/reactive'
 import {
   boldIcon,
   bulletListIcon,
@@ -181,7 +181,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Note settings',
     isInFloatingMenu: false,
-    onClick: (note) => renderNoteDetailsDialog(note as Note),
+    onClick: (note) => noteDetailsDialog.render(note as Note),
     html: settingsIcon,
   },
 ]

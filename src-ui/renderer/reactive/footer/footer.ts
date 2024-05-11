@@ -6,13 +6,13 @@ import './footer.css'
 
 class Footer {
   constructor() {
-    this.init()
+    this.render()
   }
 
   /**
    * Allows for re-rendering the footer
    */
-  public init() {
+  public render() {
     const container = document.querySelector('footer')
     if (!container) {
       /**

@@ -9,7 +9,7 @@ import pkg from '../../../../package.json'
 describe('footer', () => {
   it('renders only package version on initial render', () => {
     const { getByText, queryByText } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     expect(getByText(`v${pkg.version}`)).toBeInTheDocument()
     expect(queryByText('Connected')).toBeNull()
@@ -18,7 +18,7 @@ describe('footer', () => {
 
   it('does not render error alert button if no error passed in', () => {
     const { queryByRole } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     footer.renderAlert('')
     expect(queryByRole('button', { name: 'Error Error' })).toBeNull()
@@ -26,7 +26,7 @@ describe('footer', () => {
 
   it('renders error alert button and opens dialog', async () => {
     const { getByRole, getByText } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     footer.renderAlert('Error message')
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
@@ -41,7 +41,7 @@ describe('footer', () => {
 
   it('renders not connected db status and opens dialog on click', async () => {
     const { getByText, queryByText, getByRole } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     footer.renderRemoteDb({ isConnected: false })
     expect(queryByText('Connected')).toBeNull()
@@ -58,7 +58,7 @@ describe('footer', () => {
 
   it('renders connected db status and opens dialog on click', async () => {
     const { getByText, queryByText, getByRole } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     footer.renderRemoteDb({ isConnected: true })
     expect(queryByText('Not connected')).toBeNull()
@@ -75,7 +75,7 @@ describe('footer', () => {
 
   it('does not render last saved date if null', () => {
     const { queryByText } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     footer.renderLastSaved(null)
     expect(queryByText('Last saved')).toBeNull()
@@ -83,7 +83,7 @@ describe('footer', () => {
 
   it('renders last saved date if provided', () => {
     const { getByText } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     const date = new Date().toLocaleString()
     footer.renderLastSaved(date)
@@ -92,7 +92,7 @@ describe('footer', () => {
 
   it('does not render last sync date if null', () => {
     const { queryByText } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     footer.renderLastSynced(null)
     expect(queryByText('Last synced')).toBeNull()
@@ -100,7 +100,7 @@ describe('footer', () => {
 
   it('renders last sync date', () => {
     const { getByText } = renderComponent({
-      renderComponent: footer.init,
+      renderComponent: footer.render,
     })
     const date = new Date().toLocaleString()
     footer.renderLastSynced(date)
