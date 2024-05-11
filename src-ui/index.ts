@@ -1,4 +1,21 @@
 /**
+ * Plan for sidebar/mobile:
+ * - the top editor bar does not wrap but horizontal scrolls (CSS ONLY SOLUTION)
+ * - footer drops some elements to make space (last sync date, last saved date)
+ *     - this information will be visible from the DB details dialog
+ * - dialog styling needs to be updated
+ * - sidebar is a class instance
+ *    - the scroll is in the list of notes and not the entire list (so CREATE is always visible)
+ *    - on MOBILE (this is the ony component that tracks mobile state)
+ *      the sidebar shrinks into JUST a "BACK" button at the top left,
+ *      replacing the "CREATE" button.
+ *      - When a note is NOT selected you only see the LIST view
+ *      - When a note is selected, you see the note in the editor
+ *  So then mobile is a mix of tracking screen width IN ADDITION to
+ *  whether or not a note id exists in the URL
+ */
+
+/**
  * TODO PRIORITY ORDER
  *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
