@@ -144,11 +144,6 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // TODO: use consts
     switch (dialog) {
       case 'details':
-        // TODO: only render if a dialog is NOT already rendered
-        // Could fix this by making it be a class that gets reinstantated?
-        // then I can reset it all state how I choose.
-        // Why? Because there should be MANY instances of dialogs.
-        // but only ONE instance of THIS dialog.
         note && noteDetailsDialog.render(note)
         break
       case 'database':
