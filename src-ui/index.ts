@@ -53,6 +53,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     // render base app layout with loading states
     renderSidebarCreateNote({ isSavingNote: false })
     renderSidebarNoteList({ isLoading: true, notes: {} })
+    footer.render()
     footer.renderRemoteDb({ isConnected: false })
 
     // setup database after app is rendering in loading state

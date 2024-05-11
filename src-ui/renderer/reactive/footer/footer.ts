@@ -5,24 +5,12 @@ import pkg from '../../../../package.json'
 import './footer.css'
 
 class Footer {
-  constructor() {
-    this.render()
-  }
-
   /**
    * Allows for re-rendering the footer
    */
   public render() {
     const container = document.querySelector('footer')
-    if (!container) {
-      /**
-       * Not throwing an error because tests would break.
-       * If element isn't found, index.html is broken,
-       * which would be caught sooner
-       */
-      console.warn('Footer container not found')
-      return
-    }
+    if (!container) throw new Error('Footer container not found')
     container.innerHTML = '' // reset container
     container.innerHTML = `
       <div class='footer-data-container'>
