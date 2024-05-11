@@ -1,6 +1,6 @@
 /**
  * TODO PRIORITY ORDER
- *  - db dialog: needs tests + showing if connected to local only or remote
+ *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
@@ -13,8 +13,8 @@
  *             - the error also gets triggered/logged before vite connects (in the logs)
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
- *   - hyperlinks in the editor
  *   - mobile view (sidebar only + selected note only, state lives in URL)
+ *   - hyperlinks in the editor
  *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
  * - BRANDING
  *  - make favicon
