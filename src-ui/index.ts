@@ -11,6 +11,7 @@
  *     - BUG: fix database dialog error styling. Icon shrinks
  *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *             - the error also gets triggered/logged before vite connects (in the logs)
+ *     - BUG: if unable to find data, need to be able to delete the undefined notes
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - mobile view (sidebar only + selected note only, state lives in URL)
