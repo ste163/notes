@@ -36,7 +36,7 @@ body {
 
 main {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   grid-area: main;
   overflow-y: auto;
 }
@@ -114,4 +114,10 @@ strong {
 #no-notes-page {
   margin-top: 2em;
   margin-left: 2em;
+}
+
+@media (max-width: 767px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
 }
