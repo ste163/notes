@@ -1,18 +1,11 @@
 /**
  * Plan for sidebar/mobile:
- * - the top editor bar does not wrap but horizontal scrolls (CSS ONLY SOLUTION)
- * - footer drops some elements to make space (last sync date, last saved date)
- *     - this information will be visible from the DB details dialog
- * - dialog styling needs to be updated
- * - sidebar is a class instance
- *    - the scroll is in the list of notes and not the entire list (so CREATE is always visible)
- *    - on MOBILE (this is the ony component that tracks mobile state)
- *      the sidebar shrinks into JUST a "BACK" button at the top left,
- *      replacing the "CREATE" button.
- *      - When a note is NOT selected you only see the LIST view
- *      - When a note is selected, you see the note in the editor
- *  So then mobile is a mix of tracking screen width IN ADDITION to
- *  whether or not a note id exists in the URL
+ * - IF NO NOTE IS SELECTED then we see the sidebar, always OPEN
+ * - If a note IS selected, then the sidebar disappears, and a hamburger button renders, that will reopen the sideabar
+ * - and if you open the sidebar, when you select a note again, the sidebar closes again.
+ *
+ * This way, the state is always managed by selecting a note. But the user can over-ride that until a state change occurs
+ * (user can also HIDE the sidebar, so we'll need a way to hide it. Probably the hamburger icon?)
  */
 
 /**
