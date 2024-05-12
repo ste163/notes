@@ -37,8 +37,7 @@
   width: 100%;
   max-width: 50em;
   outline: none;
-  padding-left: 3em;
-  padding-right: 5em;
+  padding: 0 5em;
 }
 
 .code-block {
