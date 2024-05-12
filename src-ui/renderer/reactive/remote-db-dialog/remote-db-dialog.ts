@@ -27,10 +27,9 @@ function renderRemoteDbDialog({
   // that all my data from my local is synced to the new remote.
 
   dialogContent.innerHTML = `
-      
-        <section>
-          <h3 class="remote-db-connection-heading">Connection details</h3>
-          <form id="remote-db-connection-form">
+        <section class="remote-db-setup-dialog">
+          <h3>Connection details</h3>
+          <form>
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="admin">
             <label for="password">Password</label>

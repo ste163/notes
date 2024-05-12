@@ -4,6 +4,25 @@ import { closeIcon } from 'icons'
 import { trapFocus } from './trap-focus'
 import './dialog.css'
 
+// BUG TO FIX
+// When the dialog is open, I can still highlight text behind it with ctrl+a. Can I disable that?
+
+// GitHub Copilot
+// Yes, you can disable text selection behind the dialog when it's open. You can achieve this by applying a CSS rule to the body or the parent container when the dialog is open.
+
+// Here's how you can do it:
+
+// body.dialog-open {
+//   user-select: none;
+// }
+
+// In this code, user-select: none disables text selection. You should add the dialog-open class to the body when the dialog is open, and remove it when the dialog is closed.
+// Please note that this will disable text selection for the entire page. If you want to allow text selection within the dialog, you can override this rule for the dialog:
+// body.dialog-open .dialog {
+//   user-select: text;
+// }
+// In this code, user-select: text enables text selection within the dialog, even when text selection is disabled for the rest of the page.
+
 class Dialog {
   private id: string = nanoid()
   private url: string = ''

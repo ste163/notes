@@ -1,6 +1,8 @@
 .note-details-container {
   display: flex;
   flex-direction: column;
+  width: 100vw;
+  max-width: 15em;
 }
 
 .note-details-container > h3 {

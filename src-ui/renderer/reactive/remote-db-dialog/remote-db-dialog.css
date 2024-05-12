@@ -1,7 +1,8 @@
 .remote-db-setup-dialog section {
   display: flex;
   flex-direction: column;
-  margin-top: 1em;
+  width: 100vw;
+  max-width: 30em;
 }
 
 .remote-db-setup-dialog h3 {
