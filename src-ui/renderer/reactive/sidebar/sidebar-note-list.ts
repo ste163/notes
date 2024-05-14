@@ -28,6 +28,7 @@ function renderSidebarNoteList({
   }
   const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
     new Button({
+      id: _id,
       title: 'Select note',
       onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
       html: `

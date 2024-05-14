@@ -10,6 +10,9 @@
 
 /**
  * TODO PRIORITY ORDER
+ *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
+ *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
+ *    the details dialog and always fetch by id.
  *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
  *  - github action to run tests and require them to pass before merging. Only run builds if tests pass
