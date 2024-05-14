@@ -6,6 +6,7 @@
   border-left: var(--outline-color) 0.15em solid;
   overflow-y: auto;
   overflow-x: hidden;
+  min-width: min-content;
 }
 
 #editor-top-menu > div {
