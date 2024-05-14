@@ -3,7 +3,6 @@
  * - the top editor bar does not wrap but horizontal scrolls (CSS ONLY SOLUTION)
  * - footer drops some elements to make space (last sync date, last saved date)
  *     - this information will be visible from the DB details dialog
- * - dialog styling needs to be updated
  * - sidebar is a class instance
  *    - the scroll is in the list of notes and not the entire list (so CREATE is always visible)
  *    - on MOBILE (this is the ony component that tracks mobile state)
@@ -17,6 +16,9 @@
 
 /**
  * TODO PRIORITY ORDER
+ *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
+ *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
+ *    the details dialog and always fetch by id.
  *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
  *  - github action to run tests and require them to pass before merging. Only run builds if tests pass
@@ -30,6 +32,7 @@
  *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *             - the error also gets triggered/logged before vite connects (in the logs)
  *     - BUG: if unable to find data, need to be able to delete the undefined notes
+ *    - BUG: on safari, the button sidebar when needing to scroll destroys the button layout
  * - FEATURES
  *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - mobile view (sidebar only + selected note only, state lives in URL)

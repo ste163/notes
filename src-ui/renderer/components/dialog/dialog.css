@@ -20,6 +20,7 @@
   border: 0.1em solid var(--outline-color);
   border-radius: 0.25em;
   overflow-y: hidden;
+  overflow-x: hidden;
 }
 
 .dialog-header {

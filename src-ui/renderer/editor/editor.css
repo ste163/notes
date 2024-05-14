@@ -3,6 +3,7 @@
   flex-direction: column;
   padding: 0.5em;
   border-left: var(--outline-color) 0.15em solid;
+  overflow-y: auto;
 }
 
 #editor-top-menu > div {
