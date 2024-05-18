@@ -10,6 +10,8 @@
 
 /**
  * TODO PRIORITY ORDER
+ *  - Editor is a class instance like the other reactive components
+ *      - always render it with buttons and main editor disabled if no note selected
  *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
  *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
  *    the details dialog and always fetch by id.

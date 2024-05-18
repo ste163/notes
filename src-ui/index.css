@@ -124,7 +124,7 @@ strong {
 
 /* Cleaner styling for scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -132,7 +132,7 @@ strong {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   border-radius: 10px;
   border: 0px solid transparent;
   background-clip: content-box;
