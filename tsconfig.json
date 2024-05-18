@@ -21,13 +21,12 @@
       "event": ["./src-ui/event"],
       "icons": ["./src-ui/renderer/icons"],
       "logger": ["./src-ui/logger"],
-      "renderer/editor": ["./src-ui/renderer/editor"],
       "renderer/reactive": ["./src-ui/renderer/reactive"],
       "store": ["./src-ui/store"],
       "types": ["./src-ui/types"],
-      "test-utils": ["./src-ui/test-utils"],
-    },
+      "test-utils": ["./src-ui/test-utils"]
+    }
   },
   "include": ["./src-ui", "./vitest-setup.ts"],
-  "exclude": ["node_modules", "dist", "./src-tauri", "./src-ui/test-utils"],
+  "exclude": ["node_modules", "dist", "./src-tauri", "./src-ui/test-utils"]
 }

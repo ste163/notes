@@ -23,7 +23,6 @@ export default defineConfig({
       event: '/src-ui/event',
       icons: '/src-ui/renderer/icons',
       logger: '/src-ui/logger',
-      'renderer/editor': '/src-ui/renderer/editor',
       'renderer/reactive': '/src-ui/renderer/reactive',
       store: '/src-ui/store',
       types: '/src-ui/types',

@@ -52,13 +52,13 @@ import { logger } from 'logger'
 import { EditorStore } from 'store'
 import {
   footer,
+  renderEditor,
   renderSidebarCreateNote,
   renderSidebarNoteList,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
   noteDetailsDialog,
 } from 'renderer/reactive'
-import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
 
 let database: Database
