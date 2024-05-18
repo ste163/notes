@@ -54,7 +54,6 @@ import {
   sidebar,
   footer,
   renderEditor,
-  renderSidebarCreateNote,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
   noteDetailsDialog,
@@ -70,7 +69,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     footer.renderRemoteDb({ isConnected: false })
 
     // render base app layout with loading states
-    renderSidebarCreateNote({ isSavingNote: false })
+    sidebar.renderCreateNote()
 
     // setup database after app is rendering in loading state
     setupDatabase()
@@ -179,16 +178,14 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   const title = (event as CustomEvent)?.detail?.title
   try {
     // re-render the sidebar with loading state
-    renderSidebarCreateNote({
-      isSavingNote: true,
+    sidebar.renderCreateNote({
       title: title,
     })
     const _id = await database.put({ title, content: '' })
     createEvent(NoteEvents.Created, { _id }).dispatch()
   } catch (error) {
-    // TODO: render error notification inside sidebarMenu
-    renderSidebarCreateNote({
-      isSavingNote: false,
+    // TODO: REMOVE THIS
+    sidebar.renderCreateNote({
       title: title,
       error: 'Error creating note',
     })
@@ -196,7 +193,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 })
 
 window.addEventListener(NoteEvents.Created, async (event) => {
-  renderSidebarCreateNote({ isSavingNote: false, error: '' })
+  sidebar.renderCreateNote({ error: '' })
   const _id = (event as CustomEvent)?.detail?._id
   createEvent(NoteEvents.Select, { _id }).dispatch()
   createEvent(NoteEvents.GetAll).dispatch()

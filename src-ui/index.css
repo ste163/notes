@@ -93,24 +93,6 @@ strong {
   font-weight: bold;
 }
 
-#sidebar {
-  border-right: var(--outline-color) 0.15em solid;
-  grid-area: sidebar;
-  padding-right: 0.5em;
-  width: 10em;
-  overflow-y: auto;
-}
-
-#sidebar > button {
-  margin-top: 0.8em;
-  margin-left: 0.5em;
-  font-size: 0.9em;
-}
-
-#sidebar-top-menu {
-  margin: 1em;
-}
-
 #no-notes-page {
   margin-top: 2em;
   margin-left: 2em;

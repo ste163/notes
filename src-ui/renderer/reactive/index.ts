@@ -1,6 +1,5 @@
 export { renderEditor } from './editor'
 export { sidebar } from './sidebar'
 export { footer } from './footer'
-export { renderSidebarCreateNote } from './sidebar'
 export { renderRemoteDbLogs, renderRemoteDbDialog } from './remote-db-dialog'
 export { noteDetailsDialog } from './note-details-dialog'

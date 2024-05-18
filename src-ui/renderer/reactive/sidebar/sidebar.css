@@ -1,3 +1,26 @@
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  border-right: var(--outline-color) 0.15em solid;
+  grid-area: sidebar;
+  width: 10em;
+  overflow-y: hidden;
+}
+
+#sidebar > button {
+  margin-top: 0.8em;
+  margin-left: 0.5em;
+  font-size: 0.9em;
+}
+
+#sidebar-top-menu {
+  margin: 1em;
+}
+
+#sidebar-list {
+  overflow-y: auto;
+}
+
 .note-select-container {
   display: flex;
   flex-direction: row;

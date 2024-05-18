@@ -8,6 +8,34 @@ import type { Notes } from 'types'
 vi.mock('event')
 
 describe('sidebar', () => {
+  it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
+    const title = 'Note title'
+
+    const { getByRole, queryByRole } = renderComponent({
+      renderComponent: sidebar.render,
+    })
+
+    sidebar.renderCreateNote({ title: '', error: '' })
+
+    // renders input on create click
+    const createButton = getByRole('button', { name: 'Add Create' })
+    await userEvent.click(createButton)
+    const input = getByRole('textbox', { name: 'Note title' })
+
+    // clicking cancel button removes input
+    const cancelButton = getByRole('button', { name: 'Cancel' })
+    await userEvent.click(cancelButton)
+    expect(queryByRole('textbox', { name: 'Note title' })).toBeNull()
+
+    // can enter note and submit event is called with title
+    createButton.click()
+    await userEvent.type(input, title)
+    await userEvent.click(getByRole('button', { name: 'Save' }))
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Create, {
+      title,
+    })
+  })
+
   it('note-list: renders loading while loading', () => {
     const { getByText } = renderComponent({
       renderComponent: sidebar.render,
