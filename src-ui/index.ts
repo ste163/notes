@@ -51,10 +51,10 @@ import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
 import { EditorStore } from 'store'
 import {
+  sidebar,
   footer,
   renderEditor,
   renderSidebarCreateNote,
-  renderSidebarNoteList,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
   noteDetailsDialog,
@@ -65,11 +65,12 @@ let database: Database
 
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
-    // render base app layout with loading states
-    renderSidebarCreateNote({ isSavingNote: false })
-    renderSidebarNoteList({ isLoading: true, notes: {} })
+    sidebar.render()
     footer.render()
     footer.renderRemoteDb({ isConnected: false })
+
+    // render base app layout with loading states
+    renderSidebarCreateNote({ isSavingNote: false })
 
     // setup database after app is rendering in loading state
     setupDatabase()
@@ -104,7 +105,7 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
   // TODO: if no notes, then emit a new event
   // to handle that state so that we can reset the UI
 
-  renderSidebarNoteList({ isLoading: false, notes })
+  sidebar.renderNoteList({ isLoading: false, notes })
 
   if (noteId)
     toggleActiveClass({

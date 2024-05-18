@@ -5,6 +5,12 @@
   max-width: 30em;
 }
 
+@media (max-width: 767px) {
+  .remote-db-setup-dialog section {
+    max-width: 20em;
+  }
+}
+
 .remote-db-setup-dialog h3 {
   margin: 1.5em 0 0.5em 0;
 }
