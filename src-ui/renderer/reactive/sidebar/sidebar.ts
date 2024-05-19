@@ -1,6 +1,6 @@
 import { NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
-import { addNoteIcon } from 'icons'
+import { addNoteIcon, fileListIcon } from 'icons'
 import type { Notes } from 'types'
 import './sidebar.css'
 
@@ -62,7 +62,7 @@ class Sidebar {
       new Button({
         title: 'Open sidebar',
         onClick: this.render.bind(this),
-        html: `${addNoteIcon}`,
+        html: `${fileListIcon}`,
       }).getElement()
     )
   }

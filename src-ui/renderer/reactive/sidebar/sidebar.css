@@ -7,11 +7,12 @@
 
 .sidebar-opened {
   width: 10em;
-  border-right: var(--outline-color) 0.15em solid;
+  border-left: var(--outline-color) 0.15em solid;
 }
 
 .sidebar-closed {
   overflow-y: hidden;
+  margin-right: 0.5em;
 }
 
 #sidebar > button {

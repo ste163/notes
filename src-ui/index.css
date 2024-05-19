@@ -23,10 +23,10 @@
 
 body {
   display: grid;
-  grid-template-columns: auto 10fr;
+  grid-template-columns: 10fr auto;
   grid-template-rows: 1fr auto;
   grid-template-areas:
-    'sidebar main'
+    'main sidebar'
     'footer footer';
   height: 100vh;
   margin: 0;
