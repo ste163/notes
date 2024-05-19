@@ -4,57 +4,32 @@ import { addNoteIcon } from 'icons'
 import type { Notes } from 'types'
 import './sidebar.css'
 
-// TODO if the note create input is open, ESC press closes it
-
 class Sidebar {
+  private inputContainerId = 'note-input-container'
+
+  constructor() {
+    this.renderInput = this.renderInput.bind(this)
+  }
+
   public render() {
     // render the basic sidebar setup
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
     container.innerHTML = '' // reset container
     container.innerHTML = `
-      <div id='sidebar-top-menu'></div>
+      <div id='sidebar-menu'></div>
       <div id='sidebar-list'></div>
     `
-  }
-
-  // TODO: revisit how errors work
-  // I think i'll gut that feature as error handling is all done
-  // by the logger and its notification system
-  // that will also make the code simpler
-
-  public renderCreateNote(
-    { title, error }: Props = { title: '', error: '' }
-  ): void {
-    // TODO: the create note button should be in the instantiation of render()
-    // and then open input and close input become functions on here
-
-    const container = document.querySelector('#sidebar-top-menu') as Element
-    container.innerHTML = '' // reset container before rendering
-    // render Create button that will always be present in the menu
-    container.appendChild(
+    document.querySelector('#sidebar-menu')?.appendChild(
       new Button({
         title: 'Create note',
-        onClick: () =>
-          renderInput({
-            menuContainer: container,
-            title,
-            error,
-          }),
+        onClick: this.renderInput,
         html: `
         ${addNoteIcon}
         <span>Create<span/>
       `,
       }).getElement()
     )
-
-    if (error)
-      // then the user has interacted with note input, so ensure it renders
-      renderInput({
-        menuContainer: container,
-        title,
-        error,
-      })
   }
 
   public renderNoteList({
@@ -94,85 +69,76 @@ class Sidebar {
       container.appendChild(buttonContainer)
     })
   }
-}
 
-interface Props {
-  title?: string
-  error?: string
-}
-
-interface InputProps extends Props {
-  menuContainer: Element
-}
-
-function renderInput({ menuContainer, title, error }: InputProps) {
-  const inputAndButtonContainerId = 'create-note-input-container'
-  // reset container before rendering (in case already rendered)
-  document.querySelector(`#${inputAndButtonContainerId}`)?.remove()
-
-  const { saveButton, cancelButton, inputContainer, input } =
-    instantiateElements(title, inputAndButtonContainerId)
-
-  if (error) {
-    // TODO: error rendering if creation fails
-    console.error('HAVE NOT SETUP CREATE ERROR RENDERING')
+  public closeInput() {
+    const container = document.querySelector(`#${this.inputContainerId}`)
+    container?.remove()
+    document.removeEventListener('keydown', this.handleEscape)
   }
 
-  // create containers, set styles, and add to DOM
-  const inputAndButtonContainer = document.createElement('div')
-  inputAndButtonContainer.id = inputAndButtonContainerId
-  inputAndButtonContainer.style.display = 'flex'
-  inputAndButtonContainer.style.flexDirection = 'column'
+  private handleEscape = (event: KeyboardEvent) => {
+    // TODO: (revisit)
+    // this does not take into account if a modal is opened
+    // so it's possible we may want this to be moved to
+    // the global index listener, but we'll leave it for now
+    if (event.key === 'Escape') {
+      this.closeInput()
+    }
+  }
 
-  inputContainer.style.marginBottom = '0.5em'
-  inputContainer.style.marginTop = '0.5em'
+  private renderInput() {
+    // reset container before rendering (in case already rendered)
+    this.closeInput()
+    const { saveButton, cancelButton, inputContainer, input } =
+      this.instantiateInputElements()
 
-  const buttonContainer = document.createElement('div')
-  buttonContainer.style.display = 'flex'
-  buttonContainer.style.justifyContent = 'space-between'
-  buttonContainer.classList.add('note-input-buttons')
-  buttonContainer.appendChild(saveButton)
-  buttonContainer.appendChild(cancelButton)
+    // create containers, set styles, and add to DOM
+    const inputAndButtonContainer = document.createElement('div')
+    inputAndButtonContainer.id = this.inputContainerId
 
-  inputAndButtonContainer.appendChild(inputContainer)
-  inputAndButtonContainer.appendChild(buttonContainer)
+    const buttonContainer = document.createElement('div')
 
-  menuContainer.appendChild(inputAndButtonContainer)
+    buttonContainer.classList.add('note-input-buttons')
+    buttonContainer.appendChild(saveButton)
+    buttonContainer.appendChild(cancelButton)
 
-  // accessibility focus
-  input?.focus()
-}
+    inputAndButtonContainer.appendChild(inputContainer)
+    inputAndButtonContainer.appendChild(buttonContainer)
 
-function instantiateElements(
-  title: string | undefined,
-  containerToRemoveId: string
-) {
-  const inputInstance = new Input({
-    id: 'create-note',
-    title: 'Note title',
-    placeholder: 'Note title',
-    value: title,
-  })
-  const input = inputInstance.getInput()
+    document
+      .querySelector('#sidebar-menu')
+      ?.appendChild(inputAndButtonContainer)
 
-  return {
-    input,
-    inputContainer: inputInstance.getContainer(),
-    saveButton: new Button({
-      title: 'Save note',
-      html: 'Save',
-      onClick: () => {
-        const title: string = input?.value
-        if (!title) throw new Error('Unable to read title from input')
-        createEvent(NoteEvents.Create, { title }).dispatch()
-      },
-    }).getElement(),
-    cancelButton: new Button({
-      title: 'Cancel',
-      html: 'Cancel',
-      onClick: () =>
-        document.querySelector(`#${containerToRemoveId}`)?.remove(),
-    }).getElement(),
+    // accessibility focus
+    input?.focus()
+    document.addEventListener('keydown', this.handleEscape)
+  }
+
+  private instantiateInputElements() {
+    const inputInstance = new Input({
+      id: 'create-note',
+      title: 'Note title',
+      placeholder: 'Note title',
+    })
+    const input = inputInstance.getInput()
+    return {
+      input,
+      inputContainer: inputInstance.getContainer(),
+      saveButton: new Button({
+        title: 'Save note',
+        html: 'Save',
+        onClick: () => {
+          const title: string = input?.value
+          if (!title) throw new Error('Unable to read title from input')
+          createEvent(NoteEvents.Create, { title }).dispatch()
+        },
+      }).getElement(),
+      cancelButton: new Button({
+        title: 'Cancel',
+        html: 'Cancel',
+        onClick: this.closeInput.bind(this),
+      }).getElement(),
+    }
   }
 }
 

@@ -13,12 +13,24 @@
   font-size: 0.9em;
 }
 
-#sidebar-top-menu {
+#sidebar-menu {
   margin: 1em;
 }
 
 #sidebar-list {
   overflow-y: auto;
+}
+
+#note-input-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5em;
+}
+
+.note-input-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5em 0;
 }
 
 .note-select-container {

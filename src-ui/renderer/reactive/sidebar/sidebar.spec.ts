@@ -12,10 +12,8 @@ describe('sidebar', () => {
     const title = 'Note title'
 
     const { getByRole, queryByRole } = renderComponent({
-      renderComponent: sidebar.render,
+      renderComponent: sidebar.render.bind(sidebar),
     })
-
-    sidebar.renderCreateNote({ title: '', error: '' })
 
     // renders input on create click
     const createButton = getByRole('button', { name: 'Add Create' })
@@ -38,7 +36,7 @@ describe('sidebar', () => {
 
   it('note-list: renders loading while loading', () => {
     const { getByText } = renderComponent({
-      renderComponent: sidebar.render,
+      renderComponent: sidebar.render.bind(sidebar),
     })
     sidebar.renderNoteList({ isLoading: true, notes: {} })
 
@@ -46,13 +44,13 @@ describe('sidebar', () => {
   })
 
   it('note-list: renders no notes if no notes are present', () => {
-    const { queryByRole } = renderComponent({
-      renderComponent: sidebar.render,
+    const { getAllByRole } = renderComponent({
+      renderComponent: sidebar.render.bind(sidebar),
     })
     sidebar.renderNoteList({ isLoading: false, notes: {} })
 
-    // notes are rendered as buttons
-    expect(queryByRole('button')).toBeNull()
+    // notes are rendered as buttons, but the first is the Create note button
+    expect(getAllByRole('button')).toHaveLength(1)
   })
 
   it('note-list: renders notes and clicking note emits event', async () => {
@@ -73,16 +71,16 @@ describe('sidebar', () => {
       },
     }
     const { getAllByRole } = renderComponent({
-      renderComponent: sidebar.render,
+      renderComponent: sidebar.render.bind(sidebar),
     })
     sidebar.renderNoteList({ isLoading: false, notes })
 
     // notes are rendered as buttons
     const buttons = getAllByRole('button')
-    expect(buttons).toHaveLength(Object.keys(notes).length)
+    expect(buttons).toHaveLength(Object.keys(notes).length + 1)
 
     // clicking note emits event
-    await userEvent.click(buttons[0])
+    await userEvent.click(buttons[1])
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Select, {
       _id: '1',
     })

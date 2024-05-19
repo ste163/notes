@@ -97,7 +97,7 @@ class Database {
 
   public async put(
     note: Partial<Note>
-  ): Promise<{ id: string; updatedAt: Date }> {
+  ): Promise<{ _id: string; updatedAt: Date }> {
     const date = new Date()
     if (note?._id) {
       // is an update event
@@ -116,7 +116,7 @@ class Database {
         createdAt: note.createdAt,
         updatedAt: date,
       })
-      return { id: note._id, updatedAt: date }
+      return { _id: note._id, updatedAt: date }
     }
     // then this is a new note
     const { id } = await this.db.put({
@@ -131,7 +131,7 @@ class Database {
       createdAt: date,
       updatedAt: date,
     })
-    return { id, updatedAt: date }
+    return { _id: id, updatedAt: date }
   }
 
   public async delete(note: Note) {
