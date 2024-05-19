@@ -5,16 +5,23 @@ import type { Notes } from 'types'
 import './sidebar.css'
 
 class Sidebar {
+  private notes: Notes = {}
   private inputContainerId = 'note-input-container'
+
+  // TODO: allow for sidebar to opened and closed
+  // if it's closed, the create button becomes an icon button for the menu
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
+    this.renderNoteList = this.renderNoteList.bind(this)
   }
 
   public render() {
     // render the basic sidebar setup
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
+    container.classList.remove('sidebar-closed')
+    container.classList.add('sidebar-opened')
     container.innerHTML = '' // reset container
     container.innerHTML = `
       <div id='sidebar-menu'></div>
@@ -30,22 +37,33 @@ class Sidebar {
       `,
       }).getElement()
     )
+
+    this.renderNoteList(this.notes)
   }
 
-  public renderNoteList({
-    isLoading,
-    notes,
-  }: {
-    isLoading: boolean
-    notes: Notes
-  }) {
+  public close() {
+    const container = document.querySelector('#sidebar')
+    if (!container) throw new Error('Sidebar container not found')
+
+    // TODO: render the note title at the top left
+
+    container.classList.remove('sidebar-opened')
+    container.classList.add('sidebar-closed')
+    container.innerHTML = '' // reset container
+    container.appendChild(
+      new Button({
+        title: 'Open sidebar',
+        onClick: this.render.bind(this),
+        html: `${addNoteIcon}`,
+      }).getElement()
+    )
+  }
+
+  public renderNoteList(notes: Notes = {}) {
+    this.notes = notes
     const container = document.querySelector('#sidebar-list') as Element
     container.innerHTML = '' // reset container before rendering
-    if (isLoading) {
-      // TODO: skeleton screen
-      container.innerHTML = 'Loading...'
-      return
-    }
+
     const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
       new Button({
         id: _id,
@@ -60,6 +78,7 @@ class Sidebar {
         </div>`,
       }).getElement()
     )
+
     noteButtons?.forEach((b) => {
       // setup container for button and append to sidebar
       const buttonContainer = document.createElement('div')

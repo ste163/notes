@@ -34,20 +34,11 @@ describe('sidebar', () => {
     })
   })
 
-  it('note-list: renders loading while loading', () => {
-    const { getByText } = renderComponent({
-      renderComponent: sidebar.render.bind(sidebar),
-    })
-    sidebar.renderNoteList({ isLoading: true, notes: {} })
-
-    expect(getByText('Loading...')).toBeInTheDocument()
-  })
-
   it('note-list: renders no notes if no notes are present', () => {
     const { getAllByRole } = renderComponent({
       renderComponent: sidebar.render.bind(sidebar),
     })
-    sidebar.renderNoteList({ isLoading: false, notes: {} })
+    sidebar.renderNoteList()
 
     // notes are rendered as buttons, but the first is the Create note button
     expect(getAllByRole('button')).toHaveLength(1)
@@ -73,7 +64,7 @@ describe('sidebar', () => {
     const { getAllByRole } = renderComponent({
       renderComponent: sidebar.render.bind(sidebar),
     })
-    sidebar.renderNoteList({ isLoading: false, notes })
+    sidebar.renderNoteList(notes)
 
     // notes are rendered as buttons
     const buttons = getAllByRole('button')

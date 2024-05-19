@@ -1,9 +1,16 @@
 #sidebar {
   display: flex;
   flex-direction: column;
-  border-right: var(--outline-color) 0.15em solid;
   grid-area: sidebar;
+  overflow-y: hidden;
+}
+
+.sidebar-opened {
   width: 10em;
+  border-right: var(--outline-color) 0.15em solid;
+}
+
+.sidebar-closed {
   overflow-y: hidden;
 }
 
