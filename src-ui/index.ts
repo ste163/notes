@@ -102,6 +102,9 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
 
   // TODO: if no notes, then emit a new event
   // to handle that state so that we can reset the UI
+  // TODO: only renderNoteList if there are notes
+  // OR, we have a more generic method for supplying updated notes
+  // to the note list
   sidebar.renderNoteList(notes)
 
   if (noteId)
@@ -137,10 +140,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // setup url routing based on the note
     note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
 
-    // TODO
-    // this is a weird experience. It should be user-defined closing.
-    // it should only auto-close on MOBILE!
-    // sidebar.close()
+    sidebar.close()
 
     // update styling for the selected note in list
     toggleActiveClass({

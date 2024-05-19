@@ -10,6 +10,10 @@ class Sidebar {
 
   // TODO: allow for sidebar to opened and closed
   // if it's closed, the create button becomes an icon button for the menu
+  // ALSO try
+  // swap the editor buttons and the note list sidebar
+  // so that way opening and closing the sidebar
+  // does not move the editor text content
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -39,6 +43,10 @@ class Sidebar {
     )
 
     this.renderNoteList(this.notes)
+  }
+
+  public open() {
+    this.render()
   }
 
   public close() {
