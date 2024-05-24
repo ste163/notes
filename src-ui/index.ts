@@ -78,31 +78,28 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   const { noteId } = getUrlParams()
   const isNoteSelected = !!noteId
 
+  const setDesktopView = () => {
+    sidebar.toggleFullscreen(false)
+    toggleEditorVisibility(true)
+  }
+
+  const setMobileView = () => {
+    sidebar.toggleFullscreen(true)
+    toggleEditorVisibility(false)
+  }
+
   if (isNoteSelected) {
-    sidebar.toggleCloseButtonVisibility(isNoteSelected)
-    if (isMobile) {
-      if (isSidebarOpen) {
-        toggleEditorVisibility(false)
-        sidebar.toggleFullscreen(true)
-      } else {
-        toggleEditorVisibility(true)
-        sidebar.toggleFullscreen(false)
-      }
-    } else {
-      toggleEditorVisibility(true)
-      sidebar.toggleFullscreen(false)
-    }
+    sidebar.toggleCloseButtonVisibility(true)
+    isMobile
+      ? isSidebarOpen
+        ? setMobileView()
+        : setDesktopView()
+      : setDesktopView()
   }
 
   if (!isNoteSelected) {
     sidebar.toggleCloseButtonVisibility(false)
-    if (isMobile) {
-      toggleEditorVisibility(false)
-      sidebar.toggleFullscreen(true)
-    } else {
-      toggleEditorVisibility(true)
-      sidebar.toggleFullscreen(false)
-    }
+    isMobile ? setMobileView() : setDesktopView()
   }
 })
 

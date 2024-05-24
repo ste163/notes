@@ -119,9 +119,9 @@ class Sidebar {
       : container?.classList.remove('sidebar-fullscreen')
   }
 
-  public toggleCloseButtonVisibility(isSelected: boolean) {
+  public toggleCloseButtonVisibility(isVisible: boolean) {
     const closeButton = document.querySelector('#close-sidebar')
-    isSelected
+    isVisible
       ? closeButton?.classList.remove('sidebar-close-invisible')
       : closeButton?.classList.add('sidebar-close-invisible')
   }
