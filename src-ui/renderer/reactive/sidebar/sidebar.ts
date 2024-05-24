@@ -112,18 +112,18 @@ class Sidebar {
     document.removeEventListener('keydown', this.handleEscape)
   }
 
-  public toggleStyleFullscreen(isFullscreen: boolean) {
+  public toggleFullscreen(isFullscreen: boolean) {
     const container = document.querySelector('#sidebar')
     isFullscreen
       ? container?.classList.add('sidebar-fullscreen')
       : container?.classList.remove('sidebar-fullscreen')
   }
 
-  public toggleStyleNoteSelected(isSelected: boolean) {
+  public toggleCloseButtonVisibility(isSelected: boolean) {
     const closeButton = document.querySelector('#close-sidebar')
     isSelected
-      ? closeButton?.classList.remove('sidebar-close-hidden')
-      : closeButton?.classList.add('sidebar-close-hidden')
+      ? closeButton?.classList.remove('sidebar-close-invisible')
+      : closeButton?.classList.add('sidebar-close-invisible')
   }
 
   private handleEscape = (event: KeyboardEvent) => {

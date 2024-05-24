@@ -79,29 +79,29 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   const isNoteSelected = !!noteId
 
   if (isNoteSelected) {
-    sidebar.toggleStyleNoteSelected(isNoteSelected)
+    sidebar.toggleCloseButtonVisibility(isNoteSelected)
     if (isMobile) {
       if (isSidebarOpen) {
         toggleEditorVisibility(false)
-        sidebar.toggleStyleFullscreen(true)
+        sidebar.toggleFullscreen(true)
       } else {
         toggleEditorVisibility(true)
-        sidebar.toggleStyleFullscreen(false)
+        sidebar.toggleFullscreen(false)
       }
     } else {
       toggleEditorVisibility(true)
-      sidebar.toggleStyleFullscreen(false)
+      sidebar.toggleFullscreen(false)
     }
   }
 
   if (!isNoteSelected) {
-    sidebar.toggleStyleNoteSelected(false)
+    sidebar.toggleCloseButtonVisibility(false)
     if (isMobile) {
       toggleEditorVisibility(false)
-      sidebar.toggleStyleFullscreen(true)
+      sidebar.toggleFullscreen(true)
     } else {
       toggleEditorVisibility(true)
-      sidebar.toggleStyleFullscreen(false)
+      sidebar.toggleFullscreen(false)
     }
   }
 })
@@ -109,10 +109,10 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
 window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
   isSidebarOpen = true
   if (isMobile) {
-    sidebar.toggleStyleFullscreen(true)
+    sidebar.toggleFullscreen(true)
     toggleEditorVisibility(false)
   } else {
-    sidebar.toggleStyleFullscreen(false)
+    sidebar.toggleFullscreen(false)
     toggleEditorVisibility(true)
   }
 })
@@ -120,7 +120,7 @@ window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
 window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
   isSidebarOpen = false
   if (isMobile) {
-    sidebar.toggleStyleFullscreen(false)
+    sidebar.toggleFullscreen(false)
     toggleEditorVisibility(true)
   }
 })
