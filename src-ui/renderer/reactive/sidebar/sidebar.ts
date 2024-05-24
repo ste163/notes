@@ -65,8 +65,6 @@ class Sidebar {
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
 
-    // TODO: render the note title at the top left
-
     container.classList.remove('sidebar-opened')
     container.classList.add('sidebar-closed')
     container.innerHTML = '' // reset container
