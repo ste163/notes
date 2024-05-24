@@ -1,14 +1,4 @@
 /**
- * Plan for sidebar/mobile:
- * - IF NO NOTE IS SELECTED then we see the sidebar, always OPEN
- * - If a note IS selected, then the sidebar disappears, and a hamburger button renders, that will reopen the sideabar
- * - and if you open the sidebar, when you select a note again, the sidebar closes again.
- *
- * This way, the state is always managed by selecting a note. But the user can over-ride that until a state change occurs
- * (user can also HIDE the sidebar, so we'll need a way to hide it. Probably the hamburger icon?)
- */
-
-/**
  * TODO PRIORITY ORDER
  *  - Editor is a class instance like the other reactive components
  *      - always render it with buttons and main editor disabled if no note selected
@@ -61,14 +51,17 @@ import {
 import type { Note } from 'types'
 
 let database: Database
+let isMobile: boolean
+let isSidebarOpen: boolean
+
+window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
     sidebar.render()
     footer.render()
     footer.renderRemoteDb({ isConnected: false })
-
-    // render base app layout with loading states
+    handleScreenWidth()
 
     // setup database after app is rendering in loading state
     setupDatabase()
@@ -78,6 +71,57 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)
+  }
+})
+
+window.addEventListener(LifeCycleEvents.WidthChanged, () => {
+  const { noteId } = getUrlParams()
+  const isNoteSelected = !!noteId
+
+  if (isNoteSelected) {
+    sidebar.toggleStyleNoteSelected(isNoteSelected)
+    if (isMobile) {
+      if (isSidebarOpen) {
+        toggleEditorVisibility(false)
+        sidebar.toggleStyleFullscreen(true)
+      } else {
+        toggleEditorVisibility(true)
+        sidebar.toggleStyleFullscreen(false)
+      }
+    } else {
+      toggleEditorVisibility(true)
+      sidebar.toggleStyleFullscreen(false)
+    }
+  }
+
+  if (!isNoteSelected) {
+    sidebar.toggleStyleNoteSelected(false)
+    if (isMobile) {
+      toggleEditorVisibility(false)
+      sidebar.toggleStyleFullscreen(true)
+    } else {
+      toggleEditorVisibility(true)
+      sidebar.toggleStyleFullscreen(false)
+    }
+  }
+})
+
+window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
+  isSidebarOpen = true
+  if (isMobile) {
+    sidebar.toggleStyleFullscreen(true)
+    toggleEditorVisibility(false)
+  } else {
+    sidebar.toggleStyleFullscreen(false)
+    toggleEditorVisibility(true)
+  }
+})
+
+window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
+  isSidebarOpen = false
+  if (isMobile) {
+    sidebar.toggleStyleFullscreen(false)
+    toggleEditorVisibility(true)
   }
 })
 
@@ -375,6 +419,28 @@ function setupDatabase() {
   } catch (error) {
     logger.logError('Error setting up database.', error)
   }
+}
+
+function toggleEditorVisibility(isVisible: boolean) {
+  const body = document.body
+  const mainElement = document.querySelector('#main') as HTMLElement
+  if (isVisible) {
+    mainElement.style.display = 'flex'
+    body.classList.remove('body-invisible')
+    body.classList.add('body-visible')
+  } else {
+    mainElement.style.display = 'none'
+    body.classList.remove('body-visible')
+    body.classList.add('body-invisible')
+  }
+}
+
+function handleScreenWidth() {
+  const width = window.innerWidth
+  const previousIsMobile = isMobile
+  isMobile = width < 640
+  if (previousIsMobile !== isMobile)
+    dispatchEvent(new Event(LifeCycleEvents.WidthChanged))
 }
 
 function toggleActiveClass({

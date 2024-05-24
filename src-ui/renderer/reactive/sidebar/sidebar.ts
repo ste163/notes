@@ -1,4 +1,4 @@
-import { NoteEvents, createEvent } from 'event'
+import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
 import { addNoteIcon, closeIcon, fileListIcon } from 'icons'
 import type { Notes } from 'types'
@@ -39,6 +39,7 @@ class Sidebar {
 
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
+        id: 'close-sidebar',
         title: 'Close sidebar',
         onClick: this.close.bind(this),
         html: `${closeIcon}`,
@@ -51,6 +52,7 @@ class Sidebar {
 
   public open() {
     this.render()
+    dispatchEvent(new Event(LifeCycleEvents.SidebarOpened))
   }
 
   public close() {
@@ -65,16 +67,18 @@ class Sidebar {
     container.appendChild(
       new Button({
         title: 'Open sidebar',
-        onClick: this.render.bind(this),
+        onClick: this.open.bind(this),
         html: `${fileListIcon}`,
         style: { border: 'none' },
       }).getElement()
     )
+    dispatchEvent(new Event(LifeCycleEvents.SidebarClosed))
   }
 
   public renderNoteList(notes: Notes = {}) {
     this.notes = notes
-    const container = document.querySelector('#sidebar-list') as Element
+    const container = document.querySelector('#sidebar-list')
+    if (!container) return
     container.innerHTML = '' // reset container before rendering
 
     const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
@@ -106,6 +110,20 @@ class Sidebar {
     const container = document.querySelector(`#${this.inputContainerId}`)
     container?.remove()
     document.removeEventListener('keydown', this.handleEscape)
+  }
+
+  public toggleStyleFullscreen(isFullscreen: boolean) {
+    const container = document.querySelector('#sidebar')
+    isFullscreen
+      ? container?.classList.add('sidebar-fullscreen')
+      : container?.classList.remove('sidebar-fullscreen')
+  }
+
+  public toggleStyleNoteSelected(isSelected: boolean) {
+    const closeButton = document.querySelector('#close-sidebar')
+    isSelected
+      ? closeButton?.classList.remove('sidebar-close-hidden')
+      : closeButton?.classList.add('sidebar-close-hidden')
   }
 
   private handleEscape = (event: KeyboardEvent) => {

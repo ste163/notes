@@ -1,6 +1,9 @@
 // TODO: potentially get rid of LifeCycleEvents
 export enum LifeCycleEvents {
   Init = 'init',
+  WidthChanged = 'width-changed',
+  SidebarOpened = 'sidebar-opened',
+  SidebarClosed = 'sidebar-closed',
 }
 
 export enum KeyboardEvents {

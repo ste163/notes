@@ -25,13 +25,22 @@ body {
   display: grid;
   grid-template-columns: 10fr auto;
   grid-template-rows: 1fr auto;
-  grid-template-areas:
-    'main sidebar'
-    'footer footer';
   height: 100vh;
   margin: 0;
   padding: 0;
   overflow-y: hidden;
+}
+
+.body-visible {
+  grid-template-areas:
+    'main sidebar'
+    'footer footer';
+}
+
+.body-invisible {
+  grid-template-areas:
+    'sidebar sidebar'
+    'footer footer';
 }
 
 main {
@@ -98,7 +107,7 @@ strong {
   margin-left: 2em;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 640px) {
   .hide-on-mobile {
     display: none !important;
   }

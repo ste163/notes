@@ -15,6 +15,14 @@
   margin-right: 0.5em;
 }
 
+.sidebar-fullscreen {
+  width: auto;
+}
+
+.sidebar-close-hidden {
+  display: none;
+}
+
 #sidebar > button {
   margin-top: 0.8em;
   margin-left: 0.5em;
