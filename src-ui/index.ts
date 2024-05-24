@@ -1,5 +1,11 @@
 /**
  * TODO PRIORITY ORDER
+ *  - Editor is a class instance like the other reactive components
+ *      - always render it with buttons and main editor disabled if no note selected
+ *  - render note title when it is selected (above the editor)
+ *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
+ *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
+ *    the details dialog and always fetch by id.
  *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
  *  - github action to run tests and require them to pass before merging. Only run builds if tests pass
@@ -36,25 +42,26 @@ import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
 import { EditorStore } from 'store'
 import {
+  sidebar,
   footer,
-  renderSidebarCreateNote,
-  renderSidebarNoteList,
+  renderEditor,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
   noteDetailsDialog,
 } from 'renderer/reactive'
-import { renderEditor } from 'renderer/editor'
 import type { Note } from 'types'
 
 let database: Database
+let isMobile: boolean
+
+window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
-    // render base app layout with loading states
-    renderSidebarCreateNote({ isSavingNote: false })
-    renderSidebarNoteList({ isLoading: true, notes: {} })
+    sidebar.render()
     footer.render()
     footer.renderRemoteDb({ isConnected: false })
+    handleScreenWidth()
 
     // setup database after app is rendering in loading state
     setupDatabase()
@@ -65,6 +72,33 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)
   }
+})
+
+window.addEventListener(LifeCycleEvents.WidthChanged, () => {
+  const { noteId } = getUrlParams()
+  const isNoteSelected = !!noteId
+
+  if (isNoteSelected) {
+    sidebar.toggleCloseButtonVisibility(true)
+    isMobile
+      ? sidebar.getIsOpen()
+        ? setMobileView()
+        : setDesktopView()
+      : setDesktopView()
+  }
+
+  if (!isNoteSelected) {
+    sidebar.toggleCloseButtonVisibility(false)
+    isMobile ? setMobileView() : setDesktopView()
+  }
+})
+
+window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
+  isMobile ? setMobileView() : setDesktopView()
+})
+
+window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
+  setDesktopView()
 })
 
 /**
@@ -88,8 +122,10 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
 
   // TODO: if no notes, then emit a new event
   // to handle that state so that we can reset the UI
-
-  renderSidebarNoteList({ isLoading: false, notes })
+  // TODO: only renderNoteList if there are notes
+  // OR, we have a more generic method for supplying updated notes
+  // to the note list
+  sidebar.renderNoteList(notes)
 
   if (noteId)
     toggleActiveClass({
@@ -123,6 +159,8 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     const { noteId, dialog } = getUrlParams()
     // setup url routing based on the note
     note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
+
+    sidebar.close()
 
     // update styling for the selected note in list
     toggleActiveClass({
@@ -162,45 +200,25 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
 window.addEventListener(NoteEvents.Create, async (event) => {
   const title = (event as CustomEvent)?.detail?.title
   try {
-    // re-render the sidebar with loading state
-    renderSidebarCreateNote({
-      isSavingNote: true,
-      title: title,
-    })
-    const _id = await database.put({ title, content: '' })
-    createEvent(NoteEvents.Created, { _id }).dispatch()
+    const { _id } = await database.put({ title, content: '' })
+    sidebar.closeInput()
+    createEvent(NoteEvents.Select, { _id }).dispatch()
+    createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    // TODO: render error notification inside sidebarMenu
-    renderSidebarCreateNote({
-      isSavingNote: false,
-      title: title,
-      error: 'Error creating note',
-    })
+    logger.logError('Error creating note.', error)
   }
-})
-
-window.addEventListener(NoteEvents.Created, async (event) => {
-  renderSidebarCreateNote({ isSavingNote: false, error: '' })
-  const _id = (event as CustomEvent)?.detail?._id
-  createEvent(NoteEvents.Select, { _id }).dispatch()
-  createEvent(NoteEvents.GetAll).dispatch()
 })
 
 window.addEventListener(NoteEvents.Save, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note
     const { updatedAt } = await database.put(note)
-    createEvent(NoteEvents.Saved, { note: { ...note, updatedAt } }).dispatch()
+    footer.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
+    // ensure rest of state is updated
+    createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
     logger.logError('Error saving note.', error)
   }
-})
-
-window.addEventListener(NoteEvents.Saved, (event) => {
-  const note = (event as CustomEvent)?.detail?.note as Note
-  footer.renderLastSaved(new Date(note?.updatedAt ?? '').toLocaleString())
-  // ensure rest of state is updated
-  createEvent(NoteEvents.GetAll).dispatch()
 })
 
 window.addEventListener(NoteEvents.EditTitle, async (event) => {
@@ -327,6 +345,9 @@ window.addEventListener(LoggerEvents.Error, (event) => {
  * Keyboard events
  */
 document.addEventListener(KeyboardEvents.Keydown, (event) => {
+  // TODO: the create input ESC click to close lives in its component
+  // as opposed to here. Consider consolidating
+
   // TODO: note sure how to do this, as it will require the current note
   // which is currently not exposed state, but passed by events.
   // the keyboard does not have access to the current note, so it will need to fetch it from state.
@@ -374,6 +395,38 @@ function setupDatabase() {
   } catch (error) {
     logger.logError('Error setting up database.', error)
   }
+}
+
+function setDesktopView() {
+  sidebar.toggleFullscreen(false)
+  toggleEditorVisibility(true)
+}
+
+function setMobileView() {
+  sidebar.toggleFullscreen(true)
+  toggleEditorVisibility(false)
+}
+
+function toggleEditorVisibility(isVisible: boolean) {
+  const body = document.body
+  const mainElement = document.querySelector('#main') as HTMLElement
+  if (isVisible) {
+    mainElement.style.display = 'flex'
+    body.classList.remove('body-invisible')
+    body.classList.add('body-visible')
+  } else {
+    mainElement.style.display = 'none'
+    body.classList.remove('body-visible')
+    body.classList.add('body-invisible')
+  }
+}
+
+function handleScreenWidth() {
+  const width = window.innerWidth
+  const previousIsMobile = isMobile
+  isMobile = width < 640
+  if (previousIsMobile !== isMobile)
+    dispatchEvent(new Event(LifeCycleEvents.WidthChanged))
 }
 
 function toggleActiveClass({

@@ -1,13 +1,18 @@
 #editor-top-menu {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
   padding: 0.5em;
-  border-bottom: var(--outline-color) 0.15em solid;
+  border-right: var(--outline-color) 0.15em solid;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: min-content;
 }
 
 #editor-top-menu > div {
   display: flex;
-  margin: 0.15em 0.5em;
+  flex-direction: column;
+  margin: 0.4em 0.2em;
 }
 
 #editor-top-menu > div > button {
@@ -16,7 +21,10 @@
 
 #editor {
   flex-grow: 1;
+  display: flex;
+  justify-content: center;
   overflow-y: auto;
+  padding-top: 1em;
 }
 
 #editor-floating-menu {
@@ -30,10 +38,10 @@
 /* TipTap/ProseMirror specific */
 .ProseMirror {
   height: 100%;
-  max-width: 80em;
+  width: 100%;
+  max-width: 50em;
   outline: none;
-  padding-left: 3em;
-  padding-right: 7em;
+  padding: 0 1em;
 }
 
 .code-block {

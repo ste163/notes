@@ -88,6 +88,7 @@ class Dialog {
     this.previouslyFocusedOutsideElement =
       document.activeElement as HTMLElement | null
 
+    document.body.style.userSelect = 'none' // disallow selecting text behind dialog
     this.dialogBackdrop.style.display = 'block' // shows dialog
 
     this.dialog.addEventListener('keydown', this.trapFocusListener)
@@ -99,6 +100,7 @@ class Dialog {
 
   public close() {
     window.removeEventListener(DialogEvents.Closed, this.closeDialogFromEvent)
+    document.body.style.userSelect = 'text' // re-enable selecting text
     this.delete()
     if (this.previouslyFocusedOutsideElement)
       this.previouslyFocusedOutsideElement.focus()

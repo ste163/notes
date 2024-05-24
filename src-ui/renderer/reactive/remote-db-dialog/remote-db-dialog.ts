@@ -27,10 +27,9 @@ function renderRemoteDbDialog({
   // that all my data from my local is synced to the new remote.
 
   dialogContent.innerHTML = `
-      <div class='remote-db-setup-container'>
-        <section>
-          <h3 class="remote-db-connection-heading">Connection details</h3>
-          <form id="remote-db-connection-form">
+        <section class="remote-db-setup-dialog">
+          <h3>Connection details</h3>
+          <form>
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="admin">
             <label for="password">Password</label>
@@ -81,8 +80,7 @@ function renderRemoteDbDialog({
         <section>
           <h3>Need help?</h3>
           <div>To setup a remote, Docker-based database for this application, visit <a target="_blank" href="https://github.com/ste163/couchdb-docker">this project on Github</a>.</div>
-        </section>
-      </div>`
+        </section>`
 
   const dialog = new Dialog()
 

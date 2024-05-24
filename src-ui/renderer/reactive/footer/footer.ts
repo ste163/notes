@@ -11,12 +11,12 @@ class Footer {
     container.innerHTML = '' // reset container
     container.innerHTML = `
       <div class='footer-data-container'>
-        <div id="remote-db-setup-container"></div>
-        <div id="footer-last-sync"></div>
-        <div id="footer-last-save"></div>
+        <div id='remote-db-setup-container'></div>
+        <div id='footer-last-sync' class='hide-on-mobile'></div>
+        <div id='footer-last-save' class='hide-on-mobile'></div>
       </div>
       <div class='footer-status-container'>
-        <div id="footer-alert"></div>
+        <div id='footer-alert'></div>
         <div>v${pkg.version}</div>
       </div>`
   }

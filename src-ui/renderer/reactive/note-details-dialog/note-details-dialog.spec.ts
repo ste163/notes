@@ -40,7 +40,7 @@ describe('note-details-dialog', () => {
       getByText(new Date(note.createdAt).toLocaleString())
     ).toBeInTheDocument()
 
-    // last updated at is rendered
+    // last saved at is rendered
     expect(
       getByText(new Date(note.updatedAt).toLocaleString())
     ).toBeInTheDocument()

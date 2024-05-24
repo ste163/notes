@@ -36,135 +36,6 @@ interface EditorButton extends ButtonOptions {
 const BUTTON_CONFIGURATION: EditorButton[] = [
   {
     group: 1,
-    title: 'Bold',
-    markName: 'bold',
-    className: 'menu-button-bold',
-    isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleBold().run(),
-    html: boldIcon,
-  },
-  {
-    group: 1,
-    title: 'Italic',
-    markName: 'italic',
-    className: 'menu-button-italic',
-    isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleItalic().run(),
-    html: italicIcon,
-  },
-  {
-    group: 1,
-    title: 'Underline',
-    markName: 'underline',
-    className: 'menu-button-underline',
-    isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleUnderline().run(),
-    html: underlineIcon,
-  },
-  {
-    group: 1,
-    title: 'Strike',
-    markName: 'strike',
-    className: 'menu-button-strike',
-    isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleStrike().run(),
-    html: strikeIcon,
-  },
-  {
-    group: 2,
-    title: 'Heading 1',
-    markName: 'heading',
-    markOptions: { level: 1 },
-    className: 'menu-button-h1',
-    isInFloatingMenu: false,
-    onClick: () =>
-      EditorStore.editor?.chain().focus().toggleHeading({ level: 1 }).run(),
-    html: heading1Icon,
-  },
-  {
-    group: 2,
-    title: 'Heading 2',
-    markName: 'heading',
-    markOptions: { level: 2 },
-    className: 'menu-button-h2',
-    isInFloatingMenu: false,
-    onClick: () =>
-      EditorStore.editor?.chain().focus().toggleHeading({ level: 2 }).run(),
-    html: heading2Icon,
-  },
-  {
-    group: 2,
-    title: 'Heading 3',
-    markName: 'heading',
-    markOptions: { level: 3 },
-    className: 'menu-button-h3',
-    isInFloatingMenu: false,
-    onClick: () =>
-      EditorStore.editor?.chain().focus().toggleHeading({ level: 3 }).run(),
-    html: heading3Icon,
-  },
-  {
-    group: 3,
-    title: 'Bullet List',
-    markName: 'bulletList',
-    className: 'menu-button-bullet-list',
-    isInFloatingMenu: false,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleBulletList().run()
-    },
-    html: bulletListIcon,
-  },
-  {
-    group: 3,
-    title: 'Ordered List',
-    markName: 'orderedList',
-    className: 'menu-button-ordered-list',
-    isInFloatingMenu: false,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleOrderedList().run()
-    },
-    html: orderedListIcon,
-  },
-  {
-    group: 3,
-    // todo: need to remove the bullet from this
-    // and make the checkbox bigger
-    title: 'Task List',
-    markName: 'taskList',
-    className: 'menu-button-task-list',
-    isInFloatingMenu: true,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleTaskList().run()
-    },
-    html: taskListIcon,
-  },
-  {
-    group: 4,
-    title: 'Code Block',
-    markName: 'codeBlock',
-    className: 'menu-button-code-block',
-    isInFloatingMenu: true,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleCodeBlock().run()
-    },
-    html: codeBlockIcon,
-  },
-  {
-    group: 5,
-    title: 'Undo',
-    isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().undo().run(),
-    html: undoIcon,
-  },
-  {
-    group: 5,
-    title: 'Redo',
-    isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().redo().run(),
-    html: redoIcon,
-  },
-  {
-    group: 6,
     title: 'Save note',
     isInFloatingMenu: false,
     onClick: (arg) => {
@@ -178,11 +49,140 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: saveIcon,
   },
   {
-    group: 6,
+    group: 1,
     title: 'Note settings',
     isInFloatingMenu: false,
     onClick: (note) => noteDetailsDialog.render(note as Note),
     html: settingsIcon,
+  },
+  {
+    group: 2,
+    title: 'Bold',
+    markName: 'bold',
+    className: 'menu-button-bold',
+    isInFloatingMenu: false,
+    onClick: () => EditorStore.editor?.chain().focus().toggleBold().run(),
+    html: boldIcon,
+  },
+  {
+    group: 2,
+    title: 'Italic',
+    markName: 'italic',
+    className: 'menu-button-italic',
+    isInFloatingMenu: false,
+    onClick: () => EditorStore.editor?.chain().focus().toggleItalic().run(),
+    html: italicIcon,
+  },
+  {
+    group: 2,
+    title: 'Underline',
+    markName: 'underline',
+    className: 'menu-button-underline',
+    isInFloatingMenu: false,
+    onClick: () => EditorStore.editor?.chain().focus().toggleUnderline().run(),
+    html: underlineIcon,
+  },
+  {
+    group: 2,
+    title: 'Strike',
+    markName: 'strike',
+    className: 'menu-button-strike',
+    isInFloatingMenu: false,
+    onClick: () => EditorStore.editor?.chain().focus().toggleStrike().run(),
+    html: strikeIcon,
+  },
+  {
+    group: 3,
+    title: 'Heading 1',
+    markName: 'heading',
+    markOptions: { level: 1 },
+    className: 'menu-button-h1',
+    isInFloatingMenu: false,
+    onClick: () =>
+      EditorStore.editor?.chain().focus().toggleHeading({ level: 1 }).run(),
+    html: heading1Icon,
+  },
+  {
+    group: 3,
+    title: 'Heading 2',
+    markName: 'heading',
+    markOptions: { level: 2 },
+    className: 'menu-button-h2',
+    isInFloatingMenu: false,
+    onClick: () =>
+      EditorStore.editor?.chain().focus().toggleHeading({ level: 2 }).run(),
+    html: heading2Icon,
+  },
+  {
+    group: 3,
+    title: 'Heading 3',
+    markName: 'heading',
+    markOptions: { level: 3 },
+    className: 'menu-button-h3',
+    isInFloatingMenu: false,
+    onClick: () =>
+      EditorStore.editor?.chain().focus().toggleHeading({ level: 3 }).run(),
+    html: heading3Icon,
+  },
+  {
+    group: 4,
+    title: 'Bullet List',
+    markName: 'bulletList',
+    className: 'menu-button-bullet-list',
+    isInFloatingMenu: false,
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleBulletList().run()
+    },
+    html: bulletListIcon,
+  },
+  {
+    group: 4,
+    title: 'Ordered List',
+    markName: 'orderedList',
+    className: 'menu-button-ordered-list',
+    isInFloatingMenu: false,
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleOrderedList().run()
+    },
+    html: orderedListIcon,
+  },
+  {
+    group: 4,
+    // todo: need to remove the bullet from this
+    // and make the checkbox bigger
+    title: 'Task List',
+    markName: 'taskList',
+    className: 'menu-button-task-list',
+    isInFloatingMenu: true,
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleTaskList().run()
+    },
+    html: taskListIcon,
+  },
+  {
+    group: 5,
+    title: 'Code Block',
+    markName: 'codeBlock',
+    className: 'menu-button-code-block',
+    isInFloatingMenu: true,
+    onClick: () => {
+      EditorStore.editor?.chain().focus().toggleCodeBlock().run()
+    },
+    html: codeBlockIcon,
+  },
+  {
+    group: 6,
+    title: 'Undo',
+    isInFloatingMenu: false,
+    onClick: () => EditorStore.editor?.chain().focus().undo().run(),
+    html: undoIcon,
+  },
+  {
+    group: 6,
+    title: 'Redo',
+    isInFloatingMenu: false,
+    onClick: () => EditorStore.editor?.chain().focus().redo().run(),
+    html: redoIcon,
   },
 ]
 
@@ -194,7 +194,6 @@ function instantiateTopMenuButtons(note: Note | null) {
       className: b.className ?? '',
       onClick: () => b.onClick(note),
     }).getElement()
-
     button.dataset.group = b.group.toString()
     return button
   })
