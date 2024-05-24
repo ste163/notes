@@ -7,6 +7,7 @@ import './sidebar.css'
 class Sidebar {
   private notes: Notes = {}
   private inputContainerId = 'note-input-container'
+  private isOpen: boolean = false
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -52,7 +53,12 @@ class Sidebar {
 
   public open() {
     this.render()
+    this.isOpen = true
     dispatchEvent(new Event(LifeCycleEvents.SidebarOpened))
+  }
+
+  public getIsOpen() {
+    return this.isOpen
   }
 
   public close() {
@@ -72,6 +78,7 @@ class Sidebar {
         style: { border: 'none' },
       }).getElement()
     )
+    this.isOpen = false
     dispatchEvent(new Event(LifeCycleEvents.SidebarClosed))
   }
 

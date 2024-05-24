@@ -52,7 +52,6 @@ import type { Note } from 'types'
 
 let database: Database
 let isMobile: boolean
-let isSidebarOpen: boolean
 
 window.addEventListener('resize', handleScreenWidth)
 
@@ -81,7 +80,7 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   if (isNoteSelected) {
     sidebar.toggleCloseButtonVisibility(true)
     isMobile
-      ? isSidebarOpen
+      ? sidebar.getIsOpen()
         ? setMobileView()
         : setDesktopView()
       : setDesktopView()
@@ -94,12 +93,10 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
 })
 
 window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
-  isSidebarOpen = true
   isMobile ? setMobileView() : setDesktopView()
 })
 
 window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
-  isSidebarOpen = false
   setDesktopView()
 })
 
