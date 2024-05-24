@@ -78,16 +78,6 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   const { noteId } = getUrlParams()
   const isNoteSelected = !!noteId
 
-  const setDesktopView = () => {
-    sidebar.toggleFullscreen(false)
-    toggleEditorVisibility(true)
-  }
-
-  const setMobileView = () => {
-    sidebar.toggleFullscreen(true)
-    toggleEditorVisibility(false)
-  }
-
   if (isNoteSelected) {
     sidebar.toggleCloseButtonVisibility(true)
     isMobile
@@ -105,21 +95,12 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
 
 window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
   isSidebarOpen = true
-  if (isMobile) {
-    sidebar.toggleFullscreen(true)
-    toggleEditorVisibility(false)
-  } else {
-    sidebar.toggleFullscreen(false)
-    toggleEditorVisibility(true)
-  }
+  isMobile ? setMobileView() : setDesktopView()
 })
 
 window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
   isSidebarOpen = false
-  if (isMobile) {
-    sidebar.toggleFullscreen(false)
-    toggleEditorVisibility(true)
-  }
+  setDesktopView()
 })
 
 /**
@@ -416,6 +397,16 @@ function setupDatabase() {
   } catch (error) {
     logger.logError('Error setting up database.', error)
   }
+}
+
+function setDesktopView() {
+  sidebar.toggleFullscreen(false)
+  toggleEditorVisibility(true)
+}
+
+function setMobileView() {
+  sidebar.toggleFullscreen(true)
+  toggleEditorVisibility(false)
 }
 
 function toggleEditorVisibility(isVisible: boolean) {
