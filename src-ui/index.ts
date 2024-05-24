@@ -1,8 +1,15 @@
+// Two components to refactor into classes:
+// Editor
+// DB Dialog
+
 /**
  * TODO PRIORITY ORDER
+ *  - Only auto-close sidebar when in mobile view, not desktop. Keep it open.
+ *  - AUTO SAVE open editor state on note select (before swapping to new note)
  *  - Editor is a class instance like the other reactive components
  *      - always render it with buttons and main editor disabled if no note selected
  *  - render note title when it is selected (above the editor)
+ *  - DATABASE should be a single class instance, like the other classes (so i can remove local state)
  *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
  *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
  *    the details dialog and always fetch by id.
@@ -20,7 +27,8 @@
  *             - the error also gets triggered/logged before vite connects (in the logs)
  *     - BUG: if unable to find data, need to be able to delete the undefined notes
  * - FEATURES
- *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - keyboard shortcuts for saving
+ *   - (placed in footer)? auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - mobile view (sidebar only + selected note only, state lives in URL)
  *   - hyperlinks in the editor
  *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
