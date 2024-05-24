@@ -9,6 +9,9 @@
  *  - Editor is a class instance like the other reactive components
  *      - always render it with buttons and main editor disabled if no note selected
  *  - render note title when it is selected (above the editor)
+ *  - add a warning banner for web-only builds that says:
+ *  "Running: web version. This is version is for demo purposes only. Please download
+ *   the application for the best experience."
  *  - DATABASE should be a single class instance, like the other classes (so i can remove local state)
  *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
  *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
