@@ -1,5 +1,5 @@
 // Two components to refactor into classes:
-// Editor
+// Editor - and then I can remove the store
 // DB Dialog
 
 /**
