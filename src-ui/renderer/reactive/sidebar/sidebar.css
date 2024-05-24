@@ -22,7 +22,12 @@
 }
 
 #sidebar-menu {
-  margin: 1em;
+  margin: 0.5em;
+}
+
+#sidebar-menu-controls {
+  display: flex;
+  justify-content: space-between;
 }
 
 #sidebar-list {

@@ -1,19 +1,12 @@
 import { NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
-import { addNoteIcon, fileListIcon } from 'icons'
+import { addNoteIcon, closeIcon, fileListIcon } from 'icons'
 import type { Notes } from 'types'
 import './sidebar.css'
 
 class Sidebar {
   private notes: Notes = {}
   private inputContainerId = 'note-input-container'
-
-  // TODO: allow for sidebar to opened and closed
-  // if it's closed, the create button becomes an icon button for the menu
-  // ALSO try
-  // swap the editor buttons and the note list sidebar
-  // so that way opening and closing the sidebar
-  // does not move the editor text content
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -28,10 +21,12 @@ class Sidebar {
     container.classList.add('sidebar-opened')
     container.innerHTML = '' // reset container
     container.innerHTML = `
-      <div id='sidebar-menu'></div>
+      <div id='sidebar-menu'>
+        <div id='sidebar-menu-controls'></div>
+      </div>
       <div id='sidebar-list'></div>
     `
-    document.querySelector('#sidebar-menu')?.appendChild(
+    document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
         title: 'Create note',
         onClick: this.renderInput,
@@ -39,6 +34,15 @@ class Sidebar {
         ${addNoteIcon}
         <span>Create<span/>
       `,
+      }).getElement()
+    )
+
+    document.querySelector('#sidebar-menu-controls')?.appendChild(
+      new Button({
+        title: 'Close sidebar',
+        onClick: this.close.bind(this),
+        html: `${closeIcon}`,
+        style: { border: 'none' },
       }).getElement()
     )
 
@@ -63,6 +67,7 @@ class Sidebar {
         title: 'Open sidebar',
         onClick: this.render.bind(this),
         html: `${fileListIcon}`,
+        style: { border: 'none' },
       }).getElement()
     )
   }

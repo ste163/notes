@@ -34,17 +34,17 @@ describe('sidebar', () => {
     })
   })
 
-  it('note-list: renders no notes if no notes are present', () => {
+  it('renders no notes if no notes are present', () => {
     const { getAllByRole } = renderComponent({
       renderComponent: sidebar.render.bind(sidebar),
     })
     sidebar.renderNoteList()
 
-    // notes are rendered as buttons, but the first is the Create note button
-    expect(getAllByRole('button')).toHaveLength(1)
+    // notes are rendered as buttons, but the first two are the create and close buttons
+    expect(getAllByRole('button')).toHaveLength(2)
   })
 
-  it('note-list: renders notes and clicking note emits event', async () => {
+  it('renders note list and clicking note emits event', async () => {
     const notes: Notes = {
       '1': {
         _id: '1',
@@ -68,10 +68,10 @@ describe('sidebar', () => {
 
     // notes are rendered as buttons
     const buttons = getAllByRole('button')
-    expect(buttons).toHaveLength(Object.keys(notes).length + 1)
+    expect(buttons).toHaveLength(Object.keys(notes).length + 2) // first two buttons are create and close
 
     // clicking note emits event
-    await userEvent.click(buttons[1])
+    await userEvent.click(buttons[2]) // click the first note
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Select, {
       _id: '1',
     })
