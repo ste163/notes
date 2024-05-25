@@ -1,7 +1,5 @@
 import { NoteEvents, createEvent } from 'event'
-import { EditorStore } from 'store'
 import { Button } from 'components'
-import { noteDetailsDialog } from 'renderer/reactive'
 import {
   boldIcon,
   bulletListIcon,
@@ -20,10 +18,12 @@ import {
   undoIcon,
 } from 'icons'
 import type { ButtonOptions } from 'components'
-import type { MarkOptions, Note } from 'types'
+import type { MarkOptions } from 'types'
+import type { Editor } from '@tiptap/core'
 
-interface EditorButton extends ButtonOptions {
+interface EditorButton extends Omit<ButtonOptions, 'onClick'> {
   group: number // used for placing in which div for organization
+  onClick: (editor: Editor | null) => void
   isInFloatingMenu: boolean
   markName?: string // used for toggling css
   markOptions?: MarkOptions // used for toggling css
@@ -38,13 +38,11 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 1,
     title: 'Save note',
     isInFloatingMenu: false,
-    onClick: (arg) => {
-      if (typeof arg === 'object' && arg !== null) {
-        const note = arg as Note
-        const noteToSave = { ...note }
-        noteToSave.content = EditorStore.editor?.getHTML() ?? note?.content
-        createEvent(NoteEvents.Save, { note: noteToSave }).dispatch()
-      }
+    onClick: () => {
+      // TODO: save will just call the save event, and then from index
+      // the save event will call editor.getContent which will get everything
+      // ready to be saved
+      createEvent(NoteEvents.Save).dispatch()
     },
     html: saveIcon,
   },
@@ -52,7 +50,14 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 1,
     title: 'Note settings',
     isInFloatingMenu: false,
-    onClick: (note) => noteDetailsDialog.render(note as Note),
+    // TODO: this needs to emit an EVENT
+    // WHY? Because then noteDetailsDialog can always fetch the latest note
+    // as opposed to this function knowing everything
+    // index.ts is the brain. NOT these functions
+    onClick: () => {
+      console.log('TODO DISPATCH EVENT')
+      // noteDetailsDialog.render(note as Note)
+    },
     html: settingsIcon,
   },
   {
@@ -61,7 +66,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'bold',
     className: 'menu-button-bold',
     isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleBold().run(),
+    onClick: (editor) => editor?.chain().focus().toggleBold().run(),
     html: boldIcon,
   },
   {
@@ -70,7 +75,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'italic',
     className: 'menu-button-italic',
     isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleItalic().run(),
+    onClick: (editor) => editor?.chain().focus().toggleItalic().run(),
     html: italicIcon,
   },
   {
@@ -79,7 +84,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'underline',
     className: 'menu-button-underline',
     isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleUnderline().run(),
+    onClick: (editor) => editor?.chain().focus().toggleUnderline().run(),
     html: underlineIcon,
   },
   {
@@ -88,7 +93,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'strike',
     className: 'menu-button-strike',
     isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().toggleStrike().run(),
+    onClick: (editor) => editor?.chain().focus().toggleStrike().run(),
     html: strikeIcon,
   },
   {
@@ -98,8 +103,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 1 },
     className: 'menu-button-h1',
     isInFloatingMenu: false,
-    onClick: () =>
-      EditorStore.editor?.chain().focus().toggleHeading({ level: 1 }).run(),
+    onClick: (editor) =>
+      editor?.chain().focus().toggleHeading({ level: 1 }).run(),
     html: heading1Icon,
   },
   {
@@ -109,8 +114,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 2 },
     className: 'menu-button-h2',
     isInFloatingMenu: false,
-    onClick: () =>
-      EditorStore.editor?.chain().focus().toggleHeading({ level: 2 }).run(),
+    onClick: (editor) =>
+      editor?.chain().focus().toggleHeading({ level: 2 }).run(),
     html: heading2Icon,
   },
   {
@@ -120,8 +125,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 3 },
     className: 'menu-button-h3',
     isInFloatingMenu: false,
-    onClick: () =>
-      EditorStore.editor?.chain().focus().toggleHeading({ level: 3 }).run(),
+    onClick: (editor) =>
+      editor?.chain().focus().toggleHeading({ level: 3 }).run(),
     html: heading3Icon,
   },
   {
@@ -130,8 +135,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'bulletList',
     className: 'menu-button-bullet-list',
     isInFloatingMenu: false,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleBulletList().run()
+    onClick: (editor) => {
+      editor?.chain().focus().toggleBulletList().run()
     },
     html: bulletListIcon,
   },
@@ -141,8 +146,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'orderedList',
     className: 'menu-button-ordered-list',
     isInFloatingMenu: false,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleOrderedList().run()
+    onClick: (editor) => {
+      editor?.chain().focus().toggleOrderedList().run()
     },
     html: orderedListIcon,
   },
@@ -154,8 +159,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'taskList',
     className: 'menu-button-task-list',
     isInFloatingMenu: true,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleTaskList().run()
+    onClick: (editor) => {
+      editor?.chain().focus().toggleTaskList().run()
     },
     html: taskListIcon,
   },
@@ -165,8 +170,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'codeBlock',
     className: 'menu-button-code-block',
     isInFloatingMenu: true,
-    onClick: () => {
-      EditorStore.editor?.chain().focus().toggleCodeBlock().run()
+    onClick: (editor) => {
+      editor?.chain().focus().toggleCodeBlock().run()
     },
     html: codeBlockIcon,
   },
@@ -174,38 +179,38 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 6,
     title: 'Undo',
     isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().undo().run(),
+    onClick: (editor) => editor?.chain().focus().undo().run(),
     html: undoIcon,
   },
   {
     group: 6,
     title: 'Redo',
     isInFloatingMenu: false,
-    onClick: () => EditorStore.editor?.chain().focus().redo().run(),
+    onClick: (editor) => editor?.chain().focus().redo().run(),
     html: redoIcon,
   },
 ]
 
-function instantiateMenuButtons(note: Note | null) {
+function instantiateMenuButtons(editor: Editor | null) {
   return BUTTON_CONFIGURATION.filter((b) => !b.isInFloatingMenu).map((b) => {
     const button = new Button({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
-      onClick: () => b.onClick(note),
+      onClick: () => b.onClick(editor),
     }).getElement()
     button.dataset.group = b.group.toString()
     return button
   })
 }
 
-function instantiateFloatingMenuButtons(note: Note | null) {
+function instantiateFloatingMenuButtons(editor: Editor | null) {
   return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) =>
     new Button({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
-      onClick: () => b.onClick(note),
+      onClick: () => b.onClick(editor),
     }).getElement()
   )
 }

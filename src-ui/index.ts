@@ -1,5 +1,4 @@
-// Two components to refactor into classes:
-// Editor - and then I can remove the store
+// COMPONENT to refactor into class:
 // DB Dialog
 
 /**
@@ -51,7 +50,6 @@ import {
 } from 'event'
 import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
-import { EditorStore } from 'store'
 
 import {
   sidebar,
@@ -332,13 +330,13 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   const { noteId } = getUrlParams()
   setUrl({ noteId, dialog: dialogTitle })
 
-  EditorStore.editor?.setEditable(false)
+  editor?.setDisabled(true)
 })
 
 window.addEventListener(DialogEvents.Closed, () => {
   // If there is a selected note, enable the editor after dialog closes
   const { noteId } = getUrlParams()
-  if (noteId) EditorStore.editor?.setEditable(true)
+  if (noteId) editor.setDisabled(false)
   setUrl({ noteId })
 })
 

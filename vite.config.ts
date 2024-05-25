@@ -24,7 +24,6 @@ export default defineConfig({
       icons: '/src-ui/renderer/icons',
       logger: '/src-ui/logger',
       'renderer/reactive': '/src-ui/renderer/reactive',
-      store: '/src-ui/store',
       types: '/src-ui/types',
       'test-utils': '/src-ui/test-utils',
     },

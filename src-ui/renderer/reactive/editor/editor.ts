@@ -1,4 +1,3 @@
-import { EditorStore } from 'store'
 import {
   BUTTON_CONFIGURATION,
   instantiateMenuButtons,
@@ -51,7 +50,7 @@ class Editor {
     if (!container) return
     container.innerHTML = '' // reset container before rendering
 
-    const buttons = instantiateMenuButtons(this.note) // IDEALLY we do not pass the nmote in here
+    const buttons = instantiateMenuButtons(this.editor)
     buttons.forEach((button) => {
       if (isDisabled) button.disabled = true
 
@@ -74,7 +73,7 @@ class Editor {
     const container = document.querySelector('#editor-floating-menu')
     if (!container) return
     container.innerHTML = '' // reset container before rendering
-    const buttons = instantiateFloatingMenuButtons(this.note)
+    const buttons = instantiateFloatingMenuButtons(this.editor)
     buttons.forEach((button) => {
       container.appendChild(button)
     })
@@ -91,6 +90,7 @@ class Editor {
 
   public setDisabled(isDisabled: boolean) {
     this.editor?.setEditable(isDisabled)
+    this.renderMenu(isDisabled)
   }
 
   private toggleActiveEditorClass({
@@ -154,11 +154,13 @@ class Editor {
       content:
         note?.content ??
         `<h1>Get started</h1><p>Create a note from the sidebar.</p>`,
-      onUpdate: ({ editor }) => {
-        if (EditorStore.isDirty) return
-        const currentContent = editor.getHTML()
-        EditorStore.isDirty = currentContent !== note?.content
-      },
+      onUpdate: () =>
+        // { editor }
+        {
+          // if (EditorStore.isDirty) return
+          // const currentContent = editor.getHTML()
+          // EditorStore.isDirty = currentContent !== note?.content
+        },
       onTransaction: () => {
         /**
          * onTransaction tracks cursor position
