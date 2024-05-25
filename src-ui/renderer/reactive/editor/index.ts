@@ -1,1 +1,1 @@
-export { renderEditor } from './editor'
+export { editor } from './editor'

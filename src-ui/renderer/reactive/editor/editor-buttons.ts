@@ -186,7 +186,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
   },
 ]
 
-function instantiateTopMenuButtons(note: Note | null) {
+function instantiateMenuButtons(note: Note | null) {
   return BUTTON_CONFIGURATION.filter((b) => !b.isInFloatingMenu).map((b) => {
     const button = new Button({
       title: b.title,
@@ -212,6 +212,6 @@ function instantiateFloatingMenuButtons(note: Note | null) {
 
 export {
   BUTTON_CONFIGURATION,
-  instantiateTopMenuButtons,
+  instantiateMenuButtons,
   instantiateFloatingMenuButtons,
 }

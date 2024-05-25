@@ -1,10 +1,10 @@
 import { EditorStore } from 'store'
 import {
   BUTTON_CONFIGURATION,
-  instantiateTopMenuButtons,
+  instantiateMenuButtons,
   instantiateFloatingMenuButtons,
 } from './editor-buttons'
-import { Editor } from '@tiptap/core'
+import { Editor as TipTapEditor } from '@tiptap/core'
 import FloatingMenu from '@tiptap/extension-floating-menu'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -24,165 +24,173 @@ import History from '@tiptap/extension-history'
 import type { MarkOptions, Note } from 'types'
 import './editor.css'
 
-/**
- * Instantiates the editor and returns the instance.
- */
-async function renderEditor({
-  note,
-  isLoading,
-}: {
-  note: Note | null
-  isLoading: boolean
-}): Promise<Editor | void> {
-  const editorElement = document.querySelector('#editor')
-  const topEditorMenu = document.querySelector('#editor-top-menu')
-  const floatingEditorMenu = document.querySelector('#editor-floating-menu')
-  if (!editorElement) throw new Error('Unable to find editor element')
+class Editor {
+  private editor: TipTapEditor | null = null
+  private note: Note | null = null
 
-  if (editorElement) editorElement.innerHTML = '' // reset container before rendering
-
-  if (isLoading) {
-    editorElement.innerHTML = 'Loading...'
-    return
+  constructor() {
+    this.render()
   }
 
-  const editor = new Editor({
-    element: editorElement,
-    extensions: [
-      Document,
-      Paragraph,
-      Text,
-      Bold,
-      Italic,
-      Underline,
-      Strike,
-      Heading,
-      BulletList,
-      ListItem,
-      OrderedList,
-      TaskList,
-      TaskItem.configure({
-        nested: true,
-        HTMLAttributes: {
-          class: 'task-item',
-        },
-      }),
-      CodeBlock.configure({
-        HTMLAttributes: {
-          class: 'code-block',
-        },
-      }),
-      History,
-      FloatingMenu.configure({
-        element: floatingEditorMenu as HTMLElement,
-        shouldShow: ({ editor, view }) =>
-          view.state.selection.$head.node().content.size === 0
-            ? editor.isActive('paragraph')
-            : false,
-      }),
-    ],
-    content:
-      note?.content ??
-      `<h1>Get started</h1><p>Create a note from the sidebar.</p>`,
-    onUpdate: ({ editor }) => {
-      if (EditorStore.isDirty) return
-      const currentContent = editor.getHTML()
-      EditorStore.isDirty = currentContent !== note?.content
-    },
-    onTransaction: ({ editor }) => {
-      /**
-       * onTransaction tracks cursor position
-       * and is used to toggle active css for each button
-       */
-      BUTTON_CONFIGURATION.forEach(({ className, markName, markOptions }) => {
-        if (!className) return
-        toggleActiveEditorClass({
-          className,
-          markName: markName ?? '',
-          markOptions,
-          editor,
+  public render() {
+    const container = document.querySelector('#main')
+    if (!container) throw new Error('Main container not found')
+    container.innerHTML = ''
+    container.innerHTML = `
+      <div id='editor-menu'></div>
+      <div id='editor-floating-menu'></div>
+      <div id='editor'></div>
+    `
+    this.editor = this.instantiateTipTap(this.note)
+    this.renderMenu()
+    this.renderFloatingMenu()
+  }
+
+  public renderMenu(isDisabled = false) {
+    const container = document.querySelector('#editor-menu')
+    if (!container) return
+    container.innerHTML = '' // reset container before rendering
+
+    const buttons = instantiateMenuButtons(this.note) // IDEALLY we do not pass the nmote in here
+    buttons.forEach((button) => {
+      if (isDisabled) button.disabled = true
+
+      // group buttons by data attribute
+      const group = button.dataset.group
+      if (!group) throw new Error('Top menu button is not assigned to a group')
+
+      const groupId = `top-menu-group-${group}`
+      let groupContainer = document.querySelector(`#${groupId}`)
+      if (!groupContainer) {
+        groupContainer = document.createElement('div')
+        groupContainer.id = groupId
+      }
+      container.appendChild(groupContainer)
+      groupContainer.appendChild(button)
+    })
+  }
+
+  public renderFloatingMenu() {
+    const container = document.querySelector('#editor-floating-menu')
+    if (!container) return
+    container.innerHTML = '' // reset container before rendering
+    const buttons = instantiateFloatingMenuButtons(this.note)
+    buttons.forEach((button) => {
+      container.appendChild(button)
+    })
+  }
+
+  public getEditor() {
+    return this.editor
+  }
+
+  public setNote(note: Note | null) {
+    this.note = note
+    this.render()
+  }
+
+  public setDisabled(isDisabled: boolean) {
+    this.editor?.setEditable(isDisabled)
+  }
+
+  private toggleActiveEditorClass({
+    className,
+    markName,
+    markOptions,
+  }: {
+    className: string
+    markName: string
+    markOptions?: MarkOptions
+  }): void {
+    const elements = document.querySelectorAll(`.${className}`)
+    if (!elements.length) return
+    elements.forEach((element) => {
+      // isActive checks the current cursor position
+      this.editor?.isActive(markName, markOptions && markOptions)
+        ? element.classList.add('isActive')
+        : element.classList.remove('isActive')
+    })
+  }
+
+  private instantiateTipTap(note: Note | null) {
+    const editorElement = document.querySelector('#editor') as Element
+    const floatingEditorMenu = document.querySelector('#editor-floating-menu')
+
+    const editor = new TipTapEditor({
+      element: editorElement,
+      extensions: [
+        Document,
+        Paragraph,
+        Text,
+        Bold,
+        Italic,
+        Underline,
+        Strike,
+        Heading,
+        BulletList,
+        ListItem,
+        OrderedList,
+        TaskList,
+        TaskItem.configure({
+          nested: true,
+          HTMLAttributes: {
+            class: 'task-item',
+          },
+        }),
+        CodeBlock.configure({
+          HTMLAttributes: {
+            class: 'code-block',
+          },
+        }),
+        History,
+        FloatingMenu.configure({
+          element: floatingEditorMenu as HTMLElement,
+          shouldShow: ({ editor, view }) =>
+            view.state.selection.$head.node().content.size === 0
+              ? editor.isActive('paragraph')
+              : false,
+        }),
+      ],
+      content:
+        note?.content ??
+        `<h1>Get started</h1><p>Create a note from the sidebar.</p>`,
+      onUpdate: ({ editor }) => {
+        if (EditorStore.isDirty) return
+        const currentContent = editor.getHTML()
+        EditorStore.isDirty = currentContent !== note?.content
+      },
+      onTransaction: () => {
+        /**
+         * onTransaction tracks cursor position
+         * and is used to toggle active css for each button
+         */
+        BUTTON_CONFIGURATION.forEach(({ className, markName, markOptions }) => {
+          if (!className) return
+          this.toggleActiveEditorClass({
+            className,
+            markName: markName ?? '',
+            markOptions,
+          })
         })
-      })
-    },
-  })
-  if (topEditorMenu) renderTopMenu(topEditorMenu, note)
-  if (floatingEditorMenu) renderFloatingMenu(floatingEditorMenu, note)
+      },
+    })
 
-  /**
-   * If no note was passed in, then we're rendering the Get started content
-   */
-  if (!note) editor.setEditable(false)
+    // TODO: only set these IF we're selecting a new note
+    // if the same note is active, then we don't want to reset
+    // pointer positioning (like on a save event, otherwise it's awkward)
+    //
+    // TODO: move these to their own method (so if I'm saving, I ignore these)
+    // and if I'm selecting a new note, then we set these
 
-  // TODO: only set these IF we're selecting a new note
-  // if the same note is active, then we don't want to reset
-  // pointer positioning (like on a save event, otherwise it's awkward)
+    // reset editor scroll position
+    editorElement.scrollTop = 0
+    // focus on editor
+    editor.commands.focus('start')
 
-  // reset editor scroll position
-  editorElement.scrollTop = 0
-  // focus on editor
-  editor.commands.focus('start')
-
-  return editor
+    return editor
+  }
 }
 
-/**
- * Instantiates top-menu buttons and organizes them into their container groups
- */
-function renderTopMenu(container: Element, note: Note | null) {
-  container.innerHTML = '' // reset container before rendering
-  const buttons = instantiateTopMenuButtons(note)
-  // setup editor buttons (bold, italic, etc.)
-  buttons.forEach((button) => {
-    if (!note) button.disabled = true // rendering Get Started, disable editing
-    // get the button grouping from the data attribute
-    const group = button.dataset.group
-    if (!group) throw new Error('Top menu button is not assigned to a group')
-    const groupId = `top-menu-group-${group}`
-    let groupContainer = document.querySelector(`#${groupId}`)
-    if (!groupContainer) {
-      groupContainer = document.createElement('div')
-      groupContainer.id = groupId
-    }
-    container.appendChild(groupContainer)
-    groupContainer.appendChild(button)
-  })
-}
+const editor = new Editor()
 
-function renderFloatingMenu(container: Element, note: Note | null) {
-  container.innerHTML = '' // reset container before rendering
-  const buttons = instantiateFloatingMenuButtons(note)
-  buttons.forEach((button) => {
-    container.appendChild(button)
-  })
-}
-
-/**
- * Toggle active css state for Editor based on the given
- * elementSelector, editor instance, and mark name.
- * Always call editor.isActive as tiptap is
- * the state-manager and will always be in sync.
- *
- * ie: toggleIsActiveCss({elementSelector: 'bold-button', markName: 'bold', editor: Editor})
- */
-function toggleActiveEditorClass({
-  className,
-  markName,
-  markOptions,
-  editor,
-}: {
-  className: string
-  markName: string
-  markOptions?: MarkOptions
-  editor: Editor
-}): void {
-  const elements = document.querySelectorAll(`.${className}`)
-  if (!elements.length) return
-  elements.forEach((element) => {
-    // isActive checks the current cursor position
-    editor.isActive(markName, markOptions && markOptions)
-      ? element.classList.add('isActive')
-      : element.classList.remove('isActive')
-  })
-}
-
-export { renderEditor }
+export { editor }

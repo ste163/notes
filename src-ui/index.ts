@@ -52,10 +52,11 @@ import {
 import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
 import { EditorStore } from 'store'
+
 import {
   sidebar,
   footer,
-  renderEditor,
+  editor,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
   noteDetailsDialog,
@@ -70,8 +71,10 @@ window.addEventListener('resize', handleScreenWidth)
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
     sidebar.render()
+    console.log('rendered sidebar')
     footer.render()
     footer.renderRemoteDb({ isConnected: false })
+    editor.render()
     handleScreenWidth()
 
     // setup database after app is rendering in loading state
@@ -150,7 +153,8 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     const noteId: string = (event as CustomEvent)?.detail?._id
     if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
 
-    await renderNoteEditor({ isLoading: true, note: null })
+    editor.setNote(null)
+
     createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
   } catch (error) {
     // BUG: we're never stopping the loading state if there is an error
@@ -185,7 +189,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     if (note?.updatedAt)
       footer.renderLastSaved(new Date(note.updatedAt).toLocaleString())
 
-    await renderNoteEditor({ isLoading: false, note })
+    editor.setNote(note)
 
     // based on URL params, render dialogs
     // TODO: use consts
@@ -380,21 +384,6 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
 window.addEventListener('DOMContentLoaded', async () => {
   dispatchEvent(new Event(LifeCycleEvents.Init))
 })
-
-/**
- * Renders the editor and updates store state
- * TODO: see if we can remove this function
- */
-async function renderNoteEditor({
-  isLoading,
-  note,
-}: {
-  isLoading: boolean
-  note: Note | null
-}) {
-  const editor = await renderEditor({ note, isLoading })
-  if (editor) EditorStore.editor = editor
-}
 
 function setupDatabase() {
   // TODO: this should live in the Database instance
