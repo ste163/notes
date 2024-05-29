@@ -57,7 +57,3 @@
   overflow-y: auto;
   overflow-x: scroll;
 }
-
-#remote-db-logs p {
-  text-wrap: nowrap;
-}

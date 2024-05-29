@@ -35,6 +35,6 @@ export enum NoteEvents {
   Selected = 'note-selected',
   Create = 'create-note',
   Save = 'save-note',
-  EditTitle = 'edit-note-title',
+  UpdateTitle = 'update-note-title',
   Delete = 'delete-note',
 }
