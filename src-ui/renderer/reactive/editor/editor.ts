@@ -83,10 +83,6 @@ class Editor {
     return this.editor?.getHTML() ?? ''
   }
 
-  public getEditor() {
-    return this.editor
-  }
-
   public setNote(note: Note | null) {
     this.note = note
     this.render()
