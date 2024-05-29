@@ -93,7 +93,6 @@ class Editor {
   }
 
   public setDisabled(isDisabled: boolean) {
-    console.log(this.editor)
     this.editor?.setEditable(!isDisabled)
     this.renderMenu(isDisabled)
   }
