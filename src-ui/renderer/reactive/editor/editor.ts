@@ -21,6 +21,7 @@ import TaskList from '@tiptap/extension-task-list'
 import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
 import type { MarkOptions, Note } from 'types'
+import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
 
 class Editor {
@@ -93,6 +94,10 @@ class Editor {
     this.renderMenu(isDisabled)
   }
 
+  public setCursorPosition(position: FocusPosition) {
+    this.editor?.commands.focus(position)
+  }
+
   private toggleActiveEditorClass({
     className,
     markName,
@@ -154,13 +159,6 @@ class Editor {
       content:
         note?.content ??
         `<h1>Get started</h1><p>Create a note from the sidebar.</p>`,
-      onUpdate: () =>
-        // { editor }
-        {
-          // if (EditorStore.isDirty) return
-          // const currentContent = editor.getHTML()
-          // EditorStore.isDirty = currentContent !== note?.content
-        },
       onTransaction: () => {
         /**
          * onTransaction tracks cursor position
@@ -176,18 +174,6 @@ class Editor {
         })
       },
     })
-
-    // TODO: only set these IF we're selecting a new note
-    // if the same note is active, then we don't want to reset
-    // pointer positioning (like on a save event, otherwise it's awkward)
-    //
-    // TODO: move these to their own method (so if I'm saving, I ignore these)
-    // and if I'm selecting a new note, then we set these
-
-    // reset editor scroll position
-    editorElement.scrollTop = 0
-    // focus on editor
-    editor.commands.focus('start')
 
     return editor
   }

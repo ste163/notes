@@ -32,6 +32,7 @@
  *   - (placed in footer)? auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - mobile view (sidebar only + selected note only, state lives in URL)
  *   - hyperlinks in the editor
+ *   - save cursor position to the note object so we can re-open at the correct location
  *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
  * - BRANDING
  *  - make favicon
@@ -119,7 +120,6 @@ window.addEventListener(NoteEvents.GetAll, async () => {
     const notes = await database.getAll()
     createEvent(NoteEvents.GotAll, { notes }).dispatch()
   } catch (error) {
-    // TODO: render error in sidebarNoteList
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
     // - if you are using console.error, say it's an error and say you need to use logger
     logger.logError('Error fetching all notes', error)
@@ -148,12 +148,8 @@ window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     const noteId: string = (event as CustomEvent)?.detail?._id
     if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
-
-    editor.setNote(null)
-
     createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
   } catch (error) {
-    // BUG: we're never stopping the loading state if there is an error
     logger.logError('Error selecting note.', error)
   }
 })
@@ -186,6 +182,8 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
       footer.renderLastSaved(new Date(note.updatedAt).toLocaleString())
 
     editor.setNote(note)
+
+    editor.setCursorPosition('start')
 
     // based on URL params, render dialogs
     // TODO: use consts
