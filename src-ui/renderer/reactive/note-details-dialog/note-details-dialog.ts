@@ -86,8 +86,7 @@ class NoteDetailsDialog {
       style: { marginRight: '0.5em' },
       onClick: () => {
         if (!inputValue) throw new Error('Unable to read input value')
-        const updatedNote = { ...this.note, title: inputValue }
-        createEvent(NoteEvents.EditTitle, { note: updatedNote }).dispatch()
+        createEvent(NoteEvents.UpdateTitle, { title: inputValue }).dispatch()
       },
     }).getElement()
 

@@ -1,4 +1,4 @@
-#editor-top-menu {
+#editor-menu {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,13 +9,13 @@
   min-width: min-content;
 }
 
-#editor-top-menu > div {
+#editor-menu > div {
   display: flex;
   flex-direction: column;
   margin: 0.4em 0.2em;
 }
 
-#editor-top-menu > div > button {
+#editor-menu > div > button {
   margin: 0.1em;
 }
 
@@ -39,7 +39,7 @@
 .ProseMirror {
   height: 100%;
   width: 100%;
-  max-width: 50em;
+  max-width: 40em;
   outline: none;
   padding: 0 1em;
 }

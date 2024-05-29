@@ -1,4 +1,4 @@
-export { renderEditor } from './editor'
+export { editor } from './editor'
 export { sidebar } from './sidebar'
 export { footer } from './footer'
 export { renderRemoteDbLogs, renderRemoteDbDialog } from './remote-db-dialog'

@@ -35,8 +35,9 @@ button.isActive {
 }
 
 button:disabled {
-  background-color: lightgray;
+  background-color: transparent;
   border-color: gray;
   color: gray;
+  fill: gray;
   cursor: not-allowed;
 }

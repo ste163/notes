@@ -1,32 +1,37 @@
+// COMPONENTS to refactor into classes:
+// DB Dialog
+// Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
+
 /**
  * TODO PRIORITY ORDER
- *  - Editor is a class instance like the other reactive components
- *      - always render it with buttons and main editor disabled if no note selected
+ *  - AUTO SAVE open editor state on note select (before swapping to new note)
  *  - render note title when it is selected (above the editor)
- *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
- *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
- *    the details dialog and always fetch by id.
- *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
- *  - github action to run tests and require them to pass before merging. Only run builds if tests pass
+ *  - add a warning banner for web-only builds that says:
+ *      "Running: web version. This is version is for demo purposes only. Please download
+ *       the application for the best experience."
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the footer
  *      - could include info about the application, its version, its license and the remix icon license
- *     - BUG: floating menu disappears after selecting a note (its only on the first render)
- *     - BUG: fix database dialog error styling. Icon shrinks
- *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
- *             - the error also gets triggered/logged before vite connects (in the logs)
- *     - BUG: if unable to find data, need to be able to delete the undefined notes
  * - FEATURES
- *   - (placed in footer) auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
- *   - mobile view (sidebar only + selected note only, state lives in URL)
+ *   - (placed in footer)? auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
- *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
+ *   - save cursor position to the note object so we can re-open at the correct location
+ *   - sidebar: if a note is selected, apply the DISABLED state to it
+ *   - github action to run tests and require them to pass before merging. Only run builds if tests pass
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
+ * - BUGS
+ *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
+ *    - floating menu disappears after selecting a note (its only on the first render)
+ *    - tab order is broken for the floating menu if there is a checkbox in the editor
+ *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
+ *      - the error also gets triggered/logged before vite connects (in the logs)
+ *    - if unable to find data, need to be able to delete the undefined notes
  */
 import { config } from 'config'
 import {
@@ -40,11 +45,11 @@ import {
 } from 'event'
 import { Database, useRemoteDetails } from 'database'
 import { logger } from 'logger'
-import { EditorStore } from 'store'
+
 import {
   sidebar,
   footer,
-  renderEditor,
+  editor,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
   noteDetailsDialog,
@@ -61,6 +66,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     sidebar.render()
     footer.render()
     footer.renderRemoteDb({ isConnected: false })
+    editor.render()
     handleScreenWidth()
 
     // setup database after app is rendering in loading state
@@ -68,6 +74,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
+    if (!noteId) editor.setDisabled(true)
     if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)
@@ -109,7 +116,6 @@ window.addEventListener(NoteEvents.GetAll, async () => {
     const notes = await database.getAll()
     createEvent(NoteEvents.GotAll, { notes }).dispatch()
   } catch (error) {
-    // TODO: render error in sidebarNoteList
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
     // - if you are using console.error, say it's an error and say you need to use logger
     logger.logError('Error fetching all notes', error)
@@ -138,11 +144,8 @@ window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     const noteId: string = (event as CustomEvent)?.detail?._id
     if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
-
-    await renderNoteEditor({ isLoading: true, note: null })
     createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
   } catch (error) {
-    // BUG: we're never stopping the loading state if there is an error
     logger.logError('Error selecting note.', error)
   }
 })
@@ -160,7 +163,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // setup url routing based on the note
     note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
 
-    sidebar.close()
+    if (isMobile) sidebar.close()
 
     // update styling for the selected note in list
     toggleActiveClass({
@@ -174,13 +177,15 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     if (note?.updatedAt)
       footer.renderLastSaved(new Date(note.updatedAt).toLocaleString())
 
-    await renderNoteEditor({ isLoading: false, note })
+    editor.setNote(note)
+
+    editor.setCursorPosition('start')
 
     // based on URL params, render dialogs
     // TODO: use consts
     switch (dialog) {
       case 'details':
-        note && noteDetailsDialog.render(note)
+        note && createEvent(DialogEvents.OpenNoteDetails).dispatch()
         break
       case 'database':
         // BUG: this does not actually render based on the isConnected state
@@ -209,10 +214,13 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   }
 })
 
-window.addEventListener(NoteEvents.Save, async (event) => {
+window.addEventListener(NoteEvents.Save, async () => {
   try {
-    const note = (event as CustomEvent)?.detail?.note as Note
-    const { updatedAt } = await database.put(note)
+    const note = await fetchNoteFromUrl()
+    const { updatedAt } = await database.put({
+      ...note,
+      content: editor.getContent(),
+    })
     footer.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
     // ensure rest of state is updated
     createEvent(NoteEvents.GetAll).dispatch()
@@ -221,19 +229,20 @@ window.addEventListener(NoteEvents.Save, async (event) => {
   }
 })
 
-window.addEventListener(NoteEvents.EditTitle, async (event) => {
+window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
   try {
-    const note = (event as CustomEvent)?.detail?.note as Note
-    await database.put(note)
-    // TODO: do not emit the .Select event again, but instead
-    // re-render ONLY the open dialog with the new state.
-    // That way we re-trigger less rendering of the entire application, which is uneeded
-    createEvent(NoteEvents.Select, { _id: note._id }).dispatch() // re-fetch full note data
-    createEvent(NoteEvents.GetAll).dispatch() // re-fetch meta-data for list
+    const title = (event as CustomEvent)?.detail?.title
+    const note = await fetchNoteFromUrl()
+    const updatedNote = { ...note, title, content: editor.getContent() }
+    const { updatedAt } = await database.put({
+      ...updatedNote,
+    })
+    footer.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
+    editor.setNote({ ...updatedNote, updatedAt })
+    noteDetailsDialog.render({ ...updatedNote, updatedAt })
+    createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    // TODO: show error notification
-    // re-enable the form
-    console.error(error)
+    logger.logError('Error updating note title.', error)
   }
 })
 
@@ -242,15 +251,12 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.delete(note)
     logger.logInfo(`Note deleted: ${note.title}`)
-    // clear the url dialog param
+    // reset state
     setUrl({})
-    // trigger events to reset state
-    createEvent(DialogEvents.Closed).dispatch() // TODO: this doesn't feel accurate; remove/fix
+    createEvent(DialogEvents.Closed).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(NoteEvents.Select, { _id: '' }).dispatch() // TODO: this causes an error
   } catch (error) {
-    // TODO: if error, render the details dialog with the error state
-    // TODO: tests and error handling for details dialog
     logger.logError('Error deleting note.', error)
   }
 })
@@ -317,14 +323,20 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   const { noteId } = getUrlParams()
   setUrl({ noteId, dialog: dialogTitle })
 
-  EditorStore.editor?.setEditable(false)
+  editor.setDisabled(true)
 })
 
 window.addEventListener(DialogEvents.Closed, () => {
-  // If there is a selected note, enable the editor after dialog closes
   const { noteId } = getUrlParams()
-  if (noteId) EditorStore.editor?.setEditable(true)
+  if (noteId) editor.setDisabled(false)
   setUrl({ noteId })
+})
+
+window.addEventListener(DialogEvents.OpenNoteDetails, async () => {
+  const { noteId } = getUrlParams()
+  if (!noteId) return
+  const note = await database.getById(noteId)
+  if (note) noteDetailsDialog.render(note)
 })
 
 /**
@@ -355,10 +367,7 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
   // to the save event
   if (event.ctrlKey && event.key === 's') {
     event.preventDefault() // prevent default save behavior
-    // EditorStore.editor &&
-    //   createEvent(NoteEvents.Save, {
-    //     note: { content: EditorStore.editor.getHTML() },
-    //   }).dispatch()
+    createEvent(NoteEvents.Save).dispatch()
   }
 })
 
@@ -369,21 +378,6 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
 window.addEventListener('DOMContentLoaded', async () => {
   dispatchEvent(new Event(LifeCycleEvents.Init))
 })
-
-/**
- * Renders the editor and updates store state
- * TODO: see if we can remove this function
- */
-async function renderNoteEditor({
-  isLoading,
-  note,
-}: {
-  isLoading: boolean
-  note: Note | null
-}) {
-  const editor = await renderEditor({ note, isLoading })
-  if (editor) EditorStore.editor = editor
-}
 
 function setupDatabase() {
   // TODO: this should live in the Database instance
@@ -429,6 +423,10 @@ function handleScreenWidth() {
     dispatchEvent(new Event(LifeCycleEvents.WidthChanged))
 }
 
+// TODO:
+// move this to the sidebar as that is the only place this is used
+// sidebar.setActiveNote()
+// can handle all of this.
 function toggleActiveClass({
   selector,
   type,
@@ -449,6 +447,14 @@ function toggleActiveClass({
   } catch (error) {
     console.error(error)
   }
+}
+
+async function fetchNoteFromUrl() {
+  const { noteId } = getUrlParams()
+  if (!noteId) throw new Error('No note selected.')
+  const note = await database.getById(noteId)
+  if (!note) throw new Error('No note found.')
+  return note
 }
 
 function getUrlParams() {

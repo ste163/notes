@@ -79,8 +79,8 @@ describe('note-details-dialog', () => {
 
     // clicking update button emits update event
     await userEvent.click(updateButton)
-    expect(createEvent).toHaveBeenCalledWith(NoteEvents.EditTitle, {
-      note: { ...note, title: newTitle },
+    expect(createEvent).toHaveBeenCalledWith(NoteEvents.UpdateTitle, {
+      title: newTitle,
     })
   })
 })
