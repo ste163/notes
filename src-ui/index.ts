@@ -1,40 +1,36 @@
-// COMPONENT to refactor into class:
+// COMPONENTS to refactor into classes:
 // DB Dialog
+// Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
 
 /**
  * TODO PRIORITY ORDER
  *  - AUTO SAVE open editor state on note select (before swapping to new note)
  *  - render note title when it is selected (above the editor)
- *  - add a warning banner for web-only builds that says:
- *  "Running: web version. This is version is for demo purposes only. Please download
- *   the application for the best experience."
- *  - DATABASE should be a single class instance, like the other classes (so i can remove local state)
- *  - BUG: renaming a note resets content to its first saved state. Even if the editor saved the latest it gets over-written.
- *    this is because we don't reset the editor state after saving content. One solution would be to pass in an ID into
- *    the details dialog and always fetch by id.
- *  - db dialog: showing if connected to local only or remote
  *  - consolidate events. Do not use Get and Got, but use Get only
- *  - github action to run tests and require them to pass before merging. Only run builds if tests pass
+ *  - add a warning banner for web-only builds that says:
+ *      "Running: web version. This is version is for demo purposes only. Please download
+ *       the application for the best experience."
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the footer
  *      - could include info about the application, its version, its license and the remix icon license
- *     - BUG: floating menu disappears after selecting a note (its only on the first render)
- *     - BUG: if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
- *             - the error also gets triggered/logged before vite connects (in the logs)
- *     - BUG: if unable to find data, need to be able to delete the undefined notes
- *     - BUG: sidebar: if a note is selected, apply the DISABLED state to it
  * - FEATURES
- *   - keyboard shortcuts for saving
  *   - (placed in footer)? auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
- *   - mobile view (sidebar only + selected note only, state lives in URL)
+ *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
- *   - BUG: tab order is broken for the floating menu if there is a checkbox in the editor
+ *   - sidebar: if a note is selected, apply the DISABLED state to it
+ *   - github action to run tests and require them to pass before merging. Only run builds if tests pass
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
+ * - BUGS
+ *    - floating menu disappears after selecting a note (its only on the first render)
+ *    - tab order is broken for the floating menu if there is a checkbox in the editor
+ *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
+ *      - the error also gets triggered/logged before vite connects (in the logs)
+ *    - if unable to find data, need to be able to delete the undefined notes
  */
 import { config } from 'config'
 import {
