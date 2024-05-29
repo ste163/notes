@@ -26,6 +26,7 @@
  *  - make favicon
  *  - make icons for desktop
  * - BUGS
+ *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
  *    - floating menu disappears after selecting a note (its only on the first render)
  *    - tab order is broken for the floating menu if there is a checkbox in the editor
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
