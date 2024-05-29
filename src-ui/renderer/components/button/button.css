@@ -36,8 +36,8 @@ button.isActive {
 
 button:disabled {
   background-color: transparent;
-  border-color: rgb(185, 185, 185);
-  color: rgb(185, 185, 185);
-  fill: rgb(185, 185, 185);
+  border-color: gray;
+  color: gray;
+  fill: gray;
   cursor: not-allowed;
 }
