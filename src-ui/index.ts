@@ -220,10 +220,17 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   }
 })
 
-window.addEventListener(NoteEvents.Save, async (event) => {
+window.addEventListener(NoteEvents.Save, async () => {
   try {
-    const note = (event as CustomEvent)?.detail?.note as Note
-    const { updatedAt } = await database.put(note)
+    const { noteId } = getUrlParams()
+    const note = await database.getById(noteId)
+    if (!note) throw new Error('No note found to save.')
+
+    const { updatedAt } = await database.put({
+      ...note,
+      content: editor.getContent(),
+    })
+
     footer.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
     // ensure rest of state is updated
     createEvent(NoteEvents.GetAll).dispatch()

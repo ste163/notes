@@ -79,6 +79,10 @@ class Editor {
     })
   }
 
+  public getContent() {
+    return this.editor?.getHTML() ?? ''
+  }
+
   public getEditor() {
     return this.editor
   }

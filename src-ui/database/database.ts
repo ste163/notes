@@ -100,11 +100,9 @@ class Database {
   ): Promise<{ _id: string; updatedAt: Date }> {
     const date = new Date()
     if (note?._id) {
-      // is an update event
-      const lastSavedVersion = await this.getById(note._id) // always get latest _rev
       await this.db.put({
         _id: note._id,
-        _rev: lastSavedVersion?._rev,
+        _rev: note?._rev,
         title: note.title,
         // note HTML is saved as an attachment html file
         _attachments: {

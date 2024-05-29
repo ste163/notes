@@ -38,12 +38,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 1,
     title: 'Save note',
     isInFloatingMenu: false,
-    onClick: () => {
-      // TODO: save will just call the save event, and then from index
-      // the save event will call editor.getContent which will get everything
-      // ready to be saved
-      createEvent(NoteEvents.Save).dispatch()
-    },
+    onClick: () => createEvent(NoteEvents.Save).dispatch(),
     html: saveIcon,
   },
   {
