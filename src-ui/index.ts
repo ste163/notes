@@ -3,7 +3,6 @@
 
 /**
  * TODO PRIORITY ORDER
- *  - Only auto-close sidebar when in mobile view, not desktop. Keep it open.
  *  - AUTO SAVE open editor state on note select (before swapping to new note)
  *  - Editor is a class instance like the other reactive components
  *      - always render it with buttons and main editor disabled if no note selected
@@ -69,7 +68,6 @@ window.addEventListener('resize', handleScreenWidth)
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
     sidebar.render()
-    console.log('rendered sidebar')
     footer.render()
     footer.renderRemoteDb({ isConnected: false })
     editor.render()
@@ -173,7 +171,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // setup url routing based on the note
     note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
 
-    sidebar.close()
+    if (isMobile) sidebar.close()
 
     // update styling for the selected note in list
     toggleActiveClass({
@@ -193,7 +191,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     // TODO: use consts
     switch (dialog) {
       case 'details':
-        note && noteDetailsDialog.render(note)
+        note && createEvent(DialogEvents.OpenNoteDetails).dispatch()
         break
       case 'database':
         // BUG: this does not actually render based on the isConnected state
@@ -338,6 +336,13 @@ window.addEventListener(DialogEvents.Closed, () => {
   const { noteId } = getUrlParams()
   if (noteId) editor.setDisabled(false)
   setUrl({ noteId })
+})
+
+window.addEventListener(DialogEvents.OpenNoteDetails, async () => {
+  const { noteId } = getUrlParams()
+  if (!noteId) return
+  const note = await database.getById(noteId)
+  if (note) noteDetailsDialog.render(note)
 })
 
 /**

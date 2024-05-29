@@ -18,6 +18,7 @@ export enum LoggerEvents {
 export enum DialogEvents {
   Opened = 'opened-dialog',
   Closed = 'closed-dialog',
+  OpenNoteDetails = 'open-note-details-dialog',
 }
 
 export enum DatabaseEvents {

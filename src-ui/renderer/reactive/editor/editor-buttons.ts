@@ -1,4 +1,4 @@
-import { NoteEvents, createEvent } from 'event'
+import { DialogEvents, NoteEvents, createEvent } from 'event'
 import { Button } from 'components'
 import {
   boldIcon,
@@ -50,14 +50,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     group: 1,
     title: 'Note settings',
     isInFloatingMenu: false,
-    // TODO: this needs to emit an EVENT
-    // WHY? Because then noteDetailsDialog can always fetch the latest note
-    // as opposed to this function knowing everything
-    // index.ts is the brain. NOT these functions
-    onClick: () => {
-      console.log('TODO DISPATCH EVENT')
-      // noteDetailsDialog.render(note as Note)
-    },
+    onClick: () => createEvent(DialogEvents.OpenNoteDetails).dispatch(),
     html: settingsIcon,
   },
   {
