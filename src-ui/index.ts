@@ -4,8 +4,6 @@
 /**
  * TODO PRIORITY ORDER
  *  - AUTO SAVE open editor state on note select (before swapping to new note)
- *  - Editor is a class instance like the other reactive components
- *      - always render it with buttons and main editor disabled if no note selected
  *  - render note title when it is selected (above the editor)
  *  - add a warning banner for web-only builds that says:
  *  "Running: web version. This is version is for demo purposes only. Please download
@@ -79,6 +77,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
+    if (!noteId) editor.setDisabled(true)
     if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)
