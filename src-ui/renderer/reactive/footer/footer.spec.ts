@@ -25,18 +25,12 @@ describe('footer', () => {
   })
 
   it('renders error alert button and opens dialog', async () => {
-    const { getByRole, getByText } = renderComponent({
+    const { getByRole } = renderComponent({
       renderComponent: footer.render,
     })
     footer.renderAlert('Error message')
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
-    // TODO/NOTE: this is not super accurate with current dialog implementation
-    // because it always exists in the DOM.
-    // A better way will be to conditionally render dialog based on state
     expect(getByRole('dialog')).toBeInTheDocument()
-    // this is the text of the dialog. Once the dialog is refactored
-    // this line should be removed to isolate the test more from the dialog component
-    expect(getByText('Connection details')).toBeInTheDocument()
   })
 
   it('renders not connected db status and opens dialog on click', async () => {
@@ -47,13 +41,7 @@ describe('footer', () => {
     expect(queryByText('Connected')).toBeNull()
     expect(getByText('Not connected')).toBeInTheDocument()
     await userEvent.click(getByText('Not connected'))
-    // TODO/NOTE: this is not super accurate with current dialog implementation
-    // because it always exists in the DOM.
-    // A better way will be to conditionally render dialog based on state
     expect(getByRole('dialog')).toBeInTheDocument()
-    // this is the text of the dialog. Once the dialog is refactored
-    // this line should be removed to isolate the test more from the dialog component
-    expect(getByText('Connection details')).toBeInTheDocument()
   })
 
   it('renders connected db status and opens dialog on click', async () => {
@@ -64,13 +52,7 @@ describe('footer', () => {
     expect(queryByText('Not connected')).toBeNull()
     expect(getByText('Connected')).toBeInTheDocument()
     await userEvent.click(getByText('Connected'))
-    // TODO/NOTE: this is not super accurate with current dialog implementation
-    // because it always exists in the DOM.
-    // A better way will be to conditionally render dialog based on state
     expect(getByRole('dialog')).toBeInTheDocument()
-    // this is the text of the dialog. Once the dialog is refactored
-    // this line should be removed to isolate the test more from the dialog component
-    expect(getByText('Connection details')).toBeInTheDocument()
   })
 
   it('does not render last saved date if null', () => {

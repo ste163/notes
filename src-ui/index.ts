@@ -459,16 +459,9 @@ async function fetchNoteFromUrl() {
 
 function getUrlParams() {
   const searchParams = new URLSearchParams(window.location.search)
-  const params = Array.from(searchParams).reduce(
-    (acc, [key, value]) => {
-      acc[key] = value
-      return acc
-    },
-    {} as Record<string, string>
-  )
   return {
-    dialog: params.dialog,
-    noteId: params.noteId,
+    dialog: searchParams.get('dialog') ?? '',
+    noteId: searchParams.get('noteId') ?? '',
   }
 }
 
