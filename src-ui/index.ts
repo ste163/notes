@@ -4,6 +4,7 @@
 
 /**
  * TODO PRIORITY ORDER
+ *  - cannot select a selected note + move selected note styling to sidebar class
  *  - render note title when it is selected (above the editor)
  *  - consolidate events. Do not use Get and Got, but use Get only
  *  - add a warning banner for web-only builds that says:
