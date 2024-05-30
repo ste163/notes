@@ -16,11 +16,9 @@ type Props = { [key: string]: unknown } | unknown
  * that allows for destructuring the getByRole, queryByRole, etc.
  */
 function renderComponent<T extends Props>({
-  containerId,
   renderComponent,
   props = {} as T,
 }: {
-  containerId?: string
   renderComponent: (props: T) => void
   props?: T
 }) {
@@ -28,9 +26,7 @@ function renderComponent<T extends Props>({
   globalThis.window = window as Window & typeof globalThis.window
   globalThis.document = window.document as unknown as Document &
     typeof globalThis.document
-  globalThis.window.document.body.innerHTML = containerId
-    ? `<div id="${containerId}"></div>`
-    : getIndexBodyContent()
+  globalThis.window.document.body.innerHTML = getIndexBodyContent()
 
   renderComponent(props)
 
