@@ -4,7 +4,6 @@
 
 /**
  * TODO PRIORITY ORDER
- *  - AUTO SAVE open editor state on note select (before swapping to new note)
  *  - render note title when it is selected (above the editor)
  *  - consolidate events. Do not use Get and Got, but use Get only
  *  - add a warning banner for web-only builds that says:
@@ -159,6 +158,9 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     if (!eventNoteId)
       throw new Error('No noteId provided to NoteEvents.Selected')
     const note = await database.getById(eventNoteId)
+
+    if (editor.getIsDirty()) await saveNote()
+
     const { noteId, dialog } = getUrlParams()
     // setup url routing based on the note
     note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
@@ -166,19 +168,16 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     if (isMobile) sidebar.close()
 
     // update styling for the selected note in list
+    // TODO: move this to the sidebar class
     toggleActiveClass({
       selector: `#${note?._id}-note-select-container`,
       type: NoteEvents.Select,
     })
 
-    // TODO: revisit isDirty saving on a changed note event
-    // if (EditorStore.isDirty) await saveNote(note)
-
     if (note?.updatedAt)
       footer.renderLastSaved(new Date(note.updatedAt).toLocaleString())
 
     editor.setNote(note)
-
     editor.setCursorPosition('start')
 
     // based on URL params, render dialogs
@@ -196,6 +195,8 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
       default:
         break
     }
+
+    createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
     // TODO: render error that selecting note failed (probably passing the error into the editor body)
     logger.logError('Error selecting note.', error)
@@ -216,14 +217,9 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 
 window.addEventListener(NoteEvents.Save, async () => {
   try {
-    const note = await fetchNoteFromUrl()
-    const { updatedAt } = await database.put({
-      ...note,
-      content: editor.getContent(),
-    })
+    const { updatedAt } = await saveNote()
     footer.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
-    // ensure rest of state is updated
-    createEvent(NoteEvents.GetAll).dispatch()
+    createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
   } catch (error) {
     logger.logError('Error saving note.', error)
   }
@@ -388,6 +384,20 @@ function setupDatabase() {
     )
   } catch (error) {
     logger.logError('Error setting up database.', error)
+  }
+}
+
+async function saveNote() {
+  const note = await fetchNoteFromUrl()
+  const content = editor.getContent()
+  const { updatedAt } = await database.put({
+    ...note,
+    content,
+  })
+  return {
+    ...note,
+    content,
+    updatedAt,
   }
 }
 

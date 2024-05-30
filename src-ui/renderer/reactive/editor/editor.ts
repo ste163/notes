@@ -27,6 +27,7 @@ import './editor.css'
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
+  private isDirty = false
 
   constructor() {
     this.render()
@@ -41,6 +42,7 @@ class Editor {
       <div id='editor-floating-menu'></div>
       <div id='editor'></div>
     `
+    this.isDirty = false
     this.editor = this.instantiateTipTap(this.note)
     this.renderMenu()
     this.renderFloatingMenu()
@@ -78,6 +80,10 @@ class Editor {
     buttons.forEach((button) => {
       container.appendChild(button)
     })
+  }
+
+  public getIsDirty() {
+    return this.isDirty
   }
 
   public getContent() {
@@ -159,6 +165,11 @@ class Editor {
       content:
         note?.content ??
         `<h1>Get started</h1><p>Create a note from the sidebar.</p>`,
+      onUpdate: ({ editor }) => {
+        if (this.isDirty) return
+        const currentContent = editor.getHTML()
+        this.isDirty = currentContent !== note?.content
+      },
       onTransaction: () => {
         /**
          * onTransaction tracks cursor position
