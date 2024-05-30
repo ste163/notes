@@ -141,8 +141,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
   },
   {
     group: 4,
-    // todo: need to remove the bullet from this
-    // and make the checkbox bigger
     title: 'Task List',
     markName: 'taskList',
     className: 'menu-button-task-list',

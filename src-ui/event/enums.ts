@@ -1,4 +1,3 @@
-// TODO: potentially get rid of LifeCycleEvents
 export enum LifeCycleEvents {
   Init = 'init',
   WidthChanged = 'width-changed',
