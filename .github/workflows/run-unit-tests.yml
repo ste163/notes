@@ -1,4 +1,4 @@
-name: Run Unit Tests
+name: frontend-unit-tests
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
+    - name: checkout
       uses: actions/checkout@v4
     - name: setup pnpm
       uses: pnpm/action-setup@v4
@@ -21,7 +21,7 @@ jobs:
       with:
         node-version: 20
         cache: pnpm
-    - name: Install dependencies
+    - name: install dependencies
       run: pnpm install
-    - name: Run tests
+    - name: run tests
       run: pnpm run test
