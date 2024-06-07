@@ -24,6 +24,8 @@ import type { MarkOptions, Note } from 'types'
 import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
 
+const STARTING_CONTENT = `<h1>Get started</h1><p>Create a note from the sidebar.</p>`
+
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
@@ -162,12 +164,11 @@ class Editor {
               : false,
         }),
       ],
-      content:
-        note?.content ??
-        `<h1>Get started</h1><p>Create a note from the sidebar.</p>`,
+      content: note?.content ?? STARTING_CONTENT,
       onUpdate: ({ editor }) => {
         if (this.isDirty) return
         const currentContent = editor.getHTML()
+        if (currentContent === STARTING_CONTENT) return
         this.isDirty = currentContent !== note?.content
       },
       onTransaction: () => {

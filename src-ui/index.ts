@@ -4,7 +4,6 @@
 
 /**
  * TODO PRIORITY ORDER
- *  - cannot select a selected note + move selected note styling to sidebar class
  *  - render note title when it is selected (above the editor)
  *  - consolidate events. Do not use Get and Got, but use Get only
  *  - add a warning banner for web-only builds that says:
@@ -34,6 +33,8 @@
  *    - if unable to find data, need to be able to delete the undefined notes
  */
 import { config } from 'config'
+import { logger } from 'logger'
+import { Database, useRemoteDetails } from 'database'
 import {
   LifeCycleEvents,
   KeyboardEvents,
@@ -43,9 +44,6 @@ import {
   NoteEvents,
   createEvent,
 } from 'event'
-import { Database, useRemoteDetails } from 'database'
-import { logger } from 'logger'
-
 import {
   sidebar,
   footer,
@@ -85,6 +83,9 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   const { noteId } = getUrlParams()
   const isNoteSelected = !!noteId
 
+  // TODO: this isn't working as expected
+  // if a note is selected and we are in desktop, then it doesn't swap to mobile
+  // it only swaps properly if we're in mobile first
   if (isNoteSelected) {
     sidebar.toggleCloseButtonVisibility(true)
     isMobile
@@ -133,11 +134,7 @@ window.addEventListener(NoteEvents.GotAll, (event) => {
   // to the note list
   sidebar.renderNoteList(notes)
 
-  if (noteId)
-    toggleActiveClass({
-      selector: `#${noteId}-note-select-container`,
-      type: NoteEvents.Select,
-    })
+  if (noteId) sidebar.setActiveNote(noteId)
 })
 
 window.addEventListener(NoteEvents.Select, async (event) => {
@@ -158,22 +155,19 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     const eventNoteId = (event as CustomEvent)?.detail?._id ?? ''
     if (!eventNoteId)
       throw new Error('No noteId provided to NoteEvents.Selected')
+
     const note = await database.getById(eventNoteId)
 
     if (editor.getIsDirty()) await saveNote()
 
     const { noteId, dialog } = getUrlParams()
+
     // setup url routing based on the note
     note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
 
     if (isMobile) sidebar.close()
 
-    // update styling for the selected note in list
-    // TODO: move this to the sidebar class
-    toggleActiveClass({
-      selector: `#${note?._id}-note-select-container`,
-      type: NoteEvents.Select,
-    })
+    sidebar.setActiveNote(eventNoteId)
 
     if (note?.updatedAt)
       footer.renderLastSaved(new Date(note.updatedAt).toLocaleString())
@@ -432,32 +426,6 @@ function handleScreenWidth() {
   isMobile = width < 640
   if (previousIsMobile !== isMobile)
     dispatchEvent(new Event(LifeCycleEvents.WidthChanged))
-}
-
-// TODO:
-// move this to the sidebar as that is the only place this is used
-// sidebar.setActiveNote()
-// can handle all of this.
-function toggleActiveClass({
-  selector,
-  type,
-}: {
-  selector: string
-  type: string
-}) {
-  try {
-    const activeType = `${type}-active`
-    // remove any active classes
-    const elementsToClear = document.querySelectorAll(`.${activeType}`)
-    elementsToClear?.forEach((element) => {
-      element?.classList?.remove(activeType)
-    })
-    // assign activeType to selector
-    const elementToActivate = document.querySelector(selector)
-    elementToActivate?.classList.add(activeType)
-  } catch (error) {
-    console.error(error)
-  }
 }
 
 async function fetchNoteFromUrl() {
