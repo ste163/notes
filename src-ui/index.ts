@@ -4,7 +4,8 @@
 
 /**
  * TODO PRIORITY ORDER
- *  - render note title when it is selected (above the editor)
+ *  - STATUS BAR:
+ *      - render note title when it is selected (above the editor)
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."

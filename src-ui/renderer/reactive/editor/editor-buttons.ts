@@ -9,13 +9,11 @@ import {
   heading3Icon,
   italicIcon,
   orderedListIcon,
-  redoIcon,
   saveIcon,
   settingsIcon,
   strikeIcon,
   taskListIcon,
   underlineIcon,
-  undoIcon,
 } from 'icons'
 import type { ButtonOptions } from 'components'
 import type { MarkOptions } from 'types'
@@ -160,20 +158,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       editor?.chain().focus().toggleCodeBlock().run()
     },
     html: codeBlockIcon,
-  },
-  {
-    group: 6,
-    title: 'Undo',
-    isInFloatingMenu: false,
-    onClick: (editor) => editor?.chain().focus().undo().run(),
-    html: undoIcon,
-  },
-  {
-    group: 6,
-    title: 'Redo',
-    isInFloatingMenu: false,
-    onClick: (editor) => editor?.chain().focus().redo().run(),
-    html: redoIcon,
   },
 ]
 
