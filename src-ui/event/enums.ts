@@ -29,9 +29,7 @@ export enum DatabaseEvents {
 
 export enum NoteEvents {
   GetAll = 'get-all-notes',
-  GotAll = 'got-all-notes',
   Select = 'select-note',
-  Selected = 'note-selected',
   Create = 'create-note',
   Save = 'save-note',
   UpdateTitle = 'update-note-title',
