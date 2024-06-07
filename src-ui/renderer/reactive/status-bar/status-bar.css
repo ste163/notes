@@ -19,8 +19,25 @@
   background-color: var(--info-button-hover-color);
 }
 
-#status-bar-note-container > button:first-child {
-  margin-right: 0.25em;
+#status-bar-note-container > :first-child {
+  margin-right: 0.5em;
+}
+
+#status-bar-note-container > :not(:first-child) {
+  margin: 0 0.15em;
+}
+
+.status-bar-note-title,
+.status-bar-note-title-disabled {
+  font-weight: bold;
+  max-width: 10em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.status-bar-note-title-disabled {
+  color: gray;
 }
 
 .status-bar-data-container,

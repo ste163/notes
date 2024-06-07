@@ -213,6 +213,7 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
       ...updatedNote,
     })
     statusBar.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
+    statusBar.renderNoteSection(updatedNote)
     editor.setNote({ ...updatedNote, updatedAt })
     noteDetailsDialog.render({ ...updatedNote, updatedAt })
     createEvent(NoteEvents.GetAll).dispatch()

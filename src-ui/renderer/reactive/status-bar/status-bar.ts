@@ -11,12 +11,20 @@ class StatusBar {
     const container = document.querySelector('#status-bar')
     if (!container) throw new Error('Status bar container not found')
     container.innerHTML = '' // reset container
+
+    // New structure:
+    // save + settings on the right after the alert, before version number
+    // database information on the left
+    // note title centered with a set width
+    //
+    // where does last saved date + last sync time go?
+
     container.innerHTML = `
       <div class='status-bar-data-container'>
         <div id='status-bar-note-container'></div>
+        <div id='status-bar-last-save' class='hide-on-mobile'></div>
         <div id='remote-db-setup-container'></div>
         <div id='status-bar-last-sync' class='hide-on-mobile'></div>
-        <div id='status-bar-last-save' class='hide-on-mobile'></div>
       </div>
       <div class='status-bar-status-container'>
         <div id='status-bar-alert'></div>
@@ -40,16 +48,27 @@ class StatusBar {
       onClick: createEvent(DialogEvents.OpenNoteDetails)?.dispatch,
     })
 
+    // TODO
+    // the note title should be centered in the status bar
+    const title = document.createElement('span')
+    title.appendChild(
+      document.createTextNode(note?.title || 'No note selected')
+    )
+    title.classList.add(
+      note?.title ? 'status-bar-note-title' : 'status-bar-note-title-disabled'
+    )
+
     saveButton.setEnabled(!!note)
     settingsButton.setEnabled(!!note)
+    container?.appendChild(title)
     container?.appendChild(saveButton.getElement())
     container?.appendChild(settingsButton.getElement())
-    container?.appendChild(this.createDivider())
   }
 
   public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
     const container = document.querySelector('#remote-db-setup-container')
     if (container) container.innerHTML = ''
+    container?.appendChild(this.createDivider())
     container?.appendChild(
       new Button({
         title: 'Setup remote database',
@@ -122,7 +141,6 @@ class StatusBar {
     if (!date) return // then keep the container cleared
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(`${label}: ${date}`))
-    container?.appendChild(this.createDivider())
     container?.appendChild(span)
   }
 
