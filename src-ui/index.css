@@ -31,16 +31,20 @@ body {
   overflow-y: hidden;
 }
 
+#status-bar {
+  grid-area: status-bar;
+}
+
 .body-visible {
   grid-template-areas:
     'main sidebar'
-    'footer footer';
+    'status-bar status-bar';
 }
 
 .body-invisible {
   grid-template-areas:
     'sidebar sidebar'
-    'footer footer';
+    'status-bar status-bar';
 }
 
 main {
@@ -83,10 +87,6 @@ ol {
 
 li {
   margin: 0.5em 0;
-}
-
-footer {
-  grid-area: footer;
 }
 
 p {
