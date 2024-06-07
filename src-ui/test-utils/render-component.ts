@@ -9,11 +9,10 @@ type Props = { [key: string]: unknown } | unknown
  * Render a component and its props
  * in a simulated window and document
  *
- * @param containerId (optional) id of container to render in or the index html file if not given
  * @param renderComponent component's render function
  * @param props component's props
- * @returns "within" instance from testing-library/dom for this component
- * that allows for destructuring the getByRole, queryByRole, etc.
+ * @returns "within" instance from testing-library/dom of the body
+ * This allows for tests to deconstruct selectors from this renderer.
  */
 function renderComponent<T extends Props>({
   renderComponent,
@@ -22,20 +21,26 @@ function renderComponent<T extends Props>({
   renderComponent: (props: T) => void
   props?: T
 }) {
+  setupWindowEnvironment()
+  renderComponent(props)
+  return within(window.document.body as unknown as HTMLElement)
+}
+
+/**
+ * To render components for testing,
+ * we need to simulate the window and document
+ */
+function setupWindowEnvironment() {
   const window = new Window()
   globalThis.window = window as Window & typeof globalThis.window
   globalThis.document = window.document as unknown as Document &
     typeof globalThis.document
   globalThis.window.document.body.innerHTML = getIndexBodyContent()
-
-  renderComponent(props)
-
-  return within(window.document.body as unknown as HTMLElement)
 }
 
 /**
  * Get the body content from the index.html file.
- * For example: everything inside of <body>...</body>
+ * (Everything inside of <body>...</body>)
  *
  * @returns string
  */
