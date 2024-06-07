@@ -19,6 +19,10 @@
   background-color: var(--info-button-hover-color);
 }
 
+#status-bar-note-container > button:first-child {
+  margin-right: 0.25em;
+}
+
 .status-bar-data-container,
 .status-bar-status-container {
   display: flex;

@@ -22,8 +22,6 @@ class StatusBar {
         <div id='status-bar-alert'></div>
         <div>v${pkg.version}</div>
       </div>`
-
-    this.renderNoteSection(null)
   }
 
   public renderNoteSection(note: Note | null) {
@@ -33,13 +31,13 @@ class StatusBar {
     const saveButton = new Button({
       title: 'Save note',
       html: saveIcon,
-      onClick: createEvent(NoteEvents.Save).dispatch,
+      onClick: createEvent(NoteEvents.Save)?.dispatch,
     })
 
     const settingsButton = new Button({
       title: 'Note settings',
       html: settingsIcon,
-      onClick: createEvent(DialogEvents.OpenNoteDetails).dispatch,
+      onClick: createEvent(DialogEvents.OpenNoteDetails)?.dispatch,
     })
 
     saveButton.setEnabled(!!note)

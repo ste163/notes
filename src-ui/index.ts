@@ -62,6 +62,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     sidebar.render()
     statusBar.render()
     statusBar.renderRemoteDb({ isConnected: false })
+    statusBar.renderNoteSection(null)
     editor.render()
     handleScreenWidth()
 

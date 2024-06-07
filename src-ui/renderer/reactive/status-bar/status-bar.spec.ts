@@ -1,19 +1,51 @@
-import { describe, it, expect } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
+import { NoteEvents, DialogEvents, createEvent } from 'event'
 import { statusBar } from './status-bar'
 import pkg from '../../../../package.json'
+
+vi.mock('event')
 
 // because status bar is managed by the main app,
 // only testing individual render methods and their props
 describe('status-bar', () => {
-  it.todo(
-    'renders disabled save button and settings button if no note selected'
-  )
+  it('renders disabled save button and settings button if no note selected', () => {
+    const { getByRole } = renderComponent({
+      renderComponent: statusBar.render,
+    })
+    statusBar.renderNoteSection(null)
 
-  it.todo(
-    'renders enabled save button and settings button and calls events on click'
-  )
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Settings' })).toBeDisabled()
+  })
+
+  it('renders enabled save button and settings button and calls events on click', async () => {
+    const { getByRole } = renderComponent({
+      renderComponent: statusBar.render,
+    })
+    statusBar.renderNoteSection({
+      _id: 'abc',
+      title: 'Note title',
+      updatedAt: new Date(),
+      createdAt: new Date(),
+      content: '',
+    })
+
+    const saveButton = getByRole('button', { name: 'Save' })
+    const settingsButton = getByRole('button', { name: 'Settings' })
+
+    expect(saveButton).toBeEnabled()
+    expect(settingsButton).toBeEnabled()
+
+    await userEvent.click(saveButton)
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Save)
+
+    await userEvent.click(settingsButton)
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
+      DialogEvents.OpenNoteDetails
+    )
+  })
 
   it('renders only package version on initial render', () => {
     const { getByText, queryByText } = renderComponent({
