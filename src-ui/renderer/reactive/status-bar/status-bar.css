@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   font-size: small;
-  border-top: var(--outline-color) 0.15em solid;
+  border-bottom: var(--outline-color) 0.15em solid;
   padding: 0.25em 0.5em;
   height: min-content;
 }
@@ -30,13 +30,13 @@
   align-items: center;
 }
 
-.status-bar-alert {
+#status-bar-alert button {
   margin-right: 1em;
   font-weight: bold;
   background-color: var(--error-color);
 }
 
-.status-bar-alert:hover {
+#status-bar-alert button:hover {
   background-color: var(--error-color);
 }
 

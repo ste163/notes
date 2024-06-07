@@ -23,7 +23,7 @@
 
 body {
   display: grid;
-  grid-template-columns: 10fr auto;
+  grid-template-columns: auto 10fr;
   grid-template-rows: 1fr auto;
   height: 100vh;
   margin: 0;
@@ -37,14 +37,14 @@ body {
 
 .body-visible {
   grid-template-areas:
-    'main sidebar'
-    'status-bar status-bar';
+    'status-bar status-bar'
+    'sidebar main';
 }
 
 .body-invisible {
   grid-template-areas:
-    'sidebar sidebar'
-    'status-bar status-bar';
+    'status-bar status-bar'
+    'sidebar sidebar';
 }
 
 main {

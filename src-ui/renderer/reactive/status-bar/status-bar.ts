@@ -65,7 +65,6 @@ class StatusBar {
       container?.appendChild(
         new Button({
           title: 'Setup remote database',
-          className: 'status-bar-alert',
           html: `
         ${errorIcon} 
         <span>
