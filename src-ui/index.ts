@@ -7,8 +7,14 @@
  *  - STATUS BAR:
  *      - render note title when it is selected
  *      - render save button, and settings button
- *      - re-organize status bar to be "Selecte Note Information" then "DB information"
+ *      - re-organize status bar to be "Selected Note Information" then "DB information"
  *      - status bar scrolls instead of hides information
+ *  - EDITOR BUTTONS:
+ *     - only use the floating menu
+ *     - FIX floating menu
+ *     - tab order is broken for the floating menu if there is a checkbox in the editor
+ *     - add hyperlink insert support
+ *     - remove editor button bar once floating menu is stable
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
@@ -18,7 +24,7 @@
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
- *   - (placed in statusBar)? auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - auto-save at debounced interval
  *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
@@ -27,8 +33,6 @@
  *  - make icons for desktop
  * - BUGS
  *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
- *    - floating menu disappears after selecting a note (its only on the first render)
- *    - tab order is broken for the floating menu if there is a checkbox in the editor
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *      - the error also gets triggered/logged before vite connects (in the logs)
  *    - if unable to find data, need to be able to delete the undefined notes
