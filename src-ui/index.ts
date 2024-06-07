@@ -144,6 +144,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     if (isMobile) sidebar.close()
 
     sidebar.setActiveNote(noteId)
+    statusBar.renderNoteSection(note)
 
     if (note?.updatedAt)
       statusBar.renderLastSaved(new Date(note.updatedAt).toLocaleString())

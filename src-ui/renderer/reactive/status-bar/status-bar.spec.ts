@@ -7,6 +7,14 @@ import pkg from '../../../../package.json'
 // because status bar is managed by the main app,
 // only testing individual render methods and their props
 describe('status-bar', () => {
+  it.todo(
+    'renders disabled save button and settings button if no note selected'
+  )
+
+  it.todo(
+    'renders enabled save button and settings button and calls events on click'
+  )
+
   it('renders only package version on initial render', () => {
     const { getByText, queryByText } = renderComponent({
       renderComponent: statusBar.render,

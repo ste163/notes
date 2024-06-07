@@ -1,8 +1,10 @@
 import { Button } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
-import { databaseIcon, errorIcon } from 'icons'
+import { databaseIcon, errorIcon, saveIcon, settingsIcon } from 'icons'
+import { createEvent, DialogEvents, NoteEvents } from 'event'
 import pkg from '../../../../package.json'
 import './status-bar.css'
+import type { Note } from 'types'
 
 class StatusBar {
   public render() {
@@ -11,6 +13,7 @@ class StatusBar {
     container.innerHTML = '' // reset container
     container.innerHTML = `
       <div class='status-bar-data-container'>
+        <div id='status-bar-note-container'></div>
         <div id='remote-db-setup-container'></div>
         <div id='status-bar-last-sync' class='hide-on-mobile'></div>
         <div id='status-bar-last-save' class='hide-on-mobile'></div>
@@ -19,6 +22,31 @@ class StatusBar {
         <div id='status-bar-alert'></div>
         <div>v${pkg.version}</div>
       </div>`
+
+    this.renderNoteSection(null)
+  }
+
+  public renderNoteSection(note: Note | null) {
+    const container = document.querySelector('#status-bar-note-container')
+    if (container) container.innerHTML = ''
+
+    const saveButton = new Button({
+      title: 'Save note',
+      html: saveIcon,
+      onClick: createEvent(NoteEvents.Save).dispatch,
+    })
+
+    const settingsButton = new Button({
+      title: 'Note settings',
+      html: settingsIcon,
+      onClick: createEvent(DialogEvents.OpenNoteDetails).dispatch,
+    })
+
+    saveButton.setEnabled(!!note)
+    settingsButton.setEnabled(!!note)
+    container?.appendChild(saveButton.getElement())
+    container?.appendChild(settingsButton.getElement())
+    container?.appendChild(this.createDivider())
   }
 
   public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
