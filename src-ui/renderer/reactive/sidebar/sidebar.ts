@@ -6,6 +6,7 @@ import './sidebar.css'
 
 class Sidebar {
   private notes: Notes = {}
+  private activeNoteId: string = ''
   private inputContainerId = 'note-input-container'
   private isOpen: boolean = false
 
@@ -49,39 +50,11 @@ class Sidebar {
     )
 
     this.renderNoteList(this.notes)
-  }
-
-  public open() {
-    this.render()
-    this.isOpen = true
-    dispatchEvent(new Event(LifeCycleEvents.SidebarOpened))
-  }
-
-  public getIsOpen() {
-    return this.isOpen
-  }
-
-  public close() {
-    const container = document.querySelector('#sidebar')
-    if (!container) throw new Error('Sidebar container not found')
-
-    container.classList.remove('sidebar-opened')
-    container.classList.add('sidebar-closed')
-    container.innerHTML = '' // reset container
-    container.appendChild(
-      new Button({
-        title: 'Open sidebar',
-        onClick: this.open.bind(this),
-        html: `${fileListIcon}`,
-        style: { border: 'none' },
-      }).getElement()
-    )
-    this.isOpen = false
-    dispatchEvent(new Event(LifeCycleEvents.SidebarClosed))
+    this.setActiveNoteInList()
   }
 
   public renderNoteList(notes: Notes = {}) {
-    this.notes = notes
+    this.setNotes(notes)
     const container = document.querySelector('#sidebar-list')
     if (!container) return
     container.innerHTML = '' // reset container before rendering
@@ -111,10 +84,48 @@ class Sidebar {
     })
   }
 
+  public close() {
+    const container = document.querySelector('#sidebar')
+    if (!container) throw new Error('Sidebar container not found')
+
+    container.classList.remove('sidebar-opened')
+    container.classList.add('sidebar-closed')
+    container.innerHTML = '' // reset container
+    container.appendChild(
+      new Button({
+        title: 'Open sidebar',
+        onClick: this.open.bind(this),
+        html: `${fileListIcon}`,
+        style: { border: 'none' },
+      }).getElement()
+    )
+    this.isOpen = false
+    dispatchEvent(new Event(LifeCycleEvents.SidebarClosed))
+  }
+
+  public open() {
+    this.render()
+    this.isOpen = true
+    dispatchEvent(new Event(LifeCycleEvents.SidebarOpened))
+  }
+
+  public getIsOpen() {
+    return this.isOpen
+  }
+
   public closeInput() {
     const container = document.querySelector(`#${this.inputContainerId}`)
     container?.remove()
     document.removeEventListener('keydown', this.handleEscape)
+  }
+
+  public setNotes(notes: Notes) {
+    this.notes = notes
+  }
+
+  public setActiveNote(id: string) {
+    this.activeNoteId = id
+    this.setActiveNoteInList()
   }
 
   public toggleFullscreen(isFullscreen: boolean) {
@@ -129,6 +140,39 @@ class Sidebar {
     isVisible
       ? closeButton?.classList.remove('sidebar-close-invisible')
       : closeButton?.classList.add('sidebar-close-invisible')
+  }
+
+  private setActiveNoteInList() {
+    if (!this.activeNoteId) return // no active note selected, ignore
+
+    const setStyling = () => {
+      const activeClass = 'select-note-active'
+      document.querySelectorAll(`.${activeClass}`)?.forEach((element) => {
+        element?.classList?.remove(activeClass)
+      })
+      document
+        .querySelector(`#${this.activeNoteId}-note-select-container`)
+        ?.classList.add(activeClass)
+    }
+
+    const setDisabledState = () => {
+      const containers = document.querySelectorAll('.note-select-container')
+
+      containers.forEach((container) => {
+        const button = container.querySelector('button')
+        if (button) {
+          button.disabled = false
+        }
+      })
+
+      const selectedButton = document.querySelector(
+        `#${this.activeNoteId}`
+      ) as HTMLButtonElement
+      if (selectedButton) selectedButton.disabled = true
+    }
+
+    setStyling()
+    setDisabledState()
   }
 
   private handleEscape = (event: KeyboardEvent) => {

@@ -76,4 +76,37 @@ describe('sidebar', () => {
       _id: '1',
     })
   })
+
+  it('renders active note as disabled', () => {
+    const activeNoteId = 'abc'
+
+    const notes: Notes = {
+      [activeNoteId]: {
+        _id: activeNoteId,
+        title: 'Note 1',
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        content: '',
+      },
+      '2': {
+        _id: '2',
+        title: 'Note 2',
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        content: '',
+      },
+    }
+
+    const { getAllByRole } = renderComponent({
+      renderComponent: sidebar.render.bind(sidebar),
+    })
+    // must call multiple methods because
+    // we are not testing the accurate application flow
+    sidebar.setNotes(notes)
+    sidebar.setActiveNote(activeNoteId)
+    sidebar.render()
+    // active note is disabled
+    const buttons = getAllByRole('button')
+    expect(buttons[3]).toBeDisabled()
+  })
 })
