@@ -2,21 +2,21 @@ import { Button } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
 import { databaseIcon, errorIcon } from 'icons'
 import pkg from '../../../../package.json'
-import './footer.css'
+import './status-bar.css'
 
-class Footer {
+class StatusBar {
   public render() {
-    const container = document.querySelector('footer')
-    if (!container) throw new Error('Footer container not found')
+    const container = document.querySelector('#status-bar')
+    if (!container) throw new Error('Status bar container not found')
     container.innerHTML = '' // reset container
     container.innerHTML = `
-      <div class='footer-data-container'>
+      <div class='status-bar-data-container'>
         <div id='remote-db-setup-container'></div>
-        <div id='footer-last-sync' class='hide-on-mobile'></div>
-        <div id='footer-last-save' class='hide-on-mobile'></div>
+        <div id='status-bar-last-sync' class='hide-on-mobile'></div>
+        <div id='status-bar-last-save' class='hide-on-mobile'></div>
       </div>
-      <div class='footer-status-container'>
-        <div id='footer-alert'></div>
+      <div class='status-bar-status-container'>
+        <div id='status-bar-alert'></div>
         <div>v${pkg.version}</div>
       </div>`
   }
@@ -44,7 +44,7 @@ class Footer {
 
   public renderLastSaved(date: string | null) {
     this.renderDateSection({
-      selector: '#footer-last-save',
+      selector: '#status-bar-last-save',
       date,
       label: 'Last saved',
     })
@@ -52,20 +52,19 @@ class Footer {
 
   public renderLastSynced(date: string | null) {
     this.renderDateSection({
-      selector: '#footer-last-sync',
+      selector: '#status-bar-last-sync',
       date,
       label: 'Last synced',
     })
   }
 
   public renderAlert(message: string) {
-    const container = document.querySelector('#footer-alert')
+    const container = document.querySelector('#status-bar-alert')
     if (container) container.innerHTML = ''
     if (message)
       container?.appendChild(
         new Button({
           title: 'Setup remote database',
-          className: 'footer-alert',
           html: `
         ${errorIcon} 
         <span>
@@ -105,12 +104,12 @@ class Footer {
     parent.style.position = 'relative'
     parent.style.margin = '0 0.5rem'
     const divider = document.createElement('div')
-    divider.classList.add('footer-divider')
+    divider.classList.add('status-bar-divider')
     parent.appendChild(divider)
     return parent
   }
 }
 
-const footer = new Footer()
+const statusBar = new StatusBar()
 
-export { footer }
+export { statusBar }

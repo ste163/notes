@@ -12,10 +12,10 @@
  *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
- *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the footer
+ *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
- *   - (placed in footer)? auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
+ *   - (placed in statusBar)? auto-save toggle button with interval setting (most reliable way to save since I can't reliably intercept the close window event)
  *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
@@ -44,7 +44,7 @@ import {
 } from 'event'
 import {
   sidebar,
-  footer,
+  statusBar,
   editor,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
@@ -60,8 +60,8 @@ window.addEventListener('resize', handleScreenWidth)
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
     sidebar.render()
-    footer.render()
-    footer.renderRemoteDb({ isConnected: false })
+    statusBar.render()
+    statusBar.renderRemoteDb({ isConnected: false })
     editor.render()
     handleScreenWidth()
 
@@ -168,7 +168,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
     sidebar.setActiveNote(eventNoteId)
 
     if (note?.updatedAt)
-      footer.renderLastSaved(new Date(note.updatedAt).toLocaleString())
+      statusBar.renderLastSaved(new Date(note.updatedAt).toLocaleString())
 
     editor.setNote(note)
     editor.setCursorPosition('start')
@@ -211,7 +211,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 window.addEventListener(NoteEvents.Save, async () => {
   try {
     const { updatedAt } = await saveNote()
-    footer.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
+    statusBar.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
   } catch (error) {
     logger.logError('Error saving note.', error)
@@ -226,7 +226,7 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     const { updatedAt } = await database.put({
       ...updatedNote,
     })
-    footer.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
+    statusBar.renderLastSaved(new Date(updatedAt ?? '').toLocaleString())
     editor.setNote({ ...updatedNote, updatedAt })
     noteDetailsDialog.render({ ...updatedNote, updatedAt })
     createEvent(NoteEvents.GetAll).dispatch()
@@ -262,7 +262,7 @@ window.addEventListener(DatabaseEvents.RemoteConnect, () => {
 })
 
 window.addEventListener(DatabaseEvents.RemoteConnected, () => {
-  footer.renderRemoteDb({ isConnected: true })
+  statusBar.renderRemoteDb({ isConnected: true })
   database.setupSyncing()
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
@@ -273,14 +273,14 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
 
 window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
-  if (successfulDisconnect) footer.renderRemoteDb({ isConnected: false })
+  if (successfulDisconnect) statusBar.renderRemoteDb({ isConnected: false })
   // TODO: need to clear the remote details from local storage
   // so we do not reconnect on refresh
 })
 
 window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
   const date = (event as CustomEvent)?.detail?.date
-  footer.renderLastSynced(new Date(date).toLocaleString())
+  statusBar.renderLastSynced(new Date(date).toLocaleString())
   // TODO:
   // this also needs to be stored in local storage
   // so that we can render that on the chance that we are unable to connect
@@ -305,8 +305,8 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   // TODO: dialog titles need to be a const so I can do safer checks.
   // should come from the dialog Class
   if (dialogTitle === 'database') {
-    // clear the footer's alert state
-    footer.renderAlert('')
+    // clear the statusBar's alert state
+    statusBar.renderAlert('')
   }
 
   const { noteId } = getUrlParams()
@@ -339,7 +339,7 @@ window.addEventListener(LoggerEvents.Update, (event) => {
 
 window.addEventListener(LoggerEvents.Error, (event) => {
   const message = (event as CustomEvent)?.detail?.message
-  if (message) footer.renderAlert(message)
+  if (message) statusBar.renderAlert(message)
 })
 
 /**

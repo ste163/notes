@@ -23,7 +23,7 @@
 
 body {
   display: grid;
-  grid-template-columns: 10fr auto;
+  grid-template-columns: auto 10fr;
   grid-template-rows: 1fr auto;
   height: 100vh;
   margin: 0;
@@ -31,16 +31,20 @@ body {
   overflow-y: hidden;
 }
 
+#status-bar {
+  grid-area: status-bar;
+}
+
 .body-visible {
   grid-template-areas:
-    'main sidebar'
-    'footer footer';
+    'status-bar status-bar'
+    'sidebar main';
 }
 
 .body-invisible {
   grid-template-areas:
-    'sidebar sidebar'
-    'footer footer';
+    'status-bar status-bar'
+    'sidebar sidebar';
 }
 
 main {
@@ -83,10 +87,6 @@ ol {
 
 li {
   margin: 0.5em 0;
-}
-
-footer {
-  grid-area: footer;
 }
 
 p {

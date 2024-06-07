@@ -1,50 +1,50 @@
-footer {
+#status-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: small;
-  border-top: var(--outline-color) 0.15em solid;
+  border-bottom: var(--outline-color) 0.15em solid;
   padding: 0.25em 0.5em;
   height: min-content;
 }
 
-footer button {
+#status-bar button {
   border: none;
   padding: 0 0.2em;
   font-weight: inherit;
   font-size: inherit;
 }
 
-footer button:hover {
+#status-bar button:hover {
   background-color: var(--info-button-hover-color);
 }
 
-.footer-data-container,
-.footer-status-container {
+.status-bar-data-container,
+.status-bar-status-container {
   display: flex;
   align-items: center;
 }
 
-.footer-data-container div {
+.status-bar-data-container div {
   display: flex;
   align-items: center;
 }
 
-.footer-alert {
+#status-bar-alert button {
   margin-right: 1em;
   font-weight: bold;
   background-color: var(--error-color);
 }
 
-.footer-alert:hover {
+#status-bar-alert button:hover {
   background-color: var(--error-color);
 }
 
-.footer-divider {
+.status-bar-divider {
   height: 1em;
 }
 
-.footer-divider::before {
+.status-bar-divider::before {
   content: '';
   position: absolute;
   top: 0;
