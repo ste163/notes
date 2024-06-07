@@ -5,7 +5,6 @@
 /**
  * TODO PRIORITY ORDER
  *  - render note title when it is selected (above the editor)
- *  - consolidate events. Do not use Get and Got, but use Get only
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
@@ -113,7 +112,14 @@ window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
 window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     const notes = await database.getAll()
-    createEvent(NoteEvents.GotAll, { notes }).dispatch()
+    const { noteId } = getUrlParams()
+    // TODO: if no notes, then emit a new event
+    // to handle that state so that we can reset the UI
+    // TODO: only renderNoteList if there are notes
+    // OR, we have a more generic method for supplying updated notes
+    // to the note list
+    sidebar.renderNoteList(notes)
+    if (noteId) sidebar.setActiveNote(noteId)
   } catch (error) {
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
     // - if you are using console.error, say it's an error and say you need to use logger
@@ -121,41 +127,12 @@ window.addEventListener(NoteEvents.GetAll, async () => {
   }
 })
 
-window.addEventListener(NoteEvents.GotAll, (event) => {
-  const notes = (event as CustomEvent)?.detail?.notes
-  const { noteId } = getUrlParams()
-
-  // TODO: if no notes, then emit a new event
-  // to handle that state so that we can reset the UI
-  // TODO: only renderNoteList if there are notes
-  // OR, we have a more generic method for supplying updated notes
-  // to the note list
-  sidebar.renderNoteList(notes)
-
-  if (noteId) sidebar.setActiveNote(noteId)
-})
-
 window.addEventListener(NoteEvents.Select, async (event) => {
   try {
-    const noteId: string = (event as CustomEvent)?.detail?._id
-    if (!noteId) throw new Error('No noteId provided to NoteEvents.Select')
-    createEvent(NoteEvents.Selected, { _id: noteId }).dispatch()
-  } catch (error) {
-    logger.logError('Error selecting note.', error)
-  }
-})
-
-/**
- * Selected that handles fetching and rendering of the main editor body
- */
-window.addEventListener(NoteEvents.Selected, async (event) => {
-  try {
-    const eventNoteId = (event as CustomEvent)?.detail?._id ?? ''
-    if (!eventNoteId)
-      throw new Error('No noteId provided to NoteEvents.Selected')
+    const eventNoteId: string = (event as CustomEvent)?.detail?._id
+    if (!eventNoteId) throw new Error('No noteId provided to NoteEvents.Select')
 
     const note = await database.getById(eventNoteId)
-
     if (editor.getIsDirty()) await saveNote()
 
     const { noteId, dialog } = getUrlParams()
@@ -165,7 +142,7 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
 
     if (isMobile) sidebar.close()
 
-    sidebar.setActiveNote(eventNoteId)
+    sidebar.setActiveNote(noteId)
 
     if (note?.updatedAt)
       statusBar.renderLastSaved(new Date(note.updatedAt).toLocaleString())
@@ -191,7 +168,6 @@ window.addEventListener(NoteEvents.Selected, async (event) => {
 
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    // TODO: render error that selecting note failed (probably passing the error into the editor body)
     logger.logError('Error selecting note.', error)
   }
 })
