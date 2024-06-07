@@ -1,30 +1,26 @@
-#editor-menu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0.5em;
-  border-left: var(--outline-color) 0.15em solid;
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-width: min-content;
-}
-
-#editor-menu > div {
-  display: flex;
-  flex-direction: column;
-  margin: 0.4em 0.2em;
-}
-
-#editor-menu > div > button {
-  margin: 0.1em;
-}
-
 #editor {
   flex-grow: 1;
   display: flex;
   justify-content: center;
   overflow-y: auto;
   padding-top: 1em;
+  min-height: max-content;
+}
+
+#editor-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25em;
+}
+
+#editor-menu > div {
+  display: flex;
+  margin: 0.4em 0.2em;
+}
+
+#editor-menu > div > button {
+  margin: 0.1em;
 }
 
 #editor-floating-menu {

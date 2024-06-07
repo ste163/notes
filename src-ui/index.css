@@ -49,7 +49,7 @@ body {
 
 main {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   grid-area: main;
   overflow-y: auto;
 }

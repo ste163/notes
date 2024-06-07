@@ -101,6 +101,7 @@ class StatusBar {
             renderRemoteDbDialog({
               // TODO this should come from some state NOT passed in like this
               isConnectedToRemote: true, // because this isn't valid
+              // THIS NEEDS TO BE AN EMITTED EVENT LIKE THE OTHER DIALOG
               error: message,
             }),
         }).getElement()
@@ -127,6 +128,7 @@ class StatusBar {
 
   private createDivider() {
     const parent = document.createElement('div')
+    // TODO: move this to the .css
     parent.style.position = 'relative'
     parent.style.margin = '0 0.5rem'
     const divider = document.createElement('div')
