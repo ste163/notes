@@ -1,0 +1,27 @@
+name: frontend-unit-tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+    - name: setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: pnpm
+    - name: install dependencies
+      run: pnpm install
+    - name: run tests
+      run: pnpm run test

@@ -19,8 +19,6 @@
  *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
- *   - sidebar: if a note is selected, apply the DISABLED state to it
- *   - github action to run tests and require them to pass before merging. Only run builds if tests pass
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
