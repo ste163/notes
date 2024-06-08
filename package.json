@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build:ui": "tsc && vite build --mode web",
+    "build:ui:web": "tsc && vite build --mode web",
     "build:ui:desktop": "tsc && vite build --mode desktop",
     "start:dev:ui:web": "vite --mode web",
     "start:dev:ui:desktop": "vite --mode desktop",
