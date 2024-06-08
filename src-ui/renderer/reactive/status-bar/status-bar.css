@@ -5,6 +5,8 @@
   font-size: small;
   border-bottom: var(--outline-color) 0.13rem solid;
   padding: 0.25rem 0.5rem;
+  overflow-y: hidden;
+  overflow-x: scroll;
 }
 
 #status-bar button {
@@ -39,10 +41,17 @@
   color: gray;
 }
 
-@media (max-width: 780px) {
+@media (max-width: 906px) {
   .status-bar-title,
   .status-bar-title-disabled {
-    max-width: 40vw;
+    max-width: 50vw;
+  }
+}
+
+@media (max-width: 580px) {
+  .status-bar-title,
+  .status-bar-title-disabled {
+    max-width: 35vw;
   }
 }
 
@@ -79,7 +88,7 @@
   background-color: var(--error-color);
 }
 
-@media (max-width: 780px) {
+@media (max-width: 906px) {
   .status-bar-hide-on-mobile {
     display: none !important;
   }
