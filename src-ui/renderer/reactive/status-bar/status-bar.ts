@@ -32,39 +32,6 @@ class StatusBar {
     this.updateTitle(note?.title || 'No note selected')
   }
 
-  private renderSaveButton(note: Note | null) {
-    const container = document.querySelector('#status-bar-save')
-    if (container) container.innerHTML = ''
-    const saveButton = new Button({
-      title: 'Save note',
-      html: saveIcon,
-      onClick: createEvent(NoteEvents.Save)?.dispatch,
-    })
-    saveButton.setEnabled(!!note)
-    container?.appendChild(saveButton.getElement())
-  }
-
-  private renderSettingsButton(note: Note | null) {
-    const container = document.querySelector('#status-bar-settings')
-    if (container) container.innerHTML = ''
-    const settingsButton = new Button({
-      title: 'Note settings',
-      html: settingsIcon,
-      onClick: createEvent(DialogEvents.OpenNoteDetails)?.dispatch,
-    })
-    settingsButton.setEnabled(!!note)
-    container?.appendChild(settingsButton.getElement())
-  }
-
-  private updateTitle(title: string) {
-    const container = document.querySelector('#status-bar-title-container')
-    if (container) container.innerHTML = ''
-    const span = document.createElement('span')
-    span.appendChild(document.createTextNode(title))
-    span.classList.add(title ? 'status-bar-title' : 'status-bar-title-disabled')
-    container?.appendChild(span)
-  }
-
   public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
     const container = document.querySelector('#remote-db-setup-container')
     if (container) container.innerHTML = ''
@@ -124,6 +91,39 @@ class StatusBar {
             }),
         }).getElement()
       )
+  }
+
+  private renderSaveButton(note: Note | null) {
+    const container = document.querySelector('#status-bar-save')
+    if (container) container.innerHTML = ''
+    const saveButton = new Button({
+      title: 'Save note',
+      html: saveIcon,
+      onClick: createEvent(NoteEvents.Save)?.dispatch,
+    })
+    saveButton.setEnabled(!!note)
+    container?.appendChild(saveButton.getElement())
+  }
+
+  private renderSettingsButton(note: Note | null) {
+    const container = document.querySelector('#status-bar-settings')
+    if (container) container.innerHTML = ''
+    const settingsButton = new Button({
+      title: 'Note settings',
+      html: settingsIcon,
+      onClick: createEvent(DialogEvents.OpenNoteDetails)?.dispatch,
+    })
+    settingsButton.setEnabled(!!note)
+    container?.appendChild(settingsButton.getElement())
+  }
+
+  private updateTitle(title: string) {
+    const container = document.querySelector('#status-bar-title-container')
+    if (container) container.innerHTML = ''
+    const span = document.createElement('span')
+    span.appendChild(document.createTextNode(title))
+    span.classList.add(title ? 'status-bar-title' : 'status-bar-title-disabled')
+    container?.appendChild(span)
   }
 
   private renderDateSection({
