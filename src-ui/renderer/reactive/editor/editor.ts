@@ -1,10 +1,5 @@
-import {
-  BUTTON_CONFIGURATION,
-  instantiateMenuButtons,
-  instantiateFloatingMenuButtons,
-} from './editor-buttons'
+import { BUTTON_CONFIGURATION, instantiateMenuButtons } from './editor-buttons'
 import { Editor as TipTapEditor } from '@tiptap/core'
-import FloatingMenu from '@tiptap/extension-floating-menu'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
@@ -140,45 +135,6 @@ class Editor {
         CodeBlock.configure({
           HTMLAttributes: {
             class: 'code-block',
-          },
-        }),
-        FloatingMenu.configure({
-          element: document.querySelector(
-            '#editor-floating-menu'
-          ) as HTMLElement,
-          tippyOptions: {
-            duration: 50,
-            onHidden: (instance) => {
-              instance.setContent('')
-            },
-            onMount: (instance) => {
-              const div = document.createElement('div')
-              div.classList.add('editor-floating-menu')
-              const buttons = instantiateFloatingMenuButtons(this.editor)
-              buttons.forEach((button) => {
-                // group buttons by data attribute
-                const group = button.dataset.group
-                if (!group)
-                  throw new Error('Top menu button is not assigned to a group')
-
-                const groupId = `top-menu-group-${group}`
-                let groupContainer = document.querySelector(`#${groupId}`)
-                if (!groupContainer) {
-                  groupContainer = document.createElement('div')
-                  groupContainer.id = groupId
-                }
-                div.appendChild(groupContainer)
-                groupContainer.appendChild(button)
-                instance.setContent(div)
-              })
-            },
-          },
-          shouldShow: ({ editor, view }) => {
-            const shouldShow =
-              view.state.selection.$head.node().content.size === 0
-                ? editor.isActive('paragraph')
-                : false
-            return shouldShow
           },
         }),
       ],
