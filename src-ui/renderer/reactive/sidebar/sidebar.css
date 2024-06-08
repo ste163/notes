@@ -6,7 +6,7 @@
 }
 
 .sidebar-opened {
-  width: 10rem;
+  width: 15rem;
   border-right: var(--outline-color) 0.13rem solid;
 }
 
@@ -66,9 +66,14 @@
   width: 100%;
   font-weight: normal;
   text-align: left;
+}
+
+.note-select-container > button > div > div:first-child {
+  display: inline-block;
   text-overflow: ellipsis;
-  white-space: nowrap;
   overflow: hidden;
+  white-space: nowrap;
+  max-width: 13.5rem;
 }
 
 .note-select-container > button:hover {
