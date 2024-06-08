@@ -71,7 +71,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'heading',
     markOptions: { level: 1 },
     className: 'menu-button-h1',
-    isInFloatingMenu: false,
+    isInFloatingMenu: true,
     onClick: (editor) =>
       editor?.chain().focus().toggleHeading({ level: 1 }).run(),
     html: heading1Icon,
@@ -82,7 +82,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'heading',
     markOptions: { level: 2 },
     className: 'menu-button-h2',
-    isInFloatingMenu: false,
+    isInFloatingMenu: true,
     onClick: (editor) =>
       editor?.chain().focus().toggleHeading({ level: 2 }).run(),
     html: heading2Icon,
@@ -93,7 +93,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'heading',
     markOptions: { level: 3 },
     className: 'menu-button-h3',
-    isInFloatingMenu: false,
+    isInFloatingMenu: true,
     onClick: (editor) =>
       editor?.chain().focus().toggleHeading({ level: 3 }).run(),
     html: heading3Icon,
@@ -103,7 +103,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Bullet List',
     markName: 'bulletList',
     className: 'menu-button-bullet-list',
-    isInFloatingMenu: false,
+    isInFloatingMenu: true,
     onClick: (editor) => {
       editor?.chain().focus().toggleBulletList().run()
     },
@@ -114,7 +114,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Ordered List',
     markName: 'orderedList',
     className: 'menu-button-ordered-list',
-    isInFloatingMenu: false,
+    isInFloatingMenu: true,
     onClick: (editor) => {
       editor?.chain().focus().toggleOrderedList().run()
     },
@@ -159,14 +159,16 @@ function instantiateMenuButtons(editor: Editor | null) {
 }
 
 function instantiateFloatingMenuButtons(editor: Editor | null) {
-  return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) =>
-    new Button({
+  return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) => {
+    const button = new Button({
       title: b.title,
       html: b.html,
       className: b.className ?? '',
       onClick: () => b.onClick(editor),
     }).getElement()
-  )
+    button.dataset.group = b.group.toString()
+    return button
+  })
 }
 
 export {

@@ -6,7 +6,7 @@
   border-bottom: var(--outline-color) 0.13rem solid;
   padding: 0.25rem 0.5rem;
   overflow-y: hidden;
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 #status-bar button {

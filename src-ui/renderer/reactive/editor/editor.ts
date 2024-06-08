@@ -47,7 +47,6 @@ class Editor {
     this.isDirty = false
     this.editor = this.instantiateTipTap(this.note)
     this.renderMenu()
-    this.renderFloatingMenu()
   }
 
   public renderMenu(isDisabled = false) {
@@ -71,16 +70,6 @@ class Editor {
       }
       container.appendChild(groupContainer)
       groupContainer.appendChild(button)
-    })
-  }
-
-  public renderFloatingMenu() {
-    const container = document.querySelector('#editor-floating-menu')
-    if (!container) return
-    container.innerHTML = '' // reset container before rendering
-    const buttons = instantiateFloatingMenuButtons(this.editor)
-    buttons.forEach((button) => {
-      container.appendChild(button)
     })
   }
 
@@ -126,13 +115,11 @@ class Editor {
   }
 
   private instantiateTipTap(note: Note | null) {
-    const editorElement = document.querySelector('#editor') as Element
-    const floatingEditorMenu = document.querySelector('#editor-floating-menu')
-
     const editor = new TipTapEditor({
-      element: editorElement,
+      element: document.querySelector('#editor') as Element,
       extensions: [
         Document,
+        History,
         Paragraph,
         Text,
         Bold,
@@ -155,13 +142,44 @@ class Editor {
             class: 'code-block',
           },
         }),
-        History,
         FloatingMenu.configure({
-          element: floatingEditorMenu as HTMLElement,
-          shouldShow: ({ editor, view }) =>
-            view.state.selection.$head.node().content.size === 0
-              ? editor.isActive('paragraph')
-              : false,
+          element: document.querySelector(
+            '#editor-floating-menu'
+          ) as HTMLElement,
+          tippyOptions: {
+            duration: 50,
+            onHidden: (instance) => {
+              instance.setContent('')
+            },
+            onMount: (instance) => {
+              const div = document.createElement('div')
+              div.classList.add('editor-floating-menu')
+              const buttons = instantiateFloatingMenuButtons(this.editor)
+              buttons.forEach((button) => {
+                // group buttons by data attribute
+                const group = button.dataset.group
+                if (!group)
+                  throw new Error('Top menu button is not assigned to a group')
+
+                const groupId = `top-menu-group-${group}`
+                let groupContainer = document.querySelector(`#${groupId}`)
+                if (!groupContainer) {
+                  groupContainer = document.createElement('div')
+                  groupContainer.id = groupId
+                }
+                div.appendChild(groupContainer)
+                groupContainer.appendChild(button)
+                instance.setContent(div)
+              })
+            },
+          },
+          shouldShow: ({ editor, view }) => {
+            const shouldShow =
+              view.state.selection.$head.node().content.size === 0
+                ? editor.isActive('paragraph')
+                : false
+            return shouldShow
+          },
         }),
       ],
       content: note?.content ?? STARTING_CONTENT,
