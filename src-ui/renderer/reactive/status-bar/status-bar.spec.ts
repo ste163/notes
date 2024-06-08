@@ -14,7 +14,7 @@ describe('status-bar', () => {
     const { getByRole } = renderComponent({
       renderComponent: statusBar.render,
     })
-    statusBar.renderNoteSection(null)
+    statusBar.renderActiveNote(null)
 
     expect(getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(getByRole('button', { name: 'Settings' })).toBeDisabled()
@@ -24,7 +24,7 @@ describe('status-bar', () => {
     const { getByRole } = renderComponent({
       renderComponent: statusBar.render,
     })
-    statusBar.renderNoteSection({
+    statusBar.renderActiveNote({
       _id: 'abc',
       title: 'Note title',
       updatedAt: new Date(),
@@ -95,37 +95,37 @@ describe('status-bar', () => {
     expect(getByRole('dialog')).toBeInTheDocument()
   })
 
-  it('does not render last saved date if null', () => {
+  it('does not render saved on date if null', () => {
     const { queryByText } = renderComponent({
       renderComponent: statusBar.render,
     })
-    statusBar.renderLastSaved(null)
-    expect(queryByText('Last saved')).toBeNull()
+    statusBar.renderSavedOn(null)
+    expect(queryByText('Saved on')).toBeNull()
   })
 
-  it('renders last saved date if provided', () => {
+  it('renders saved on date if provided', () => {
     const { getByText } = renderComponent({
       renderComponent: statusBar.render,
     })
     const date = new Date().toLocaleString()
-    statusBar.renderLastSaved(date)
-    expect(getByText(`Last saved: ${date}`)).toBeInTheDocument()
+    statusBar.renderSavedOn(date)
+    expect(getByText(`Saved on: ${date}`)).toBeInTheDocument()
   })
 
-  it('does not render last sync date if null', () => {
+  it('does not render synced on date if null', () => {
     const { queryByText } = renderComponent({
       renderComponent: statusBar.render,
     })
-    statusBar.renderLastSynced(null)
-    expect(queryByText('Last synced')).toBeNull()
+    statusBar.renderSyncedOn(null)
+    expect(queryByText('Synced on')).toBeNull()
   })
 
-  it('renders last sync date', () => {
+  it('renders synced on date', () => {
     const { getByText } = renderComponent({
       renderComponent: statusBar.render,
     })
     const date = new Date().toLocaleString()
-    statusBar.renderLastSynced(date)
-    expect(getByText(`Last synced: ${date}`)).toBeInTheDocument()
+    statusBar.renderSyncedOn(date)
+    expect(getByText(`Synced on: ${date}`)).toBeInTheDocument()
   })
 })

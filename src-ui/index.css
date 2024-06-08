@@ -33,6 +33,7 @@ body {
 
 #status-bar {
   grid-area: status-bar;
+  overflow-y: scroll;
 }
 
 .body-visible {
