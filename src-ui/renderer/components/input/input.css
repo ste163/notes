@@ -1,7 +1,7 @@
 input {
   font-size: small;
-  border: var(--outline-color) 0.15em solid;
-  padding: 0.5em;
+  border: var(--outline-color) 0.13rem solid;
+  padding: 0.5rem;
 }
 
 .input-container {
@@ -11,5 +11,5 @@ input {
 
 .input-container > label {
   font-size: small;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5rem;
 }
