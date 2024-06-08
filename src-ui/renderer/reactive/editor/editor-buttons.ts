@@ -1,4 +1,3 @@
-import { DialogEvents, NoteEvents, createEvent } from 'event'
 import { Button } from 'components'
 import {
   boldIcon,
@@ -9,13 +8,9 @@ import {
   heading3Icon,
   italicIcon,
   orderedListIcon,
-  redoIcon,
-  saveIcon,
-  settingsIcon,
   strikeIcon,
   taskListIcon,
   underlineIcon,
-  undoIcon,
 } from 'icons'
 import type { ButtonOptions } from 'components'
 import type { MarkOptions } from 'types'
@@ -36,20 +31,6 @@ interface EditorButton extends Omit<ButtonOptions, 'onClick'> {
 const BUTTON_CONFIGURATION: EditorButton[] = [
   {
     group: 1,
-    title: 'Save note',
-    isInFloatingMenu: false,
-    onClick: () => createEvent(NoteEvents.Save).dispatch(),
-    html: saveIcon,
-  },
-  {
-    group: 1,
-    title: 'Note settings',
-    isInFloatingMenu: false,
-    onClick: () => createEvent(DialogEvents.OpenNoteDetails).dispatch(),
-    html: settingsIcon,
-  },
-  {
-    group: 2,
     title: 'Bold',
     markName: 'bold',
     className: 'menu-button-bold',
@@ -58,7 +39,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: boldIcon,
   },
   {
-    group: 2,
+    group: 1,
     title: 'Italic',
     markName: 'italic',
     className: 'menu-button-italic',
@@ -67,7 +48,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: italicIcon,
   },
   {
-    group: 2,
+    group: 1,
     title: 'Underline',
     markName: 'underline',
     className: 'menu-button-underline',
@@ -76,7 +57,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: underlineIcon,
   },
   {
-    group: 2,
+    group: 1,
     title: 'Strike',
     markName: 'strike',
     className: 'menu-button-strike',
@@ -85,7 +66,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: strikeIcon,
   },
   {
-    group: 3,
+    group: 2,
     title: 'Heading 1',
     markName: 'heading',
     markOptions: { level: 1 },
@@ -96,7 +77,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: heading1Icon,
   },
   {
-    group: 3,
+    group: 2,
     title: 'Heading 2',
     markName: 'heading',
     markOptions: { level: 2 },
@@ -107,7 +88,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: heading2Icon,
   },
   {
-    group: 3,
+    group: 2,
     title: 'Heading 3',
     markName: 'heading',
     markOptions: { level: 3 },
@@ -118,7 +99,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: heading3Icon,
   },
   {
-    group: 4,
+    group: 3,
     title: 'Bullet List',
     markName: 'bulletList',
     className: 'menu-button-bullet-list',
@@ -129,7 +110,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: bulletListIcon,
   },
   {
-    group: 4,
+    group: 3,
     title: 'Ordered List',
     markName: 'orderedList',
     className: 'menu-button-ordered-list',
@@ -140,7 +121,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: orderedListIcon,
   },
   {
-    group: 4,
+    group: 3,
     title: 'Task List',
     markName: 'taskList',
     className: 'menu-button-task-list',
@@ -151,7 +132,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     html: taskListIcon,
   },
   {
-    group: 5,
+    // TODO/BUG: this isn't rendering
+    group: 4,
     title: 'Code Block',
     markName: 'codeBlock',
     className: 'menu-button-code-block',
@@ -160,20 +142,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       editor?.chain().focus().toggleCodeBlock().run()
     },
     html: codeBlockIcon,
-  },
-  {
-    group: 6,
-    title: 'Undo',
-    isInFloatingMenu: false,
-    onClick: (editor) => editor?.chain().focus().undo().run(),
-    html: undoIcon,
-  },
-  {
-    group: 6,
-    title: 'Redo',
-    isInFloatingMenu: false,
-    onClick: (editor) => editor?.chain().focus().redo().run(),
-    html: redoIcon,
   },
 ]
 

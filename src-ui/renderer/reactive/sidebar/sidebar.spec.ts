@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
 import { sidebar } from './sidebar'

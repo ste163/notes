@@ -40,9 +40,9 @@ class Editor {
     if (!container) throw new Error('Main container not found')
     container.innerHTML = ''
     container.innerHTML = `
-    <div id='editor'></div>
-    <div id='editor-floating-menu'></div>
     <div id='editor-menu'></div>
+    <div id='editor-floating-menu'></div>
+    <div id='editor'></div>
     `
     this.isDirty = false
     this.editor = this.instantiateTipTap(this.note)

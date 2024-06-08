@@ -19,37 +19,60 @@
   background-color: var(--info-button-hover-color);
 }
 
-.status-bar-data-container,
+#status-bar-title-container {
+  text-align: center;
+}
+
+.status-bar-title,
+.status-bar-title-disabled {
+  display: inline-block;
+  font-weight: bold;
+  max-width: 18vw;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.status-bar-title-disabled {
+  color: gray;
+}
+
+@media (max-width: 640px) {
+  .status-bar-title,
+  .status-bar-title-disabled {
+    max-width: 40vw;
+  }
+}
+
+@media (min-width: 850px) {
+  .status-bar-title,
+  .status-bar-title-disabled {
+    max-width: 40vw;
+  }
+}
+
+.status-bar-database-container,
 .status-bar-status-container {
   display: flex;
   align-items: center;
 }
 
-.status-bar-data-container div {
-  display: flex;
-  align-items: center;
+.status-bar-date {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.status-bar-status-container div,
+.status-bar-database-container div {
+  margin: 0 0.2em;
 }
 
 #status-bar-alert button {
-  margin-right: 1em;
   font-weight: bold;
   background-color: var(--error-color);
 }
 
 #status-bar-alert button:hover {
   background-color: var(--error-color);
-}
-
-.status-bar-divider {
-  height: 1em;
-}
-
-.status-bar-divider::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  height: 100%;
-  border-left: var(--outline-color) 0.15em solid;
-  transform: translateX(-50%);
 }

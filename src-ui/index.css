@@ -33,6 +33,7 @@ body {
 
 #status-bar {
   grid-area: status-bar;
+  overflow-y: scroll;
 }
 
 .body-visible {
@@ -49,7 +50,7 @@ body {
 
 main {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   grid-area: main;
   overflow-y: auto;
 }

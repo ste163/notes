@@ -1,7 +1,9 @@
 import { Button } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
-import { databaseIcon, errorIcon } from 'icons'
+import { databaseIcon, errorIcon, saveIcon, settingsIcon } from 'icons'
+import { createEvent, DialogEvents, NoteEvents } from 'event'
 import pkg from '../../../../package.json'
+import type { Note } from 'types'
 import './status-bar.css'
 
 class StatusBar {
@@ -10,15 +12,24 @@ class StatusBar {
     if (!container) throw new Error('Status bar container not found')
     container.innerHTML = '' // reset container
     container.innerHTML = `
-      <div class='status-bar-data-container'>
+      <div class='status-bar-database-container'>
         <div id='remote-db-setup-container'></div>
-        <div id='status-bar-last-sync' class='hide-on-mobile'></div>
-        <div id='status-bar-last-save' class='hide-on-mobile'></div>
+        <div id='status-bar-synced-on' class='status-bar-date hide-on-mobile'></div>
       </div>
+      <div id='status-bar-title-container'></div>
       <div class='status-bar-status-container'>
+        <div id='status-bar-saved-on' class='status-bar-date hide-on-mobile'></div>
         <div id='status-bar-alert'></div>
+        <div id='status-bar-save'></div>
+        <div id='status-bar-settings'></div>
         <div>v${pkg.version}</div>
       </div>`
+  }
+
+  public renderActiveNote(note: Note | null) {
+    this.renderSaveButton(note)
+    this.renderSettingsButton(note)
+    this.updateTitle(note?.title || 'No note selected')
   }
 
   public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
@@ -42,19 +53,19 @@ class StatusBar {
     )
   }
 
-  public renderLastSaved(date: string | null) {
+  public renderSavedOn(date: string | null) {
     this.renderDateSection({
-      selector: '#status-bar-last-save',
+      selector: '#status-bar-saved-on',
       date,
-      label: 'Last saved',
+      label: 'Saved on',
     })
   }
 
-  public renderLastSynced(date: string | null) {
+  public renderSyncedOn(date: string | null) {
     this.renderDateSection({
-      selector: '#status-bar-last-sync',
+      selector: '#status-bar-synced-on',
       date,
-      label: 'Last synced',
+      label: 'Synced on',
     })
   }
 
@@ -75,10 +86,44 @@ class StatusBar {
             renderRemoteDbDialog({
               // TODO this should come from some state NOT passed in like this
               isConnectedToRemote: true, // because this isn't valid
+              // THIS NEEDS TO BE AN EMITTED EVENT LIKE THE OTHER DIALOG
               error: message,
             }),
         }).getElement()
       )
+  }
+
+  private renderSaveButton(note: Note | null) {
+    const container = document.querySelector('#status-bar-save')
+    if (container) container.innerHTML = ''
+    const saveButton = new Button({
+      title: 'Save note',
+      html: saveIcon,
+      onClick: createEvent(NoteEvents.Save)?.dispatch,
+    })
+    saveButton.setEnabled(!!note)
+    container?.appendChild(saveButton.getElement())
+  }
+
+  private renderSettingsButton(note: Note | null) {
+    const container = document.querySelector('#status-bar-settings')
+    if (container) container.innerHTML = ''
+    const settingsButton = new Button({
+      title: 'Note settings',
+      html: settingsIcon,
+      onClick: createEvent(DialogEvents.OpenNoteDetails)?.dispatch,
+    })
+    settingsButton.setEnabled(!!note)
+    container?.appendChild(settingsButton.getElement())
+  }
+
+  private updateTitle(title: string) {
+    const container = document.querySelector('#status-bar-title-container')
+    if (container) container.innerHTML = ''
+    const span = document.createElement('span')
+    span.appendChild(document.createTextNode(title))
+    span.classList.add(title ? 'status-bar-title' : 'status-bar-title-disabled')
+    container?.appendChild(span)
   }
 
   private renderDateSection({
@@ -94,19 +139,10 @@ class StatusBar {
     if (container) container.innerHTML = ''
     if (!date) return // then keep the container cleared
     const span = document.createElement('span')
+    span.style.fontSize = 'x-small'
+    span.style.textWrap = 'nowrap'
     span.appendChild(document.createTextNode(`${label}: ${date}`))
-    container?.appendChild(this.createDivider())
     container?.appendChild(span)
-  }
-
-  private createDivider() {
-    const parent = document.createElement('div')
-    parent.style.position = 'relative'
-    parent.style.margin = '0 0.5rem'
-    const divider = document.createElement('div')
-    divider.classList.add('status-bar-divider')
-    parent.appendChild(divider)
-    return parent
   }
 }
 
