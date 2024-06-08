@@ -5,6 +5,7 @@
 /**
  * TODO PRIORITY ORDER
  *  - EDITOR BUTTONS:
+ *     - implement bubble menu for font items
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."

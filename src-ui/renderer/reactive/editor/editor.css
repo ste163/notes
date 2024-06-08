@@ -23,6 +23,7 @@
 #editor-menu > div > button {
   margin: 0.2rem;
   padding: 0.2rem 0.4rem;
+  border: none;
 }
 
 /* TipTap/ProseMirror specific */
