@@ -25,21 +25,6 @@
   padding: 0.2rem 0.4rem;
 }
 
-.editor-floating-menu {
-  display: flex;
-  flex-direction: row;
-}
-
-.editor-floating-menu div {
-  display: flex;
-  flex-flow: row nowrap;
-  margin: 0.4rem 0.2rem;
-}
-
-.editor-floating-menu div button {
-  margin: 0 0.1rem;
-}
-
 /* TipTap/ProseMirror specific */
 .ProseMirror {
   height: 100%;

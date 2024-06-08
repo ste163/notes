@@ -5,11 +5,6 @@
 /**
  * TODO PRIORITY ORDER
  *  - EDITOR BUTTONS:
- *     - only use the floating menu
- *     - FIX floating menu
- *     - tab order is broken for the floating menu if there is a checkbox in the editor
- *     - add hyperlink insert support
- *     - remove editor button bar once floating menu is stable
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
@@ -25,6 +20,7 @@
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - db dialog needs to have last synced date (for mobile parity)
+ *   - add hyperlink insert support
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
