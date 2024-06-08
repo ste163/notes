@@ -18,7 +18,7 @@ button {
 }
 
 button:hover {
-  background-color: var(--active-color);
+  background-color: var(--info-button-hover-color);
 }
 
 button > svg {

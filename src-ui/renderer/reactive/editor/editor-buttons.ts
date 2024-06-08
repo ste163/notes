@@ -19,7 +19,6 @@ import type { Editor } from '@tiptap/core'
 interface EditorButton extends Omit<ButtonOptions, 'onClick'> {
   group: number // used for placing in which div for organization
   onClick: (editor: Editor | null) => void
-  isInFloatingMenu: boolean
   markName?: string // used for toggling css
   markOptions?: MarkOptions // used for toggling css
 }
@@ -34,7 +33,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Bold',
     markName: 'bold',
     className: 'menu-button-bold',
-    isInFloatingMenu: false,
     onClick: (editor) => editor?.chain().focus().toggleBold().run(),
     html: boldIcon,
   },
@@ -43,7 +41,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Italic',
     markName: 'italic',
     className: 'menu-button-italic',
-    isInFloatingMenu: false,
     onClick: (editor) => editor?.chain().focus().toggleItalic().run(),
     html: italicIcon,
   },
@@ -52,7 +49,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Underline',
     markName: 'underline',
     className: 'menu-button-underline',
-    isInFloatingMenu: false,
     onClick: (editor) => editor?.chain().focus().toggleUnderline().run(),
     html: underlineIcon,
   },
@@ -61,7 +57,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Strike',
     markName: 'strike',
     className: 'menu-button-strike',
-    isInFloatingMenu: false,
     onClick: (editor) => editor?.chain().focus().toggleStrike().run(),
     html: strikeIcon,
   },
@@ -71,7 +66,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'heading',
     markOptions: { level: 1 },
     className: 'menu-button-h1',
-    isInFloatingMenu: false,
     onClick: (editor) =>
       editor?.chain().focus().toggleHeading({ level: 1 }).run(),
     html: heading1Icon,
@@ -82,7 +76,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'heading',
     markOptions: { level: 2 },
     className: 'menu-button-h2',
-    isInFloatingMenu: false,
     onClick: (editor) =>
       editor?.chain().focus().toggleHeading({ level: 2 }).run(),
     html: heading2Icon,
@@ -93,7 +86,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'heading',
     markOptions: { level: 3 },
     className: 'menu-button-h3',
-    isInFloatingMenu: false,
     onClick: (editor) =>
       editor?.chain().focus().toggleHeading({ level: 3 }).run(),
     html: heading3Icon,
@@ -103,7 +95,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Bullet List',
     markName: 'bulletList',
     className: 'menu-button-bullet-list',
-    isInFloatingMenu: false,
     onClick: (editor) => {
       editor?.chain().focus().toggleBulletList().run()
     },
@@ -114,7 +105,6 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Ordered List',
     markName: 'orderedList',
     className: 'menu-button-ordered-list',
-    isInFloatingMenu: false,
     onClick: (editor) => {
       editor?.chain().focus().toggleOrderedList().run()
     },
@@ -125,19 +115,16 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Task List',
     markName: 'taskList',
     className: 'menu-button-task-list',
-    isInFloatingMenu: true,
     onClick: (editor) => {
       editor?.chain().focus().toggleTaskList().run()
     },
     html: taskListIcon,
   },
   {
-    // TODO/BUG: this isn't rendering
     group: 4,
     title: 'Code Block',
     markName: 'codeBlock',
     className: 'menu-button-code-block',
-    isInFloatingMenu: true,
     onClick: (editor) => {
       editor?.chain().focus().toggleCodeBlock().run()
     },
@@ -146,7 +133,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
 ]
 
 function instantiateMenuButtons(editor: Editor | null) {
-  return BUTTON_CONFIGURATION.filter((b) => !b.isInFloatingMenu).map((b) => {
+  return BUTTON_CONFIGURATION.map((b) => {
     const button = new Button({
       title: b.title,
       html: b.html,
@@ -158,19 +145,4 @@ function instantiateMenuButtons(editor: Editor | null) {
   })
 }
 
-function instantiateFloatingMenuButtons(editor: Editor | null) {
-  return BUTTON_CONFIGURATION.filter((b) => b.isInFloatingMenu).map((b) =>
-    new Button({
-      title: b.title,
-      html: b.html,
-      className: b.className ?? '',
-      onClick: () => b.onClick(editor),
-    }).getElement()
-  )
-}
-
-export {
-  BUTTON_CONFIGURATION,
-  instantiateMenuButtons,
-  instantiateFloatingMenuButtons,
-}
+export { BUTTON_CONFIGURATION, instantiateMenuButtons }

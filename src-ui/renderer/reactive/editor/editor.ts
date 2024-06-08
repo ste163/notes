@@ -1,10 +1,5 @@
-import {
-  BUTTON_CONFIGURATION,
-  instantiateMenuButtons,
-  instantiateFloatingMenuButtons,
-} from './editor-buttons'
+import { BUTTON_CONFIGURATION, instantiateMenuButtons } from './editor-buttons'
 import { Editor as TipTapEditor } from '@tiptap/core'
-import FloatingMenu from '@tiptap/extension-floating-menu'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
@@ -40,14 +35,11 @@ class Editor {
     if (!container) throw new Error('Main container not found')
     container.innerHTML = ''
     container.innerHTML = `
-    <div id='editor-menu'></div>
-    <div id='editor-floating-menu'></div>
-    <div id='editor'></div>
-    `
+      <div id='editor-menu'></div>
+      <div id='editor'></div>`
     this.isDirty = false
     this.editor = this.instantiateTipTap(this.note)
     this.renderMenu()
-    this.renderFloatingMenu()
   }
 
   public renderMenu(isDisabled = false) {
@@ -71,16 +63,6 @@ class Editor {
       }
       container.appendChild(groupContainer)
       groupContainer.appendChild(button)
-    })
-  }
-
-  public renderFloatingMenu() {
-    const container = document.querySelector('#editor-floating-menu')
-    if (!container) return
-    container.innerHTML = '' // reset container before rendering
-    const buttons = instantiateFloatingMenuButtons(this.editor)
-    buttons.forEach((button) => {
-      container.appendChild(button)
     })
   }
 
@@ -126,13 +108,11 @@ class Editor {
   }
 
   private instantiateTipTap(note: Note | null) {
-    const editorElement = document.querySelector('#editor') as Element
-    const floatingEditorMenu = document.querySelector('#editor-floating-menu')
-
     const editor = new TipTapEditor({
-      element: editorElement,
+      element: document.querySelector('#editor') as Element,
       extensions: [
         Document,
+        History,
         Paragraph,
         Text,
         Bold,
@@ -154,14 +134,6 @@ class Editor {
           HTMLAttributes: {
             class: 'code-block',
           },
-        }),
-        History,
-        FloatingMenu.configure({
-          element: floatingEditorMenu as HTMLElement,
-          shouldShow: ({ editor, view }) =>
-            view.state.selection.$head.node().content.size === 0
-              ? editor.isActive('paragraph')
-              : false,
         }),
       ],
       content: note?.content ?? STARTING_CONTENT,

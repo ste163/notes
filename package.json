@@ -23,7 +23,6 @@
     "@tiptap/extension-bullet-list": "2.4.0",
     "@tiptap/extension-code-block": "2.4.0",
     "@tiptap/extension-document": "2.4.0",
-    "@tiptap/extension-floating-menu": "2.4.0",
     "@tiptap/extension-heading": "2.4.0",
     "@tiptap/extension-history": "2.4.0",
     "@tiptap/extension-italic": "2.4.0",
