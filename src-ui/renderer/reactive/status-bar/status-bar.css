@@ -5,7 +5,6 @@
   font-size: small;
   border-bottom: var(--outline-color) 0.13rem solid;
   padding: 0.25rem 0.5rem;
-  height: min-content;
 }
 
 #status-bar button {
@@ -26,9 +25,8 @@
 .status-bar-title,
 .status-bar-title-disabled {
   font-size: medium;
-  display: inline-block;
   font-weight: bold;
-  max-width: 18vw;
+  max-width: 30vw;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
