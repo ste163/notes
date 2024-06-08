@@ -38,6 +38,9 @@ class StatusBar {
     container?.appendChild(
       new Button({
         title: 'Setup remote database',
+        style: {
+          textWrap: 'nowrap',
+        },
         html: `
         ${databaseIcon}
         <span>

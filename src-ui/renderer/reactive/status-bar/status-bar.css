@@ -24,6 +24,8 @@
 
 .status-bar-title,
 .status-bar-title-disabled {
+  display: inline-block;
+  line-height: normal;
   font-size: medium;
   font-weight: bold;
   max-width: 30vw;
@@ -70,6 +72,7 @@
 #status-bar-alert button {
   font-weight: bold;
   background-color: var(--error-color);
+  padding-right: 0.3rem;
 }
 
 #status-bar-alert button:hover {

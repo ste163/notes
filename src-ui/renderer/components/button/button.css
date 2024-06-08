@@ -4,9 +4,9 @@ button {
   align-items: center;
   border-radius: 0.3rem;
   border: 0.13rem solid var(--outline-color);
-  padding: 0.3rem 0.5rem;
+  padding: 0.25rem 0.4rem;
 
-  font-size: 0.9rem;
+  font-size: medium;
   font-weight: bold;
 
   cursor: pointer;
