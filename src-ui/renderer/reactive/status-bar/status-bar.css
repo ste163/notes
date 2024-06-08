@@ -3,14 +3,14 @@
   align-items: center;
   justify-content: space-between;
   font-size: small;
-  border-bottom: var(--outline-color) 0.15em solid;
-  padding: 0.25em 0.5em;
+  border-bottom: var(--outline-color) 0.13rem solid;
+  padding: 0.25rem 0.5rem;
   height: min-content;
 }
 
 #status-bar button {
   border: none;
-  padding: 0 0.2em;
+  padding: 0 0.2rem;
   font-weight: inherit;
   font-size: inherit;
 }
@@ -25,26 +25,28 @@
 
 .status-bar-title,
 .status-bar-title-disabled {
+  font-size: medium;
   display: inline-block;
   font-weight: bold;
   max-width: 18vw;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  padding: 0 0.4rem;
 }
 
 .status-bar-title-disabled {
   color: gray;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 780px) {
   .status-bar-title,
   .status-bar-title-disabled {
     max-width: 40vw;
   }
 }
 
-@media (min-width: 850px) {
+@media (min-width: 1080px) {
   .status-bar-title,
   .status-bar-title-disabled {
     max-width: 40vw;
@@ -58,14 +60,13 @@
 }
 
 .status-bar-date {
-  text-overflow: ellipsis;
   white-space: nowrap;
-  overflow: hidden;
+  font-size: 0.65rem;
 }
 
 .status-bar-status-container div,
 .status-bar-database-container div {
-  margin: 0 0.2em;
+  margin: 0 0.2rem;
 }
 
 #status-bar-alert button {
@@ -75,4 +76,10 @@
 
 #status-bar-alert button:hover {
   background-color: var(--error-color);
+}
+
+@media (max-width: 780px) {
+  .status-bar-hide-on-mobile {
+    display: none !important;
+  }
 }

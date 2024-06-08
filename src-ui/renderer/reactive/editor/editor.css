@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   overflow-y: auto;
-  padding-top: 1em;
+  padding-top: 1rem;
   min-height: max-content;
 }
 
@@ -12,16 +12,16 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 0.25em;
+  padding: 0.25rem;
 }
 
 #editor-menu > div {
   display: flex;
-  margin: 0.4em 0.2em;
+  margin: 0.4rem 0.2rem;
 }
 
 #editor-menu > div > button {
-  margin: 0.1em;
+  margin: 0.1rem;
 }
 
 #editor-floating-menu {
@@ -29,25 +29,25 @@
 }
 
 #editor-floating-menu > button {
-  margin: 0 0.1em;
+  margin: 0 0.1rem;
 }
 
 /* TipTap/ProseMirror specific */
 .ProseMirror {
   height: 100%;
   width: 100%;
-  max-width: 40em;
+  max-width: 40rem;
   outline: none;
-  padding: 0 1em;
+  padding: 0 1rem;
 }
 
 .code-block {
   display: block;
-  padding: 0.5em;
+  padding: 0.5rem;
   background-color: var(--code-block-color);
   color: white;
-  border-radius: 0.3em;
-  margin: 0.5em;
+  border-radius: 0.3rem;
+  margin: 0.5rem;
 }
 
 .task-item {
@@ -56,7 +56,7 @@
 }
 
 .task-item > label {
-  margin-right: 0.5em;
+  margin-right: 0.5rem;
 }
 
 .task-item > label > input {

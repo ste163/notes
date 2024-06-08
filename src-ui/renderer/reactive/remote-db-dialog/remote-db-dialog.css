@@ -2,17 +2,17 @@
   display: flex;
   flex-direction: column;
   width: 100vw;
-  max-width: 30em;
+  max-width: 30rem;
 }
 
 @media (max-width: 640px) {
   .remote-db-setup-dialog section {
-    max-width: 20em;
+    max-width: 20rem;
   }
 }
 
 .remote-db-setup-dialog h3 {
-  margin: 1.5em 0 0.5em 0;
+  margin: 1.5rem 0 0.5rem 0;
 }
 
 .remote-db-connection-heading {
@@ -25,17 +25,17 @@
 }
 
 .remote-db-setup-dialog form input {
-  margin: 0.25em 0;
+  margin: 0.25rem 0;
 }
 
 .remote-db-setup-dialog form label {
-  margin: 0.5em 0 0 0;
+  margin: 0.5rem 0 0 0;
 }
 
 .remote-db-setup-dialog form > div {
   display: flex;
   justify-content: space-between;
-  margin-top: 0.5em;
+  margin-top: 0.5rem;
 }
 
 .remote-db-status-container > div {
@@ -44,15 +44,15 @@
 }
 
 .remote-db-status-icon {
-  height: 2em;
-  width: 2em;
-  margin-right: 0.5em;
+  height: 2rem;
+  width: 2rem;
+  margin-right: 0.5rem;
 }
 
 #remote-db-logs {
   display: block;
-  margin-top: 1em;
-  height: 10em;
+  margin-top: 1rem;
+  height: 10rem;
 
   overflow-y: auto;
   overflow-x: scroll;

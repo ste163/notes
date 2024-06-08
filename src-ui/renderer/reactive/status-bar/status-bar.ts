@@ -14,11 +14,11 @@ class StatusBar {
     container.innerHTML = `
       <div class='status-bar-database-container'>
         <div id='remote-db-setup-container'></div>
-        <div id='status-bar-synced-on' class='status-bar-date hide-on-mobile'></div>
+        <div id='status-bar-synced-on' class='status-bar-date status-bar-hide-on-mobile'></div>
       </div>
       <div id='status-bar-title-container'></div>
       <div class='status-bar-status-container'>
-        <div id='status-bar-saved-on' class='status-bar-date hide-on-mobile'></div>
+        <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
         <div id='status-bar-alert'></div>
         <div id='status-bar-save'></div>
         <div id='status-bar-settings'></div>
@@ -139,8 +139,6 @@ class StatusBar {
     if (container) container.innerHTML = ''
     if (!date) return // then keep the container cleared
     const span = document.createElement('span')
-    span.style.fontSize = 'x-small'
-    span.style.textWrap = 'nowrap'
     span.appendChild(document.createTextNode(`${label}: ${date}`))
     container?.appendChild(span)
   }

@@ -2,11 +2,11 @@ button {
   display: flex;
   flex-direction: row;
   align-items: center;
-  border-radius: 0.3em;
-  border: 0.15em solid var(--outline-color);
-  padding: 0.3em 0.5em;
+  border-radius: 0.3rem;
+  border: 0.13rem solid var(--outline-color);
+  padding: 0.3rem 0.5rem;
 
-  font-size: 0.9em;
+  font-size: 0.9rem;
   font-weight: bold;
 
   cursor: pointer;
@@ -22,12 +22,12 @@ button:hover {
 }
 
 button > svg {
-  width: 1.2em;
-  margin: 0.1em 0;
+  width: 1.2rem;
+  margin: 0.1rem 0;
 }
 
 button > span {
-  margin-left: 0.25em;
+  margin-left: 0.25rem;
 }
 
 button.isActive {
