@@ -21,7 +21,8 @@
 }
 
 #editor-menu > div > button {
-  margin: 0.1rem;
+  margin: 0.2rem;
+  padding: 0.2rem 0.4rem;
 }
 
 #editor-floating-menu {
