@@ -24,6 +24,7 @@
  *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
+ *   - db dialog needs to have last synced date (for mobile parity)
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
