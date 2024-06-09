@@ -51,18 +51,23 @@ class Editor {
     buttons.forEach((button) => {
       if (isDisabled) button.disabled = true
 
-      // group buttons by data attribute
-      const group = button.dataset.group
-      if (!group) throw new Error('Top menu button is not assigned to a group')
+      const assignButtonToGroup = () => {
+        const group = button.dataset.group
+        if (!group) throw new Error('button is not assigned to a group')
 
-      const groupId = `top-menu-group-${group}`
-      let groupContainer = document.querySelector(`#${groupId}`)
-      if (!groupContainer) {
-        groupContainer = document.createElement('div')
-        groupContainer.id = groupId
+        const groupId = `menu-group-${group}`
+        let groupContainer = document.querySelector(`#${groupId}`)
+        if (!groupContainer) {
+          groupContainer = document.createElement('div')
+          groupContainer.id = groupId
+          if (group === '1') groupContainer.classList.add('hide-on-mobile')
+        }
+
+        container.appendChild(groupContainer)
+        groupContainer.appendChild(button)
       }
-      container.appendChild(groupContainer)
-      groupContainer.appendChild(button)
+
+      assignButtonToGroup()
     })
   }
 

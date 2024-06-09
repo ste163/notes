@@ -107,6 +107,12 @@ strong {
   margin-left: 2rem;
 }
 
+@media (max-width: 640px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
 /* Cleaner styling for scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
