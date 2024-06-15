@@ -14,7 +14,6 @@
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
  *   - auto-save at debounced interval
- *   - if it's a manual save, display a notification that is removed after a few seconds this will be something new to implement
  *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
@@ -50,6 +49,7 @@ import {
   noteDetailsDialog,
 } from 'renderer/reactive'
 import type { Note } from 'types'
+import { AppNotification } from './renderer/components/app-notification'
 
 let database: Database
 let isMobile: boolean
@@ -188,6 +188,15 @@ window.addEventListener(NoteEvents.Save, async () => {
     const { updatedAt } = await saveNote()
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
+
+    const notification = new AppNotification({
+      id: 'note-saved',
+      innerHTML: 'Saved',
+    })
+    notification.show()
+    setTimeout(() => {
+      notification.remove()
+    }, 2000)
   } catch (error) {
     logger.logError('Error saving note.', error)
   }
