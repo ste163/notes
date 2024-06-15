@@ -1,9 +1,18 @@
 // COMPONENTS to refactor into classes:
-// DB Dialog
-// Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
+// - DB Dialog
+// - Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
 
 /**
  * TODO PRIORITY ORDER
+ *  - move note title to above editor buttons + click on title swaps it to title edit input
+ *       - all inputs need to TRIM() before saving (test that trim was setup properly)
+ *       - consider removing the note details dialog. Note created + updated at can be in NOTE LIST
+ *           - This is a good approach because the note list is close-able. So having Created At and Updated At
+ *             is completely fine and not an over-crowded UI
+ *       - this dialog could become a delete confirmation dialog (I think this approach is best)
+ *       - add editor test that the title is editable
+ *            - this will be the only test because all other items are TipTap specific
+ *  - add a check icon to the save notification alert
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
