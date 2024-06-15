@@ -1,7 +1,13 @@
 import { Button } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
-import { databaseIcon, errorIcon, saveIcon, settingsIcon } from 'icons'
-import { createEvent, DialogEvents, NoteEvents } from 'event'
+import {
+  databaseIcon,
+  errorIcon,
+  fileListIcon,
+  saveIcon,
+  settingsIcon,
+} from 'icons'
+import { createEvent, DialogEvents, LifeCycleEvents, NoteEvents } from 'event'
 import pkg from '../../../../package.json'
 import type { Note } from 'types'
 import './status-bar.css'
@@ -12,18 +18,30 @@ class StatusBar {
     if (!container) throw new Error('Status bar container not found')
     container.innerHTML = '' // reset container
     container.innerHTML = `
-      <div class='status-bar-database-container'>
+      <div class='status-bar-left-container'>
+        <div id='sidebar-container'></div>
         <div id='remote-db-setup-container'></div>
         <div id='status-bar-synced-on' class='status-bar-date status-bar-hide-on-mobile'></div>
       </div>
       <div id='status-bar-title-container'></div>
-      <div class='status-bar-status-container'>
+      <div class='status-bar-right-container'>
         <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
         <div id='status-bar-alert'></div>
         <div id='status-bar-save'></div>
         <div id='status-bar-settings'></div>
         <div>v${pkg.version}</div>
       </div>`
+
+    const sidebarContainer = document.querySelector('#sidebar-container')
+    sidebarContainer?.appendChild(
+      new Button({
+        title: 'Open sidebar',
+        onClick: () =>
+          createEvent(LifeCycleEvents.SidebarOpenOrClose).dispatch(),
+        html: `${fileListIcon}`,
+        style: { border: 'none' },
+      }).getElement()
+    )
   }
 
   public renderActiveNote(note: Note | null) {

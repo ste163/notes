@@ -12,11 +12,11 @@
 
 .sidebar-closed {
   overflow-y: hidden;
-  margin-right: 0.5rem;
 }
 
 .sidebar-fullscreen {
   width: auto;
+  border-right: none;
 }
 
 .sidebar-close-invisible {

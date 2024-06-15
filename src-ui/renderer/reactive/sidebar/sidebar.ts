@@ -1,6 +1,6 @@
 import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
-import { addNoteIcon, closeIcon, fileListIcon } from 'icons'
+import { addNoteIcon, closeIcon } from 'icons'
 import type { Notes } from 'types'
 import './sidebar.css'
 
@@ -16,7 +16,6 @@ class Sidebar {
   }
 
   public render() {
-    // render the basic sidebar setup
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
     container.classList.remove('sidebar-closed')
@@ -26,16 +25,14 @@ class Sidebar {
       <div id='sidebar-menu'>
         <div id='sidebar-menu-controls'></div>
       </div>
-      <div id='sidebar-list'></div>
-    `
+      <div id='sidebar-list'></div>`
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
         title: 'Create note',
         onClick: this.renderInput,
         html: `
-        ${addNoteIcon}
-        <span>Create<span/>
-      `,
+          ${addNoteIcon}
+          <span>Create<span/>`,
       }).getElement()
     )
 
@@ -87,18 +84,9 @@ class Sidebar {
   public close() {
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
-
     container.classList.remove('sidebar-opened')
     container.classList.add('sidebar-closed')
     container.innerHTML = '' // reset container
-    container.appendChild(
-      new Button({
-        title: 'Open sidebar',
-        onClick: this.open.bind(this),
-        html: `${fileListIcon}`,
-        style: { border: 'none' },
-      }).getElement()
-    )
     this.isOpen = false
     dispatchEvent(new Event(LifeCycleEvents.SidebarClosed))
   }
@@ -116,7 +104,6 @@ class Sidebar {
   public closeInput() {
     const container = document.querySelector(`#${this.inputContainerId}`)
     container?.remove()
-    document.removeEventListener('keydown', this.handleEscape)
   }
 
   public setNotes(notes: Notes) {
@@ -133,13 +120,6 @@ class Sidebar {
     isFullscreen
       ? container?.classList.add('sidebar-fullscreen')
       : container?.classList.remove('sidebar-fullscreen')
-  }
-
-  public toggleCloseButtonVisibility(isVisible: boolean) {
-    const closeButton = document.querySelector('#close-sidebar')
-    isVisible
-      ? closeButton?.classList.remove('sidebar-close-invisible')
-      : closeButton?.classList.add('sidebar-close-invisible')
   }
 
   private setActiveNoteInList() {
@@ -175,16 +155,6 @@ class Sidebar {
     setDisabledState()
   }
 
-  private handleEscape = (event: KeyboardEvent) => {
-    // TODO: (revisit)
-    // this does not take into account if a modal is opened
-    // so it's possible we may want this to be moved to
-    // the global index listener, but we'll leave it for now
-    if (event.key === 'Escape') {
-      this.closeInput()
-    }
-  }
-
   private renderInput() {
     // reset container before rendering (in case already rendered)
     this.closeInput()
@@ -210,7 +180,6 @@ class Sidebar {
 
     // accessibility focus
     input?.focus()
-    document.addEventListener('keydown', this.handleEscape)
   }
 
   private instantiateInputElements() {
