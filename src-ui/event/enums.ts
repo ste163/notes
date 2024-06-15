@@ -1,8 +1,10 @@
+// TODO: need a new name for LifeCycleEvents enum
 export enum LifeCycleEvents {
   Init = 'init',
   WidthChanged = 'width-changed',
   SidebarOpened = 'sidebar-opened',
   SidebarClosed = 'sidebar-closed',
+  SidebarOpenOrClose = 'sidebar-open-or-close',
 }
 
 export enum KeyboardEvents {

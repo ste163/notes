@@ -62,8 +62,8 @@
   }
 }
 
-.status-bar-database-container,
-.status-bar-status-container {
+.status-bar-left-container,
+.status-bar-right-container {
   display: flex;
   align-items: center;
 }
@@ -73,8 +73,8 @@
   font-size: 0.65rem;
 }
 
-.status-bar-status-container div,
-.status-bar-database-container div {
+.status-bar-right-container div,
+.status-bar-left-container div {
   margin: 0 0.2rem;
 }
 
@@ -86,6 +86,10 @@
 
 #status-bar-alert button:hover {
   background-color: var(--error-color);
+}
+
+.open-sidebar-button-active {
+  background-color: var(--info-button-hover-color);
 }
 
 @media (max-width: 906px) {

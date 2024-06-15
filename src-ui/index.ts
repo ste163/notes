@@ -4,8 +4,6 @@
 
 /**
  * TODO PRIORITY ORDER
- *  - auto-save at debounced interval
- *  - if it's a manual save, display a notification that is removed after a few seconds this will be something new to implement
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
@@ -15,6 +13,8 @@
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
+ *   - auto-save at debounced interval
+ *   - if it's a manual save, display a notification that is removed after a few seconds this will be something new to implement
  *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
@@ -82,22 +82,26 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   const isNoteSelected = !!noteId
 
   if (isNoteSelected) {
-    sidebar.toggleCloseButtonVisibility(true)
     sidebar.close()
   }
 
   if (!isNoteSelected) {
-    sidebar.toggleCloseButtonVisibility(false)
     isMobile ? setMobileView() : setDesktopView()
   }
 })
 
+window.addEventListener(LifeCycleEvents.SidebarOpenOrClose, () => {
+  sidebar.getIsOpen() ? sidebar.close() : sidebar.open()
+})
+
 window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
   isMobile ? setMobileView() : setDesktopView()
+  statusBar.setSidebarButtonActive(true)
 })
 
 window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
   setDesktopView()
+  statusBar.setSidebarButtonActive(false)
 })
 
 /**
@@ -136,7 +140,6 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 
     if (isMobile) sidebar.close()
 
-    sidebar.toggleCloseButtonVisibility(true)
     sidebar.setActiveNote(noteId)
     statusBar.renderActiveNote(note)
 
