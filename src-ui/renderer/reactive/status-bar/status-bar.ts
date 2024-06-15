@@ -35,6 +35,7 @@ class StatusBar {
     const sidebarContainer = document.querySelector('#sidebar-container')
     sidebarContainer?.appendChild(
       new Button({
+        id: 'open-sidebar-button',
         title: 'Open sidebar',
         onClick: () =>
           createEvent(LifeCycleEvents.SidebarOpenOrClose).dispatch(),
@@ -42,6 +43,17 @@ class StatusBar {
         style: { border: 'none' },
       }).getElement()
     )
+  }
+
+  /**
+   * Add or remove active class from the sidebar button
+   */
+  public setSidebarButtonActive(isActive: boolean) {
+    const button = document.querySelector('#open-sidebar-button')
+    if (!button) return
+    isActive
+      ? button.classList.add('open-sidebar-button-active')
+      : button.classList.remove('open-sidebar-button-active')
   }
 
   public renderActiveNote(note: Note | null) {

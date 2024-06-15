@@ -96,10 +96,12 @@ window.addEventListener(LifeCycleEvents.SidebarOpenOrClose, () => {
 
 window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
   isMobile ? setMobileView() : setDesktopView()
+  statusBar.setSidebarButtonActive(true)
 })
 
 window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
   setDesktopView()
+  statusBar.setSidebarButtonActive(false)
 })
 
 /**
