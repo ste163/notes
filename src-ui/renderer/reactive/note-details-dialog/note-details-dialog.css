@@ -1,11 +1,11 @@
-.note-details-container {
+.note-delete-container {
   display: flex;
   flex-direction: column;
   width: 100vw;
   max-width: 15rem;
 }
 
-.note-details-container > h3 {
+.note-delete-container > h3 {
   font-size: inherit;
   margin-top: 0.75rem;
   margin-bottom: 0.25rem;

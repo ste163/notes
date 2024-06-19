@@ -2,10 +2,10 @@ import { Button } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
 import {
   databaseIcon,
+  deleteIcon,
   errorIcon,
   fileListIcon,
   saveIcon,
-  settingsIcon,
 } from 'icons'
 import { createEvent, DialogEvents, LifeCycleEvents, NoteEvents } from 'event'
 import pkg from '../../../../package.json'
@@ -140,9 +140,9 @@ class StatusBar {
     const container = document.querySelector('#status-bar-settings')
     if (container) container.innerHTML = ''
     const settingsButton = new Button({
-      title: 'Note settings',
-      html: settingsIcon,
-      onClick: createEvent(DialogEvents.OpenNoteDetails)?.dispatch,
+      title: 'Delete note',
+      html: deleteIcon,
+      onClick: createEvent(DialogEvents.OpenNoteDelete)?.dispatch,
     })
     settingsButton.setEnabled(!!note)
     container?.appendChild(settingsButton.getElement())

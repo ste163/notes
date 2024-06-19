@@ -14,15 +14,16 @@ class NoteDetailsDialog {
     const dialogContent = document.createElement('div')
 
     dialogContent.innerHTML = `
-      <div class='note-details-container'>
-        <h3>Title</h3>
+      <div class='note-delete-container'>
+        <h3>Are you sure you want to delete this note?</h3>
+        <p>This action cannot be undone.</p>
         <div id="title-edit"></div>
       </div>`
 
     dialogContent.appendChild(
       new Button({
         title: 'Delete note',
-        html: `${deleteIcon}<span>Delete</span>`,
+        html: `${deleteIcon}<span>Delete forever</span>`,
         onClick: () =>
           createEvent(NoteEvents.Delete, { note: this.note }).dispatch(),
         style: { marginTop: '1em' },
@@ -31,9 +32,9 @@ class NoteDetailsDialog {
 
     this.dialog = new Dialog()
     this.dialog.setContent({
-      title: 'Details',
+      title: 'Delete',
       content: dialogContent,
-      url: 'details',
+      url: 'delete',
     })
     this.dialog.open()
 

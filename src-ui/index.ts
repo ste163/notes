@@ -161,8 +161,8 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     // based on URL params, render dialogs
     // TODO: use consts
     switch (dialog) {
-      case 'details':
-        note && createEvent(DialogEvents.OpenNoteDetails).dispatch()
+      case 'delete':
+        note && createEvent(DialogEvents.OpenNoteDelete).dispatch()
         break
       case 'database':
         // BUG: this does not actually render based on the isConnected state
@@ -315,7 +315,7 @@ window.addEventListener(DialogEvents.Closed, () => {
   setUrl({ noteId })
 })
 
-window.addEventListener(DialogEvents.OpenNoteDetails, async () => {
+window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
   const { noteId } = getUrlParams()
   if (!noteId) return
   const note = await database.getById(noteId)
