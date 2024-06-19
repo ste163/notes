@@ -56,19 +56,23 @@ class Sidebar {
     if (!container) return
     container.innerHTML = '' // reset container before rendering
 
-    const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
-      new Button({
-        id: _id,
-        title: 'Select note',
-        onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
-        html: `
+    const noteButtons = Object.values(notes)?.map(
+      ({ _id, title, updatedAt, createdAt }) =>
+        new Button({
+          id: _id,
+          title: 'Select note',
+          onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
+          html: `
         <div>
           <div>${title}</div>
-          <div class="select-note-date">${new Date(
+          <div class="select-note-date">Updated: ${new Date(
             updatedAt
           ).toLocaleString()}</div>
+          <div class="select-note-date">Created: ${new Date(
+            createdAt
+          ).toLocaleString()}</div>
         </div>`,
-      }).getElement()
+        }).getElement()
     )
 
     noteButtons?.forEach((b) => {

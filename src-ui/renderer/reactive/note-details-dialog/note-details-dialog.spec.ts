@@ -20,12 +20,9 @@ const note: Note = {
   content: 'Note content',
 }
 
-// TODO
-// clicking the DELETE opens an input that requires you to type confirm
-// and only if that is inputted, can you click the confirm button (becomes enabled)
 describe('note-details-dialog', () => {
   it('renders details dialog with note state and can emit delete event on delete', async () => {
-    const { getByRole, getByText } = renderComponent({
+    const { getByRole } = renderComponent({
       renderComponent: noteDetailsDialog.render.bind(noteDetailsDialog),
       props: note,
     })
@@ -34,16 +31,6 @@ describe('note-details-dialog', () => {
     expect(getByRole('textbox', { name: 'Update note title' })).toHaveValue(
       note.title
     )
-
-    // created at is rendered
-    expect(
-      getByText(new Date(note.createdAt).toLocaleString())
-    ).toBeInTheDocument()
-
-    // last saved at is rendered
-    expect(
-      getByText(new Date(note.updatedAt).toLocaleString())
-    ).toBeInTheDocument()
 
     // delete button is rendered
     await userEvent.click(getByRole('button', { name: 'Delete Delete' }))

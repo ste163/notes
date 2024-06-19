@@ -4,9 +4,6 @@ import { deleteIcon } from 'icons'
 import type { Note } from 'types'
 import './note-details-dialog.css'
 
-// TODO (later):
-// - add delete confirmation input (type note title to confirm delete)
-
 class NoteDetailsDialog {
   private note: Note | null = null
   private dialog: Dialog | null = null
@@ -14,17 +11,12 @@ class NoteDetailsDialog {
   public render(note: Note) {
     this.reset()
     this.note = note
-    const { createdAt, updatedAt } = this.note
     const dialogContent = document.createElement('div')
 
     dialogContent.innerHTML = `
       <div class='note-details-container'>
         <h3>Title</h3>
         <div id="title-edit"></div>
-        <h3>Created at</h3>
-        <div>${new Date(createdAt).toLocaleString()}</div>
-        <h3>Last saved at</h3>
-        <div>${new Date(updatedAt).toLocaleString()}</div>
       </div>`
 
     dialogContent.appendChild(
