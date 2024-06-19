@@ -35,11 +35,13 @@ class Editor {
     if (!container) throw new Error('Main container not found')
     container.innerHTML = ''
     container.innerHTML = `
+      <div id='editor-title-container'></div>
       <div id='editor-menu'></div>
       <div id='editor'></div>`
     this.isDirty = false
     this.editor = this.instantiateTipTap(this.note)
     this.renderMenu()
+    this.updateTitle(this.note?.title || 'No note selected')
   }
 
   public renderMenu(isDisabled = false) {
@@ -110,6 +112,15 @@ class Editor {
         ? element.classList.add('isActive')
         : element.classList.remove('isActive')
     })
+  }
+
+  private updateTitle(title: string) {
+    const container = document.querySelector('#editor-title-container')
+    if (container) container.innerHTML = ''
+    const span = document.createElement('span')
+    span.appendChild(document.createTextNode(title))
+    span.classList.add(title ? 'editor-title' : 'editor-title-disabled')
+    container?.appendChild(span)
   }
 
   private instantiateTipTap(note: Note | null) {

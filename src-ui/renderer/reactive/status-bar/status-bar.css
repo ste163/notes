@@ -20,48 +20,6 @@
   background-color: var(--info-button-hover-color);
 }
 
-#status-bar-title-container {
-  text-align: center;
-}
-
-.status-bar-title,
-.status-bar-title-disabled {
-  display: inline-block;
-  line-height: normal;
-  font-size: medium;
-  font-weight: bold;
-  max-width: 30vw;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  padding: 0 0.4rem;
-}
-
-.status-bar-title-disabled {
-  color: gray;
-}
-
-@media (max-width: 906px) {
-  .status-bar-title,
-  .status-bar-title-disabled {
-    max-width: 50vw;
-  }
-}
-
-@media (max-width: 580px) {
-  .status-bar-title,
-  .status-bar-title-disabled {
-    max-width: 35vw;
-  }
-}
-
-@media (min-width: 1080px) {
-  .status-bar-title,
-  .status-bar-title-disabled {
-    max-width: 40vw;
-  }
-}
-
 .status-bar-left-container,
 .status-bar-right-container {
   display: flex;
