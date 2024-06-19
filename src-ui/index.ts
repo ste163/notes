@@ -55,7 +55,7 @@ import {
   editor,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
-  noteDetailsDialog,
+  noteDeleteDialog,
 } from 'renderer/reactive'
 import type { Note } from 'types'
 import { AppNotification } from './renderer/components/app-notification'
@@ -222,7 +222,7 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     statusBar.renderActiveNote(updatedNote)
     editor.setNote({ ...updatedNote, updatedAt })
-    noteDetailsDialog.render({ ...updatedNote, updatedAt })
+    noteDeleteDialog.render({ ...updatedNote, updatedAt })
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
     logger.logError('Error updating note title.', error)
@@ -319,7 +319,7 @@ window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
   const { noteId } = getUrlParams()
   if (!noteId) return
   const note = await database.getById(noteId)
-  if (note) noteDetailsDialog.render(note)
+  if (note) noteDeleteDialog.render(note)
 })
 
 /**

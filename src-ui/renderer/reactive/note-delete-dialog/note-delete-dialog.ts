@@ -2,9 +2,9 @@ import { NoteEvents, createEvent } from 'event'
 import { Dialog, Button, Input } from 'components'
 import { deleteIcon } from 'icons'
 import type { Note } from 'types'
-import './note-details-dialog.css'
+import './note-delete-dialog.css'
 
-class NoteDetailsDialog {
+class NoteDeleteDialog {
   private note: Note | null = null
   private dialog: Dialog | null = null
 
@@ -94,6 +94,6 @@ class NoteDetailsDialog {
   }
 }
 
-const noteDetailsDialog = new NoteDetailsDialog()
+const noteDeleteDialog = new NoteDeleteDialog()
 
-export { noteDetailsDialog }
+export { noteDeleteDialog }

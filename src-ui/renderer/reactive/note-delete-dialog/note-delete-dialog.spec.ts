@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
-import { noteDetailsDialog } from './note-details-dialog'
+import { noteDeleteDialog } from './note-delete-dialog'
 import { NoteEvents, createEvent } from 'event'
 import type { Note } from 'types'
 
@@ -20,10 +20,10 @@ const note: Note = {
   content: 'Note content',
 }
 
-describe('note-details-dialog', () => {
-  it('renders details dialog with note state and can emit delete event on delete', async () => {
+describe('note-delete-dialog', () => {
+  it('renders delete dialog emits delete event on delete', async () => {
     const { getByRole } = renderComponent({
-      renderComponent: noteDetailsDialog.render.bind(noteDetailsDialog),
+      renderComponent: noteDeleteDialog.render.bind(noteDeleteDialog),
       props: note,
     })
 
@@ -33,15 +33,18 @@ describe('note-details-dialog', () => {
     )
 
     // delete button is rendered
-    await userEvent.click(getByRole('button', { name: 'Delete Delete' }))
+    await userEvent.click(
+      getByRole('button', { name: 'Delete Delete forever' })
+    )
     expect(createEvent).toHaveBeenCalledWith(NoteEvents.Delete, { note })
   })
 
+  // TODO: move to editor
   it('title input is disabled unless changed, and can emit update event', async () => {
     const newTitle = 'New title!'
 
     const { getByRole } = renderComponent({
-      renderComponent: noteDetailsDialog.render.bind(noteDetailsDialog),
+      renderComponent: noteDeleteDialog.render.bind(noteDeleteDialog),
       props: note,
     })
 
