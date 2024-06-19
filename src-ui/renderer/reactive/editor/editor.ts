@@ -15,6 +15,8 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
+import { Button, Input } from 'components'
+import { NoteEvents, createEvent } from 'event'
 import type { MarkOptions, Note } from 'types'
 import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
@@ -34,8 +36,12 @@ class Editor {
     const container = document.querySelector('#main')
     if (!container) throw new Error('Main container not found')
     container.innerHTML = ''
+    // TODO: reset note title with the input when clicked.
+    // - click outside saves the title instead of a button
+    // - click outside resets to title
     container.innerHTML = `
       <div id='editor-title-container'></div>
+      <div id="title-edit"></div>
       <div id='editor-menu'></div>
       <div id='editor'></div>`
     this.isDirty = false
@@ -117,10 +123,63 @@ class Editor {
   private updateTitle(title: string) {
     const container = document.querySelector('#editor-title-container')
     if (container) container.innerHTML = ''
+    // TODO: not a span because that's not accessible
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(title))
+    span.onclick = () => {
+      this.renderTitleEdit(document.querySelector('#title-edit') as Element)
+    }
     span.classList.add(title ? 'editor-title' : 'editor-title-disabled')
     container?.appendChild(span)
+  }
+
+  private renderTitleEdit(titleEditContainer: Element) {
+    titleEditContainer.innerHTML = ''
+
+    const instantiateInputAndButton = () => {
+      if (!this.note) throw new Error('Note not set')
+      let inputValue = this.note.title
+
+      const inputInstance = new Input({
+        id: 'update-title',
+        title: 'Update note title',
+        placeholder: 'Note title',
+        value: inputValue,
+      })
+
+      const input = inputInstance.getInput()
+
+      const button = new Button({
+        title: 'Update title',
+        html: 'Update',
+        disabled: this.note.title === inputValue,
+        style: { marginRight: '0.5em' },
+        onClick: () => {
+          if (!inputValue) throw new Error('Unable to read input value')
+          createEvent(NoteEvents.UpdateTitle, { title: inputValue }).dispatch()
+        },
+      }).getElement()
+
+      // on input value change, update value and button disabled state
+      input.addEventListener('input', (event) => {
+        if (!this.note) throw new Error('Note not set')
+        inputValue = (event.target as HTMLInputElement).value
+        button.disabled = this.note.title === inputValue || !inputValue.trim()
+      })
+
+      return { inputContainer: inputInstance.getContainer(), button }
+    }
+
+    const inputAndButtonContainer = document.createElement('div')
+    const buttonContainer = document.createElement('div')
+    buttonContainer.style.marginTop = '0.5em'
+
+    const { inputContainer, button } = instantiateInputAndButton()
+
+    buttonContainer.appendChild(button)
+    inputAndButtonContainer.appendChild(inputContainer)
+    inputAndButtonContainer.appendChild(buttonContainer)
+    titleEditContainer.appendChild(inputAndButtonContainer)
   }
 
   private instantiateTipTap(note: Note | null) {

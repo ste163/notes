@@ -222,7 +222,6 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     statusBar.renderActiveNote(updatedNote)
     editor.setNote({ ...updatedNote, updatedAt })
-    noteDeleteDialog.render({ ...updatedNote, updatedAt })
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
     logger.logError('Error updating note title.', error)
