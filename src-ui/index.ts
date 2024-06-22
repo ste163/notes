@@ -53,9 +53,9 @@ import {
   renderRemoteDbDialog,
   noteDeleteDialog,
 } from 'renderer/reactive'
-import type { Note } from 'types'
-import { AppNotification } from './renderer/components/app-notification'
+import { AppNotification } from 'components'
 import { checkIcon } from 'icons'
+import type { Note } from 'types'
 
 let database: Database // TODO: move to singleton
 let isMobile: boolean
