@@ -85,6 +85,15 @@ class Sidebar {
     })
   }
 
+  public setNotes(notes: Notes) {
+    this.notes = notes
+  }
+
+  public setActiveNote(id: string) {
+    this.activeNoteId = id
+    this.setActiveNoteInList()
+  }
+
   public close() {
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
@@ -110,15 +119,6 @@ class Sidebar {
     container?.remove()
   }
 
-  public setNotes(notes: Notes) {
-    this.notes = notes
-  }
-
-  public setActiveNote(id: string) {
-    this.activeNoteId = id
-    this.setActiveNoteInList()
-  }
-
   public toggleFullscreen(isFullscreen: boolean) {
     const container = document.querySelector('#sidebar')
     isFullscreen
@@ -140,14 +140,14 @@ class Sidebar {
     }
 
     const setDisabledState = () => {
-      const containers = document.querySelectorAll('.note-select-container')
-
-      containers.forEach((container) => {
-        const button = container.querySelector('button')
-        if (button) {
-          button.disabled = false
-        }
-      })
+      document
+        .querySelectorAll('.note-select-container')
+        .forEach((container) => {
+          const button = container.querySelector('button')
+          if (button) {
+            button.disabled = false
+          }
+        })
 
       const selectedButton = document.querySelector(
         `#${this.activeNoteId}`
@@ -165,6 +165,8 @@ class Sidebar {
     const { saveButton, cancelButton, inputContainer, input } =
       this.instantiateInputElements()
 
+    saveButton.disabled = true // disable by default as there is no value entered
+
     // create containers, set styles, and add to DOM
     const inputAndButtonContainer = document.createElement('div')
     inputAndButtonContainer.id = this.inputContainerId
@@ -181,6 +183,11 @@ class Sidebar {
     document
       .querySelector('#sidebar-menu')
       ?.appendChild(inputAndButtonContainer)
+
+    input.addEventListener('input', (event) => {
+      const value = (event.target as HTMLInputElement).value
+      saveButton.disabled = value.trim() === ''
+    })
 
     // accessibility focus
     input?.focus()
@@ -200,7 +207,7 @@ class Sidebar {
         title: 'Save note',
         html: 'Save',
         onClick: () => {
-          const title: string = input?.value
+          const title: string = input?.value.trim()
           if (!title) throw new Error('Unable to read title from input')
           createEvent(NoteEvents.Create, { title }).dispatch()
         },
