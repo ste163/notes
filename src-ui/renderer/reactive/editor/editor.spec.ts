@@ -7,16 +7,16 @@ import type { Note } from 'types'
 
 vi.mock('event')
 
-describe('editor', () => {
-  const note: Note = {
-    _id: 'note-id',
-    _rev: 'rev-id',
-    title: 'Note title',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    content: 'Note content',
-  }
+const note: Note = {
+  _id: 'note-id',
+  _rev: 'rev-id',
+  title: 'Note title',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  content: 'Note content',
+}
 
+describe('editor', () => {
   it('if title was not changed, then the original title renders', async () => {
     const { getByRole, queryByRole } = renderComponent({
       renderComponent: editor.render.bind(editor),
@@ -38,6 +38,7 @@ describe('editor', () => {
     expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
       note.title
     )
+    expect(createEvent).not.toHaveBeenCalled()
   })
 
   it('if the title was set to an empty string, then the original title renders', async () => {
@@ -60,6 +61,7 @@ describe('editor', () => {
     expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
       note.title
     )
+    expect(createEvent).not.toHaveBeenCalled()
   })
 
   it('if the title was changed, then calls the update title event', async () => {

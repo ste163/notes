@@ -22,8 +22,6 @@ describe('note-delete-dialog', () => {
       renderComponent: noteDeleteDialog.render.bind(noteDeleteDialog),
       props: note,
     })
-
-    // delete button is rendered
     await userEvent.click(
       getByRole('button', { name: 'Delete Delete forever' })
     )

@@ -70,7 +70,6 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     statusBar.render()
     statusBar.renderRemoteDb({ isConnected: false })
     statusBar.renderActiveNote(null)
-    editor.render()
     handleScreenWidth()
 
     // setup database after app is rendering in loading state
@@ -78,7 +77,10 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
-    if (!noteId) editor.setDisabled(true)
+    if (!noteId) {
+      editor.setDisabled(true)
+      editor.setNote(null)
+    }
     if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)

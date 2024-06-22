@@ -28,17 +28,10 @@ class Editor {
   private note: Note | null = null
   private isDirty = false
 
-  constructor() {
-    this.render()
-  }
-
   public render() {
     const container = document.querySelector('#main')
-    if (!container) {
-      // TODO: tests fail on this throw error. Investigate after all are passing
-      return
-      // throw new Error('Main container not found')
-    }
+    if (!container) throw new Error('Main container not found')
+
     container.innerHTML = ''
     container.innerHTML = `
       <div id='editor-title-container'></div>
@@ -47,7 +40,10 @@ class Editor {
     this.isDirty = false
     this.editor = this.instantiateTipTap(this.note)
     this.renderMenu()
-    this.updateTitle(this.note?.title || 'No note selected')
+    // only render title if there is a note
+    // and only have the editor enabled if there is a note
+    if (this.note) this.updateTitle(this.note.title)
+    if (!this.note) this.setDisabled(true)
   }
 
   public renderMenu(isDisabled = false) {
