@@ -4,10 +4,15 @@ A minimal note-taking application for Linux, Mac, Windows, and browsers. Support
 
 TODO: INSERT IMAGE OF APPLICATION HERE
 
-## TODOs
+## Web and Desktop versions
 
-- Cleanup missing features and bugs (listed in index.ts)
-- Test Tauri version: supports auto-updates
+Notes uses the Tauri framework for desktop builds (and soon to be Android). Until Tauri v2's release, I will not be developing the desktop-specific features as v2 will include API changes.
+
+Once Tauri v2 releases, Notes will support:
+
+- Auto updates
+- Keyboard shortcuts
+- Linux, Mac, Windows, and Android
 
 ## Application Architecture
 
@@ -18,7 +23,7 @@ Keep the application as simple and easily maintainable as possible by leveraging
 ### Package decisions
 
 - Two main dependencies: [PouchDB](https://pouchdb.com/) (database with remote-syncing) and [TipTap](https://tiptap.dev/) (word processor and main state manager).
-- Pure Javascript frontend instead of a UI framework (because they update way too often). TipTap handles the majority of the application state (as it is the word processor), so using a framework like React, Vue, or Svelte is unnecessary at this point. The main events are related to CRUD and handling database connections, which are few enough that a hand-rolled solution is easier to work with and keep updated.
+- Pure Javascript frontend instead of a UI framework (because they update way too often). TipTap handles the majority of the application state (as it is the word processor), so using a framework like React, Vue, or Svelte is unnecessary at this point. The main events are related to CRUD and handling database connections, which are few enough that a hand-rolled solution has been easier to work with and keep updated (but we'll see for how long).
 
 ### Remote (cloud) syncing support
 
@@ -26,7 +31,7 @@ PouchDB works locally using the browser's [IndexedDB](https://developer.mozilla.
 
 ### Application data flow
 
-This application structure allows for real-time data syncing and a React/SPA-like user experience but with pure Javascript.
+This application structure allows for real-time data syncing and a SPA-like user experience but with pure Javascript.
 
 ```mermaid
 flowchart LR
