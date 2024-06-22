@@ -5,9 +5,8 @@
 /**
  * TODO PRIORITY ORDER
  *  - delete dialog styling refresh (it's only functional now)
- *  - move note title to above editor buttons + click on title swaps it to title edit input
- *       - all inputs need to TRIM() before saving (test that trim was setup properly)
- *       - add editor test that the title is editable
+ *  - title edit ENTER click saves
+ *  - all inputs need to TRIM() before saving (test that trim was setup properly)
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."

@@ -1,55 +1,85 @@
-import {
-  describe,
-  // expect,
-  it,
-} from 'vitest'
-// import { renderComponent } from 'test-utils'
-// import userEvent from '@testing-library/user-event'
-// import { NoteEvents, createEvent } from 'event'
-// import { editor } from './editor'
-// import type { Note } from 'types'
+import { vi, describe, expect, it } from 'vitest'
+import { renderComponent } from 'test-utils'
+import userEvent from '@testing-library/user-event'
+import { NoteEvents, createEvent } from 'event'
+import { editor } from './editor'
+import type { Note } from 'types'
+
+vi.mock('event')
 
 describe('editor', () => {
-  //   const note: Note = {
-  //     _id: 'note-id',
-  //     _rev: 'rev-id',
-  //     title: 'Note title',
-  //     createdAt,
-  //     updatedAt,
-  //     content: 'Note content',
-  //   }
+  const note: Note = {
+    _id: 'note-id',
+    _rev: 'rev-id',
+    title: 'Note title',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    content: 'Note content',
+  }
 
-  it.skip('if title was not changed, then the original title renders')
+  it('if title was not changed, then the original title renders', async () => {
+    const { getByRole, queryByRole } = renderComponent({
+      renderComponent: editor.render.bind(editor),
+    })
+    editor.setNote(note)
 
-  it.skip(
-    'if the title was set to an empty string, then the original title renders'
-  )
+    // open input
+    await userEvent.click(getByRole('button', { name: 'Note title' }))
 
-  it.skip('if the title was changed, then calls the update title event')
+    // the button is now gone and the input renders
+    expect(queryByRole('button', { name: 'Note title' })).toBeNull()
+    expect(getByRole('textbox')).toHaveValue(note.title)
 
-  it.skip('title input is disabled unless changed, and can emit update event', async () => {
-    // const newTitle = 'New title!'
-    // const { getByRole } = renderComponent({
-    //   renderComponent: editor.render.bind(editor),
-    // })
-    // const titleInput = getByRole('textbox', { name: 'Update note title' })
-    // const updateButton = getByRole('button', { name: 'Update' })
-    // // update button is disabled if title is unchanged
-    // expect(updateButton).toBeDisabled()
-    // // if the title input is empty, update button is disabled
-    // await userEvent.clear(titleInput)
-    // expect(updateButton).toBeDisabled()
-    // // if the title input is changed back to the initial title, update button is disabled
-    // await userEvent.type(titleInput, note.title)
-    // expect(updateButton).toBeDisabled()
-    // // clearing and setting a new title enables update button
-    // await userEvent.clear(titleInput)
-    // await userEvent.type(titleInput, newTitle)
-    // expect(updateButton).not.toBeDisabled()
-    // // clicking update button emits update event
-    // await userEvent.click(updateButton)
-    // expect(createEvent).toHaveBeenCalledWith(NoteEvents.UpdateTitle, {
-    //   title: newTitle,
-    // })
+    // remove focus from the text input
+    await userEvent.click(getByRole('button', { name: 'Bold' }))
+
+    // the input is now gone and the button renders
+    expect(queryByRole('textbox')).toBeNull()
+    expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
+      note.title
+    )
+  })
+
+  it('if the title was set to an empty string, then the original title renders', async () => {
+    const { getByRole, queryByRole } = renderComponent({
+      renderComponent: editor.render.bind(editor),
+    })
+    editor.setNote(note)
+
+    // open input
+    await userEvent.click(getByRole('button', { name: 'Note title' }))
+
+    const input = getByRole('textbox')
+    await userEvent.clear(input)
+
+    // remove focus from the text input
+    await userEvent.click(getByRole('button', { name: 'Bold' }))
+
+    // the input is now gone and the button renders
+    expect(queryByRole('textbox')).toBeNull()
+    expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
+      note.title
+    )
+  })
+
+  it('if the title was changed, then calls the update title event', async () => {
+    const { getByRole } = renderComponent({
+      renderComponent: editor.render.bind(editor),
+    })
+    editor.setNote(note)
+
+    // open input
+    await userEvent.click(getByRole('button', { name: 'Note title' }))
+
+    const input = getByRole('textbox')
+    await userEvent.clear(input) // remove old title
+    await userEvent.type(input, 'New title!')
+
+    // remove focus from the text input
+    await userEvent.click(getByRole('button', { name: 'Bold' }))
+
+    expect(createEvent).toHaveBeenCalledWith(NoteEvents.UpdateTitle, {
+      title: 'New title!',
+    })
   })
 })
