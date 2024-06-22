@@ -15,6 +15,8 @@ import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
 import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
+import { Button, Input } from 'components'
+import { NoteEvents, createEvent } from 'event'
 import type { MarkOptions, Note } from 'types'
 import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
@@ -26,20 +28,22 @@ class Editor {
   private note: Note | null = null
   private isDirty = false
 
-  constructor() {
-    this.render()
-  }
-
   public render() {
     const container = document.querySelector('#main')
     if (!container) throw new Error('Main container not found')
+
     container.innerHTML = ''
     container.innerHTML = `
+      <div id='editor-title-container'></div>
       <div id='editor-menu'></div>
       <div id='editor'></div>`
     this.isDirty = false
     this.editor = this.instantiateTipTap(this.note)
     this.renderMenu()
+    // only render title if there is a note
+    // and only have the editor enabled if there is a note
+    if (this.note) this.updateTitle(this.note.title)
+    if (!this.note) this.setDisabled(true)
   }
 
   public renderMenu(isDisabled = false) {
@@ -110,6 +114,78 @@ class Editor {
         ? element.classList.add('isActive')
         : element.classList.remove('isActive')
     })
+  }
+
+  private updateTitle(title: string) {
+    const container = document.querySelector('#editor-title-container')
+    if (container) container.innerHTML = ''
+
+    const span = document.createElement('span')
+    span.appendChild(document.createTextNode(title))
+    span.classList.add(title ? 'editor-title' : 'editor-title-disabled')
+
+    container?.appendChild(
+      new Button({
+        title: 'Edit title',
+        html: span.outerHTML, // inject the full span element
+        style: { border: 'none', width: 'inherit' },
+        onClick: () => {
+          this.renderTitleEdit(container as Element)
+        },
+      }).getElement()
+    )
+  }
+
+  private renderTitleEdit(titleEditContainer: Element) {
+    titleEditContainer.innerHTML = ''
+
+    const instantiateInput = () => {
+      if (!this.note) throw new Error('Note not set')
+      let inputValue = this.note.title
+
+      // todo: use a custom input for this?
+      // because I DO NOT want a title here
+      // The layout CANNOT shift when we swap inputs
+      const inputInstance = new Input({
+        id: 'update-title',
+        title: '',
+        placeholder: 'Note title',
+        value: inputValue,
+      })
+
+      const input = inputInstance.getInput()
+
+      input.onblur = () => {
+        const isValueEmpty = inputValue?.trim() === ''
+        const wasTitleChanged = this.note?.title !== inputValue
+
+        if (isValueEmpty || !wasTitleChanged)
+          // close input, and render title again
+          this.updateTitle(this.note?.title || 'Error')
+
+        const canUpdate = wasTitleChanged && !isValueEmpty
+
+        if (canUpdate)
+          createEvent(NoteEvents.UpdateTitle, {
+            title: inputValue.trim(),
+          }).dispatch()
+      }
+
+      // TODO: on ENTER click, call the onblur's function
+
+      input.addEventListener('input', (event) => {
+        if (!this.note) throw new Error('Note not set')
+        inputValue = (event.target as HTMLInputElement)?.value || ''
+      })
+
+      return { input, inputContainer: inputInstance.getContainer() }
+    }
+
+    const { input, inputContainer } = instantiateInput()
+
+    titleEditContainer.appendChild(inputContainer)
+
+    input.focus()
   }
 
   private instantiateTipTap(note: Note | null) {

@@ -5,6 +5,7 @@ export enum LifeCycleEvents {
   SidebarOpened = 'sidebar-opened',
   SidebarClosed = 'sidebar-closed',
   SidebarOpenOrClose = 'sidebar-open-or-close',
+  ShowSaveNotification = 'show-save-notification',
 }
 
 export enum KeyboardEvents {
@@ -19,7 +20,7 @@ export enum LoggerEvents {
 export enum DialogEvents {
   Opened = 'opened-dialog',
   Closed = 'closed-dialog',
-  OpenNoteDetails = 'open-note-details-dialog',
+  OpenNoteDelete = 'open-note-delete-dialog',
 }
 
 export enum DatabaseEvents {

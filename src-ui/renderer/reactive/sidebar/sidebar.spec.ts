@@ -9,8 +9,6 @@ vi.mock('event')
 
 describe('sidebar', () => {
   it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
-    const title = 'Note title'
-
     const { getByRole, queryByRole } = renderComponent({
       renderComponent: sidebar.render.bind(sidebar),
     })
@@ -18,7 +16,6 @@ describe('sidebar', () => {
     // renders input on create click
     const createButton = getByRole('button', { name: 'Add Create' })
     await userEvent.click(createButton)
-    const input = getByRole('textbox', { name: 'Note title' })
 
     // clicking cancel button removes input
     const cancelButton = getByRole('button', { name: 'Cancel' })
@@ -27,10 +24,21 @@ describe('sidebar', () => {
 
     // can enter note and submit event is called with title
     createButton.click()
-    await userEvent.type(input, title)
+
+    // save button is disabled because there is no value entered
+    expect(getByRole('button', { name: 'Save' })).toBeDisabled()
+
+    await userEvent.type(
+      getByRole('textbox', { name: 'Note title' }),
+      '  Title with spaces     '
+    )
+
+    // save button is enabled because there is value entered
+    expect(getByRole('button', { name: 'Save' })).toBeEnabled()
     await userEvent.click(getByRole('button', { name: 'Save' }))
+    // value was trimmed
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Create, {
-      title,
+      title: 'Title with spaces',
     })
   })
 

@@ -56,19 +56,23 @@ class Sidebar {
     if (!container) return
     container.innerHTML = '' // reset container before rendering
 
-    const noteButtons = Object.values(notes)?.map(({ _id, title, updatedAt }) =>
-      new Button({
-        id: _id,
-        title: 'Select note',
-        onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
-        html: `
+    const noteButtons = Object.values(notes)?.map(
+      ({ _id, title, updatedAt, createdAt }) =>
+        new Button({
+          id: _id,
+          title: 'Select note',
+          onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
+          html: `
         <div>
           <div>${title}</div>
-          <div class="select-note-date">${new Date(
+          <div class="select-note-date">Updated: ${new Date(
             updatedAt
           ).toLocaleString()}</div>
+          <div class="select-note-date">Created: ${new Date(
+            createdAt
+          ).toLocaleString()}</div>
         </div>`,
-      }).getElement()
+        }).getElement()
     )
 
     noteButtons?.forEach((b) => {
@@ -79,6 +83,15 @@ class Sidebar {
       buttonContainer.appendChild(b)
       container.appendChild(buttonContainer)
     })
+  }
+
+  public setNotes(notes: Notes) {
+    this.notes = notes
+  }
+
+  public setActiveNote(id: string) {
+    this.activeNoteId = id
+    this.setActiveNoteInList()
   }
 
   public close() {
@@ -106,15 +119,6 @@ class Sidebar {
     container?.remove()
   }
 
-  public setNotes(notes: Notes) {
-    this.notes = notes
-  }
-
-  public setActiveNote(id: string) {
-    this.activeNoteId = id
-    this.setActiveNoteInList()
-  }
-
   public toggleFullscreen(isFullscreen: boolean) {
     const container = document.querySelector('#sidebar')
     isFullscreen
@@ -136,14 +140,14 @@ class Sidebar {
     }
 
     const setDisabledState = () => {
-      const containers = document.querySelectorAll('.note-select-container')
-
-      containers.forEach((container) => {
-        const button = container.querySelector('button')
-        if (button) {
-          button.disabled = false
-        }
-      })
+      document
+        .querySelectorAll('.note-select-container')
+        .forEach((container) => {
+          const button = container.querySelector('button')
+          if (button) {
+            button.disabled = false
+          }
+        })
 
       const selectedButton = document.querySelector(
         `#${this.activeNoteId}`
@@ -161,6 +165,8 @@ class Sidebar {
     const { saveButton, cancelButton, inputContainer, input } =
       this.instantiateInputElements()
 
+    saveButton.disabled = true // disable by default as there is no value entered
+
     // create containers, set styles, and add to DOM
     const inputAndButtonContainer = document.createElement('div')
     inputAndButtonContainer.id = this.inputContainerId
@@ -177,6 +183,11 @@ class Sidebar {
     document
       .querySelector('#sidebar-menu')
       ?.appendChild(inputAndButtonContainer)
+
+    input.addEventListener('input', (event) => {
+      const value = (event.target as HTMLInputElement).value
+      saveButton.disabled = value.trim() === ''
+    })
 
     // accessibility focus
     input?.focus()
@@ -196,7 +207,7 @@ class Sidebar {
         title: 'Save note',
         html: 'Save',
         onClick: () => {
-          const title: string = input?.value
+          const title: string = input?.value.trim()
           if (!title) throw new Error('Unable to read title from input')
           createEvent(NoteEvents.Create, { title }).dispatch()
         },

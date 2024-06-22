@@ -1,13 +1,17 @@
 // COMPONENTS to refactor into classes:
-// DB Dialog
-// Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
+// - DB Dialog
+// - Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
 
 /**
  * TODO PRIORITY ORDER
+ *  - idea: sidebar state could live in nav bar as a ?sidebar-open=true query param (allow for consistent rendering)
+ *  - delete dialog styling refresh (it's only functional now)
+ *  - title edit
+ *      - on hover show edit icon (pencil?) = new functionality
+ *      - ENTER press saves when input is open (calls onBlur function)
  *  - add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
- *  - cleanup styling of the initial state so that there is a clean layout that doesn't re-adjust on first render
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
@@ -19,6 +23,7 @@
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - db dialog needs to have last synced date (for mobile parity)
  *   - add hyperlink insert support
+ *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
@@ -46,12 +51,13 @@ import {
   editor,
   renderRemoteDbLogs,
   renderRemoteDbDialog,
-  noteDetailsDialog,
+  noteDeleteDialog,
 } from 'renderer/reactive'
+import { AppNotification } from 'components'
+import { checkIcon } from 'icons'
 import type { Note } from 'types'
-import { AppNotification } from './renderer/components/app-notification'
 
-let database: Database
+let database: Database // TODO: move to singleton
 let isMobile: boolean
 
 window.addEventListener('resize', handleScreenWidth)
@@ -62,7 +68,6 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     statusBar.render()
     statusBar.renderRemoteDb({ isConnected: false })
     statusBar.renderActiveNote(null)
-    editor.render()
     handleScreenWidth()
 
     // setup database after app is rendering in loading state
@@ -70,7 +75,10 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
-    if (!noteId) editor.setDisabled(true)
+    if (!noteId) {
+      editor.setDisabled(true)
+      editor.setNote(null)
+    }
     if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
     logger.logError('Error in LifeCycleEvents.Init.', error)
@@ -102,6 +110,18 @@ window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
 window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
   setDesktopView()
   statusBar.setSidebarButtonActive(false)
+})
+
+window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
+  const notification = new AppNotification({
+    id: 'note-saved',
+    icon: checkIcon,
+    text: `Saved`,
+  })
+  notification.show()
+  setTimeout(() => {
+    notification.remove()
+  }, 2000)
 })
 
 /**
@@ -152,8 +172,8 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     // based on URL params, render dialogs
     // TODO: use consts
     switch (dialog) {
-      case 'details':
-        note && createEvent(DialogEvents.OpenNoteDetails).dispatch()
+      case 'delete':
+        note && createEvent(DialogEvents.OpenNoteDelete).dispatch()
         break
       case 'database':
         // BUG: this does not actually render based on the isConnected state
@@ -188,15 +208,7 @@ window.addEventListener(NoteEvents.Save, async () => {
     const { updatedAt } = await saveNote()
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
-
-    const notification = new AppNotification({
-      id: 'note-saved',
-      innerHTML: 'Saved',
-    })
-    notification.show()
-    setTimeout(() => {
-      notification.remove()
-    }, 2000)
+    createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
     logger.logError('Error saving note.', error)
   }
@@ -210,11 +222,12 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     const { updatedAt } = await database.put({
       ...updatedNote,
     })
+
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     statusBar.renderActiveNote(updatedNote)
     editor.setNote({ ...updatedNote, updatedAt })
-    noteDetailsDialog.render({ ...updatedNote, updatedAt })
     createEvent(NoteEvents.GetAll).dispatch()
+    createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
     logger.logError('Error updating note title.', error)
   }
@@ -306,11 +319,11 @@ window.addEventListener(DialogEvents.Closed, () => {
   setUrl({ noteId })
 })
 
-window.addEventListener(DialogEvents.OpenNoteDetails, async () => {
+window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
   const { noteId } = getUrlParams()
   if (!noteId) return
   const note = await database.getById(noteId)
-  if (note) noteDetailsDialog.render(note)
+  if (note) noteDeleteDialog.render(note)
 })
 
 /**

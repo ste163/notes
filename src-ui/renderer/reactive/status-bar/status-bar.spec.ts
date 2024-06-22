@@ -17,7 +17,7 @@ describe('status-bar', () => {
     statusBar.renderActiveNote(null)
 
     expect(getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(getByRole('button', { name: 'Settings' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Delete' })).toBeDisabled()
   })
 
   it('renders enabled save button and settings button and calls events on click', async () => {
@@ -33,17 +33,17 @@ describe('status-bar', () => {
     })
 
     const saveButton = getByRole('button', { name: 'Save' })
-    const settingsButton = getByRole('button', { name: 'Settings' })
+    const deleteButton = getByRole('button', { name: 'Delete' })
 
     expect(saveButton).toBeEnabled()
-    expect(settingsButton).toBeEnabled()
+    expect(deleteButton).toBeEnabled()
 
     await userEvent.click(saveButton)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Save)
 
-    await userEvent.click(settingsButton)
+    await userEvent.click(deleteButton)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DialogEvents.OpenNoteDetails
+      DialogEvents.OpenNoteDelete
     )
   })
 

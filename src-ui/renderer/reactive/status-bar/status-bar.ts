@@ -2,10 +2,10 @@ import { Button } from 'components'
 import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
 import {
   databaseIcon,
+  deleteIcon,
   errorIcon,
   fileListIcon,
   saveIcon,
-  settingsIcon,
 } from 'icons'
 import { createEvent, DialogEvents, LifeCycleEvents, NoteEvents } from 'event'
 import pkg from '../../../../package.json'
@@ -23,7 +23,6 @@ class StatusBar {
         <div id='remote-db-setup-container'></div>
         <div id='status-bar-synced-on' class='status-bar-date status-bar-hide-on-mobile'></div>
       </div>
-      <div id='status-bar-title-container'></div>
       <div class='status-bar-right-container'>
         <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
         <div id='status-bar-alert'></div>
@@ -59,7 +58,6 @@ class StatusBar {
   public renderActiveNote(note: Note | null) {
     this.renderSaveButton(note)
     this.renderSettingsButton(note)
-    this.updateTitle(note?.title || 'No note selected')
   }
 
   public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
@@ -142,21 +140,12 @@ class StatusBar {
     const container = document.querySelector('#status-bar-settings')
     if (container) container.innerHTML = ''
     const settingsButton = new Button({
-      title: 'Note settings',
-      html: settingsIcon,
-      onClick: createEvent(DialogEvents.OpenNoteDetails)?.dispatch,
+      title: 'Delete note',
+      html: deleteIcon,
+      onClick: createEvent(DialogEvents.OpenNoteDelete)?.dispatch,
     })
     settingsButton.setEnabled(!!note)
     container?.appendChild(settingsButton.getElement())
-  }
-
-  private updateTitle(title: string) {
-    const container = document.querySelector('#status-bar-title-container')
-    if (container) container.innerHTML = ''
-    const span = document.createElement('span')
-    span.appendChild(document.createTextNode(title))
-    span.classList.add(title ? 'status-bar-title' : 'status-bar-title-disabled')
-    container?.appendChild(span)
   }
 
   private renderDateSection({
