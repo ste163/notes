@@ -115,6 +115,18 @@ window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
   statusBar.setSidebarButtonActive(false)
 })
 
+window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
+  const notification = new AppNotification({
+    id: 'note-saved',
+    icon: checkIcon,
+    text: `Saved`,
+  })
+  notification.show()
+  setTimeout(() => {
+    notification.remove()
+  }, 2000)
+})
+
 /**
  * Note events for fetching, selecting, and CRUD operations
  */
@@ -199,16 +211,7 @@ window.addEventListener(NoteEvents.Save, async () => {
     const { updatedAt } = await saveNote()
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
-
-    const notification = new AppNotification({
-      id: 'note-saved',
-      icon: checkIcon,
-      text: `Saved`,
-    })
-    notification.show()
-    setTimeout(() => {
-      notification.remove()
-    }, 2000)
+    createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
     logger.logError('Error saving note.', error)
   }
@@ -227,6 +230,7 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     statusBar.renderActiveNote(updatedNote)
     editor.setNote({ ...updatedNote, updatedAt })
     createEvent(NoteEvents.GetAll).dispatch()
+    createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
     logger.logError('Error updating note title.', error)
   }

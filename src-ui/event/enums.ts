@@ -5,6 +5,7 @@ export enum LifeCycleEvents {
   SidebarOpened = 'sidebar-opened',
   SidebarClosed = 'sidebar-closed',
   SidebarOpenOrClose = 'sidebar-open-or-close',
+  ShowSaveNotification = 'show-save-notification',
 }
 
 export enum KeyboardEvents {

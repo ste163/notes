@@ -36,9 +36,6 @@ class Editor {
     const container = document.querySelector('#main')
     if (!container) throw new Error('Main container not found')
     container.innerHTML = ''
-    // TODO: reset note title with the input when clicked.
-    // - click outside saves the title instead of a button
-    // - click outside resets to title
     container.innerHTML = `
       <div id='editor-title-container'></div>
       <div id='editor-menu'></div>
