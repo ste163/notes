@@ -9,10 +9,6 @@ import {
 // import { editor } from './editor'
 // import type { Note } from 'types'
 
-// const createdAt = new Date()
-// Ensure 'updatedAt' is later than 'createdAt' by adding an hour
-// const updatedAt = new Date(createdAt.getTime() + 1000 * 60 * 60)
-
 describe('editor', () => {
   //   const note: Note = {
   //     _id: 'note-id',
@@ -22,6 +18,14 @@ describe('editor', () => {
   //     updatedAt,
   //     content: 'Note content',
   //   }
+
+  it.skip('if title was not changed, then the original title renders')
+
+  it.skip(
+    'if the title was set to an empty string, then the original title renders'
+  )
+
+  it.skip('if the title was changed, then calls the update title event')
 
   it.skip('title input is disabled unless changed, and can emit update event', async () => {
     // const newTitle = 'New title!'

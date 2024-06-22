@@ -41,7 +41,6 @@ class Editor {
     // - click outside resets to title
     container.innerHTML = `
       <div id='editor-title-container'></div>
-      <div id="title-edit"></div>
       <div id='editor-menu'></div>
       <div id='editor'></div>`
     this.isDirty = false
@@ -123,63 +122,73 @@ class Editor {
   private updateTitle(title: string) {
     const container = document.querySelector('#editor-title-container')
     if (container) container.innerHTML = ''
-    // TODO: not a span because that's not accessible
+
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(title))
-    span.onclick = () => {
-      this.renderTitleEdit(document.querySelector('#title-edit') as Element)
-    }
     span.classList.add(title ? 'editor-title' : 'editor-title-disabled')
-    container?.appendChild(span)
+
+    container?.appendChild(
+      new Button({
+        title: 'Edit title',
+        html: span.outerHTML, // inject the full span element
+        style: { border: 'none', width: 'inherit' },
+        onClick: () => {
+          this.renderTitleEdit(container as Element)
+        },
+      }).getElement()
+    )
   }
 
   private renderTitleEdit(titleEditContainer: Element) {
     titleEditContainer.innerHTML = ''
 
-    const instantiateInputAndButton = () => {
+    const instantiateInput = () => {
       if (!this.note) throw new Error('Note not set')
       let inputValue = this.note.title
 
+      // todo: use a custom input for this?
+      // because I DO NOT want a title here
+      // The layout CANNOT shift when we swap inputs
       const inputInstance = new Input({
         id: 'update-title',
-        title: 'Update note title',
+        title: '',
         placeholder: 'Note title',
         value: inputValue,
       })
 
       const input = inputInstance.getInput()
 
-      const button = new Button({
-        title: 'Update title',
-        html: 'Update',
-        disabled: this.note.title === inputValue,
-        style: { marginRight: '0.5em' },
-        onClick: () => {
-          if (!inputValue) throw new Error('Unable to read input value')
-          createEvent(NoteEvents.UpdateTitle, { title: inputValue }).dispatch()
-        },
-      }).getElement()
+      input.onblur = () => {
+        const isValueEmpty = inputValue?.trim() === ''
+        const wasTitleChanged = this.note?.title !== inputValue
 
-      // on input value change, update value and button disabled state
+        if (isValueEmpty || !wasTitleChanged)
+          // close input, and render title again
+          this.updateTitle(this.note?.title || 'Error')
+
+        const canUpdate = wasTitleChanged && !isValueEmpty
+
+        if (canUpdate)
+          createEvent(NoteEvents.UpdateTitle, {
+            title: inputValue.trim(),
+          }).dispatch()
+      }
+
+      // TODO: on ENTER click, call the onblur's function
+
       input.addEventListener('input', (event) => {
         if (!this.note) throw new Error('Note not set')
-        inputValue = (event.target as HTMLInputElement).value
-        button.disabled = this.note.title === inputValue || !inputValue.trim()
+        inputValue = (event.target as HTMLInputElement)?.value || ''
       })
 
-      return { inputContainer: inputInstance.getContainer(), button }
+      return { input, inputContainer: inputInstance.getContainer() }
     }
 
-    const inputAndButtonContainer = document.createElement('div')
-    const buttonContainer = document.createElement('div')
-    buttonContainer.style.marginTop = '0.5em'
+    const { input, inputContainer } = instantiateInput()
 
-    const { inputContainer, button } = instantiateInputAndButton()
+    titleEditContainer.appendChild(inputContainer)
 
-    buttonContainer.appendChild(button)
-    inputAndButtonContainer.appendChild(inputContainer)
-    inputAndButtonContainer.appendChild(buttonContainer)
-    titleEditContainer.appendChild(inputAndButtonContainer)
+    input.focus()
   }
 
   private instantiateTipTap(note: Note | null) {

@@ -219,6 +219,7 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     const { updatedAt } = await database.put({
       ...updatedNote,
     })
+
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     statusBar.renderActiveNote(updatedNote)
     editor.setNote({ ...updatedNote, updatedAt })

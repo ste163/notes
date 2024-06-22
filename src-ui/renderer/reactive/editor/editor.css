@@ -8,6 +8,8 @@
 }
 
 #editor-title-container {
+  display: flex;
+  align-self: center;
   margin-top: 1rem;
   text-align: center;
 }
@@ -18,7 +20,6 @@
   line-height: normal;
   font-size: medium;
   font-weight: bold;
-  max-width: 30vw;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -29,7 +30,6 @@
   color: gray;
 }
 
-/* REVISIT these now that it is in the editor and not status-bar */
 @media (max-width: 906px) {
   .editor-title,
   .editor-title-disabled {
@@ -41,13 +41,6 @@
   .editor-title,
   .editor-title-disabled {
     max-width: 35vw;
-  }
-}
-
-@media (min-width: 1080px) {
-  .editor-title,
-  .editor-title-disabled {
-    max-width: 40vw;
   }
 }
 
