@@ -5,7 +5,9 @@
 /**
  * TODO PRIORITY ORDER
  *  - delete dialog styling refresh (it's only functional now)
- *  - title edit ENTER click saves
+ *  - title edit
+ *      - on hover show edit icon (pencil?) = new functionality
+ *      - ENTER press saves when input is open (calls onBlur function)
  *  - all inputs need to TRIM() before saving (test that trim was setup properly)
  *      - and CREATE note needs its button disabled if empty string. Currently throws error + test
  *  - add a warning banner for web-only builds that says:
