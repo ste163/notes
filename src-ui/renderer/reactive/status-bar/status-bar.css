@@ -50,7 +50,7 @@
   background-color: var(--info-button-hover-color);
 }
 
-@media (max-width: 906px) {
+@media (max-width: 580px) {
   .status-bar-hide-on-mobile {
     display: none !important;
   }

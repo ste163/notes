@@ -28,6 +28,7 @@
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - db dialog needs to have last synced date (for mobile parity)
  *   - add hyperlink insert support
+ *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  * - BRANDING
  *  - make favicon
  *  - make icons for desktop
@@ -59,8 +60,9 @@ import {
 } from 'renderer/reactive'
 import type { Note } from 'types'
 import { AppNotification } from './renderer/components/app-notification'
+import { checkIcon } from 'icons'
 
-let database: Database
+let database: Database // TODO: move to singleton
 let isMobile: boolean
 
 window.addEventListener('resize', handleScreenWidth)
@@ -200,7 +202,8 @@ window.addEventListener(NoteEvents.Save, async () => {
 
     const notification = new AppNotification({
       id: 'note-saved',
-      innerHTML: 'Saved',
+      icon: checkIcon,
+      text: `Saved`,
     })
     notification.show()
     setTimeout(() => {

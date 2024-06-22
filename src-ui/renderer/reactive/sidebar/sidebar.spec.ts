@@ -27,6 +27,11 @@ describe('sidebar', () => {
 
     // can enter note and submit event is called with title
     createButton.click()
+
+    // TODO:
+    // - SAVE is disabled if no title entered
+    // - the create event was called with the TRIMMED title
+
     await userEvent.type(input, title)
     await userEvent.click(getByRole('button', { name: 'Save' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Create, {

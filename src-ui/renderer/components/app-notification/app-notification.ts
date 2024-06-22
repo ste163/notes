@@ -5,22 +5,33 @@ import './app-notification.css'
  */
 class AppNotification {
   private id: string
-  private innerHTML: string
+  private text: string
+  private icon: string
   private element: HTMLDivElement | null = null
 
-  constructor({ id, innerHTML }: { id: string; innerHTML: string }) {
+  constructor({ id, text, icon }: { id: string; text: string; icon: string }) {
     this.id = id
-    this.innerHTML = innerHTML
+    this.text = text
+    this.icon = icon
 
     this.init()
   }
 
   private init() {
-    const div = document.createElement('div')
-    div.id = this.id
-    div.classList.add('notification')
-    div.innerHTML = this.innerHTML
-    this.element = div
+    const container = document.createElement('div')
+    container.id = this.id
+    container.classList.add('notification')
+
+    const iconDiv = document.createElement('div')
+    iconDiv.innerHTML = this.icon
+
+    const span = document.createElement('span')
+    span.innerText = this.text
+
+    container.appendChild(iconDiv)
+    container.appendChild(span)
+
+    this.element = container
   }
 
   public show() {
