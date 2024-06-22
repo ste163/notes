@@ -1,19 +1,17 @@
-// COMPONENTS to refactor into classes:
-// - DB Dialog
-// - Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
-
 /**
  * TODO PRIORITY ORDER
- *  - idea: sidebar state could live in nav bar as a ?sidebar-open=true query param (allow for consistent rendering)
+ *  - Database refactor into a single class instance like other components
+ *  - sidebar state could live in nav bar as a '?sidebar-open=true' query param
  *  - delete dialog styling refresh (it's only functional now)
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - add a warning banner for web-only builds that says:
+ *  - (?)add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
+ *      - if possible, add eslint rule to enforce this
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
@@ -25,8 +23,8 @@
  *   - add hyperlink insert support
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  * - BRANDING
- *  - make favicon
- *  - make icons for desktop
+ *   - make favicon
+ *   - make icons for desktop
  * - BUGS
  *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI

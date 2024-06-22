@@ -7,6 +7,32 @@ import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'types'
 import './remote-db-dialog.css'
 
+/**
+ * NOTE: status bar needs its text updated to match whatever approaches I take below...
+ *
+ * WHAT IS MOST IMPORTANT?
+ * - inform user on which database they're using (local or remote). Or more product-language of:
+ *  "Offline or Online"
+ * - What are the details to your remote connection
+ * - What are the recent logs/status/errors that have occurred
+ * - Link to the HELP section for setting up a remote database (should be with the remote details section)
+ *
+ * DEFAULT OPENING/CLOSING
+ * - accordion menus for the different sections that can be open or closed based on how the dialog is opened
+ *   (thinking here is whether your setting up the connection, if it is connected, if there is an error)
+ *
+ * VISUAL LAYOUT:
+ * Status (Offline/Online) with the db icon
+ *  - in smaller text below it can be more specific as "Saving locally to your device" or "Syncing to your remote database"
+ *      - Could also mention that we save locally and THEN sync to the remote
+ *  - underneath this status section can be an accordion for "View log of recent actions (for developers)"
+ * Then the accordion for Connection Details, or Remote Database Connection Setup.
+ *
+ * GOTCHAS:
+ * The trick here is that the entire dialog should be able to re-render its separate pieces
+ * as needed: whether the dialog is open or closed. We always need the latest data.
+ */
+
 function renderRemoteDbDialog({
   isConnectedToRemote,
   error,
