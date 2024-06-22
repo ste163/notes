@@ -37,27 +37,27 @@
     "@tiptap/pm": "2.4.0",
     "events": "3.3.0",
     "nanoid": "5.0.7",
-    "pouchdb-browser": "8.0.1",
-    "pouchdb-find": "8.0.1"
+    "pouchdb-browser": "9.0.0",
+    "pouchdb-find": "9.0.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "1.5.14",
     "@testing-library/dom": "10.1.0",
-    "@testing-library/jest-dom": "6.4.5",
+    "@testing-library/jest-dom": "6.4.6",
     "@testing-library/user-event": "14.5.2",
-    "@types/node": "20.12.13",
+    "@types/node": "20.14.8",
     "@types/pouchdb-browser": "6.1.5",
-    "@typescript-eslint/eslint-plugin": "7.11.0",
-    "@typescript-eslint/parser": "7.11.0",
+    "@typescript-eslint/eslint-plugin": "7.13.1",
+    "@typescript-eslint/parser": "7.13.1",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.1.3",
     "eslint-plugin-testing-library": "6.2.2",
-    "happy-dom": "14.12.0",
+    "happy-dom": "14.12.3",
     "husky": "9.0.11",
-    "prettier": "3.2.5",
-    "typescript": "5.4.5",
-    "vite": "5.2.12",
+    "prettier": "3.3.2",
+    "typescript": "5.5.2",
+    "vite": "5.3.1",
     "vitest": "1.6.0"
   }
 }
