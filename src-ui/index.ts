@@ -48,7 +48,7 @@ import {
   statusBar,
   editor,
   renderRemoteDbLogs,
-  renderRemoteDbDialog,
+  databaseDialog,
   noteDeleteDialog,
 } from 'renderer/reactive'
 import { AppNotification } from 'components'
@@ -330,24 +330,29 @@ window.addEventListener(DialogEvents.OpenDatabase, () => {
   // or it's possible that the SET functions should update the UI
   // IF those functions find that the containers are present
   //
-  // BUG: this does not actually render based on the isConnected state
-  // coming from the db. We need to have this state accessible somehow
-  // to render this dialog properly
-  renderRemoteDbDialog({ isConnectedToRemote: false, error: '' })
+  databaseDialog.render()
 })
 
 /**
  * Log events
+ * CONSIDER: having a type in the event and only use UPDATE
+ * because then the UI can decide how to render the logs
  */
 window.addEventListener(LoggerEvents.Update, (event) => {
   const logs = (event as CustomEvent)?.detail?.logs
+  // TODO: move this to the databaseDialog
   const dbLogContainer = document.querySelector('#remote-db-logs')
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
+  // Need to know if this is an error or not,
+  // because then I can know what to render in the db status section
+  // (latest error or all good state)
 })
 
 window.addEventListener(LoggerEvents.Error, (event) => {
   const message = (event as CustomEvent)?.detail?.message
   if (message) statusBar.renderAlert(message)
+  // TODO: if there is an error, then trigger the databaseDialog.setError
+  // to re-render.
 })
 
 /**

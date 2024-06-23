@@ -1,3 +1,4 @@
+// TODO: move to the Database Dialog
 function renderRemoteDbLogs(container: Element, logs: string[]) {
   // TODO: based on logs '[type]' assign color coding (errors are an accessible red)
   if (logs.length)

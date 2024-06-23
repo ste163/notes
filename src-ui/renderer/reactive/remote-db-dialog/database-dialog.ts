@@ -5,44 +5,18 @@ import { useRemoteDetails } from 'database'
 import { databaseIcon, errorIcon, checkIcon } from 'icons'
 import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'database'
-import './remote-db-dialog.css'
-
-/**
- * NOTE: status bar needs its text updated to match whatever approaches I take below...
- *
- * WHAT IS MOST IMPORTANT?
- * - inform user on which database they're using (local or remote). Or more product-language of:
- *  "Offline or Online"
- * - What are the details to your remote connection
- * - What are the recent logs/status/errors that have occurred
- * - Link to the HELP section for setting up a remote database (should be with the remote details section)
- *
- * DEFAULT OPENING/CLOSING
- * - accordion menus for the different sections that can be open or closed based on how the dialog is opened
- *   (thinking here is whether your setting up the connection, if it is connected, if there is an error)
- *
- * VISUAL LAYOUT:
- * Status (Offline/Online) with the db icon
- *  - in smaller text below it can be more specific as "Saving locally to your device" or "Syncing to your remote database"
- *      - Could also mention that we save locally and THEN sync to the remote
- *  - underneath this status section can be an accordion for "View log of recent actions (for developers)"
- * Then the accordion for Connection Details, or Remote Database Connection Setup.
- *
- * GOTCHAS:
- * The trick here is that the entire dialog should be able to re-render its separate pieces
- * as needed: whether the dialog is open or closed. We always need the latest data.
- */
-
-// STEPS:
-// move to a class
-// THEN start refactoring from there...
+import './database-dialog.css'
 
 // TODO (final manual test for syncing):
-// test that if i disconnect from 1 database
+// test that if I disconnect from one database
 // and connect to a brand new one
 // that all my data from my local is synced to the new remote.
 //
-// depending on result, allow for the Database class to swap
+// Also check that if I have a different DB on my local, disconnect
+// then connect to a NEW db with different data, see what happens. Do they all merge together?
+// once I figure out, need to document the results.
+//
+// Depending on results, allow for the Database class to swap
 // its syncing mode: ie, user defines which approach they want
 
 class DatabaseDialog {
@@ -51,7 +25,6 @@ class DatabaseDialog {
   private error: string | null = null
 
   public render() {
-    console.log(this.error)
     this.reset()
     const dialogContent = document.createElement('div')
 
@@ -68,10 +41,12 @@ class DatabaseDialog {
       title: 'Database',
       content: dialogContent,
       url: 'database',
-      classList: 'remote-db-setup-dialog',
+      classList: 'database-dialog',
     })
 
     this.dialog.open()
+    this.renderStatus()
+    this.renderConnectionForm()
   }
 
   private reset() {
@@ -80,32 +55,66 @@ class DatabaseDialog {
 
   public setConnectionStatus(isConnected: boolean) {
     this.isConnectedToRemote = isConnected
+    // TODO: when this is called,
+    // attempt to re-render the status section
   }
 
   public setError(error: string) {
     this.error = error
+    // TODO: when this is called,
+    // attempt to re-render the status section
   }
 
   public renderStatus() {
     const container = document.querySelector('#database-dialog-status')
+    // TODO: maybe do not throw the error so then I can call the re-rendering whenever
+    // without any issues
     if (!container) throw new Error('Status container not found')
+
+    const renderConnectionStatus = () =>
+      this.isConnectedToRemote
+        ? `
+            <div class='database-dialog-status-icon'>  
+              ${checkIcon}
+            </div>
+            <span>Online, syncing to database.</span>`
+        : `
+            <div class='database-dialog-status-icon'>
+              ${databaseIcon}
+            </div>
+            <span>Offline, saving to this device.</span>`
+
+    const renderErrorStatus = () =>
+      this.error
+        ? `
+          <div class='database-dialog-status-icon'>
+            ${errorIcon}
+          </div>  
+          <span>${this.error}</span>`
+        : `
+          <div class='database-dialog-status-icon'>
+            ${checkIcon}
+          </div>
+          <span>Good. No recent errors.</span>`
 
     container.innerHTML = `
       <h3>Status</h3>
-      ${this.isConnectedToRemote ? 'ONLINE' : 'OFFLINE'}
+      <div class='database-dialog-status-container'>${renderErrorStatus()}</div>
+      <div class='database-dialog-status-container'>${renderConnectionStatus()}</div>
       `
-
-    //
-    // There are 2 statuses:
-    // 1. the database icon: Online or offline (saving to device or syncing)
-    // 2. Check or error icon (recent error + text) or all good.
-    //
-    // clicking on the 'show developer logs' will render the log piece
+    // TODO:
+    // BUTTON FOR: Show all recent activity (for developers)
   }
 
-  public renderConnectionDetails() {
-    // find container
-    // render the stuff
+  public renderConnectionForm() {
+    const container = document.querySelector(
+      '#database-dialog-connection-details'
+    )
+    if (!container) throw new Error('Connection details container not found')
+    container.innerHTML = `
+      <h3>Connection details</h3>
+      TODO: setup`
+    // TODO: setup form
   }
 }
 
@@ -113,43 +122,14 @@ const databaseDialog = new DatabaseDialog()
 
 export { databaseDialog }
 
-function renderRemoteDbDialog({
-  isConnectedToRemote,
-  error,
-}: {
-  isConnectedToRemote: boolean
-  error: string
-}) {
+export function renderRemoteDbDialog(isConnectedToRemote: boolean) {
   const dialogContent = document.createElement('div')
 
   dialogContent.innerHTML = `
-      <section>
-          <h3>Status</h3>
-          <div class="remote-db-status-container">
-            <div>
-              ${
-                error
-                  ? `     
-                    <div class='remote-db-status-icon'>
-                      ${errorIcon}
-                    </div>
-                    <span>Error: ${error}</span>`
-                  : isConnectedToRemote
-                    ? `
-                    <div class='remote-db-status-icon'>  
-                      ${checkIcon}
-                    </div>
-                    <span>Online, syncing to database.</span>`
-                    : `
-                      <div class='remote-db-status-icon'>
-                        ${databaseIcon}
-                      </div>
-                      <span>Offline, saving to this device.</span>`
-              }
-            </div>
-            <div id="remote-db-logs" class="code-block"></div>
-          </div>
-        </section>
+    <section>
+      <h3>Status</h3>
+      <div id="remote-db-logs" class="code-block"></div>
+    </section>
 
         <section class="remote-db-setup-dialog">
           <h3>Connection details</h3>
@@ -172,17 +152,6 @@ function renderRemoteDbDialog({
             </div>
           </form>
         </section>`
-
-  const dialog = new Dialog()
-
-  dialog.setContent({
-    title: 'Remote Database',
-    content: dialogContent,
-    url: 'database',
-    classList: 'remote-db-setup-dialog',
-  })
-
-  dialog.open()
 
   /**
    * setup listeners for rendered elements
@@ -238,5 +207,3 @@ function renderRemoteDbDialog({
   const dbLogContainer = document.querySelector('#remote-db-logs')
   if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logger.getLogs())
 }
-
-export { renderRemoteDbDialog }

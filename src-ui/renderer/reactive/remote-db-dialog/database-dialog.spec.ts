@@ -22,6 +22,10 @@ describe('DatabaseDialog', () => {
 
   it.todo('when online, renders error if there is an error')
 
+  it.todo('setting the error state re-renders the status section')
+
+  it.todo('setting the connection state re-renders the status section')
+
   it.todo(
     // note: this test can be moved to the ONLINE test
     'connection details form can be filled'

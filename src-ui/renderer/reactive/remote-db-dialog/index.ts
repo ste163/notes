@@ -1,2 +1,2 @@
 export { renderRemoteDbLogs } from './remote-db-logs'
-export { renderRemoteDbDialog, databaseDialog } from './remote-db-dialog'
+export { databaseDialog } from './database-dialog'
