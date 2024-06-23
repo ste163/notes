@@ -72,7 +72,7 @@ class DatabaseDialog {
       this.isConnectedToRemote
         ? `
             <div class='database-dialog-status-icon'>  
-              ${checkIcon}
+              ${databaseIcon}
             </div>
             <span>Online, syncing to database.</span>`
         : `
@@ -132,8 +132,8 @@ class DatabaseDialog {
 
     document.querySelector('#database-dialog-status-log-button')?.appendChild(
       new Button({
-        title: 'Show recent activity logs (for developers)',
-        html: 'Show recent activity logs (for developers)',
+        title: 'Toggle recent activity logs (for developers)',
+        html: 'Toggle recent activity logs (for developers)',
         onClick: () => {
           if (this.areLogsShown) {
             this.areLogsShown = false
