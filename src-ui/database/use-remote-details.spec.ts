@@ -1,7 +1,7 @@
 import { describe, it, vi, expect } from 'vitest'
 import { useRemoteDetails } from './use-remote-details'
 import { logger } from 'logger'
-import type { RemoteDetails } from 'types'
+import type { RemoteDetails } from './use-remote-details'
 
 vi.mock('logger')
 

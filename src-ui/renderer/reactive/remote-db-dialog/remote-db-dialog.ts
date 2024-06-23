@@ -4,7 +4,7 @@ import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
 import { databaseIcon, errorIcon, successIcon } from 'icons'
 import { renderRemoteDbLogs } from './remote-db-logs'
-import type { RemoteDetails } from 'types'
+import type { RemoteDetails } from 'database'
 import './remote-db-dialog.css'
 
 /**
@@ -33,6 +33,83 @@ import './remote-db-dialog.css'
  * as needed: whether the dialog is open or closed. We always need the latest data.
  */
 
+// STEPS:
+// move to a class
+// THEN start refactoring from there...
+
+// TODO (final manual test for syncing):
+// test that if i disconnect from 1 database
+// and connect to a brand new one
+// that all my data from my local is synced to the new remote.
+//
+// depending on result, allow for the Database class to swap
+// its syncing mode: ie, user defines which approach they want
+
+class DatabaseDialog {
+  private dialog: Dialog | null = null
+  private isConnectedToRemote = false
+  private error: string | null = null
+
+  public render() {
+    console.log(this.isConnectedToRemote, this.error)
+
+    this.reset()
+    const dialogContent = document.createElement('div')
+
+    // TODO: this needs to be the different sections
+    // that are then rendered separately by functions
+    dialogContent.innerHTML = `
+      <section id='status'></section>
+      <section id='connection-details'></section>
+      <section id='help'>
+        <h3>Need help?</h3>
+        <p>To setup a remote, Docker-based database for this application, visit <a target="_blank" href="https://github.com/ste163/couchdb-docker">this project on Github</a>.</p>
+      </section>`
+
+    this.dialog = new Dialog()
+    this.dialog.setContent({
+      title: 'Database',
+      content: dialogContent,
+      url: 'database',
+      classList: 'remote-db-setup-dialog',
+    })
+
+    this.dialog.open()
+  }
+
+  private reset() {
+    if (this.dialog) this.dialog.close()
+  }
+
+  public setConnectionStatus(isConnected: boolean) {
+    this.isConnectedToRemote = isConnected
+  }
+
+  public setError(error: string) {
+    this.error = error
+  }
+
+  public renderStatus() {
+    // find container
+    // render the stuff
+    //
+    // There are 2 statuses:
+    // 1. the database icon: Online or offline (saving to device or syncing)
+    // 2. Check or error icon (recent error + text) or all good.
+    //
+    // clicking on the 'show developer logs' will render the log piece
+  }
+
+  public renderConnectionDetails() {
+    // find container
+    // render the stuff
+  }
+}
+
+const databaseDialog = new DatabaseDialog()
+
+export { databaseDialog }
+
 function renderRemoteDbDialog({
   isConnectedToRemote,
   error,
@@ -40,42 +117,10 @@ function renderRemoteDbDialog({
   isConnectedToRemote: boolean
   error: string
 }) {
-  // TODO: refactor
-  // TODO: needs to know about the db connection state
-  // and any major error states
-
   const dialogContent = document.createElement('div')
 
-  // TODO:
-  // manually test:
-  // test that if i disconnect from 1 database
-  // and connect to a brand new one
-  // that all my data from my local is synced to the new remote.
-
   dialogContent.innerHTML = `
-        <section class="remote-db-setup-dialog">
-          <h3>Connection details</h3>
-          <form>
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="admin">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="password">
-            <label for="host">Host</label>
-            <input type="text" id="host" name="host" placeholder="192.168.0.**">
-            <label for="port">Port</label>
-            <input type="text" id="port" name="port" placeholder="5984">
-            <div>
-              <button id="connect-button" type="submit">Connect</button>
-              ${
-                isConnectedToRemote
-                  ? `<button id="disconnect-button">Disconnect from remote</button>`
-                  : ''
-              }
-            </div>
-          </form>
-        </section>
-
-        <section>
+      <section>
           <h3>Status</h3>
           <div class="remote-db-status-container">
             <div>
@@ -96,16 +141,33 @@ function renderRemoteDbDialog({
                       <div class='remote-db-status-icon'>
                         ${databaseIcon}
                       </div>
-                      <span>Not connected to remote database.</span>`
+                      <span>Offline, saving to this device.</span>`
               }
             </div>
             <div id="remote-db-logs" class="code-block"></div>
           </div>
         </section>
 
-        <section>
-          <h3>Need help?</h3>
-          <div>To setup a remote, Docker-based database for this application, visit <a target="_blank" href="https://github.com/ste163/couchdb-docker">this project on Github</a>.</div>
+        <section class="remote-db-setup-dialog">
+          <h3>Connection details</h3>
+          <form>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="admin">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="password">
+            <label for="host">Host</label>
+            <input type="text" id="host" name="host" placeholder="192.168.0.**">
+            <label for="port">Port</label>
+            <input type="text" id="port" name="port" placeholder="5984">
+            <div>
+              <button id="connect-button" type="submit">Connect</button>
+              ${
+                isConnectedToRemote
+                  ? `<button id="disconnect-button">Disconnect from remote</button>`
+                  : ''
+              }
+            </div>
+          </form>
         </section>`
 
   const dialog = new Dialog()

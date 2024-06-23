@@ -7,16 +7,8 @@ interface Note {
   updatedAt: Date // or string?
 }
 
-interface RemoteDetails {
-  [key: string]: string // needed for correct type indexing
-  username: string
-  password: string
-  host: string
-  port: string
-}
-
 type Notes = Record<string, Note>
 
 type MarkOptions = { level: number }
 
-export type { Note, Notes, MarkOptions, RemoteDetails }
+export type { Note, Notes, MarkOptions }

@@ -1,5 +1,12 @@
 import { logger } from 'logger'
-import type { RemoteDetails } from 'types'
+
+interface RemoteDetails {
+  [key: string]: string // needed for correct type indexing
+  username: string
+  password: string
+  host: string
+  port: string
+}
 
 const key = 'remote-db-details'
 
@@ -46,3 +53,4 @@ function useRemoteDetails() {
 }
 
 export { useRemoteDetails }
+export type { RemoteDetails }
