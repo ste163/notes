@@ -33,7 +33,9 @@ class DatabaseDialog {
       <section id='database-dialog-connection-details'></section>
       <section id='database-dialog-help'>
         <h3>Need help?</h3>
-        <p>To setup a remote, Docker-based database for this application, visit <a target="_blank" href="https://github.com/ste163/couchdb-docker">this project on Github</a>.</p>
+        <p>
+          If you would like to enable cloud-syncing, you may visit <a target="_blank" href="https://github.com/ste163/couchdb-docker">this related project on Github</a>.
+        </p>
       </section>`
 
     this.dialog = new Dialog()
