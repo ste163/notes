@@ -120,6 +120,7 @@ class DatabaseDialog {
       container.appendChild(div)
     }
 
+    // setup main status section structure
     container.innerHTML = `
       <h3>Status</h3>
       <div class='database-dialog-status-container'>${renderErrorStatus()}</div>
@@ -145,6 +146,7 @@ class DatabaseDialog {
       }).getElement()
     )
 
+    // if it's a re-render while the dialog is open, keep logs open
     if (this.areLogsShown) renderDatabaseLogs(this.areLogsShown)
   }
 

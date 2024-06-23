@@ -22,6 +22,7 @@
  *   - db dialog needs to have last synced date (for mobile parity)
  *   - add hyperlink insert support
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
+ *   - resize-able sidebar that saves and loads its state to localStorage
  * - BRANDING
  *   - make favicon
  *   - make icons for desktop
