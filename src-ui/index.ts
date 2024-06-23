@@ -47,7 +47,6 @@ import {
   sidebar,
   statusBar,
   editor,
-  renderRemoteDbLogs,
   databaseDialog,
   noteDeleteDialog,
 } from 'renderer/reactive'
@@ -256,6 +255,7 @@ window.addEventListener(DatabaseEvents.RemoteConnect, () => {
 
 window.addEventListener(DatabaseEvents.RemoteConnected, () => {
   statusBar.renderRemoteDb({ isConnected: true })
+  databaseDialog.setConnectionStatus(true)
   database.setupSyncing()
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
@@ -266,9 +266,14 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
 
 window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
-  if (successfulDisconnect) statusBar.renderRemoteDb({ isConnected: false })
-  // TODO: need to clear the remote details from local storage
+  if (successfulDisconnect) {
+    statusBar.renderRemoteDb({ isConnected: false })
+    databaseDialog.setConnectionStatus(false)
+  }
+  // TODO:
+  // need to clear the remote details from local storage
   // so we do not reconnect on refresh
+  // but that happens in the form in dialog
 })
 
 window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
@@ -283,24 +288,25 @@ window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
 /**
  * Dialog events
  *
- * This are more specific to handling application state and less so on handling rendering
+ * These are split between handling the entire application state for
+ * any dialogs and for rendering specific dialogs.
+ *
  */
 window.addEventListener(DialogEvents.Opened, (event) => {
-  // Trap focus inside the dialog, disable editor, and set URL params
-  setTimeout(() => {
-    // need timeout delay to allow dialog to render
+  const focusDialog = () => {
     const dialog = document.querySelectorAll('[role="dialog"]')[0]
     ;(dialog as HTMLElement)?.focus()
-  }, 100)
+  }
+
+  setTimeout(
+    focusDialog,
+    100 // need timeout delay to allow dialog to render
+  )
 
   const dialogTitle = (event as CustomEvent)?.detail?.param as string
-
   // TODO: dialog titles need to be a const so I can do safer checks.
   // should come from the dialog Class
-  if (dialogTitle === 'database') {
-    // clear the statusBar's alert state
-    statusBar.renderAlert('')
-  }
+  if (dialogTitle === 'database') statusBar.renderAlert('') // clear the statusBar's alert state
 
   const { noteId } = getUrlParams()
   setUrl({ noteId, dialog: dialogTitle })
@@ -335,24 +341,24 @@ window.addEventListener(DialogEvents.OpenDatabase, () => {
 
 /**
  * Log events
- * CONSIDER: having a type in the event and only use UPDATE
- * because then the UI can decide how to render the logs
  */
-window.addEventListener(LoggerEvents.Update, (event) => {
-  const logs = (event as CustomEvent)?.detail?.logs
-  // TODO: move this to the databaseDialog
-  const dbLogContainer = document.querySelector('#remote-db-logs')
-  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
+window.addEventListener(LoggerEvents.Update, () => {
+  // TODO: move this to the databaseDialog (however, we need knowledge of ERROR of not)
+  databaseDialog.renderStatus()
   // Need to know if this is an error or not,
   // because then I can know what to render in the db status section
   // (latest error or all good state)
 })
 
+// TODO: move this to the log's type
 window.addEventListener(LoggerEvents.Error, (event) => {
   const message = (event as CustomEvent)?.detail?.message
-  if (message) statusBar.renderAlert(message)
-  // TODO: if there is an error, then trigger the databaseDialog.setError
-  // to re-render.
+  if (message) {
+    statusBar.renderAlert(message)
+    // TODO: if there is an error, then trigger the databaseDialog.setError
+    // to re-render.
+    databaseDialog.setError(message)
+  }
 })
 
 /**

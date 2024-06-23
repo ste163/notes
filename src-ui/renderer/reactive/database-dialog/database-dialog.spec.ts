@@ -27,6 +27,14 @@ describe('DatabaseDialog', () => {
   it.todo('setting the connection state re-renders the status section')
 
   it.todo(
+    'activity log can be opened and closed; when opened, shows latest logs when they occur'
+    // open the logs, renders latest logger.getLogs
+    // when another re-render occurrs, the logs are still displayed on the DOM
+    // (ie, testing that the logs do not disappear on a re-render because only USER decides to close it)
+    // can close the log section
+  )
+
+  it.todo(
     // note: this test can be moved to the ONLINE test
     'connection details form can be filled'
     // the connection button is disabled UNLESS all items are filled

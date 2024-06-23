@@ -1,9 +1,8 @@
-import { Dialog } from 'components'
+import { Button, Dialog } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
 import { databaseIcon, errorIcon, checkIcon } from 'icons'
-import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'database'
 import './database-dialog.css'
 
@@ -22,6 +21,7 @@ import './database-dialog.css'
 class DatabaseDialog {
   private dialog: Dialog | null = null
   private isConnectedToRemote = false
+  private areLogsShown = false
   private error: string | null = null
 
   public render() {
@@ -51,25 +51,22 @@ class DatabaseDialog {
 
   private reset() {
     if (this.dialog) this.dialog.close()
+    this.areLogsShown = false
   }
 
   public setConnectionStatus(isConnected: boolean) {
     this.isConnectedToRemote = isConnected
-    // TODO: when this is called,
-    // attempt to re-render the status section
+    this.renderStatus() // used to re-render state if dialog is open
   }
 
   public setError(error: string) {
     this.error = error
-    // TODO: when this is called,
-    // attempt to re-render the status section
+    this.renderStatus()
   }
 
   public renderStatus() {
     const container = document.querySelector('#database-dialog-status')
-    // TODO: maybe do not throw the error so then I can call the re-rendering whenever
-    // without any issues
-    if (!container) throw new Error('Status container not found')
+    if (!container) return
 
     const renderConnectionStatus = () =>
       this.isConnectedToRemote
@@ -97,13 +94,58 @@ class DatabaseDialog {
           </div>
           <span>Good. No recent errors.</span>`
 
+    const renderDatabaseLogs = (shouldShow: boolean) => {
+      const container = document.querySelector(
+        '#database-dialog-status-log-block-container'
+      )
+      if (!container) return
+
+      container.innerHTML = ''
+      if (!shouldShow) return
+
+      const div = document.createElement('div')
+
+      div.id = 'database-dialog-status-log-block'
+      div.classList.add('code-block')
+
+      // TODO: based on logs '[type]' assign color coding (errors are an accessible red)
+      const logs = logger.getLogs()
+      if (logs.length)
+        div.innerHTML = logs
+          .map((log) => `<p>${log}</p>`)
+          .reduce((acc, curr) => acc + curr)
+      // set logs to always scroll to bottom, so most recent is in view
+      div.scrollTop = div?.scrollHeight
+
+      container.appendChild(div)
+    }
+
     container.innerHTML = `
       <h3>Status</h3>
       <div class='database-dialog-status-container'>${renderErrorStatus()}</div>
       <div class='database-dialog-status-container'>${renderConnectionStatus()}</div>
-      `
-    // TODO:
-    // BUTTON FOR: Show all recent activity (for developers)
+      <div id='database-dialog-status-log-container'>
+        <div id='database-dialog-status-log-button'></div>
+        <div id='database-dialog-status-log-block-container'></div>
+      </div>`
+
+    document.querySelector('#database-dialog-status-log-button')?.appendChild(
+      new Button({
+        title: 'Show recent activity logs (for developers)',
+        html: 'Show recent activity logs (for developers)',
+        onClick: () => {
+          if (this.areLogsShown) {
+            this.areLogsShown = false
+            renderDatabaseLogs(this.areLogsShown)
+          } else {
+            this.areLogsShown = true
+            renderDatabaseLogs(this.areLogsShown)
+          }
+        },
+      }).getElement()
+    )
+
+    if (this.areLogsShown) renderDatabaseLogs(this.areLogsShown)
   }
 
   public renderConnectionForm() {
@@ -112,8 +154,7 @@ class DatabaseDialog {
     )
     if (!container) throw new Error('Connection details container not found')
     container.innerHTML = `
-      <h3>Connection details</h3>
-      TODO: setup`
+      <h3>Connection details</h3>`
     // TODO: setup form
   }
 }
@@ -122,15 +163,12 @@ const databaseDialog = new DatabaseDialog()
 
 export { databaseDialog }
 
+// BELOW SHOULD BE DELETED AS REFACTORING OCCURS
+
 export function renderRemoteDbDialog(isConnectedToRemote: boolean) {
   const dialogContent = document.createElement('div')
 
   dialogContent.innerHTML = `
-    <section>
-      <h3>Status</h3>
-      <div id="remote-db-logs" class="code-block"></div>
-    </section>
-
         <section class="remote-db-setup-dialog">
           <h3>Connection details</h3>
           <form>
@@ -203,7 +241,4 @@ export function renderRemoteDbDialog(isConnectedToRemote: boolean) {
     useRemoteDetails().set(details)
     createEvent(DatabaseEvents.RemoteConnect).dispatch()
   })
-
-  const dbLogContainer = document.querySelector('#remote-db-logs')
-  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logger.getLogs())
 }

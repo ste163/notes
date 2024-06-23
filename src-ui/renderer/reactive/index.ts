@@ -1,5 +1,5 @@
 export { editor } from './editor'
 export { sidebar } from './sidebar'
 export { statusBar } from './status-bar'
-export { databaseDialog, renderRemoteDbLogs } from './remote-db-dialog'
+export { databaseDialog } from './database-dialog'
 export { noteDeleteDialog } from './note-delete-dialog'
