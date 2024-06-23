@@ -43,46 +43,45 @@ describe('status-bar', () => {
     )
   })
 
-  it('renders only package version on initial render', () => {
-    const { getByText, queryByText } = renderComponent(statusBar.render)
+  it('renders package version number', () => {
+    const { getByText } = renderComponent(statusBar.render)
     expect(getByText(`v${pkg.version}`)).toBeInTheDocument()
-    expect(queryByText('Connected')).toBeNull()
-    expect(queryByText('Last saved')).toBeNull()
   })
 
-  it('does not render error alert button if no error passed in', () => {
+  it('error alert does not render, if not present', () => {
     const { queryByRole } = renderComponent(statusBar.render)
     statusBar.renderAlert('')
     expect(queryByRole('button', { name: 'Error Error' })).toBeNull()
   })
 
-  it('renders error alert button and opens dialog', async () => {
+  it('renders error alert button and emits dialog open', async () => {
     const { getByRole } = renderComponent(statusBar.render)
     statusBar.renderAlert('Error message')
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
+      DialogEvents.OpenDatabase
+    )
   })
 
-  it('renders not connected db status and opens dialog on click', async () => {
-    const { getByText, queryByText, getByRole } = renderComponent(
-      statusBar.render
-    )
+  it('renders offline status and emits dialog open', async () => {
+    const { getByText, queryByText } = renderComponent(statusBar.render)
     statusBar.renderRemoteDb({ isConnected: false })
-    expect(queryByText('Connected')).toBeNull()
-    expect(getByText('Not connected')).toBeInTheDocument()
-    await userEvent.click(getByText('Not connected'))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    expect(queryByText('Online')).toBeNull()
+    await userEvent.click(getByText('Offline'))
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
+      DialogEvents.OpenDatabase
+    )
   })
 
-  it('renders connected db status and opens dialog on click', async () => {
-    const { getByText, queryByText, getByRole } = renderComponent(
-      statusBar.render
-    )
+  it('renders online status and emits dialog open', async () => {
+    const { getByText, queryByText } = renderComponent(statusBar.render)
     statusBar.renderRemoteDb({ isConnected: true })
-    expect(queryByText('Not connected')).toBeNull()
-    expect(getByText('Connected')).toBeInTheDocument()
-    await userEvent.click(getByText('Connected'))
-    expect(getByRole('dialog')).toBeInTheDocument()
+    expect(queryByText('Offline')).toBeNull()
+    expect(getByText('Online')).toBeInTheDocument()
+    await userEvent.click(getByText('Online'))
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
+      DialogEvents.OpenDatabase
+    )
   })
 
   it('does not render saved on date if null', () => {

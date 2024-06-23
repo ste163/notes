@@ -26,6 +26,7 @@ class Sidebar {
         <div id='sidebar-menu-controls'></div>
       </div>
       <div id='sidebar-list'></div>`
+
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
         title: 'Create note',

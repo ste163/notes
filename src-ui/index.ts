@@ -174,10 +174,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
         note && createEvent(DialogEvents.OpenNoteDelete).dispatch()
         break
       case 'database':
-        // BUG: this does not actually render based on the isConnected state
-        // coming from the db. We need to have this state accessible somehow
-        // to render this dialog properly
-        renderRemoteDbDialog({ isConnectedToRemote: false, error: '' })
+        createEvent(DialogEvents.OpenDatabase).dispatch()
         break
       default:
         break
@@ -322,6 +319,21 @@ window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
   if (!noteId) return
   const note = await database.getById(noteId)
   if (note) noteDeleteDialog.render(note)
+})
+
+window.addEventListener(DialogEvents.OpenDatabase, () => {
+  // TODO: use databaseDialog
+  // and then setup the rest of the states
+  // related to the database
+  // to 'SET' the state of the dialog
+  // (and potentially re-render there IF the dialog is open)
+  // or it's possible that the SET functions should update the UI
+  // IF those functions find that the containers are present
+  //
+  // BUG: this does not actually render based on the isConnected state
+  // coming from the db. We need to have this state accessible somehow
+  // to render this dialog properly
+  renderRemoteDbDialog({ isConnectedToRemote: false, error: '' })
 })
 
 /**

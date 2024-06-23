@@ -2,7 +2,7 @@ import { Dialog } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
-import { databaseIcon, errorIcon, successIcon } from 'icons'
+import { databaseIcon, errorIcon, checkIcon } from 'icons'
 import { renderRemoteDbLogs } from './remote-db-logs'
 import type { RemoteDetails } from 'database'
 import './remote-db-dialog.css'
@@ -51,17 +51,14 @@ class DatabaseDialog {
   private error: string | null = null
 
   public render() {
-    console.log(this.isConnectedToRemote, this.error)
-
+    console.log(this.error)
     this.reset()
     const dialogContent = document.createElement('div')
 
-    // TODO: this needs to be the different sections
-    // that are then rendered separately by functions
     dialogContent.innerHTML = `
-      <section id='status'></section>
-      <section id='connection-details'></section>
-      <section id='help'>
+      <section id='database-dialog-status'></section>
+      <section id='database-dialog-connection-details'></section>
+      <section id='database-dialog-help'>
         <h3>Need help?</h3>
         <p>To setup a remote, Docker-based database for this application, visit <a target="_blank" href="https://github.com/ste163/couchdb-docker">this project on Github</a>.</p>
       </section>`
@@ -90,8 +87,14 @@ class DatabaseDialog {
   }
 
   public renderStatus() {
-    // find container
-    // render the stuff
+    const container = document.querySelector('#database-dialog-status')
+    if (!container) throw new Error('Status container not found')
+
+    container.innerHTML = `
+      <h3>Status</h3>
+      ${this.isConnectedToRemote ? 'ONLINE' : 'OFFLINE'}
+      `
+
     //
     // There are 2 statuses:
     // 1. the database icon: Online or offline (saving to device or syncing)
@@ -134,9 +137,9 @@ function renderRemoteDbDialog({
                   : isConnectedToRemote
                     ? `
                     <div class='remote-db-status-icon'>  
-                      ${successIcon}
+                      ${checkIcon}
                     </div>
-                    <span>Successfully connected to remote database.</span>`
+                    <span>Online, syncing to database.</span>`
                     : `
                       <div class='remote-db-status-icon'>
                         ${databaseIcon}
