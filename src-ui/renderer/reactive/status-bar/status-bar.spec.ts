@@ -11,9 +11,7 @@ vi.mock('event')
 // only testing individual render methods and their props
 describe('status-bar', () => {
   it('renders disabled save button and settings button if no note selected', () => {
-    const { getByRole } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByRole } = renderComponent(statusBar.render)
     statusBar.renderActiveNote(null)
 
     expect(getByRole('button', { name: 'Save' })).toBeDisabled()
@@ -21,9 +19,7 @@ describe('status-bar', () => {
   })
 
   it('renders enabled save button and settings button and calls events on click', async () => {
-    const { getByRole } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByRole } = renderComponent(statusBar.render)
     statusBar.renderActiveNote({
       _id: 'abc',
       title: 'Note title',
@@ -48,35 +44,29 @@ describe('status-bar', () => {
   })
 
   it('renders only package version on initial render', () => {
-    const { getByText, queryByText } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByText, queryByText } = renderComponent(statusBar.render)
     expect(getByText(`v${pkg.version}`)).toBeInTheDocument()
     expect(queryByText('Connected')).toBeNull()
     expect(queryByText('Last saved')).toBeNull()
   })
 
   it('does not render error alert button if no error passed in', () => {
-    const { queryByRole } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { queryByRole } = renderComponent(statusBar.render)
     statusBar.renderAlert('')
     expect(queryByRole('button', { name: 'Error Error' })).toBeNull()
   })
 
   it('renders error alert button and opens dialog', async () => {
-    const { getByRole } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByRole } = renderComponent(statusBar.render)
     statusBar.renderAlert('Error message')
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
     expect(getByRole('dialog')).toBeInTheDocument()
   })
 
   it('renders not connected db status and opens dialog on click', async () => {
-    const { getByText, queryByText, getByRole } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByText, queryByText, getByRole } = renderComponent(
+      statusBar.render
+    )
     statusBar.renderRemoteDb({ isConnected: false })
     expect(queryByText('Connected')).toBeNull()
     expect(getByText('Not connected')).toBeInTheDocument()
@@ -85,9 +75,9 @@ describe('status-bar', () => {
   })
 
   it('renders connected db status and opens dialog on click', async () => {
-    const { getByText, queryByText, getByRole } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByText, queryByText, getByRole } = renderComponent(
+      statusBar.render
+    )
     statusBar.renderRemoteDb({ isConnected: true })
     expect(queryByText('Not connected')).toBeNull()
     expect(getByText('Connected')).toBeInTheDocument()
@@ -96,34 +86,26 @@ describe('status-bar', () => {
   })
 
   it('does not render saved on date if null', () => {
-    const { queryByText } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { queryByText } = renderComponent(statusBar.render)
     statusBar.renderSavedOn(null)
     expect(queryByText('Saved on')).toBeNull()
   })
 
   it('renders saved on date if provided', () => {
-    const { getByText } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByText } = renderComponent(statusBar.render)
     const date = new Date().toLocaleString()
     statusBar.renderSavedOn(date)
     expect(getByText(`Saved on: ${date}`)).toBeInTheDocument()
   })
 
   it('does not render synced on date if null', () => {
-    const { queryByText } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { queryByText } = renderComponent(statusBar.render)
     statusBar.renderSyncedOn(null)
     expect(queryByText('Synced on')).toBeNull()
   })
 
   it('renders synced on date', () => {
-    const { getByText } = renderComponent({
-      renderComponent: statusBar.render,
-    })
+    const { getByText } = renderComponent(statusBar.render)
     const date = new Date().toLocaleString()
     statusBar.renderSyncedOn(date)
     expect(getByText(`Synced on: ${date}`)).toBeInTheDocument()

@@ -9,9 +9,9 @@ vi.mock('event')
 
 describe('sidebar', () => {
   it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
-    const { getByRole, queryByRole } = renderComponent({
-      renderComponent: sidebar.render.bind(sidebar),
-    })
+    const { getByRole, queryByRole } = renderComponent(
+      sidebar.render.bind(sidebar)
+    )
 
     // renders input on create click
     const createButton = getByRole('button', { name: 'Add Create' })
@@ -43,9 +43,7 @@ describe('sidebar', () => {
   })
 
   it('renders no notes if no notes are present', () => {
-    const { getAllByRole } = renderComponent({
-      renderComponent: sidebar.render.bind(sidebar),
-    })
+    const { getAllByRole } = renderComponent(sidebar.render.bind(sidebar))
     sidebar.renderNoteList()
 
     // notes are rendered as buttons, but the first two are the create and close buttons
@@ -69,9 +67,7 @@ describe('sidebar', () => {
         content: '',
       },
     }
-    const { getAllByRole } = renderComponent({
-      renderComponent: sidebar.render.bind(sidebar),
-    })
+    const { getAllByRole } = renderComponent(sidebar.render.bind(sidebar))
     sidebar.renderNoteList(notes)
 
     // notes are rendered as buttons
@@ -105,9 +101,7 @@ describe('sidebar', () => {
       },
     }
 
-    const { getAllByRole } = renderComponent({
-      renderComponent: sidebar.render.bind(sidebar),
-    })
+    const { getAllByRole } = renderComponent(sidebar.render.bind(sidebar))
     // must call multiple methods because
     // we are not testing the accurate application flow
     sidebar.setNotes(notes)
