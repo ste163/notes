@@ -1,4 +1,4 @@
-import { Button, Dialog } from 'components'
+import { Button, Dialog, Input } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useRemoteDetails } from 'database'
@@ -18,11 +18,21 @@ import './database-dialog.css'
 // Depending on results, allow for the Database class to swap
 // its syncing mode: ie, user defines which approach they want
 
+/**
+ * DatabaseDialog contains the most state complexity in the application.
+ * It needs to re-render its sub-components based on the live state
+ * of the database connection (which contains user input that needs to
+ * live between state updates).
+ *
+ * The dialog requires live information regardless of
+ * whether it's open or closed.
+ */
 class DatabaseDialog {
   private dialog: Dialog | null = null
   private isConnectedToRemote = false
   private areLogsShown = false
   private error: string | null = null
+  private formInputs: Input[] = []
 
   public render() {
     this.reset()
@@ -56,14 +66,19 @@ class DatabaseDialog {
     this.areLogsShown = false
   }
 
-  public setConnectionStatus(isConnected: boolean) {
+  public setIsConnected(isConnected: boolean) {
     this.isConnectedToRemote = isConnected
-    this.renderStatus() // used to re-render state if dialog is open
+    this.updateSubComponents()
   }
 
   public setError(error: string) {
     this.error = error
+    this.updateSubComponents()
+  }
+
+  private updateSubComponents() {
     this.renderStatus()
+    this.renderConnectionForm(false)
   }
 
   public renderStatus() {
@@ -148,101 +163,139 @@ class DatabaseDialog {
       }).getElement()
     )
 
-    // if it's a re-render while the dialog is open, keep logs open
-    if (this.areLogsShown) renderDatabaseLogs(this.areLogsShown)
+    // if the logs are open during a re-render, keep them open
+    renderDatabaseLogs(this.areLogsShown)
   }
 
-  public renderConnectionForm() {
+  public renderConnectionForm(isInitialRender = true) {
     const container = document.querySelector(
       '#database-dialog-connection-details'
     )
     if (!container) throw new Error('Connection details container not found')
-    container.innerHTML = `
-      <h3>Connection details</h3>`
-    // TODO: setup form
+    if (isInitialRender)
+      container.innerHTML = `
+      <h3>Connection details</h3>
+      <form id='database-dialog-connection-form'></form>`
+    const form = document.querySelector('#database-dialog-connection-form')
+
+    const createInputs = () => {
+      const savedDetails = useRemoteDetails().get()
+      return [
+        {
+          id: 'username',
+          label: 'Username',
+          placeholder: 'admin',
+          value: savedDetails.username,
+        },
+        {
+          id: 'password',
+          label: 'Password',
+          placeholder: 'password',
+          value: savedDetails.password,
+        },
+        {
+          id: 'host',
+          label: 'Host',
+          placeholder: '192.168.0.**',
+          value: savedDetails.host,
+        },
+        {
+          id: 'port',
+          label: 'Port',
+          placeholder: '5984',
+          value: savedDetails.port,
+        },
+      ].map((config) => new Input(config))
+    }
+
+    if (isInitialRender) this.formInputs = createInputs()
+
+    const createClearButton = () => {
+      return new Button({
+        id: 'database-dialog-clear-button',
+        title: 'Clear',
+        html: 'Clear',
+        onClick: () => {
+          this.formInputs?.forEach((input) => {
+            input.setValue('')
+          })
+          useRemoteDetails().set({
+            username: '',
+            password: '',
+            host: '',
+            port: '',
+          })
+          createEvent(DatabaseEvents.RemoteDisconnect).dispatch()
+        },
+      }).getElement()
+    }
+
+    if (isInitialRender) {
+      this.formInputs.forEach((input) =>
+        form?.appendChild(input.getContainer())
+      )
+
+      const disableDefaultSubmit = (event: Event) => {
+        event?.preventDefault()
+        event?.stopPropagation()
+      }
+      form?.addEventListener('submit', disableDefaultSubmit)
+
+      const buttonContainer = document.createElement('div')
+      buttonContainer.id = 'database-dialog-button-container'
+      buttonContainer.appendChild(
+        new Button({
+          id: 'database-dialog-submit-button',
+          title: 'Connect',
+          html: 'Connect',
+          onClick: () => {
+            const details = this.formInputs.reduce((acc, input) => {
+              return {
+                ...acc,
+                [input.getId()]: input.getValue(),
+              }
+            }, {} as RemoteDetails)
+            useRemoteDetails().set(details)
+            createEvent(DatabaseEvents.RemoteConnect).dispatch()
+          },
+        }).getElement()
+      )
+
+      if (this.isConnectedToRemote)
+        buttonContainer.appendChild(createClearButton())
+      form?.appendChild(buttonContainer)
+      return
+    }
+    // all subsequent re-renders
+    const updateSubmitButton = () => {
+      const submitButton = document.querySelector(
+        '#database-dialog-submit-button'
+      ) as HTMLButtonElement
+
+      if (submitButton) {
+        const text = this.isConnectedToRemote ? 'Reconnect' : 'Connect'
+        submitButton.innerHTML = text
+        submitButton.title = text
+      }
+    }
+
+    const updateClearButton = () => {
+      const clearButton = document.querySelector(
+        '#database-dialog-clear-button'
+      )
+      const buttonContainer = document.querySelector(
+        '#database-dialog-button-container'
+      )
+      if (clearButton && !this.isConnectedToRemote) clearButton.remove()
+      if (!clearButton && this.isConnectedToRemote)
+        buttonContainer?.appendChild(createClearButton())
+    }
+
+    updateSubmitButton()
+    updateClearButton()
   }
 }
 
 const databaseDialog = new DatabaseDialog()
 
 export { databaseDialog }
-
-// BELOW SHOULD BE DELETED AS REFACTORING OCCURS
-
-export function renderRemoteDbDialog(isConnectedToRemote: boolean) {
-  const dialogContent = document.createElement('div')
-
-  dialogContent.innerHTML = `
-        <section class="remote-db-setup-dialog">
-          <h3>Connection details</h3>
-          <form>
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="admin">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="password">
-            <label for="host">Host</label>
-            <input type="text" id="host" name="host" placeholder="192.168.0.**">
-            <label for="port">Port</label>
-            <input type="text" id="port" name="port" placeholder="5984">
-            <div>
-              <button id="connect-button" type="submit">Connect</button>
-              ${
-                isConnectedToRemote
-                  ? `<button id="disconnect-button">Disconnect from remote</button>`
-                  : ''
-              }
-            </div>
-          </form>
-        </section>`
-
-  /**
-   * setup listeners for rendered elements
-   */
-  const form = document.querySelector('#remote-db-connection-form')
-  form?.addEventListener('submit', (event) => {
-    event.preventDefault()
-    event.stopPropagation()
-  })
-
-  /**
-   * setup inputs
-   */
-  const inputElements = ['username', 'password', 'host', 'port'].map(
-    (input) => {
-      const element = document.querySelector(`#${input}`) as HTMLInputElement
-      if (!element) throw new Error(`Missing input element: ${input}`)
-      return element
-    }
-  )
-
-  const details = useRemoteDetails().get()
-
-  inputElements.forEach((element) => {
-    // if the element id is the same as the key in details
-    // assign the default value to the input
-    if (element.id in details) {
-      element.defaultValue = details[element?.id]
-    }
-  })
-
-  /**
-   * setup buttons
-   */
-  const disconnectButton = document.querySelector('#disconnect-button')
-  disconnectButton?.addEventListener(
-    'click',
-    createEvent(DatabaseEvents.RemoteDisconnect).dispatch
-  )
-
-  const connectButton = document.querySelector('#connect-button')
-  connectButton?.addEventListener('click', () => {
-    const details = inputElements.reduce((acc, element) => {
-      return {
-        ...acc,
-        [element.id]: element.value,
-      }
-    }, {} as RemoteDetails)
-    useRemoteDetails().set(details)
-    createEvent(DatabaseEvents.RemoteConnect).dispatch()
-  })
-}

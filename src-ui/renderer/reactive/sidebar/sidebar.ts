@@ -197,7 +197,7 @@ class Sidebar {
   private instantiateInputElements() {
     const inputInstance = new Input({
       id: 'create-note',
-      title: 'Note title',
+      label: 'Note title',
       placeholder: 'Note title',
     })
     const input = inputInstance.getInput()

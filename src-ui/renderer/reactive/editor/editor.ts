@@ -148,7 +148,7 @@ class Editor {
       // The layout CANNOT shift when we swap inputs
       const inputInstance = new Input({
         id: 'update-title',
-        title: '',
+        label: '',
         placeholder: 'Note title',
         value: inputValue,
       })

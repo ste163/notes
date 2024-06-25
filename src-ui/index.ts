@@ -256,7 +256,7 @@ window.addEventListener(DatabaseEvents.RemoteConnect, () => {
 
 window.addEventListener(DatabaseEvents.RemoteConnected, () => {
   statusBar.renderRemoteDb({ isConnected: true })
-  databaseDialog.setConnectionStatus(true)
+  databaseDialog.setIsConnected(true)
   database.setupSyncing()
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
@@ -269,7 +269,7 @@ window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
   if (successfulDisconnect) {
     statusBar.renderRemoteDb({ isConnected: false })
-    databaseDialog.setConnectionStatus(false)
+    databaseDialog.setIsConnected(false)
   }
   // TODO:
   // need to clear the remote details from local storage
