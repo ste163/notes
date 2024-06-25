@@ -116,25 +116,27 @@ class DatabaseDialog {
         '#database-dialog-status-log-block-container'
       )
       if (!container) return
-
       container.innerHTML = ''
       if (!shouldShow) return
 
-      const div = document.createElement('div')
+      const renderLogs = () => {
+        const div = document.createElement('div')
 
-      div.id = 'database-dialog-status-log-block'
-      div.classList.add('code-block')
+        div.id = 'database-dialog-status-log-block'
+        div.classList.add('code-block')
 
-      // TODO: based on logs '[type]' assign color coding (errors are an accessible red)
-      const logs = logger.getLogs()
-      if (logs.length)
-        div.innerHTML = logs
-          .map((log) => `<p>${log}</p>`)
-          .reduce((acc, curr) => acc + curr)
-      // set logs to always scroll to bottom, so most recent is in view
-      div.scrollTop = div?.scrollHeight
+        // TODO: based on logs '[type]' assign color coding (errors are an accessible red)
+        const logs = logger.getLogs()
+        if (logs.length)
+          div.innerHTML = logs
+            .map((log) => `<p>${log}</p>`)
+            .reduce((acc, curr) => acc + curr)
+        // set logs to always scroll to bottom, so most recent is in view
+        div.scrollTop = div?.scrollHeight
 
-      container.appendChild(div)
+        container.appendChild(div)
+      }
+      renderLogs()
     }
 
     // setup main status section structure
