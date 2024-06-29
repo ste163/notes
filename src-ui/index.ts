@@ -1,10 +1,11 @@
 /**
  * TODO PRIORITY ORDER
+ *  - DATABASE DIALOG FORM: disable the submit button UNTIL all inputs are filled
  *  - Database refactor into a single class instance like other components
  *  - Update error logging types to know how to re-render state in db dialog
  *  - Database connection form MUST be disabled fully while connecting, reconnecting, disconnecting
  *  - Database dialog should show the last synced date if we're connected
- *  - sidebar state could live in nav bar as a '?sidebar-open=true' query param
+ *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
  *  - delete dialog styling refresh (it's only functional now)
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
@@ -30,6 +31,7 @@
  *   - make favicon
  *   - make icons for desktop
  * - BUGS
+ *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *      - the error also gets triggered/logged before vite connects (in the logs)
@@ -37,7 +39,7 @@
  */
 import { config } from 'config'
 import { logger } from 'logger'
-import { Database, useDatabaseDetails } from 'database'
+import { database } from 'database'
 import {
   LifeCycleEvents,
   KeyboardEvents,
@@ -58,7 +60,6 @@ import { AppNotification } from 'components'
 import { checkIcon } from 'icons'
 import type { Note } from 'types'
 
-let database: Database // TODO: move to singleton
 let isMobile: boolean
 
 window.addEventListener('resize', handleScreenWidth)
@@ -71,8 +72,8 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     statusBar.renderActiveNote(null)
     handleScreenWidth()
 
-    // setup database after app is rendering in loading state
-    setupDatabase()
+    database.initRemoteConnection()
+
     const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
@@ -251,23 +252,23 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
  * - Separated RemoteConnect and RemoteConnected as
  *   as the connection process is asynchronous
  */
-window.addEventListener(DatabaseEvents.RemoteConnect, () => {
+window.addEventListener(DatabaseEvents.Connecting, () => {
   // TODO: on reconnection and connection
   // ie: when we're in the process of connecting'
   // the database dialogs submit button MUST be disabled
   // otherwise the loading state is unknown
   // ----
-  // TODO: there are no logs on connection, add them
-
   // TODO: only connect if not already connected
-  setupDatabase()
-  // the database emits the DatabaseEvents.RemoteConnected event if it successfully connects
+
+  console.log(
+    'connecting now. Disable form inputs, show loading indicator in db dialog AND status bar'
+  )
 })
 
-window.addEventListener(DatabaseEvents.RemoteConnected, () => {
+window.addEventListener(DatabaseEvents.Connected, () => {
   statusBar.renderRemoteDb({ isConnected: true })
   databaseDialog.setIsConnected(true)
-  database.setupSyncing()
+
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
   createEvent(NoteEvents.GetAll).dispatch()
@@ -275,19 +276,15 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
   // we'd need to SAVE it before changing though
 })
 
-window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
+window.addEventListener(DatabaseEvents.Disconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
   if (successfulDisconnect) {
     statusBar.renderRemoteDb({ isConnected: false })
     databaseDialog.setIsConnected(false)
   }
-  // TODO:
-  // need to clear the remote details from local storage
-  // so we do not reconnect on refresh
-  // but that happens in the form in dialog
 })
 
-window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
+window.addEventListener(DatabaseEvents.SyncingPaused, (event) => {
   const date = (event as CustomEvent)?.detail?.date
   statusBar.renderSyncedOn(new Date(date).toLocaleString())
   // TODO:
@@ -389,18 +386,6 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
 window.addEventListener('DOMContentLoaded', async () => {
   dispatchEvent(new Event(LifeCycleEvents.Init))
 })
-
-function setupDatabase() {
-  // TODO: this should live in the Database instance
-  try {
-    const { username, password, host, port } = useDatabaseDetails.get()
-    database = new Database(
-      username ? `http://${username}:${password}@${host}:${port}` : ''
-    )
-  } catch (error) {
-    logger.logError('Error setting up database.', error)
-  }
-}
 
 async function saveNote() {
   const note = await fetchNoteFromUrl()

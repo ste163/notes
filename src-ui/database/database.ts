@@ -1,61 +1,96 @@
-import { config } from 'config'
 import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
+import { useDatabaseDetails } from './use-database-details'
+import { config } from 'config'
+import { logger } from 'logger'
 import { nanoid } from 'nanoid'
 import { createEvent, DatabaseEvents } from 'event'
-import { logger } from 'logger'
 import type { Note } from 'types'
 
 /**
  * Note on PouchDB data saving:
- * PouchDB first saves to disk and then the remote
- * Because of this, there should be very little chance
- * of data loss or failures. The most likely failure should be
- * network syncing issues, which will get resolved eventually
- * during re-connections.
+ * The only async events with PouchDB that the client needs
+ * to be concerned with is connecting to the remote database.
+ * All syncing operations are handled by PouchDB in the background.
  *
- * Because of this local-first approach, I am not locking
- * inputs during save events.
+ * PouchDB saves to disk first and sync to remote after that is successful.
+ * Because of this, the client does not disable inputs or wait for loading
+ * except for during connection, reconnection, or disconnection events.
  */
-
-const attachmentId = 'content.html'
-
 class Database {
+  private attachmentId = 'content.html'
+  private remoteUrl: string | null = null
+  private syncHandler: PouchDB.Replication.Sync<object> | null = null
   private db: PouchDB.Database
-  private remoteUrl: string
-  private syncHandler: null | PouchDB.Replication.Sync<object>
 
-  constructor(remoteUrl: string) {
+  constructor() {
+    // setup local database
     PouchDb.plugin(PouchDbFind)
-    this.syncHandler = null
     this.db = new PouchDb(config.DATABASE_NAME)
-    this.db.createIndex({
-      index: { fields: ['createdAt'] },
-    })
-    this.remoteUrl = remoteUrl
-    if (this.remoteUrl) {
-      /**
-       * Test the connection to the remote url.
-       * If it is connected, then the main process
-       * handles the syncing setup.
-       *
-       * Because this new Pouchdb is not stored or referenced,
-       * it will be cleaned up by the garbage collector.
-       */
-      new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
-        .info()
-        .then(() => {
-          // successfully made the connection
-          createEvent(DatabaseEvents.RemoteConnected).dispatch()
-          logger.logInfo('Connected to remote database.')
-        })
-        .catch((error) => {
-          logger.logError('Remote connection error.', error)
-        })
+    // this check is for tests only. TODO: fix it
+    if (this.db.createIndex)
+      this.db?.createIndex({
+        index: { fields: ['createdAt'] },
+      })
+
+    logger.logInfo('Loaded local database.')
+  }
+
+  /**
+   * Because connection to the remote requires emitting events,
+   * must wait until the window is ready.
+   */
+  public initRemoteConnection() {
+    const { username, password, host, port } = useDatabaseDetails.get()
+    if (!username || !password || !host || !port) {
+      logger.logInfo(
+        'No database connection details saved. Saving locally only.'
+      )
+      return
+    }
+    this.remoteUrl = `http://${username}:${password}@${host}:${port}`
+    logger.logInfo('Remote database details found.')
+    // because constructors can't be async, continue setup elsewhere
+    this.testConnection()
+  }
+
+  public setRemoteUrl(url: string) {
+    this.remoteUrl = url
+  }
+
+  /**
+   * Used to determine if the given remote URL is valid
+   */
+  public async testConnection() {
+    if (!this.remoteUrl)
+      logger.logError(
+        'No remote database details set. Unable to test connection.'
+      )
+    try {
+      const testDb = new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
+      logger.logInfo('Attempting to establish connection with remote database.')
+      // TODO:
+      // WHILE THIS IS OCCURRING, NEED TO DISABLE DATABASE DIALOG FORM
+      // AND SHOW LOADING INDICATOR IN STATUS BAR
+      createEvent(DatabaseEvents.Connecting).dispatch()
+      const result = await testDb.info()
+      // TODO: figure out: how LONG will this attempt to wait?? There appear to be no options for it...
+      // seems to be close to 2min, need to inform user of this.
+      // ie (Attempting to connect... (animate the dots) and in parens (will attempt for up to two minutes))
+      logger.logInfo(
+        `Test connection established with remote database, "${result?.db_name ?? ''}".`
+      )
+      this.setupSyncing()
+    } catch (error) {
+      logger.logError(
+        'Unable to establish connection with remote database. Please check the information you entered.'
+      )
     }
   }
 
   public async setupSyncing(): Promise<void> {
+    createEvent(DatabaseEvents.Connecting).dispatch()
+    logger.logInfo('Setting up syncing with remote database.')
     this.syncHandler = this.db.sync(
       `${this.remoteUrl}/${config.DATABASE_NAME}`,
       {
@@ -63,12 +98,13 @@ class Database {
         retry: true,
       }
     )
-
+    logger.logInfo('Syncing with remote database.')
+    createEvent(DatabaseEvents.Connected).dispatch()
     this.syncHandler
       .on('paused', () => {
         // paused means replication has completed or connection was lost without an error.
         // emit the date for the 'last synced' date
-        createEvent(DatabaseEvents.RemoteSyncingPaused, {
+        createEvent(DatabaseEvents.SyncingPaused, {
           date: new Date(),
         }).dispatch()
       })
@@ -79,10 +115,8 @@ class Database {
         logger.logError('Remote database sync denied.', error)
       })
       .catch((error) => {
-        logger.logError('Remote database catch-all error.', error)
+        logger.logError('Remote database unknown error.', error)
       })
-
-    logger.logInfo('Syncing with remote database.')
   }
 
   public disconnectSyncing(): boolean {
@@ -106,7 +140,7 @@ class Database {
         title: note.title,
         // note HTML is saved as an attachment html file
         _attachments: {
-          [attachmentId]: {
+          [this.attachmentId]: {
             content_type: 'text/html',
             data: new Blob([note.content ?? ''], { type: 'text/html' }),
           },
@@ -121,7 +155,7 @@ class Database {
       _id: `id${nanoid()}`,
       title: note.title ?? 'ERROR: no title',
       _attachments: {
-        [attachmentId]: {
+        [this.attachmentId]: {
           content_type: 'text/html',
           data: new Blob([''], { type: 'text/html' }),
         },
@@ -179,7 +213,7 @@ class Database {
     const note = docs[0] as Note
     const attachment = (await this.db.getAttachment(
       note._id,
-      attachmentId
+      this.attachmentId
     )) as unknown as Blob // in browser, it's a Blob; in Node it's a Buffer
     note.content = await attachment?.text()
 
@@ -187,4 +221,6 @@ class Database {
   }
 }
 
-export { Database }
+const database = new Database()
+
+export { database }

@@ -4,12 +4,13 @@
   line-height: 24px;
   font-weight: 400;
 
-  --background-color: #f0f0e1;
-  --outline-color: #1d1d1d;
-  --active-color: #b3d4b8;
-  --info-button-hover-color: rgba(128, 128, 128, 0.2);
-  --code-block-color: #303030;
-  --error-color: rgb(252, 148, 148);
+  /* TODO: revisit naming */
+  --background-color: rgb(251, 252, 255);
+  --outline-color: rgb(45, 55, 72);
+  --active-color: #b3bfd4;
+  --button-hover-color: rgba(128, 128, 128, 0.2);
+  --code-block-color: rgb(45, 55, 72);
+  --error-color: rgb(231, 123, 123);
 
   color: var(--outline-color);
   background-color: var(--background-color);
@@ -19,6 +20,15 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+::selection {
+  color: var(--outline-color);
+  background: var(--active-color);
+}
+
+svg {
+  fill: var(--outline-color);
 }
 
 body {

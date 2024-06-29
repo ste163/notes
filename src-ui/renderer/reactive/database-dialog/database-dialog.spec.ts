@@ -74,7 +74,7 @@ describe('DatabaseDialog', () => {
     // clicking connect calls the connect event
     await userEvent.click(getByRole('button', { name: 'Connect' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteConnect
+      DatabaseEvents.Connecting
     )
   })
 
@@ -106,7 +106,7 @@ describe('DatabaseDialog', () => {
     // clicking reconnect calls the reconnect event
     await userEvent.click(getByRole('button', { name: 'Reconnect' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteConnect
+      DatabaseEvents.Connecting
     )
 
     // clearing removes from storage, calls disconnect event, and clears form
@@ -121,7 +121,7 @@ describe('DatabaseDialog', () => {
       })
     )
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteDisconnect
+      DatabaseEvents.Disconnect
     )
     formInputs.forEach((input) => {
       expect(input).toHaveValue('')
@@ -146,7 +146,7 @@ describe('DatabaseDialog', () => {
       })
     )
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteConnect
+      DatabaseEvents.Connecting
     )
 
     // TODO:

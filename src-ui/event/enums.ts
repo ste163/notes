@@ -25,10 +25,10 @@ export enum DialogEvents {
 }
 
 export enum DatabaseEvents {
-  RemoteConnect = 'remote-connect',
-  RemoteConnected = 'remote-connected',
-  RemoteSyncingPaused = 'remote-syncing-paused',
-  RemoteDisconnect = 'remote-disconnect',
+  Connecting = 'remote-connect',
+  Connected = 'remote-connected',
+  SyncingPaused = 'remote-syncing-paused',
+  Disconnect = 'remote-disconnect',
 }
 
 export enum NoteEvents {

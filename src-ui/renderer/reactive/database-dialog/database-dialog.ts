@@ -178,10 +178,11 @@ class DatabaseDialog {
   }
 
   public renderConnectionForm(isInitialRender = true) {
+    // TODO/NOTE: consider moving to a property of the class like the other containers
     const container = document.querySelector(
       '#database-dialog-connection-details'
     )
-    if (!container) throw new Error('Connection details container not found')
+    if (!container) return // no need to throw error as it may not be rendered
     if (isInitialRender)
       container.innerHTML = `
       <h3>Connection details</h3>
@@ -203,7 +204,7 @@ class DatabaseDialog {
             host: '',
             port: '',
           })
-          createEvent(DatabaseEvents.RemoteDisconnect).dispatch()
+          createEvent(DatabaseEvents.Disconnect).dispatch()
         },
       }).getElement()
 
@@ -265,7 +266,7 @@ class DatabaseDialog {
             }
           }, {} as DatabaseDetails)
           useDatabaseDetails.set(details)
-          createEvent(DatabaseEvents.RemoteConnect).dispatch()
+          createEvent(DatabaseEvents.Connecting).dispatch()
         },
       }).getElement()
 

@@ -17,7 +17,7 @@
 }
 
 #status-bar button:hover {
-  background-color: var(--info-button-hover-color);
+  background-color: var(--button-hover-color);
 }
 
 .status-bar-left-container,
@@ -47,7 +47,7 @@
 }
 
 .open-sidebar-button-active {
-  background-color: var(--info-button-hover-color);
+  background-color: var(--button-hover-color);
 }
 
 @media (max-width: 580px) {
