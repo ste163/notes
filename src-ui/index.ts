@@ -2,6 +2,8 @@
  * TODO PRIORITY ORDER
  *  - Database refactor into a single class instance like other components
  *  - Update error logging types to know how to re-render state in db dialog
+ *  - Database connection form MUST be disabled fully while connecting, reconnecting, disconnecting
+ *  - Database dialog should show the last synced date if we're connected
  *  - sidebar state could live in nav bar as a '?sidebar-open=true' query param
  *  - delete dialog styling refresh (it's only functional now)
  *  - title edit

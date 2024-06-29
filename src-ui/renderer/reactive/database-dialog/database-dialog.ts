@@ -18,6 +18,9 @@ import './database-dialog.css'
 // Depending on results, allow for the Database class to swap
 // its syncing mode: ie, user defines which approach they want
 
+// TODO:
+// add last sync date to STATUS
+
 /**
  * DatabaseDialog contains the most state complexity in the application.
  * It needs to re-render its sub-components based on the live state
@@ -33,10 +36,9 @@ class DatabaseDialog {
   private areLogsShown = false
   private error: string | null = null
   private formInputs: Input[] = []
-  // TODO:
-  // attempt to move the form buttons
-  // into private variables here
-  // so I don't have to query the dom
+  private formButtonContainer: HTMLDivElement | null = null
+  private formSubmitButton: HTMLButtonElement | null = null
+  private formClearButton: HTMLButtonElement | null = null
 
   public render() {
     this.reset()
@@ -184,6 +186,25 @@ class DatabaseDialog {
       <form id='database-dialog-connection-form'></form>`
     const form = document.querySelector('#database-dialog-connection-form')
 
+    const createClearButton = () =>
+      new Button({
+        id: 'database-dialog-clear-button',
+        title: 'Clear',
+        html: 'Clear',
+        onClick: () => {
+          this.formInputs?.forEach((input) => {
+            input.setValue('')
+          })
+          useDatabaseDetails.set({
+            username: '',
+            password: '',
+            host: '',
+            port: '',
+          })
+          createEvent(DatabaseEvents.RemoteDisconnect).dispatch()
+        },
+      }).getElement()
+
     const createInputs = () => {
       const savedDetails = useDatabaseDetails.get()
       return [
@@ -216,26 +237,6 @@ class DatabaseDialog {
 
     if (isInitialRender) this.formInputs = createInputs()
 
-    const createClearButton = () => {
-      return new Button({
-        id: 'database-dialog-clear-button',
-        title: 'Clear',
-        html: 'Clear',
-        onClick: () => {
-          this.formInputs?.forEach((input) => {
-            input.setValue('')
-          })
-          useDatabaseDetails.set({
-            username: '',
-            password: '',
-            host: '',
-            port: '',
-          })
-          createEvent(DatabaseEvents.RemoteDisconnect).dispatch()
-        },
-      }).getElement()
-    }
-
     if (isInitialRender) {
       this.formInputs.forEach((input) =>
         form?.appendChild(input.getContainer())
@@ -249,52 +250,52 @@ class DatabaseDialog {
 
       const buttonContainer = document.createElement('div')
       buttonContainer.id = 'database-dialog-button-container'
-      buttonContainer.appendChild(
-        new Button({
-          id: 'database-dialog-submit-button',
-          title: 'Connect',
-          html: 'Connect',
-          onClick: () => {
-            const details = this.formInputs.reduce((acc, input) => {
-              return {
-                ...acc,
-                [input.getId()]: input.getValue(),
-              }
-            }, {} as DatabaseDetails)
-            useDatabaseDetails.set(details)
-            createEvent(DatabaseEvents.RemoteConnect).dispatch()
-          },
-        }).getElement()
-      )
+      this.formButtonContainer = buttonContainer
 
-      if (this.isConnectedToRemote)
-        buttonContainer.appendChild(createClearButton())
+      this.formSubmitButton = new Button({
+        id: 'database-dialog-submit-button',
+        title: 'Connect',
+        html: 'Connect',
+        onClick: () => {
+          const details = this.formInputs.reduce((acc, input) => {
+            return {
+              ...acc,
+              [input.getId()]: input.getValue(),
+            }
+          }, {} as DatabaseDetails)
+          useDatabaseDetails.set(details)
+          createEvent(DatabaseEvents.RemoteConnect).dispatch()
+        },
+      }).getElement()
+
+      this.formButtonContainer.appendChild(this.formSubmitButton)
+
+      if (this.isConnectedToRemote) {
+        this.formClearButton = createClearButton()
+        this.formButtonContainer?.appendChild(this.formClearButton)
+      }
+
       form?.appendChild(buttonContainer)
       return
     }
     // all subsequent re-renders
     const updateSubmitButton = () => {
-      const submitButton = document.querySelector(
-        '#database-dialog-submit-button'
-      ) as HTMLButtonElement
-
-      if (submitButton) {
+      if (this.formSubmitButton) {
         const text = this.isConnectedToRemote ? 'Reconnect' : 'Connect'
-        submitButton.innerHTML = text
-        submitButton.title = text
+        this.formSubmitButton.innerHTML = text
+        this.formSubmitButton.title = text
       }
     }
 
     const updateClearButton = () => {
-      const clearButton = document.querySelector(
-        '#database-dialog-clear-button'
-      )
-      const buttonContainer = document.querySelector(
-        '#database-dialog-button-container'
-      )
-      if (clearButton && !this.isConnectedToRemote) clearButton.remove()
-      if (!clearButton && this.isConnectedToRemote)
-        buttonContainer?.appendChild(createClearButton())
+      const shouldRemove = !this.isConnectedToRemote && this.formClearButton
+      const shouldAdd = this.isConnectedToRemote && !this.formClearButton
+
+      if (shouldRemove) this.formClearButton?.remove()
+      if (shouldAdd) {
+        this.formClearButton = createClearButton()
+        this.formButtonContainer?.appendChild(this.formClearButton)
+      }
     }
 
     updateSubmitButton()
