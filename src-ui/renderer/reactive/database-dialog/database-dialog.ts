@@ -1,9 +1,9 @@
 import { Button, Dialog, Input } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
-import { useRemoteDetails } from 'database'
+import { useDatabaseDetails } from 'database'
 import { databaseIcon, errorIcon, checkIcon } from 'icons'
-import type { RemoteDetails } from 'database'
+import type { DatabaseDetails } from 'database'
 import './database-dialog.css'
 
 // TODO (final manual test for syncing):
@@ -181,7 +181,7 @@ class DatabaseDialog {
     const form = document.querySelector('#database-dialog-connection-form')
 
     const createInputs = () => {
-      const savedDetails = useRemoteDetails().get()
+      const savedDetails = useDatabaseDetails().get()
       return [
         {
           id: 'username',
@@ -221,7 +221,7 @@ class DatabaseDialog {
           this.formInputs?.forEach((input) => {
             input.setValue('')
           })
-          useRemoteDetails().set({
+          useDatabaseDetails().set({
             username: '',
             password: '',
             host: '',
@@ -256,8 +256,8 @@ class DatabaseDialog {
                 ...acc,
                 [input.getId()]: input.getValue(),
               }
-            }, {} as RemoteDetails)
-            useRemoteDetails().set(details)
+            }, {} as DatabaseDetails)
+            useDatabaseDetails().set(details)
             createEvent(DatabaseEvents.RemoteConnect).dispatch()
           },
         }).getElement()

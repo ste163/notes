@@ -34,7 +34,7 @@
  */
 import { config } from 'config'
 import { logger } from 'logger'
-import { Database, useRemoteDetails } from 'database'
+import { Database, useDatabaseDetails } from 'database'
 import {
   LifeCycleEvents,
   KeyboardEvents,
@@ -249,6 +249,13 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
  *   as the connection process is asynchronous
  */
 window.addEventListener(DatabaseEvents.RemoteConnect, () => {
+  // TODO: on reconnection and connection
+  // ie: when we're in the process of connecting'
+  // the database dialogs submit button MUST be disabled
+  // otherwise the loading state is unknown
+  // ----
+  // TODO: there are no logs on connection, add them
+
   // TODO: only connect if not already connected
   setupDatabase()
   // the database emits the DatabaseEvents.RemoteConnected event if it successfully connects
@@ -391,7 +398,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 function setupDatabase() {
   // TODO: this should live in the Database instance
   try {
-    const { username, password, host, port } = useRemoteDetails().get()
+    const { username, password, host, port } = useDatabaseDetails().get()
     database = new Database(
       username ? `http://${username}:${password}@${host}:${port}` : ''
     )

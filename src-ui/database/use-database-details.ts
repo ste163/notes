@@ -1,6 +1,6 @@
 import { logger } from 'logger'
 
-interface RemoteDetails {
+interface DatabaseDetails {
   [key: string]: string // needed for correct type indexing
   username: string
   password: string
@@ -13,7 +13,7 @@ const key = 'remote-db-details'
 /**
  * Runtime validation to ensure the local storage result is the valid structure
  */
-function isRemoteDetails(detail: RemoteDetails): detail is RemoteDetails {
+function isDatabaseDetails(detail: DatabaseDetails): detail is DatabaseDetails {
   return (
     detail &&
     typeof detail?.username === 'string' &&
@@ -23,12 +23,12 @@ function isRemoteDetails(detail: RemoteDetails): detail is RemoteDetails {
   )
 }
 
-function useRemoteDetails() {
+function useDatabaseDetails() {
   return {
     get: () => {
       const details = window.localStorage.getItem(key)
       const parsed = details ? JSON.parse(details) : {}
-      const isValidRemote = isRemoteDetails(parsed)
+      const isValidRemote = isDatabaseDetails(parsed)
       return isValidRemote
         ? parsed
         : {
@@ -38,8 +38,8 @@ function useRemoteDetails() {
             port: '',
           }
     },
-    set: (details: RemoteDetails) => {
-      const isValidRemote = isRemoteDetails(details)
+    set: (details: DatabaseDetails) => {
+      const isValidRemote = isDatabaseDetails(details)
       if (!isValidRemote) {
         logger.logError(
           'Invalid remote details. Attempted to set with: ' +
@@ -52,5 +52,5 @@ function useRemoteDetails() {
   }
 }
 
-export { useRemoteDetails }
-export type { RemoteDetails }
+export { useDatabaseDetails }
+export type { DatabaseDetails }

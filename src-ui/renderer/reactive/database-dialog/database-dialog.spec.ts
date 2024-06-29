@@ -49,6 +49,12 @@ describe('DatabaseDialog', () => {
     // note: this test can be moved to the ONLINE test
     'connection details form can be filled'
     // the connection button is disabled UNLESS all items are filled
-    // on submit, calls the useRemoteDetails with the data
+    // on submit, calls the useDatabaseDetails with the data
+  )
+
+  it.todo(
+    'when connecting, the connection button is disabled'
+    // this will need to just render the state change
+    // as this is controlled by events.
   )
 })
