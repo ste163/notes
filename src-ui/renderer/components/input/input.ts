@@ -46,7 +46,6 @@ class Input {
   }
 
   public setValue(value: string) {
-    console.log('NEW VALUE FOR INPUT', value)
     this.input.value = value
   }
 
