@@ -8,6 +8,8 @@ import type { DatabaseDetails } from 'database'
 
 vi.mock('event')
 
+// spying on local storage to ensure that the integration
+// of the useDatabaseDetails is working as expected
 const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
 const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
@@ -23,10 +25,7 @@ const MOCK_DETAILS: DatabaseDetails = {
 }
 
 describe('DatabaseDialog', () => {
-  // spying on local storage to ensure that the integration
-  // of the useDatabaseDetails is working as expected
-
-  it('when offline without saved remote details do not render them, renders offline setup and ok if no errors', () => {
+  it('when offline without saved details, renders empty form; renders offline setup and ok if no errors', () => {
     const { getByRole, queryByRole, getAllByRole, queryByText, getByText } =
       renderComponent(databaseDialog.render.bind(databaseDialog))
 
@@ -49,7 +48,7 @@ describe('DatabaseDialog', () => {
     expect(queryByRole('button', { name: 'Reconnect' })).toBeNull()
   })
 
-  it('when offline with saved database details and a recent error, render form and error', () => {
+  it('when offline with saved details and a recent error, render form and error', async () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify(MOCK_DETAILS))
 
     const { getByRole, queryByRole, getAllByRole, getByText } = renderComponent(
@@ -71,6 +70,12 @@ describe('DatabaseDialog', () => {
     expect(getByRole('button', { name: 'Connect' })).toBeInTheDocument()
     expect(queryByRole('button', { name: 'Clear' })).toBeNull()
     expect(queryByRole('button', { name: 'Reconnect' })).toBeNull()
+
+    // clicking connect calls the connect event
+    await userEvent.click(getByRole('button', { name: 'Connect' }))
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
+      DatabaseEvents.RemoteConnect
+    )
   })
 
   it('when online, renders online setup and no errors', async () => {
@@ -153,7 +158,6 @@ describe('DatabaseDialog', () => {
     const { getByText } = renderComponent(
       databaseDialog.render.bind(databaseDialog)
     )
-
     databaseDialog.setIsConnected(true)
     databaseDialog.setError('Test error')
     expect(getByText('Test error')).toBeInTheDocument()

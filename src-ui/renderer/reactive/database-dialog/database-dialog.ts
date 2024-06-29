@@ -35,6 +35,9 @@ class DatabaseDialog {
   private isConnectedToRemote = false
   private areLogsShown = false
   private error: string | null = null
+  // managing the elements through properties,
+  // so that we do not have to query the DOM
+  // during the multiple state updates
   private formInputs: Input[] = []
   private formButtonContainer: HTMLDivElement | null = null
   private formSubmitButton: HTMLButtonElement | null = null
@@ -127,7 +130,6 @@ class DatabaseDialog {
 
       const renderLogs = () => {
         const div = document.createElement('div')
-
         div.id = 'database-dialog-status-log-block'
         div.classList.add('code-block')
 
@@ -137,9 +139,9 @@ class DatabaseDialog {
           div.innerHTML = logs
             .map((log) => `<p>${log}</p>`)
             .reduce((acc, curr) => acc + curr)
+
         // set logs to always scroll to bottom, so most recent is in view
         div.scrollTop = div?.scrollHeight
-
         container.appendChild(div)
       }
       renderLogs()
@@ -235,9 +237,8 @@ class DatabaseDialog {
       ].map((config) => new Input(config))
     }
 
-    if (isInitialRender) this.formInputs = createInputs()
-
     if (isInitialRender) {
+      this.formInputs = createInputs()
       this.formInputs.forEach((input) =>
         form?.appendChild(input.getContainer())
       )
