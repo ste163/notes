@@ -3,9 +3,13 @@ import { renderComponent } from 'test-utils'
 import userEvent from '@testing-library/user-event'
 import { databaseDialog } from './database-dialog'
 import { DatabaseEvents, createEvent } from 'event'
+import { logger } from 'logger'
 import type { DatabaseDetails } from 'database'
 
 vi.mock('event')
+
+const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
+const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
 const OFFLINE_TEXT = 'Offline, saving to this device.'
 const ONLINE_TEXT = 'Online, syncing to database.'
@@ -21,8 +25,6 @@ const MOCK_DETAILS: DatabaseDetails = {
 describe('DatabaseDialog', () => {
   // spying on local storage to ensure that the integration
   // of the useDatabaseDetails is working as expected
-  const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
-  const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
   it('when offline without saved remote details do not render them, renders offline setup and ok if no errors', () => {
     const { getByRole, queryByRole, getAllByRole, queryByText, getByText } =
@@ -189,11 +191,31 @@ describe('DatabaseDialog', () => {
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
   })
 
-  it.todo(
-    'activity log can be opened and closed; when opened, shows latest logs when they occur'
-    // open the logs, renders latest logger.getLogs
-    // when another re-render occurs, the logs are still displayed on the DOM
-    // (ie, testing that the logs do not disappear on a re-render because only USER decides to close it)
-    // can close the log section
-  )
+  it('activity log can be opened and closed; when opened, shows latest logs', async () => {
+    const MOCK_LOG = 'Note created.'
+
+    const loggerSpy = vi.spyOn(logger, 'getLogs')
+    loggerSpy.mockReturnValue([MOCK_LOG])
+
+    const { getByRole, getByText, queryByText } = renderComponent(
+      databaseDialog.render.bind(databaseDialog)
+    )
+
+    databaseDialog.setIsConnected(false)
+    databaseDialog.setError(null)
+
+    // logger section is not displayed
+    expect(queryByText(MOCK_LOG)).toBeNull()
+
+    const button = getByRole('button', {
+      name: 'Toggle recent activity logs (for developers)',
+    })
+    await userEvent.click(button)
+
+    expect(getByText(MOCK_LOG)).toBeInTheDocument()
+
+    // can hide logs
+    await userEvent.click(button)
+    expect(queryByText(MOCK_LOG)).toBeNull()
+  })
 })
