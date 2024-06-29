@@ -1,5 +1,7 @@
 name: test-build-on-pr
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   test-tauri:
