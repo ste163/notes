@@ -1,19 +1,20 @@
-// COMPONENTS to refactor into classes:
-// - DB Dialog
-// - Database should be a single class instance like the other components (its export becomes the singleton instead of index.ts)
-
 /**
  * TODO PRIORITY ORDER
- *  - idea: sidebar state could live in nav bar as a ?sidebar-open=true query param (allow for consistent rendering)
+ *  - Database refactor into a single class instance like other components
+ *  - Update error logging types to know how to re-render state in db dialog
+ *  - Database connection form MUST be disabled fully while connecting, reconnecting, disconnecting
+ *  - Database dialog should show the last synced date if we're connected
+ *  - sidebar state could live in nav bar as a '?sidebar-open=true' query param
  *  - delete dialog styling refresh (it's only functional now)
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - add a warning banner for web-only builds that says:
+ *  - (?)add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
  *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
  *      - fetches, errors, saves, deletes, etc.
+ *      - if possible, add eslint rule to enforce this
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
@@ -24,9 +25,10 @@
  *   - db dialog needs to have last synced date (for mobile parity)
  *   - add hyperlink insert support
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
+ *   - resize-able sidebar that saves and loads its state to localStorage
  * - BRANDING
- *  - make favicon
- *  - make icons for desktop
+ *   - make favicon
+ *   - make icons for desktop
  * - BUGS
  *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
@@ -35,7 +37,7 @@
  */
 import { config } from 'config'
 import { logger } from 'logger'
-import { Database, useRemoteDetails } from 'database'
+import { Database, useDatabaseDetails } from 'database'
 import {
   LifeCycleEvents,
   KeyboardEvents,
@@ -49,8 +51,7 @@ import {
   sidebar,
   statusBar,
   editor,
-  renderRemoteDbLogs,
-  renderRemoteDbDialog,
+  databaseDialog,
   noteDeleteDialog,
 } from 'renderer/reactive'
 import { AppNotification } from 'components'
@@ -176,10 +177,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
         note && createEvent(DialogEvents.OpenNoteDelete).dispatch()
         break
       case 'database':
-        // BUG: this does not actually render based on the isConnected state
-        // coming from the db. We need to have this state accessible somehow
-        // to render this dialog properly
-        renderRemoteDbDialog({ isConnectedToRemote: false, error: '' })
+        createEvent(DialogEvents.OpenDatabase).dispatch()
         break
       default:
         break
@@ -254,6 +252,13 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
  *   as the connection process is asynchronous
  */
 window.addEventListener(DatabaseEvents.RemoteConnect, () => {
+  // TODO: on reconnection and connection
+  // ie: when we're in the process of connecting'
+  // the database dialogs submit button MUST be disabled
+  // otherwise the loading state is unknown
+  // ----
+  // TODO: there are no logs on connection, add them
+
   // TODO: only connect if not already connected
   setupDatabase()
   // the database emits the DatabaseEvents.RemoteConnected event if it successfully connects
@@ -261,6 +266,7 @@ window.addEventListener(DatabaseEvents.RemoteConnect, () => {
 
 window.addEventListener(DatabaseEvents.RemoteConnected, () => {
   statusBar.renderRemoteDb({ isConnected: true })
+  databaseDialog.setIsConnected(true)
   database.setupSyncing()
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
@@ -271,9 +277,14 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
 
 window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
-  if (successfulDisconnect) statusBar.renderRemoteDb({ isConnected: false })
-  // TODO: need to clear the remote details from local storage
+  if (successfulDisconnect) {
+    statusBar.renderRemoteDb({ isConnected: false })
+    databaseDialog.setIsConnected(false)
+  }
+  // TODO:
+  // need to clear the remote details from local storage
   // so we do not reconnect on refresh
+  // but that happens in the form in dialog
 })
 
 window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
@@ -288,24 +299,25 @@ window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
 /**
  * Dialog events
  *
- * This are more specific to handling application state and less so on handling rendering
+ * These are split between handling the entire application state for
+ * any dialogs and for rendering specific dialogs.
+ *
  */
 window.addEventListener(DialogEvents.Opened, (event) => {
-  // Trap focus inside the dialog, disable editor, and set URL params
-  setTimeout(() => {
-    // need timeout delay to allow dialog to render
+  const focusDialog = () => {
     const dialog = document.querySelectorAll('[role="dialog"]')[0]
     ;(dialog as HTMLElement)?.focus()
-  }, 100)
+  }
+
+  setTimeout(
+    focusDialog,
+    100 // need timeout delay to allow dialog to render
+  )
 
   const dialogTitle = (event as CustomEvent)?.detail?.param as string
-
   // TODO: dialog titles need to be a const so I can do safer checks.
   // should come from the dialog Class
-  if (dialogTitle === 'database') {
-    // clear the statusBar's alert state
-    statusBar.renderAlert('')
-  }
+  if (dialogTitle === 'database') statusBar.renderAlert('') // clear the statusBar's alert state
 
   const { noteId } = getUrlParams()
   setUrl({ noteId, dialog: dialogTitle })
@@ -326,18 +338,30 @@ window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
   if (note) noteDeleteDialog.render(note)
 })
 
+window.addEventListener(DialogEvents.OpenDatabase, () => {
+  databaseDialog.render()
+})
+
 /**
  * Log events
  */
-window.addEventListener(LoggerEvents.Update, (event) => {
-  const logs = (event as CustomEvent)?.detail?.logs
-  const dbLogContainer = document.querySelector('#remote-db-logs')
-  if (dbLogContainer) renderRemoteDbLogs(dbLogContainer, logs)
+window.addEventListener(LoggerEvents.Update, () => {
+  // TODO: move this to the databaseDialog (however, we need knowledge of ERROR of not)
+  databaseDialog.renderStatus()
+  // Need to know if this is an error or not,
+  // because then I can know what to render in the db status section
+  // (latest error or all good state)
 })
 
+// TODO: move this to the log's type
 window.addEventListener(LoggerEvents.Error, (event) => {
   const message = (event as CustomEvent)?.detail?.message
-  if (message) statusBar.renderAlert(message)
+  if (message) {
+    statusBar.renderAlert(message)
+    // TODO: if there is an error, then trigger the databaseDialog.setError
+    // to re-render.
+    databaseDialog.setError(message)
+  }
 })
 
 /**
@@ -369,7 +393,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 function setupDatabase() {
   // TODO: this should live in the Database instance
   try {
-    const { username, password, host, port } = useRemoteDetails().get()
+    const { username, password, host, port } = useDatabaseDetails.get()
     database = new Database(
       username ? `http://${username}:${password}@${host}:${port}` : ''
     )

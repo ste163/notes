@@ -1,5 +1,4 @@
 import { Button } from 'components'
-import { renderRemoteDbDialog } from '../remote-db-dialog/remote-db-dialog'
 import {
   databaseIcon,
   deleteIcon,
@@ -65,21 +64,17 @@ class StatusBar {
     if (container) container.innerHTML = ''
     container?.appendChild(
       new Button({
-        title: 'Setup remote database',
+        title: 'Setup database',
         style: {
           textWrap: 'nowrap',
         },
         html: `
         ${databaseIcon}
         <span>
-          ${isConnected ? 'Connected' : 'Not connected'}
+          ${isConnected ? 'Online' : 'Offline'}
         </span>
         `,
-        onClick: () =>
-          renderRemoteDbDialog({
-            isConnectedToRemote: isConnected,
-            error: '',
-          }),
+        onClick: () => createEvent(DialogEvents.OpenDatabase)?.dispatch(),
       }).getElement()
     )
   }
@@ -113,13 +108,7 @@ class StatusBar {
           Error
         </span>
         `,
-          onClick: () =>
-            renderRemoteDbDialog({
-              // TODO this should come from some state NOT passed in like this
-              isConnectedToRemote: true, // because this isn't valid
-              // THIS NEEDS TO BE AN EMITTED EVENT LIKE THE OTHER DIALOG
-              error: message,
-            }),
+          onClick: () => createEvent(DialogEvents.OpenDatabase)?.dispatch(),
         }).getElement()
       )
   }

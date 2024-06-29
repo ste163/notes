@@ -18,9 +18,9 @@ const note: Note = {
 
 describe('editor', () => {
   it('if title was not changed, then the original title renders', async () => {
-    const { getByRole, queryByRole } = renderComponent({
-      renderComponent: editor.render.bind(editor),
-    })
+    const { getByRole, queryByRole } = renderComponent(
+      editor.render.bind(editor)
+    )
     editor.setNote(note)
 
     // open input
@@ -42,9 +42,9 @@ describe('editor', () => {
   })
 
   it('if the title was set to an empty string, then the original title renders', async () => {
-    const { getByRole, queryByRole } = renderComponent({
-      renderComponent: editor.render.bind(editor),
-    })
+    const { getByRole, queryByRole } = renderComponent(
+      editor.render.bind(editor)
+    )
     editor.setNote(note)
 
     // open input
@@ -65,9 +65,7 @@ describe('editor', () => {
   })
 
   it('if the title was changed, then calls the update title event', async () => {
-    const { getByRole } = renderComponent({
-      renderComponent: editor.render.bind(editor),
-    })
+    const { getByRole } = renderComponent(editor.render.bind(editor))
     editor.setNote(note)
 
     // open input

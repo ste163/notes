@@ -26,6 +26,7 @@ class Sidebar {
         <div id='sidebar-menu-controls'></div>
       </div>
       <div id='sidebar-list'></div>`
+
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
         title: 'Create note',
@@ -196,7 +197,7 @@ class Sidebar {
   private instantiateInputElements() {
     const inputInstance = new Input({
       id: 'create-note',
-      title: 'Note title',
+      label: 'Note title',
       placeholder: 'Note title',
     })
     const input = inputInstance.getInput()

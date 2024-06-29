@@ -9,20 +9,17 @@ type Props = { [key: string]: unknown } | unknown
  * Render a component and its props
  * in a simulated window and document
  *
- * @param renderComponent component's render function
- * @param props component's props
+ * @param renderFunction
+ * @param props
  * @returns "within" instance from testing-library/dom of the body
  * This allows for tests to deconstruct selectors from this renderer.
  */
-function renderComponent<T extends Props>({
-  renderComponent,
-  props = {} as T,
-}: {
-  renderComponent: (props: T) => void
-  props?: T
-}) {
+function renderComponent<T extends Props>(
+  renderFunction: (props: T) => void,
+  props = {} as T
+) {
   setupWindowEnvironment()
-  renderComponent(props)
+  renderFunction(props)
   return within(window.document.body as unknown as HTMLElement)
 }
 
@@ -40,7 +37,8 @@ function setupWindowEnvironment() {
 
 /**
  * Get the body content from the index.html file.
- * (Everything inside of <body>...</body>)
+ * (Everything inside of <body>...</body>) as this most accurately
+ * represents the actual app.
  *
  * @returns string
  */

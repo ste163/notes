@@ -18,10 +18,10 @@ const note: Note = {
 
 describe('note-delete-dialog', () => {
   it('renders delete dialog emits delete event on delete', async () => {
-    const { getByRole } = renderComponent({
-      renderComponent: noteDeleteDialog.render.bind(noteDeleteDialog),
-      props: note,
-    })
+    const { getByRole } = renderComponent(
+      noteDeleteDialog.render.bind(noteDeleteDialog),
+      note
+    )
     await userEvent.click(
       getByRole('button', { name: 'Delete Delete forever' })
     )
