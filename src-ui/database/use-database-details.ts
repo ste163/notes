@@ -1,5 +1,8 @@
 import { logger } from 'logger'
 
+// NOTE:
+// this could very easily live inside the Database class instance.
+// consider that approach during the DB refactor
 interface DatabaseDetails {
   [key: string]: string // needed for correct type indexing
   username: string

@@ -6,7 +6,7 @@ import { databaseIcon, errorIcon, checkIcon } from 'icons'
 import type { DatabaseDetails } from 'database'
 import './database-dialog.css'
 
-// TODO (final manual test for syncing):
+// TODO (final manual test for syncing after DB has been refactored):
 // test that if I disconnect from one database
 // and connect to a brand new one
 // that all my data from my local is synced to the new remote.
