@@ -75,7 +75,7 @@ class DatabaseDialog {
     this.updateSubComponents()
   }
 
-  public setError(error: string) {
+  public setError(error: string | null) {
     this.error = error
     this.updateSubComponents()
   }
