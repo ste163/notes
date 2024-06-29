@@ -118,7 +118,7 @@ class DatabaseDialog {
           <div class='database-dialog-status-icon'>
             ${checkIcon}
           </div>
-          <span>Good. No recent errors.</span>`
+          <span>Good.</span>`
 
     const renderDatabaseLogs = (shouldShow: boolean) => {
       const container = document.querySelector(

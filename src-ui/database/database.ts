@@ -82,9 +82,7 @@ class Database {
       )
       this.setupSyncing()
     } catch (error) {
-      logger.logError(
-        'Unable to establish connection with remote database. Please check the information you entered.'
-      )
+      logger.logError('Unable to establish connection with remote database.')
     }
   }
 
