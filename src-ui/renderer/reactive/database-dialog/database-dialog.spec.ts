@@ -11,7 +11,7 @@ describe('DatabaseDialog', () => {
 
   it.todo(
     'when offline when details in the form, render error if there is an error'
-    // also render the saved details --- test for commit
+    // also render the saved details
   )
 
   it.todo(

@@ -1,6 +1,7 @@
 /**
  * TODO PRIORITY ORDER
  *  - Database refactor into a single class instance like other components
+ *  - Update error logging types to know how to re-render state in db dialog
  *  - sidebar state could live in nav bar as a '?sidebar-open=true' query param
  *  - delete dialog styling refresh (it's only functional now)
  *  - title edit
@@ -336,14 +337,6 @@ window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
 })
 
 window.addEventListener(DialogEvents.OpenDatabase, () => {
-  // TODO: use databaseDialog
-  // and then setup the rest of the states
-  // related to the database
-  // to 'SET' the state of the dialog
-  // (and potentially re-render there IF the dialog is open)
-  // or it's possible that the SET functions should update the UI
-  // IF those functions find that the containers are present
-  //
   databaseDialog.render()
 })
 

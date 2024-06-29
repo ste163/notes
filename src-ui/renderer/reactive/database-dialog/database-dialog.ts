@@ -33,6 +33,10 @@ class DatabaseDialog {
   private areLogsShown = false
   private error: string | null = null
   private formInputs: Input[] = []
+  // TODO:
+  // attempt to move the form buttons
+  // into private variables here
+  // so I don't have to query the dom
 
   public render() {
     this.reset()
