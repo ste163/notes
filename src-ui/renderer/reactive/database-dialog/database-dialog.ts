@@ -185,7 +185,7 @@ class DatabaseDialog {
     const form = document.querySelector('#database-dialog-connection-form')
 
     const createInputs = () => {
-      const savedDetails = useDatabaseDetails().get()
+      const savedDetails = useDatabaseDetails.get()
       return [
         {
           id: 'username',
@@ -225,7 +225,7 @@ class DatabaseDialog {
           this.formInputs?.forEach((input) => {
             input.setValue('')
           })
-          useDatabaseDetails().set({
+          useDatabaseDetails.set({
             username: '',
             password: '',
             host: '',
@@ -261,7 +261,7 @@ class DatabaseDialog {
                 [input.getId()]: input.getValue(),
               }
             }, {} as DatabaseDetails)
-            useDatabaseDetails().set(details)
+            useDatabaseDetails.set(details)
             createEvent(DatabaseEvents.RemoteConnect).dispatch()
           },
         }).getElement()

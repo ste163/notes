@@ -11,7 +11,7 @@ describe('use-remote-details', () => {
   const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
   it('get details returns default object if no details', () => {
-    expect(useDatabaseDetails().get()).toEqual({
+    expect(useDatabaseDetails.get()).toEqual({
       username: '',
       password: '',
       host: '',
@@ -21,7 +21,7 @@ describe('use-remote-details', () => {
 
   it('get details returns default object if it is invalid', () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify({ db: 'test' }))
-    expect(useDatabaseDetails().get()).toEqual({
+    expect(useDatabaseDetails.get()).toEqual({
       username: '',
       password: '',
       host: '',
@@ -37,13 +37,12 @@ describe('use-remote-details', () => {
       port: 'port',
     }
     localStorageGetSpy.mockReturnValue(JSON.stringify(details))
-    expect(useDatabaseDetails().get()).toEqual(details)
+    expect(useDatabaseDetails.get()).toEqual(details)
   })
 
   it('set details returns undefined if details are not valid', () => {
-    const { set } = useDatabaseDetails()
     const details = { db: 'test' } as unknown as DatabaseDetails
-    expect(set(details)).toBeUndefined()
+    expect(useDatabaseDetails.set(details)).toBeUndefined()
     expect(logger.logError).toHaveBeenCalledOnce()
     expect(localStorageSetSpy).not.toHaveBeenCalledWith(
       'remote-db-details',
@@ -52,14 +51,13 @@ describe('use-remote-details', () => {
   })
 
   it('sets details if they are valid', () => {
-    const { set } = useDatabaseDetails()
     const details = {
       username: 'user',
       password: 'pass',
       host: 'host',
       port: 'port',
     }
-    expect(set(details)).toBeUndefined()
+    expect(useDatabaseDetails.set(details)).toBeUndefined()
     expect(localStorageSetSpy).toHaveBeenCalledWith(
       'remote-db-details',
       JSON.stringify(details)

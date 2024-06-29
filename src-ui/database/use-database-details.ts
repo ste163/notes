@@ -8,49 +8,47 @@ interface DatabaseDetails {
   port: string
 }
 
-const key = 'remote-db-details'
+class UseDatabaseDetails {
+  private key = 'remote-db-details'
 
-/**
- * Runtime validation to ensure the local storage result is the valid structure
- */
-function validateDetails(detail: DatabaseDetails): detail is DatabaseDetails {
-  return (
-    detail &&
-    typeof detail?.username === 'string' &&
-    typeof detail?.password === 'string' &&
-    typeof detail?.host === 'string' &&
-    typeof detail?.port === 'string'
-  )
-}
+  public get() {
+    const details = window.localStorage.getItem(this.key)
+    const parsed = details ? JSON.parse(details) : {}
+    const isValidRemote = this.validateDetails(parsed)
+    return isValidRemote
+      ? parsed
+      : {
+          username: '',
+          password: '',
+          host: '',
+          port: '',
+        }
+  }
 
-function useDatabaseDetails() {
-  return {
-    get: () => {
-      const details = window.localStorage.getItem(key)
-      const parsed = details ? JSON.parse(details) : {}
-      const isValidRemote = validateDetails(parsed)
-      return isValidRemote
-        ? parsed
-        : {
-            username: '',
-            password: '',
-            host: '',
-            port: '',
-          }
-    },
-    set: (details: DatabaseDetails) => {
-      const isValidRemote = validateDetails(details)
-      if (!isValidRemote) {
-        logger.logError(
-          'Invalid remote details. Attempted to set with: ' +
-            JSON.stringify(details)
-        )
-        return
-      }
-      window.localStorage.setItem(key, JSON.stringify(details))
-    },
+  public set(details: DatabaseDetails) {
+    const isValidRemote = this.validateDetails(details)
+    if (!isValidRemote) {
+      logger.logError(
+        'Invalid remote details. Attempted to set with: ' +
+          JSON.stringify(details)
+      )
+      return
+    }
+    window.localStorage.setItem(this.key, JSON.stringify(details))
+  }
+
+  private validateDetails(detail: DatabaseDetails): detail is DatabaseDetails {
+    return (
+      detail &&
+      typeof detail?.username === 'string' &&
+      typeof detail?.password === 'string' &&
+      typeof detail?.host === 'string' &&
+      typeof detail?.port === 'string'
+    )
   }
 }
+
+const useDatabaseDetails = new UseDatabaseDetails()
 
 export { useDatabaseDetails }
 export type { DatabaseDetails }

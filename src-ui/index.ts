@@ -391,7 +391,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 function setupDatabase() {
   // TODO: this should live in the Database instance
   try {
-    const { username, password, host, port } = useDatabaseDetails().get()
+    const { username, password, host, port } = useDatabaseDetails.get()
     database = new Database(
       username ? `http://${username}:${password}@${host}:${port}` : ''
     )
