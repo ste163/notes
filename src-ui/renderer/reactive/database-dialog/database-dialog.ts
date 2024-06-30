@@ -154,14 +154,12 @@ class DatabaseDialog {
         div.classList.add('code-block')
 
         // TODO: based on logs '[type]' assign color coding (errors are an accessible red)
-        const logs = logger.getLogs()
+        const logs = logger.getLogs().reverse() // show newest logs first
         if (logs.length)
           div.innerHTML = logs
             .map((log) => `<p>${log}</p>`)
             .reduce((acc, curr) => acc + curr)
 
-        // set logs to always scroll to bottom, so most recent is in view
-        div.scrollTop = div?.scrollHeight
         container.appendChild(div)
       }
       renderLogs()
