@@ -28,6 +28,7 @@ export enum DatabaseEvents {
   Connecting = 'remote-connect',
   ConnectingError = 'remote-connecting-error',
   Connected = 'remote-connected',
+  Setup = 'remote-setup',
   SyncingPaused = 'remote-syncing-paused',
   Disconnect = 'remote-disconnect',
 }

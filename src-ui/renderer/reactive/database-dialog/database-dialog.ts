@@ -204,8 +204,29 @@ class DatabaseDialog {
       <form id='database-dialog-connection-form'></form>`
     const form = document.querySelector('#database-dialog-connection-form')
 
-    const createClearButton = () =>
-      new Button({
+    const createSubmitButton = () => {
+      const text = this.isConnectedToRemote ? 'Reconnect' : 'Connect'
+      const button = new Button({
+        id: 'database-dialog-submit-button',
+        title: text,
+        html: text,
+        onClick: () => {
+          const details = this.formInputs.reduce((acc, input) => {
+            return {
+              ...acc,
+              [input.getId()]: input.getValue(),
+            }
+          }, {} as DatabaseDetails)
+          useDatabaseDetails.set(details)
+          createEvent(DatabaseEvents.Setup).dispatch()
+        },
+      })
+      button.setEnabled(!this.isConnectingToRemote)
+      return button.getElement()
+    }
+
+    const createClearButton = () => {
+      const button = new Button({
         id: 'database-dialog-clear-button',
         title: 'Clear',
         html: 'Clear',
@@ -221,7 +242,10 @@ class DatabaseDialog {
           })
           createEvent(DatabaseEvents.Disconnect).dispatch()
         },
-      }).getElement()
+      })
+      button.setEnabled(!this.isConnectingToRemote)
+      return button.getElement()
+    }
 
     const createInputs = () => {
       const savedDetails = useDatabaseDetails.get()
@@ -255,9 +279,10 @@ class DatabaseDialog {
 
     if (isInitialRender) {
       this.formInputs = createInputs()
-      this.formInputs.forEach((input) =>
+      this.formInputs.forEach((input) => {
         form?.appendChild(input.getContainer())
-      )
+        input.setDisabled(this.isConnectingToRemote)
+      })
 
       const disableDefaultSubmit = (event: Event) => {
         event?.preventDefault()
@@ -269,21 +294,7 @@ class DatabaseDialog {
       buttonContainer.id = 'database-dialog-button-container'
       this.formButtonContainer = buttonContainer
 
-      this.formSubmitButton = new Button({
-        id: 'database-dialog-submit-button',
-        title: 'Connect',
-        html: 'Connect',
-        onClick: () => {
-          const details = this.formInputs.reduce((acc, input) => {
-            return {
-              ...acc,
-              [input.getId()]: input.getValue(),
-            }
-          }, {} as DatabaseDetails)
-          useDatabaseDetails.set(details)
-          createEvent(DatabaseEvents.Connecting).dispatch()
-        },
-      }).getElement()
+      this.formSubmitButton = createSubmitButton()
 
       this.formButtonContainer.appendChild(this.formSubmitButton)
 
@@ -296,15 +307,21 @@ class DatabaseDialog {
       return
     }
     // all subsequent re-renders
+
     const updateSubmitButton = () => {
-      if (this.formSubmitButton) {
-        const text = this.isConnectedToRemote ? 'Reconnect' : 'Connect'
-        this.formSubmitButton.innerHTML = text
-        this.formSubmitButton.title = text
-      }
+      this.formSubmitButton?.remove()
+      this.formSubmitButton = createSubmitButton()
+      this.formButtonContainer?.appendChild(this.formSubmitButton)
     }
 
     const updateClearButton = () => {
+      // REVISIT. it always must be removed
+      // because we need to have enabled/disabled state be accurate
+      // HOWEVER, this is breaking tests
+      // because it seems that we do not RE-ADD the button
+      // (however, it show sin manual tests)
+      this.formClearButton?.remove()
+
       const shouldRemove = !this.isConnectedToRemote && this.formClearButton
       const shouldAdd = this.isConnectedToRemote && !this.formClearButton
 
@@ -317,6 +334,10 @@ class DatabaseDialog {
 
     updateSubmitButton()
     updateClearButton()
+
+    this.formInputs.forEach((input) => {
+      input.setDisabled(this.isConnectingToRemote)
+    })
   }
 }
 

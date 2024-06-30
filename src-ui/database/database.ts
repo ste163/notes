@@ -69,9 +69,6 @@ class Database {
     try {
       const testDb = new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
       logger.logInfo('Attempting to establish connection with remote database.')
-      // TODO:
-      // WHILE THIS IS OCCURRING, NEED TO DISABLE DATABASE DIALOG FORM
-      // AND SHOW LOADING INDICATOR IN STATUS BAR
       createEvent(DatabaseEvents.Connecting).dispatch()
       const result = await testDb.info()
       // TODO: figure out: how LONG will this attempt to wait?? There appear to be no options for it...

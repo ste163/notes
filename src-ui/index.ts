@@ -2,8 +2,7 @@
  * TODO PRIORITY ORDER
  *  - DATABASE DIALOG FORM: disable the submit button UNTIL all inputs are filled
  *  - Database refactor into a single class instance like other components
- *  - Attempting connection: need a way to STOP the attempt and re-attempt. It's not obvious if you can now
- *      or how it works as the UI doesn't respond to it
+ *  - Must have a way to STOP a connection attempt: cancel button in the status section
  *  - Update error logging types to know how to re-render state in db dialog
  *  - Database connection form MUST be disabled fully while connecting, reconnecting, disconnecting
  *  - Database dialog should show the last synced date if we're connected
@@ -252,10 +251,14 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
 /**
  * Remote database events
  */
+window.addEventListener(DatabaseEvents.Setup, () => {
+  // this event is emitted when the user attempts to
+  // make a new connection or a reconnection.
+  // reset the db and attempt connection with new details
+  console.log('SETUP DB AGAIN')
+})
+
 window.addEventListener(DatabaseEvents.Connecting, () => {
-  console.log(
-    'connecting now. Disable form inputs, show loading indicator in db dialog AND status bar'
-  )
   statusBar.renderRemoteDb({ isConnected: false, isConnecting: true })
   databaseDialog.setIsConnecting(true)
 })

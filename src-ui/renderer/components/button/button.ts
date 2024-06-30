@@ -44,8 +44,7 @@ class Button<T = unknown> {
   }
 
   public setEnabled(enabled: boolean): void {
-    if (enabled) this.element.removeAttribute('disabled')
-    else this.element.setAttribute('disabled', 'true')
+    this.element.disabled = !enabled
   }
 }
 
