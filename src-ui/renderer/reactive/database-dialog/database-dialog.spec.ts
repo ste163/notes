@@ -78,8 +78,7 @@ describe('DatabaseDialog', () => {
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(DatabaseEvents.Setup)
   })
 
-  // TEST IS ALSO FAILING BECAUSE OF CLEAR BUTTON RENDERING
-  it.skip('when online, renders online setup and no errors', async () => {
+  it('when online, renders online setup and no errors', async () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify(MOCK_DETAILS))
 
     const { getByRole, queryByRole, getAllByRole, queryByText, getByText } =
@@ -103,8 +102,7 @@ describe('DatabaseDialog', () => {
     // buttons are correct
     expect(queryByRole('button', { name: 'Connect' })).toBeNull()
     expect(getByRole('button', { name: 'Reconnect' })).toBeInTheDocument()
-    // TODO: fix this as it's failing, but not sure why. Manual testing shows it works.
-    // expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Clear' })).toBeInTheDocument()
 
     // clicking reconnect calls the reconnect event
     await userEvent.click(getByRole('button', { name: 'Reconnect' }))

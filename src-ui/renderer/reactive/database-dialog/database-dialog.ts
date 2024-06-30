@@ -307,7 +307,6 @@ class DatabaseDialog {
       return
     }
     // all subsequent re-renders
-
     const updateSubmitButton = () => {
       this.formSubmitButton?.remove()
       this.formSubmitButton = createSubmitButton()
@@ -315,18 +314,8 @@ class DatabaseDialog {
     }
 
     const updateClearButton = () => {
-      // REVISIT. it always must be removed
-      // because we need to have enabled/disabled state be accurate
-      // HOWEVER, this is breaking tests
-      // because it seems that we do not RE-ADD the button
-      // (however, it show sin manual tests)
       this.formClearButton?.remove()
-
-      const shouldRemove = !this.isConnectedToRemote && this.formClearButton
-      const shouldAdd = this.isConnectedToRemote && !this.formClearButton
-
-      if (shouldRemove) this.formClearButton?.remove()
-      if (shouldAdd) {
+      if (this.isConnectedToRemote) {
         this.formClearButton = createClearButton()
         this.formButtonContainer?.appendChild(this.formClearButton)
       }
