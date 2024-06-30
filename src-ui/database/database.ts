@@ -50,40 +50,12 @@ class Database {
     }
     this.setRemoteUrl(url)
     logger.logInfo('Remote database details found.')
-    // because constructors can't be async, continue setup elsewhere
-    this.testAndInitializeConnection()
-  }
-
-  private setRemoteUrl(url: string) {
-    this.remoteUrl = url
-  }
-
-  private createRemoteUrl() {
-    const { username, password, host, port } = useDatabaseDetails.get()
-    return username && password && host && port
-      ? `http://${username}:${password}@${host}:${port}`
-      : null
-  }
-
-  /**
-   * For reconnection or setting up a new connection
-   * after the initial database setup has occurred.
-   */
-  public restartConnection() {
-    this.disconnectSyncing()
-    const url = this.createRemoteUrl()
-    if (!url) {
-      logger.logInfo(
-        'No database connection details saved. Saving locally only.'
-      )
-      return
-    }
-    this.setRemoteUrl(url)
     this.testAndInitializeConnection()
   }
 
   /**
-   * Used to determine if the given remote URL is valid
+   * Checks if the given remote url is valid (can the pouchdb client connect to it)
+   * and if so, sets up syncing.
    */
   public async testAndInitializeConnection() {
     if (!this.remoteUrl)
@@ -103,6 +75,23 @@ class Database {
       logger.logError('Unable to establish connection with remote database.')
       createEvent(DatabaseEvents.ConnectingError).dispatch()
     }
+  }
+
+  /**
+   * For reconnection or setting up a new connection
+   * after the initial database setup has occurred.
+   */
+  public restartConnection() {
+    this.disconnectSyncing()
+    const url = this.createRemoteUrl()
+    if (!url) {
+      logger.logInfo(
+        'No database connection details saved. Saving locally only.'
+      )
+      return
+    }
+    this.setRemoteUrl(url)
+    this.testAndInitializeConnection()
   }
 
   public async setupSyncing(): Promise<void> {
@@ -137,26 +126,40 @@ class Database {
   }
 
   public disconnectSyncing(): boolean {
-    if (this.syncHandler) {
-      this.syncHandler.cancel()
-      this.syncHandler = null
-      logger.logInfo('Disconnected from remote database.')
-      return true
+    if (!this.syncHandler) {
+      logger.logError('No remote database connection to disconnect.')
+      return false
     }
-    logger.logError('Error disconnecting from remote database.')
-    return false
+    this.syncHandler.cancel()
+    this.syncHandler = null
+    logger.logInfo('Disconnected from remote database.')
+    return true
+  }
+
+  private setRemoteUrl(url: string) {
+    this.remoteUrl = url
+  }
+
+  private createRemoteUrl() {
+    const { username, password, host, port } = useDatabaseDetails.get()
+    return username && password && host && port
+      ? `http://${username}:${password}@${host}:${port}`
+      : null
   }
 
   public async put(
     note: Partial<Note>
   ): Promise<{ _id: string; updatedAt: Date }> {
     const date = new Date()
+
     if (note?._id) {
       await this.db.put({
         _id: note._id,
         _rev: note?._rev,
         title: note.title,
-        // note HTML is saved as an attachment html file
+        // note HTML content is saved as an attachment html file.
+        // this allows better retrieval performance. Ie, we can fetch
+        // only the metadata without the content, which is the largest data.
         _attachments: {
           [this.attachmentId]: {
             content_type: 'text/html',
