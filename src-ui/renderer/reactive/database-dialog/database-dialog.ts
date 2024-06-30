@@ -21,6 +21,11 @@ import './database-dialog.css'
 // TODO:
 // add last sync date to STATUS
 
+//
+// TODO:
+// need validation for inputs on the basic length requirements and values to exist
+// to enable or disable the submit button.
+
 /**
  * DatabaseDialog contains the most state complexity in the application.
  * It needs to re-render its sub-components based on the live state

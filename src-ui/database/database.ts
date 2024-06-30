@@ -20,8 +20,8 @@ import type { Note } from 'types'
 class Database {
   private attachmentId = 'content.html'
   private remoteUrl: string | null = null
-  private syncHandler: PouchDB.Replication.Sync<object> | null = null
   private db: PouchDB.Database
+  private syncHandler: PouchDB.Replication.Sync<object> | null = null
 
   constructor() {
     // setup local database
@@ -41,27 +41,51 @@ class Database {
    * must wait until the window is ready.
    */
   public initRemoteConnection() {
-    const { username, password, host, port } = useDatabaseDetails.get()
-    if (!username || !password || !host || !port) {
+    const url = this.createRemoteUrl()
+    if (!url) {
       logger.logInfo(
         'No database connection details saved. Saving locally only.'
       )
       return
     }
-    this.remoteUrl = `http://${username}:${password}@${host}:${port}`
+    this.setRemoteUrl(url)
     logger.logInfo('Remote database details found.')
     // because constructors can't be async, continue setup elsewhere
-    this.testConnection()
+    this.testAndInitializeConnection()
   }
 
-  public setRemoteUrl(url: string) {
+  private setRemoteUrl(url: string) {
     this.remoteUrl = url
+  }
+
+  private createRemoteUrl() {
+    const { username, password, host, port } = useDatabaseDetails.get()
+    return username && password && host && port
+      ? `http://${username}:${password}@${host}:${port}`
+      : null
+  }
+
+  /**
+   * For reconnection or setting up a new connection
+   * after the initial database setup has occurred.
+   */
+  public restartConnection() {
+    this.disconnectSyncing()
+    const url = this.createRemoteUrl()
+    if (!url) {
+      logger.logInfo(
+        'No database connection details saved. Saving locally only.'
+      )
+      return
+    }
+    this.setRemoteUrl(url)
+    this.testAndInitializeConnection()
   }
 
   /**
    * Used to determine if the given remote URL is valid
    */
-  public async testConnection() {
+  public async testAndInitializeConnection() {
     if (!this.remoteUrl)
       logger.logError(
         'No remote database details set. Unable to test connection.'
@@ -70,10 +94,7 @@ class Database {
       const testDb = new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
       logger.logInfo('Attempting to establish connection with remote database.')
       createEvent(DatabaseEvents.Connecting).dispatch()
-      const result = await testDb.info()
-      // TODO: figure out: how LONG will this attempt to wait?? There appear to be no options for it...
-      // seems to be close to 2min, need to inform user of this.
-      // ie (Attempting to connect... (animate the dots) and in parens (will attempt for up to two minutes))
+      const result = await testDb.info() // will attempt for 1.5 minutes
       logger.logInfo(
         `Test connection established with remote database, "${result?.db_name ?? ''}".`
       )
@@ -118,6 +139,7 @@ class Database {
   public disconnectSyncing(): boolean {
     if (this.syncHandler) {
       this.syncHandler.cancel()
+      this.syncHandler = null
       logger.logInfo('Disconnected from remote database.')
       return true
     }
