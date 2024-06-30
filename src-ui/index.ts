@@ -257,15 +257,18 @@ window.addEventListener(DatabaseEvents.Connecting, () => {
     'connecting now. Disable form inputs, show loading indicator in db dialog AND status bar'
   )
   statusBar.renderRemoteDb({ isConnected: false, isConnecting: true })
+  databaseDialog.setIsConnecting(true)
 })
 
 window.addEventListener(DatabaseEvents.ConnectingError, () => {
   // TODO: consider after testing: should probably update text to say "Unable to connect"
   statusBar.renderRemoteDb({ isConnected: false, isConnecting: false })
+  databaseDialog.setIsConnecting(false)
 })
 
 window.addEventListener(DatabaseEvents.Connected, () => {
   statusBar.renderRemoteDb({ isConnected: true })
+  databaseDialog.setIsConnecting(false)
   databaseDialog.setIsConnected(true)
 
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.

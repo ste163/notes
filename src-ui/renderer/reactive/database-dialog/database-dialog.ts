@@ -1,4 +1,4 @@
-import { Button, Dialog, Input } from 'components'
+import { Button, Dialog, Input, Loader } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
 import { useDatabaseDetails } from 'database'
@@ -33,6 +33,7 @@ import './database-dialog.css'
 class DatabaseDialog {
   private dialog: Dialog | null = null
   private isConnectedToRemote = false
+  private isConnectingToRemote = false
   private areLogsShown = false
   private error: string | null = null
   // managing the elements through properties,
@@ -80,6 +81,11 @@ class DatabaseDialog {
     this.updateSubComponents()
   }
 
+  public setIsConnecting(isConnecting: boolean) {
+    this.isConnectingToRemote = isConnecting
+    this.updateSubComponents()
+  }
+
   public setError(error: string | null) {
     this.error = error
     this.updateSubComponents()
@@ -95,13 +101,22 @@ class DatabaseDialog {
     if (!container) return
 
     const renderConnectionStatus = () =>
-      this.isConnectedToRemote
+      this.isConnectingToRemote
         ? `
+          <div class='database-dialog-status-loader'>  
+            ${new Loader().getElement().outerHTML}
+          </div>
+          <div class='database-dialog-status-loader-text-container'>
+            <span>Attempting connection...</span>
+            <span class='loader-text-container-helper'>(will attempt for up to one minute and 30 seconds.)</span>
+          </div>`
+        : this.isConnectedToRemote
+          ? `
             <div class='database-dialog-status-icon'>  
               ${databaseIcon}
             </div>
             <span>Online, syncing to database.</span>`
-        : `
+          : `
             <div class='database-dialog-status-icon'>
               ${databaseIcon}
             </div>

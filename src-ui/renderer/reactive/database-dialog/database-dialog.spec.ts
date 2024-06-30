@@ -195,6 +195,12 @@ describe('DatabaseDialog', () => {
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
   })
 
+  it.todo(
+    'when attempting to connect, form is disabled and loading indicator is shown'
+    // when connection status is set to false, then the form is disabled
+    // and the loading indicator and text is removed
+  )
+
   it('activity log can be opened and closed; when opened, shows latest logs', async () => {
     const MOCK_LOG = 'Note created.'
 
