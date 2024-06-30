@@ -39,7 +39,7 @@ class Button<T = unknown> {
     }
   }
 
-  public getElement(): HTMLButtonElement {
+  public getElement() {
     return this.element
   }
 

@@ -83,6 +83,7 @@ class Database {
       this.setupSyncing()
     } catch (error) {
       logger.logError('Unable to establish connection with remote database.')
+      createEvent(DatabaseEvents.ConnectingError).dispatch()
     }
   }
 

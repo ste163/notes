@@ -1,4 +1,4 @@
-import { Button } from 'components'
+import { Button, Loader } from 'components'
 import {
   databaseIcon,
   deleteIcon,
@@ -59,7 +59,13 @@ class StatusBar {
     this.renderSettingsButton(note)
   }
 
-  public renderRemoteDb({ isConnected }: { isConnected: boolean }) {
+  public renderRemoteDb({
+    isConnected,
+    isConnecting = false,
+  }: {
+    isConnected: boolean
+    isConnecting?: boolean
+  }) {
     const container = document.querySelector('#remote-db-setup-container')
     if (container) container.innerHTML = ''
     container?.appendChild(
@@ -69,9 +75,9 @@ class StatusBar {
           textWrap: 'nowrap',
         },
         html: `
-        ${databaseIcon}
+        ${isConnecting ? new Loader().getElement().outerHTML : databaseIcon}
         <span>
-          ${isConnected ? 'Online' : 'Offline'}
+          ${isConnecting ? 'Attempting connection...' : isConnected ? 'Online' : 'Offline'}
         </span>
         `,
         onClick: () => createEvent(DialogEvents.OpenDatabase)?.dispatch(),

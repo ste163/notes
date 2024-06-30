@@ -26,6 +26,7 @@ export enum DialogEvents {
 
 export enum DatabaseEvents {
   Connecting = 'remote-connect',
+  ConnectingError = 'remote-connecting-error',
   Connected = 'remote-connected',
   SyncingPaused = 'remote-syncing-paused',
   Disconnect = 'remote-disconnect',

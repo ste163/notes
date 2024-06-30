@@ -67,6 +67,7 @@ describe('status-bar', () => {
     const { getByText, queryByText } = renderComponent(statusBar.render)
     statusBar.renderRemoteDb({ isConnected: false })
     expect(queryByText('Online')).toBeNull()
+    // TODO: queryByText('Attempting connection).tobeNull
     await userEvent.click(getByText('Offline'))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       DialogEvents.OpenDatabase
@@ -77,12 +78,18 @@ describe('status-bar', () => {
     const { getByText, queryByText } = renderComponent(statusBar.render)
     statusBar.renderRemoteDb({ isConnected: true })
     expect(queryByText('Offline')).toBeNull()
+    // TODO: queryByText('Attempting connection).tobeNull
     expect(getByText('Online')).toBeInTheDocument()
     await userEvent.click(getByText('Online'))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       DialogEvents.OpenDatabase
     )
   })
+
+  it.todo(
+    'renders connecting state if connecting'
+    // the other offline and online are null
+  )
 
   it('does not render saved on date if null', () => {
     const { queryByText } = renderComponent(statusBar.render)
