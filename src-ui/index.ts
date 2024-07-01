@@ -22,7 +22,6 @@
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
  *   - auto-save at debounced interval
- *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
