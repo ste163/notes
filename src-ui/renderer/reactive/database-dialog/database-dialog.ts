@@ -6,19 +6,6 @@ import { databaseIcon, errorIcon, checkIcon } from 'icons'
 import type { DatabaseDetails } from 'database'
 import './database-dialog.css'
 
-// TODO (final manual test for syncing after DB has been refactored):
-// test that if I disconnect from one database
-// and connect to a brand new one
-// that all my data from my local is synced to the new remote.
-//
-// Also check that if I have a different DB on my local, disconnect
-// then connect to a NEW db with different data, see what happens. Do they all merge together?
-// once I figure out, need to document the results.
-//
-// Depending on results, allow for the Database class to swap
-// its syncing mode: ie, user defines which approach they want
-
-//
 // TODO:
 // need validation for inputs on the basic length requirements and values to exist
 // to enable or disable the submit button.

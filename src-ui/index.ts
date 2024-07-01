@@ -37,6 +37,18 @@
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *      - the error also gets triggered/logged before vite connects (in the logs)
  *    - if unable to find data, need to be able to delete the undefined notes
+ *
+ *  - DATABASE INTERACTIONS
+ *     Thoroughly manually test db scenarios:
+ *
+ *     I have been connected to DB A and synced locally.
+ *     I connected to DB B, what happens?
+ *     Hypothesis: the local becomes synced to both (unless there are conflicts)
+ *
+ *     I delete data on my local and not the remote.
+ *     Does it stay deleted? (Accidental deletions?)
+ *
+ *
  */
 import { config } from 'config'
 import { logger } from 'logger'
