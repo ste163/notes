@@ -18,9 +18,6 @@ import './database-dialog.css'
 // Depending on results, allow for the Database class to swap
 // its syncing mode: ie, user defines which approach they want
 
-// TODO:
-// add last sync date to STATUS
-
 //
 // TODO:
 // need validation for inputs on the basic length requirements and values to exist
@@ -29,6 +26,7 @@ import './database-dialog.css'
 //
 // TODO:
 // the one minute and 30 second countdown should be visible instead of just text, if possible
+// however, may be too many re-renders unless it's handled in a special case
 
 /**
  * DatabaseDialog contains the most state complexity in the application.
@@ -44,6 +42,7 @@ class DatabaseDialog {
   private isConnectedToRemote = false
   private isConnectingToRemote = false
   private areLogsShown = false
+  private syncedOn: string | null = null
   private error: string | null = null
   // managing the elements through properties,
   // so that we do not have to query the DOM
@@ -85,6 +84,11 @@ class DatabaseDialog {
     this.areLogsShown = false
   }
 
+  public setSyncedOn(date: string | null) {
+    this.syncedOn = date
+    this.updateSubComponents()
+  }
+
   public setIsConnected(isConnected: boolean) {
     this.isConnectedToRemote = isConnected
     this.updateSubComponents()
@@ -115,16 +119,19 @@ class DatabaseDialog {
           <div class='database-dialog-status-loader'>  
             ${new Loader().getElement().outerHTML}
           </div>
-          <div class='database-dialog-status-loader-text-container'>
+          <div class='database-dialog-status-text-container'>
             <span>Attempting connection...</span>
-            <span class='loader-text-container-helper'>(will attempt for up to one minute and 30 seconds.)</span>
+            <span class='database-dialog-status-small-text'>(will attempt for up to one minute and 30 seconds.)</span>
           </div>`
         : this.isConnectedToRemote
           ? `
             <div class='database-dialog-status-icon'>  
               ${databaseIcon}
             </div>
-            <span>Online, syncing to database.</span>`
+            <div class='database-dialog-status-text-container'>
+              <span>Online, syncing to database.</span>
+              ${this.syncedOn ? `<span  class='database-dialog-status-small-text'>Last synced on: ${this.syncedOn}</span>` : ''}
+            </div>`
           : `
             <div class='database-dialog-status-icon'>
               ${databaseIcon}

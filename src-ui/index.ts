@@ -4,7 +4,6 @@
  *  - DB Dialog
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
  *     - DB status section ONLY shows the latest error. need to clear itself after a success.
- *     - Show the last synced date underneath the Online section (like how the connecting shows the timeout)
  *     - Need to disable the submit if the full form hasn't been entered on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
  *
@@ -291,6 +290,7 @@ window.addEventListener(DatabaseEvents.Disconnect, () => {
 window.addEventListener(DatabaseEvents.SyncingPaused, (event) => {
   const date = (event as CustomEvent)?.detail?.date
   statusBar.renderSyncedOn(new Date(date).toLocaleString())
+  databaseDialog.setSyncedOn(new Date(date).toLocaleString())
   // TODO:
   // this also needs to be stored in local storage
   // so that we can render that on the chance that we are unable to connect

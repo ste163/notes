@@ -57,12 +57,12 @@
   margin-left: 0.1rem;
 }
 
-.database-dialog-status-loader-text-container {
+.database-dialog-status-text-container {
   display: flex;
   flex-direction: column;
 }
 
-.loader-text-container-helper {
+.database-dialog-status-small-text {
   font-size: smaller;
 }
 
