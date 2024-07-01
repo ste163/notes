@@ -26,6 +26,10 @@ import './database-dialog.css'
 // need validation for inputs on the basic length requirements and values to exist
 // to enable or disable the submit button.
 
+//
+// TODO:
+// the one minute and 30 second countdown should be visible instead of just text, if possible
+
 /**
  * DatabaseDialog contains the most state complexity in the application.
  * It needs to re-render its sub-components based on the live state

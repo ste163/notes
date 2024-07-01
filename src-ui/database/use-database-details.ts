@@ -36,9 +36,10 @@ class UseDatabaseDetails {
   public set(details: DatabaseDetails) {
     const isValidRemote = this.validateDetails(details)
     if (!isValidRemote) {
-      logger.logError(
+      logger.log(
         'Invalid remote details. Attempted to set with: ' +
-          JSON.stringify(details)
+          JSON.stringify(details),
+        'error'
       )
       return
     }

@@ -1,7 +1,6 @@
 /**
  * TODO PRIORITY ORDER
  *  - DATABASE DIALOG FORM: disable the submit button UNTIL all inputs are filled
- *  - Database refactor into a single class instance like other components
  *  - DB Dialog
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
  *     - DB status section ONLY shows the latest error. need to clear itself after a success.
@@ -9,9 +8,6 @@
  *     - Need to disable the submit if the full form hasn't been entered on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
  *
- *  - Update error logging types to know how to re-render state in db dialog
- *  - Database connection form MUST be disabled fully while connecting, reconnecting, disconnecting
- *  - Database dialog should show the last synced date if we're connected
  *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
  *  - delete dialog styling refresh (it's only functional now)
  *  - title edit
@@ -90,7 +86,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     }
     if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
-    logger.logError('Error in LifeCycleEvents.Init.', error)
+    logger.log('Error in LifeCycleEvents.Init.', 'error', error)
   }
 })
 
@@ -150,7 +146,7 @@ window.addEventListener(NoteEvents.GetAll, async () => {
   } catch (error) {
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
     // - if you are using console.error, say it's an error and say you need to use logger
-    logger.logError('Error fetching all notes', error)
+    logger.log('Error fetching all notes', 'error', error)
   }
 })
 
@@ -193,7 +189,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    logger.logError('Error selecting note.', error)
+    logger.log('Error selecting note.', 'error', error)
   }
 })
 
@@ -205,7 +201,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     createEvent(NoteEvents.Select, { _id }).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    logger.logError('Error creating note.', error)
+    logger.log('Error creating note.', 'error', error)
   }
 })
 
@@ -216,7 +212,7 @@ window.addEventListener(NoteEvents.Save, async () => {
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
     createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
-    logger.logError('Error saving note.', error)
+    logger.log('Error saving note.', 'error', error)
   }
 })
 
@@ -235,7 +231,7 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
-    logger.logError('Error updating note title.', error)
+    logger.log('Error updating note title.', 'error', error)
   }
 })
 
@@ -243,14 +239,14 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.delete(note)
-    logger.logInfo(`Note deleted: ${note.title}`)
+    logger.log(`Note deleted: ${note.title}`, 'info')
     // reset state
     setUrl({})
     createEvent(DialogEvents.Closed).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(NoteEvents.Select, { _id: '' }).dispatch() // TODO: this causes an error
   } catch (error) {
-    logger.logError('Error deleting note.', error)
+    logger.log('Error deleting note.', 'error', error)
   }
 })
 
@@ -350,22 +346,22 @@ window.addEventListener(DialogEvents.OpenDatabase, () => {
 /**
  * Log events
  */
-window.addEventListener(LoggerEvents.Update, () => {
-  // TODO: move this to the databaseDialog (however, we need knowledge of ERROR of not)
-  databaseDialog.renderStatus()
-  // Need to know if this is an error or not,
-  // because then I can know what to render in the db status section
-  // (latest error or all good state)
-})
+window.addEventListener(LoggerEvents.Update, (event) => {
+  const detail = (event as CustomEvent)?.detail
 
-// TODO: move this to the log's type
-window.addEventListener(LoggerEvents.Error, (event) => {
-  const message = (event as CustomEvent)?.detail?.message
-  if (message) {
-    statusBar.renderAlert(message)
-    // TODO: if there is an error, then trigger the databaseDialog.setError
-    // to re-render.
-    databaseDialog.setError(message)
+  if (!detail.log || !detail.type)
+    throw new Error('Log update event does not contain data.')
+
+  const { log, type } = detail
+
+  if (type === 'info') {
+    statusBar.renderAlert(null)
+    databaseDialog.setError(null)
+  }
+
+  if (type === 'error') {
+    statusBar.renderAlert(log)
+    databaseDialog.setError(log)
   }
 })
 
@@ -483,6 +479,6 @@ function setUrl({
     url.search = params ? new URLSearchParams(params).toString() : ''
     window.history.replaceState({}, '', url.toString())
   } catch (error) {
-    logger.logError('Error setting URL.', error)
+    logger.log('Error setting URL.', 'error', error)
   }
 }

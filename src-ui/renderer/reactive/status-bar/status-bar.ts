@@ -101,22 +101,22 @@ class StatusBar {
     })
   }
 
-  public renderAlert(message: string) {
+  public renderAlert(message: string | null) {
     const container = document.querySelector('#status-bar-alert')
     if (container) container.innerHTML = ''
-    if (message)
-      container?.appendChild(
-        new Button({
-          title: 'Setup remote database',
-          html: `
+    if (!message) return
+    container?.appendChild(
+      new Button({
+        title: 'Setup remote database',
+        html: `
         ${errorIcon} 
         <span>
           Error
         </span>
         `,
-          onClick: () => createEvent(DialogEvents.OpenDatabase)?.dispatch(),
-        }).getElement()
-      )
+        onClick: () => createEvent(DialogEvents.OpenDatabase)?.dispatch(),
+      }).getElement()
+    )
   }
 
   private renderSaveButton(note: Note | null) {

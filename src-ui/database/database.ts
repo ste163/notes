@@ -33,7 +33,7 @@ class Database {
         index: { fields: ['createdAt'] },
       })
 
-    logger.logInfo('Loaded local database.')
+    logger.log('Loaded local database.', 'info')
   }
 
   /**
@@ -43,13 +43,14 @@ class Database {
   public initRemoteConnection() {
     const url = this.createRemoteUrl()
     if (!url) {
-      logger.logInfo(
-        'No database connection details saved. Saving locally only.'
+      logger.log(
+        'No database connection details saved. Saving locally only.',
+        'info'
       )
       return
     }
     this.setRemoteUrl(url)
-    logger.logInfo('Remote database details found.')
+    logger.log('Remote database details found.', 'info')
     this.testAndInitializeConnection()
   }
 
@@ -59,20 +60,28 @@ class Database {
    */
   public async testAndInitializeConnection() {
     if (!this.remoteUrl)
-      logger.logError(
-        'No remote database details set. Unable to test connection.'
+      logger.log(
+        'No remote database details set. Unable to test connection.',
+        'error'
       )
     try {
       const testDb = new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
-      logger.logInfo('Attempting to establish connection with remote database.')
+      logger.log(
+        'Attempting to establish connection with remote database.',
+        'info'
+      )
       createEvent(DatabaseEvents.Connecting).dispatch()
       const result = await testDb.info() // will attempt for 1.5 minutes
-      logger.logInfo(
-        `Test connection established with remote database, "${result?.db_name ?? ''}".`
+      logger.log(
+        `Test connection established with remote database, "${result?.db_name ?? ''}".`,
+        'info'
       )
       this.setupSyncing()
     } catch (error) {
-      logger.logError('Unable to establish connection with remote database.')
+      logger.log(
+        'Unable to establish connection with remote database.',
+        'error'
+      )
       createEvent(DatabaseEvents.ConnectingError).dispatch()
     }
   }
@@ -85,8 +94,9 @@ class Database {
     this.disconnectSyncing()
     const url = this.createRemoteUrl()
     if (!url) {
-      logger.logInfo(
-        'No database connection details saved. Saving locally only.'
+      logger.log(
+        'No database connection details saved. Saving locally only.',
+        'error'
       )
       return
     }
@@ -96,7 +106,7 @@ class Database {
 
   public async setupSyncing(): Promise<void> {
     createEvent(DatabaseEvents.Connecting).dispatch()
-    logger.logInfo('Setting up syncing with remote database.')
+    logger.log('Setting up syncing with remote database.', 'info')
     this.syncHandler = this.db.sync(
       `${this.remoteUrl}/${config.DATABASE_NAME}`,
       {
@@ -104,7 +114,7 @@ class Database {
         retry: true,
       }
     )
-    logger.logInfo('Syncing with remote database.')
+    logger.log('Syncing with remote database.', 'info')
     createEvent(DatabaseEvents.Connected).dispatch()
     this.syncHandler
       .on('paused', () => {
@@ -115,24 +125,24 @@ class Database {
         }).dispatch()
       })
       .on('error', (error: unknown | Error) => {
-        logger.logError('Remote database sync error.', error)
+        logger.log('Remote database sync error.', 'error', error)
       })
       .on('denied', (error) => {
-        logger.logError('Remote database sync denied.', error)
+        logger.log('Remote database sync denied.', 'error', error)
       })
       .catch((error) => {
-        logger.logError('Remote database unknown error.', error)
+        logger.log('Remote database unknown error.', 'error', error)
       })
   }
 
   public disconnectSyncing(): boolean {
     if (!this.syncHandler) {
-      logger.logError('No remote database connection to disconnect.')
+      logger.log('No remote database connection to disconnect.', 'error')
       return false
     }
     this.syncHandler.cancel()
     this.syncHandler = null
-    logger.logInfo('Disconnected from remote database.')
+    logger.log('Disconnected from remote database.', 'info')
     return true
   }
 
@@ -227,7 +237,7 @@ class Database {
     })
 
     if (!docs.length) {
-      logger.logError(`No note found with id: ${_id}`)
+      logger.log(`No note found with id: ${_id}`, 'error')
       return null
     }
 
