@@ -15,7 +15,8 @@ const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
 const OFFLINE_TEXT = 'Offline, saving to this device.'
 const ONLINE_TEXT = 'Online, syncing to database.'
-const NO_ERROR_TEXT = 'Good. No recent errors.'
+const CONNECTING_TEXT = 'Attempting connection...'
+const NO_ERROR_TEXT = 'Good.'
 
 const MOCK_DETAILS: DatabaseDetails = {
   username: 'user',
@@ -29,10 +30,12 @@ describe('DatabaseDialog', () => {
     const { getByRole, queryByRole, getAllByRole, queryByText, getByText } =
       renderComponent(databaseDialog.render.bind(databaseDialog))
 
+    databaseDialog.setIsConnecting(false)
     databaseDialog.setIsConnected(false)
     databaseDialog.setError(null)
 
     expect(queryByText(ONLINE_TEXT)).toBeNull()
+    expect(queryByText(CONNECTING_TEXT)).toBeNull()
     expect(getByText(OFFLINE_TEXT)).toBeInTheDocument()
     expect(getByText(NO_ERROR_TEXT)).toBeInTheDocument()
 
@@ -55,6 +58,7 @@ describe('DatabaseDialog', () => {
       databaseDialog.render.bind(databaseDialog)
     )
 
+    databaseDialog.setIsConnecting(false)
     databaseDialog.setIsConnected(false)
     databaseDialog.setError('Test error')
 
@@ -73,9 +77,7 @@ describe('DatabaseDialog', () => {
 
     // clicking connect calls the connect event
     await userEvent.click(getByRole('button', { name: 'Connect' }))
-    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteConnect
-    )
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(DatabaseEvents.Setup)
   })
 
   it('when online, renders online setup and no errors', async () => {
@@ -84,6 +86,7 @@ describe('DatabaseDialog', () => {
     const { getByRole, queryByRole, getAllByRole, queryByText, getByText } =
       renderComponent(databaseDialog.render.bind(databaseDialog))
 
+    databaseDialog.setIsConnecting(false)
     databaseDialog.setIsConnected(true)
     databaseDialog.setError(null)
 
@@ -91,6 +94,7 @@ describe('DatabaseDialog', () => {
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
     expect(getByText(NO_ERROR_TEXT)).toBeInTheDocument()
+    expect(queryByText(CONNECTING_TEXT)).toBeNull()
 
     // form inputs are filled with the details
     const formInputs = getAllByRole('textbox')
@@ -105,9 +109,7 @@ describe('DatabaseDialog', () => {
 
     // clicking reconnect calls the reconnect event
     await userEvent.click(getByRole('button', { name: 'Reconnect' }))
-    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteConnect
-    )
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(DatabaseEvents.Setup)
 
     // clearing removes from storage, calls disconnect event, and clears form
     await userEvent.click(getByRole('button', { name: 'Clear' }))
@@ -121,7 +123,7 @@ describe('DatabaseDialog', () => {
       })
     )
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteDisconnect
+      DatabaseEvents.Disconnect
     )
     formInputs.forEach((input) => {
       expect(input).toHaveValue('')
@@ -145,9 +147,7 @@ describe('DatabaseDialog', () => {
         port: 'new-data',
       })
     )
-    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DatabaseEvents.RemoteConnect
-    )
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(DatabaseEvents.Setup)
 
     // TODO:
     // have the form and its buttons DISABLED
@@ -158,9 +158,29 @@ describe('DatabaseDialog', () => {
     const { getByText } = renderComponent(
       databaseDialog.render.bind(databaseDialog)
     )
+    databaseDialog.setIsConnecting(false)
     databaseDialog.setIsConnected(true)
     databaseDialog.setError('Test error')
     expect(getByText('Test error')).toBeInTheDocument()
+  })
+
+  it('when online, renders last synced on date if available', () => {
+    const date = new Date().toLocaleString()
+
+    const { queryByText, getByText } = renderComponent(
+      databaseDialog.render.bind(databaseDialog)
+    )
+
+    databaseDialog.setIsConnecting(false)
+    databaseDialog.setIsConnected(true)
+    databaseDialog.setError(null)
+    databaseDialog.setSyncedOn(date)
+
+    expect(getByText(`Last synced on: ${date}`)).toBeInTheDocument()
+
+    // when offline, does not render
+    databaseDialog.setIsConnected(false)
+    expect(queryByText(`Last synced on: ${date}`)).toBeNull()
   })
 
   it('setting the error state re-renders the status section', () => {
@@ -168,6 +188,7 @@ describe('DatabaseDialog', () => {
       databaseDialog.render.bind(databaseDialog)
     )
 
+    databaseDialog.setIsConnecting(false)
     databaseDialog.setIsConnected(true)
     databaseDialog.setError('Test error')
 
@@ -183,16 +204,46 @@ describe('DatabaseDialog', () => {
       databaseDialog.render.bind(databaseDialog)
     )
 
+    databaseDialog.setIsConnecting(false)
     databaseDialog.setError(null)
     databaseDialog.setIsConnected(false)
 
     expect(getByText(OFFLINE_TEXT)).toBeInTheDocument()
     expect(queryByText(ONLINE_TEXT)).toBeNull()
+    expect(queryByText(CONNECTING_TEXT)).toBeNull()
 
     // state update that would be controlled by an event
     databaseDialog.setIsConnected(true)
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
+  })
+
+  it('when attempting to connect, form is disabled and loading indicator is shown', () => {
+    // when connection status is set to false, then the form is disabled
+    // and the loading indicator and text is removed
+    const { getByRole, getAllByRole, getByText, queryByText } = renderComponent(
+      databaseDialog.render.bind(databaseDialog)
+    )
+
+    databaseDialog.setIsConnecting(true)
+    databaseDialog.setIsConnected(false)
+    databaseDialog.setSyncedOn(null)
+    databaseDialog.setError(null)
+
+    expect(queryByText(OFFLINE_TEXT)).toBeNull()
+    expect(queryByText(ONLINE_TEXT)).toBeNull()
+    expect(getByText(CONNECTING_TEXT)).toBeInTheDocument()
+
+    expect(getByRole('status')).toBeInTheDocument()
+
+    // form inputs disabled
+    const formInputs = getAllByRole('textbox')
+    formInputs.forEach((input) => {
+      expect(input).toBeDisabled()
+    })
+
+    // submit button disabled
+    expect(getByRole('button', { name: 'Connect' })).toBeDisabled()
   })
 
   it('activity log can be opened and closed; when opened, shows latest logs', async () => {
@@ -205,6 +256,7 @@ describe('DatabaseDialog', () => {
       databaseDialog.render.bind(databaseDialog)
     )
 
+    databaseDialog.setIsConnecting(false)
     databaseDialog.setIsConnected(false)
     databaseDialog.setError(null)
 

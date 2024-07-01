@@ -7,7 +7,7 @@ vi.mock('event')
 describe('logger', () => {
   it('logs info and emits update event with logs', () => {
     const logSpy = vi.spyOn(console, 'log')
-    logger.logInfo('Connected to remote database.')
+    logger.log('Connected to remote database.', 'info')
     expect(logSpy).toHaveBeenCalledOnce()
     expect(logger.getLogs()[0]).toContain('Connected to remote database.')
     expect(vi.mocked(createEvent)).toHaveBeenCalled()
@@ -15,8 +15,9 @@ describe('logger', () => {
 
   it('logs error and emits update event with logs', () => {
     const errorSpy = vi.spyOn(console, 'error')
-    logger.logError(
+    logger.log(
       'Failed to connect to remote database.',
+      'error',
       new Error('test error')
     )
     expect(errorSpy).toHaveBeenCalledOnce()
@@ -28,7 +29,7 @@ describe('logger', () => {
 
   it('keeps max of 25 logs', () => {
     for (let i = 0; i < 30; i++) {
-      logger.logInfo(`Log ${i}`)
+      logger.log(`Log ${i}`, 'info')
     }
     expect(logger.getLogs().length).toBe(25)
   })

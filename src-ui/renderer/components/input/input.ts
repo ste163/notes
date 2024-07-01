@@ -52,6 +52,10 @@ class Input {
   public getValue(): string {
     return this.input.value
   }
+
+  public setDisabled(disabled: boolean) {
+    this.input.disabled = disabled
+  }
 }
 
 export { Input }

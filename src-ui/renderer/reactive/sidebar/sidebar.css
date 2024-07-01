@@ -77,7 +77,7 @@
 }
 
 .note-select-container > button:hover {
-  background-color: var(--info-button-hover-color);
+  background-color: var(--button-hover-color);
 }
 
 .select-note-active > button {

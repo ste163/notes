@@ -33,12 +33,41 @@
 .database-dialog-status-container {
   display: flex;
   align-items: center;
+  line-height: normal;
+  margin-top: 0.25rem;
 }
 
 .database-dialog-status-icon {
   height: 2rem;
   width: 2rem;
   margin-right: 0.5rem;
+}
+
+.database-dialog-status-loader {
+  height: 2rem;
+  width: 2rem;
+  margin-right: 0.5rem;
+}
+
+.database-dialog-status-loader > .loader {
+  padding: 0.2rem;
+  width: 1.5rem;
+  --b: 0.4rem;
+
+  margin-left: 0.1rem;
+}
+
+.database-dialog-status-text-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.database-dialog-status-small-text {
+  font-size: smaller;
+}
+
+#database-dialog-status-log-button {
+  margin: 1rem 0;
 }
 
 #database-dialog-status-log-block {
@@ -48,4 +77,12 @@
 
   overflow-y: auto;
   overflow-x: scroll;
+}
+
+#database-dialog-help {
+  margin-top: 1rem;
+}
+
+#database-dialog-help p {
+  font-size: smaller;
 }

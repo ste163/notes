@@ -6,7 +6,7 @@ import type { DatabaseDetails } from './use-database-details'
 vi.mock('logger')
 
 describe('use-remote-details', () => {
-  vi.mocked(logger.logError).mockImplementation(vi.fn())
+  vi.mocked(logger.log).mockImplementation(vi.fn())
   const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
   const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
@@ -43,7 +43,7 @@ describe('use-remote-details', () => {
   it('set details returns undefined if details are not valid', () => {
     const details = { db: 'test' } as unknown as DatabaseDetails
     expect(useDatabaseDetails.set(details)).toBeUndefined()
-    expect(logger.logError).toHaveBeenCalledOnce()
+    expect(logger.log).toHaveBeenCalledOnce()
     expect(localStorageSetSpy).not.toHaveBeenCalledWith(
       'remote-db-details',
       JSON.stringify(details)

@@ -39,13 +39,12 @@ class Button<T = unknown> {
     }
   }
 
-  public getElement(): HTMLButtonElement {
+  public getElement() {
     return this.element
   }
 
   public setEnabled(enabled: boolean): void {
-    if (enabled) this.element.removeAttribute('disabled')
-    else this.element.setAttribute('disabled', 'true')
+    this.element.disabled = !enabled
   }
 }
 

@@ -7,6 +7,10 @@ import pkg from '../../../../package.json'
 
 vi.mock('event')
 
+const ONLINE_TEXT = 'Online'
+const OFFLINE_TEXT = 'Offline'
+const CONNECTING_TEXT = 'Attempting connection...'
+
 // because status bar is managed by the main app,
 // only testing individual render methods and their props
 describe('status-bar', () => {
@@ -66,8 +70,9 @@ describe('status-bar', () => {
   it('renders offline status and emits dialog open', async () => {
     const { getByText, queryByText } = renderComponent(statusBar.render)
     statusBar.renderRemoteDb({ isConnected: false })
-    expect(queryByText('Online')).toBeNull()
-    await userEvent.click(getByText('Offline'))
+    expect(queryByText(ONLINE_TEXT)).toBeNull()
+    expect(queryByText(CONNECTING_TEXT)).toBeNull()
+    await userEvent.click(getByText(OFFLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       DialogEvents.OpenDatabase
     )
@@ -76,12 +81,24 @@ describe('status-bar', () => {
   it('renders online status and emits dialog open', async () => {
     const { getByText, queryByText } = renderComponent(statusBar.render)
     statusBar.renderRemoteDb({ isConnected: true })
-    expect(queryByText('Offline')).toBeNull()
-    expect(getByText('Online')).toBeInTheDocument()
-    await userEvent.click(getByText('Online'))
+    expect(queryByText(OFFLINE_TEXT)).toBeNull()
+    expect(queryByText(CONNECTING_TEXT)).toBeNull()
+    expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
+    await userEvent.click(getByText(ONLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       DialogEvents.OpenDatabase
     )
+  })
+
+  it('renders connecting state if connecting', () => {
+    const { getByRole, getByText, queryByText } = renderComponent(
+      statusBar.render
+    )
+    statusBar.renderRemoteDb({ isConnecting: true, isConnected: false })
+    expect(queryByText(ONLINE_TEXT)).toBeNull()
+    expect(queryByText(OFFLINE_TEXT)).toBeNull()
+    expect(getByText(CONNECTING_TEXT)).toBeInTheDocument()
+    expect(getByRole('status')).toBeInTheDocument()
   })
 
   it('does not render saved on date if null', () => {

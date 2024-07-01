@@ -1,28 +1,29 @@
 /**
  * TODO PRIORITY ORDER
- *  - Database refactor into a single class instance like other components
- *  - Update error logging types to know how to re-render state in db dialog
- *  - Database connection form MUST be disabled fully while connecting, reconnecting, disconnecting
- *  - Database dialog should show the last synced date if we're connected
- *  - sidebar state could live in nav bar as a '?sidebar-open=true' query param
- *  - delete dialog styling refresh (it's only functional now)
+ *  - DATABASE DIALOG FORM:
+ *     - Must have a way to STOP a connection attempt: cancel button in the status section
+ *     - Disable the submit button UNTIL all inputs are filled.
+ *       Need to disable the submit if the full form hasn't been entered
+ *       on CHANGE not just initial. If the form has been changed, updated
+ *       the button copy from Reconnect to Connect (as it has changed)
+ *
+ *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - (?)add a warning banner for web-only builds that says:
+ *  - (?) add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
- *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
+ *    - move all console.logs and console.errors to the logger()
+ *      so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
  *   - auto-save at debounced interval
- *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
- *   - db dialog needs to have last synced date (for mobile parity)
  *   - add hyperlink insert support
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - resize-able sidebar that saves and loads its state to localStorage
@@ -30,14 +31,27 @@
  *   - make favicon
  *   - make icons for desktop
  * - BUGS
+ *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *      - the error also gets triggered/logged before vite connects (in the logs)
  *    - if unable to find data, need to be able to delete the undefined notes
+ *
+ *  - DATABASE INTERACTIONS
+ *     Thoroughly manually test db scenarios:
+ *
+ *     I have been connected to DB A and synced locally.
+ *     I connected to DB B, what happens?
+ *     Hypothesis: the local becomes synced to both (unless there are conflicts)
+ *
+ *     I delete data on my local and not the remote.
+ *     Does it stay deleted? (Accidental deletions?)
+ *
+ *
  */
 import { config } from 'config'
 import { logger } from 'logger'
-import { Database, useDatabaseDetails } from 'database'
+import { database } from 'database'
 import {
   LifeCycleEvents,
   KeyboardEvents,
@@ -58,7 +72,6 @@ import { AppNotification } from 'components'
 import { checkIcon } from 'icons'
 import type { Note } from 'types'
 
-let database: Database // TODO: move to singleton
 let isMobile: boolean
 
 window.addEventListener('resize', handleScreenWidth)
@@ -71,8 +84,8 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     statusBar.renderActiveNote(null)
     handleScreenWidth()
 
-    // setup database after app is rendering in loading state
-    setupDatabase()
+    database.initRemoteConnection()
+
     const { noteId } = getUrlParams()
     // these events set off the chain that renders the app
     createEvent(NoteEvents.GetAll).dispatch()
@@ -82,7 +95,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     }
     if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
   } catch (error) {
-    logger.logError('Error in LifeCycleEvents.Init.', error)
+    logger.log('Error in LifeCycleEvents.Init.', 'error', error)
   }
 })
 
@@ -142,7 +155,7 @@ window.addEventListener(NoteEvents.GetAll, async () => {
   } catch (error) {
     // TODO: WOULD BE NICE to have a custom eslint rule that does:
     // - if you are using console.error, say it's an error and say you need to use logger
-    logger.logError('Error fetching all notes', error)
+    logger.log('Error fetching all notes', 'error', error)
   }
 })
 
@@ -185,7 +198,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    logger.logError('Error selecting note.', error)
+    logger.log('Error selecting note.', 'error', error)
   }
 })
 
@@ -197,7 +210,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     createEvent(NoteEvents.Select, { _id }).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    logger.logError('Error creating note.', error)
+    logger.log('Error creating note.', 'error', error)
   }
 })
 
@@ -208,7 +221,7 @@ window.addEventListener(NoteEvents.Save, async () => {
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
     createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
-    logger.logError('Error saving note.', error)
+    logger.log('Error saving note.', 'error', error)
   }
 })
 
@@ -227,7 +240,7 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
-    logger.logError('Error updating note title.', error)
+    logger.log('Error updating note title.', 'error', error)
   }
 })
 
@@ -235,39 +248,40 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.delete(note)
-    logger.logInfo(`Note deleted: ${note.title}`)
+    logger.log(`Note deleted: ${note.title}`, 'info')
     // reset state
     setUrl({})
     createEvent(DialogEvents.Closed).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(NoteEvents.Select, { _id: '' }).dispatch() // TODO: this causes an error
   } catch (error) {
-    logger.logError('Error deleting note.', error)
+    logger.log('Error deleting note.', 'error', error)
   }
 })
 
 /**
  * Remote database events
- * - Separated RemoteConnect and RemoteConnected as
- *   as the connection process is asynchronous
  */
-window.addEventListener(DatabaseEvents.RemoteConnect, () => {
-  // TODO: on reconnection and connection
-  // ie: when we're in the process of connecting'
-  // the database dialogs submit button MUST be disabled
-  // otherwise the loading state is unknown
-  // ----
-  // TODO: there are no logs on connection, add them
-
-  // TODO: only connect if not already connected
-  setupDatabase()
-  // the database emits the DatabaseEvents.RemoteConnected event if it successfully connects
+window.addEventListener(DatabaseEvents.Setup, () => {
+  database.restartConnection()
 })
 
-window.addEventListener(DatabaseEvents.RemoteConnected, () => {
+window.addEventListener(DatabaseEvents.Connecting, () => {
+  statusBar.renderRemoteDb({ isConnected: false, isConnecting: true })
+  databaseDialog.setIsConnecting(true)
+})
+
+window.addEventListener(DatabaseEvents.ConnectingError, () => {
+  // TODO: consider after testing: should probably update text to say "Unable to connect"
+  statusBar.renderRemoteDb({ isConnected: false, isConnecting: false })
+  databaseDialog.setIsConnecting(false)
+})
+
+window.addEventListener(DatabaseEvents.Connected, () => {
   statusBar.renderRemoteDb({ isConnected: true })
+  databaseDialog.setIsConnecting(false)
   databaseDialog.setIsConnected(true)
-  database.setupSyncing()
+
   // TODO: so the syncing has been setup, but the currently selected note MAY be out-dated.
   // probably not an issue as couchDB is good at syncing, but potentially something that could be an issue
   createEvent(NoteEvents.GetAll).dispatch()
@@ -275,21 +289,18 @@ window.addEventListener(DatabaseEvents.RemoteConnected, () => {
   // we'd need to SAVE it before changing though
 })
 
-window.addEventListener(DatabaseEvents.RemoteDisconnect, () => {
+window.addEventListener(DatabaseEvents.Disconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
   if (successfulDisconnect) {
     statusBar.renderRemoteDb({ isConnected: false })
     databaseDialog.setIsConnected(false)
   }
-  // TODO:
-  // need to clear the remote details from local storage
-  // so we do not reconnect on refresh
-  // but that happens in the form in dialog
 })
 
-window.addEventListener(DatabaseEvents.RemoteSyncingPaused, (event) => {
+window.addEventListener(DatabaseEvents.SyncingPaused, (event) => {
   const date = (event as CustomEvent)?.detail?.date
   statusBar.renderSyncedOn(new Date(date).toLocaleString())
+  databaseDialog.setSyncedOn(new Date(date).toLocaleString())
   // TODO:
   // this also needs to be stored in local storage
   // so that we can render that on the chance that we are unable to connect
@@ -345,22 +356,22 @@ window.addEventListener(DialogEvents.OpenDatabase, () => {
 /**
  * Log events
  */
-window.addEventListener(LoggerEvents.Update, () => {
-  // TODO: move this to the databaseDialog (however, we need knowledge of ERROR of not)
-  databaseDialog.renderStatus()
-  // Need to know if this is an error or not,
-  // because then I can know what to render in the db status section
-  // (latest error or all good state)
-})
+window.addEventListener(LoggerEvents.Update, (event) => {
+  const detail = (event as CustomEvent)?.detail
 
-// TODO: move this to the log's type
-window.addEventListener(LoggerEvents.Error, (event) => {
-  const message = (event as CustomEvent)?.detail?.message
-  if (message) {
-    statusBar.renderAlert(message)
-    // TODO: if there is an error, then trigger the databaseDialog.setError
-    // to re-render.
-    databaseDialog.setError(message)
+  if (!detail.log || !detail.type)
+    throw new Error('Log update event does not contain data.')
+
+  const { log, type } = detail
+
+  if (type === 'info') {
+    statusBar.renderAlert(null)
+    databaseDialog.setError(null)
+  }
+
+  if (type === 'error') {
+    statusBar.renderAlert(log)
+    databaseDialog.setError(log)
   }
 })
 
@@ -389,18 +400,6 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
 window.addEventListener('DOMContentLoaded', async () => {
   dispatchEvent(new Event(LifeCycleEvents.Init))
 })
-
-function setupDatabase() {
-  // TODO: this should live in the Database instance
-  try {
-    const { username, password, host, port } = useDatabaseDetails.get()
-    database = new Database(
-      username ? `http://${username}:${password}@${host}:${port}` : ''
-    )
-  } catch (error) {
-    logger.logError('Error setting up database.', error)
-  }
-}
 
 async function saveNote() {
   const note = await fetchNoteFromUrl()
@@ -490,6 +489,6 @@ function setUrl({
     url.search = params ? new URLSearchParams(params).toString() : ''
     window.history.replaceState({}, '', url.toString())
   } catch (error) {
-    logger.logError('Error setting URL.', error)
+    logger.log('Error setting URL.', 'error', error)
   }
 }
