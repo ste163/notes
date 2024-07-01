@@ -161,6 +161,11 @@ describe('DatabaseDialog', () => {
     expect(getByText('Test error')).toBeInTheDocument()
   })
 
+  it.todo(
+    'when online, renders last synced on date if available'
+    // and when it gets set, re-renders the component
+  )
+
   it('setting the error state re-renders the status section', () => {
     const { getByText } = renderComponent(
       databaseDialog.render.bind(databaseDialog)

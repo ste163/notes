@@ -1,21 +1,21 @@
 /**
  * TODO PRIORITY ORDER
- *  - DATABASE DIALOG FORM: disable the submit button UNTIL all inputs are filled
- *  - DB Dialog
+ *  - DATABASE DIALOG FORM:
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
- *     - DB status section ONLY shows the latest error. need to clear itself after a success.
- *     - Need to disable the submit if the full form hasn't been entered on CHANGE not just initial. If the form has been changed, updated
+ *     - Disable the submit button UNTIL all inputs are filled.
+ *       Need to disable the submit if the full form hasn't been entered
+ *       on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
  *
  *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
- *  - delete dialog styling refresh (it's only functional now)
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - (?)add a warning banner for web-only builds that says:
+ *  - (?) add a warning banner for web-only builds that says:
  *      "Running: web version. This is version is for demo purposes only. Please download
  *       the application for the best experience."
- *    - move all console.logs and console.errors to the logger() - include state updates. We want to log all db interactions
+ *    - move all console.logs and console.errors to the logger()
+ *      so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
  *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
@@ -25,7 +25,6 @@
  *   - db dialog: showing if connected to local only or remote
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
- *   - db dialog needs to have last synced date (for mobile parity)
  *   - add hyperlink insert support
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - resize-able sidebar that saves and loads its state to localStorage
