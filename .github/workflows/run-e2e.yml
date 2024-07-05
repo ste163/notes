@@ -1,4 +1,4 @@
-name: run-e2e
+name: browser-e2e-tests
 on:
     push:
       branches:

@@ -1,7 +1,7 @@
 describe('application flow', () => {
   it('renders get started view when no notes created', () => {
     cy.visit('/')
-    cy.get('h1').should('contain', 'Get started!!!')
+    cy.get('h1').should('contain', 'Get started')
   })
 
   // when there are no notes,
