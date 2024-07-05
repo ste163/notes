@@ -107,6 +107,7 @@ class StatusBar {
     if (!message) return
     container?.appendChild(
       new Button({
+        testId: 'alert-error',
         title: 'Setup remote database',
         html: `
         ${errorIcon} 

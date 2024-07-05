@@ -40,7 +40,7 @@ class Database {
    * Because connection to the remote requires emitting events,
    * must wait until the window is ready.
    */
-  public initRemoteConnection() {
+  public async initRemoteConnection() {
     const url = this.createRemoteUrl()
     if (!url) {
       logger.log(
@@ -51,7 +51,7 @@ class Database {
     }
     this.setRemoteUrl(url)
     logger.log('Remote database details found.', 'info')
-    this.testAndInitializeConnection()
+    await this.testAndInitializeConnection()
   }
 
   /**

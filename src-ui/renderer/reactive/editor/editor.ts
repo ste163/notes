@@ -126,6 +126,7 @@ class Editor {
 
     container?.appendChild(
       new Button({
+        testId: 'edit-title-button',
         title: 'Edit title',
         html: span.outerHTML, // inject the full span element
         style: { border: 'none', width: 'inherit' },
@@ -147,7 +148,8 @@ class Editor {
       // because I DO NOT want a title here
       // The layout CANNOT shift when we swap inputs
       const inputInstance = new Input({
-        id: 'update-title',
+        testId: 'edit-title-input',
+        id: 'edit-title',
         label: '', // TODO: consider how to handle this in an accessible way
         placeholder: 'Note title',
         value: inputValue,

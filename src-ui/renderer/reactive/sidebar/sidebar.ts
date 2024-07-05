@@ -29,6 +29,7 @@ class Sidebar {
 
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
+        testId: 'create-note',
         title: 'Create note',
         onClick: this.renderInput,
         html: `
@@ -196,6 +197,7 @@ class Sidebar {
 
   private instantiateInputElements() {
     const inputInstance = new Input({
+      testId: 'create-note-input',
       id: 'create-note',
       label: 'Note title',
       placeholder: 'Note title',
@@ -205,6 +207,7 @@ class Sidebar {
       input,
       inputContainer: inputInstance.getContainer(),
       saveButton: new Button({
+        testId: 'create-note-save',
         title: 'Save note',
         html: 'Save',
         onClick: () => {
@@ -214,6 +217,7 @@ class Sidebar {
         },
       }).getElement(),
       cancelButton: new Button({
+        testId: 'create-note-cancel',
         title: 'Cancel',
         html: 'Cancel',
         onClick: this.closeInput.bind(this),
