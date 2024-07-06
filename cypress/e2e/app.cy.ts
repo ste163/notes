@@ -228,8 +228,6 @@ describe('application flow', () => {
     cy.get(locators.sidebar.note).should('have.length', 0)
   })
   // TODOs:
-  // - BUG that tests need to solve for: the savedOn date doesn't get removed if there is no note.
-  // it always renders. So I need to setup a test id for that and check its existence.
   // - the sidebar can be opened and closed, hiding and showing the note list
   //    - should add this once the query param has been added to the URL
   // - test that the mobile view works as expected (ie, mobile sidebar)

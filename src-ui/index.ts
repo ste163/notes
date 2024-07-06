@@ -23,10 +23,10 @@
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
  *   - auto-save at debounced interval
+ *   - sidebar is resizable and saves to localStorage, loading on refresh
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
- *   - sidebar is resizable and saves to localStorage, loading on refresh
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - resize-able sidebar that saves and loads its state to localStorage
  *   - e2e:
@@ -38,9 +38,6 @@
  * - BUGS (which also need tests)
  *    - on the initial fresh load, the get fails because of no default index. All re-renders/refreshes work
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
- *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
- *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
- *      - the error also gets triggered/logged before vite connects (in the logs)
  *    - if unable to find data, need to be able to delete the undefined notes
  * - Add test reports for unit and e2e to readme
  *  - DATABASE INTERACTIONS
