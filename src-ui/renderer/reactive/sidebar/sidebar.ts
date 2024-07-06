@@ -62,6 +62,7 @@ class Sidebar {
       ({ _id, title, updatedAt, createdAt }) =>
         new Button({
           id: _id,
+          testId: 'note-select-button',
           title: 'Select note',
           onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
           html: `

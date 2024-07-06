@@ -124,6 +124,7 @@ class StatusBar {
     const container = document.querySelector('#status-bar-save')
     if (container) container.innerHTML = ''
     const saveButton = new Button({
+      testId: 'save-note-button',
       title: 'Save note',
       html: saveIcon,
       onClick: createEvent(NoteEvents.Save)?.dispatch,
@@ -136,6 +137,7 @@ class StatusBar {
     const container = document.querySelector('#status-bar-settings')
     if (container) container.innerHTML = ''
     const settingsButton = new Button({
+      testId: 'note-delete-button',
       title: 'Delete note',
       html: deleteIcon,
       onClick: createEvent(DialogEvents.OpenNoteDelete)?.dispatch,
