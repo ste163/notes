@@ -6,7 +6,7 @@
 }
 
 .sidebar-opened {
-  width: 15rem;
+  width: 12rem;
   border-right: var(--outline-color) 0.13rem solid;
 }
 

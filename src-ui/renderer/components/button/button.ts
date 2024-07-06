@@ -4,6 +4,7 @@ interface ButtonOptions<T = unknown> {
   title: string // accessibility title
   onClick: (args: T | MouseEvent) => void
   id?: string
+  testId?: string
   className?: string
   html?: string
   style?: Partial<CSSStyleDeclaration>
@@ -17,6 +18,7 @@ class Button<T = unknown> {
     title,
     onClick,
     id,
+    testId,
     className,
     html,
     style,
@@ -26,6 +28,7 @@ class Button<T = unknown> {
     this.element.title = title
     this.element.onclick = onClick
     if (id) this.element.setAttribute('id', id)
+    if (testId) this.element.setAttribute('data-testid', testId)
     if (className) this.element.className = className
     if (disabled) this.element.setAttribute('disabled', 'true')
     if (html) this.element.innerHTML = html

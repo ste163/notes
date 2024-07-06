@@ -107,6 +107,7 @@ class StatusBar {
     if (!message) return
     container?.appendChild(
       new Button({
+        testId: 'alert-error',
         title: 'Setup remote database',
         html: `
         ${errorIcon} 
@@ -123,6 +124,7 @@ class StatusBar {
     const container = document.querySelector('#status-bar-save')
     if (container) container.innerHTML = ''
     const saveButton = new Button({
+      testId: 'save-note',
       title: 'Save note',
       html: saveIcon,
       onClick: createEvent(NoteEvents.Save)?.dispatch,
@@ -135,6 +137,7 @@ class StatusBar {
     const container = document.querySelector('#status-bar-settings')
     if (container) container.innerHTML = ''
     const settingsButton = new Button({
+      testId: 'delete-note',
       title: 'Delete note',
       html: deleteIcon,
       onClick: createEvent(DialogEvents.OpenNoteDelete)?.dispatch,

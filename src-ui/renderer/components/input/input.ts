@@ -2,6 +2,7 @@ import './input.css'
 
 interface InputOptions {
   id: string
+  testId?: string
   label: string
   placeholder: string
   value?: string
@@ -12,7 +13,7 @@ class Input {
   private input: HTMLInputElement
   private label: HTMLLabelElement
 
-  constructor({ id, label, placeholder, value }: InputOptions) {
+  constructor({ id, testId, label, placeholder, value }: InputOptions) {
     this.container = document.createElement('div')
     this.container.classList.add('input-container')
 
@@ -23,6 +24,7 @@ class Input {
 
     this.input = document.createElement('input')
     this.input.id = id
+    if (testId) this.input.setAttribute('data-testid', testId)
     this.input.title = label
     this.input.placeholder = placeholder
     this.input.value = value ?? ''

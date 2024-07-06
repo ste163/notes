@@ -8,6 +8,7 @@
  *       the button copy from Reconnect to Connect (as it has changed)
  *
  *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
+ *      - also add the e2e around this
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
@@ -25,18 +26,20 @@
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
+ *   - sidebar is resizable and saves to localStorage, loading on refresh
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - resize-able sidebar that saves and loads its state to localStorage
  * - BRANDING
  *   - make favicon
  *   - make icons for desktop
- * - BUGS
+ * - BUGS (which also need tests)
+ *    - on the initial fresh load, the get fails because of no default index. All re-renders/refreshes work
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
  *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
  *      - the error also gets triggered/logged before vite connects (in the logs)
  *    - if unable to find data, need to be able to delete the undefined notes
- *
+ * - Add test reports for unit and e2e to readme
  *  - DATABASE INTERACTIONS
  *     Thoroughly manually test db scenarios:
  *
@@ -84,10 +87,12 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     statusBar.renderActiveNote(null)
     handleScreenWidth()
 
+    // by this point, the local db has been setup
+    // so begin connecting in the background; do not await
     database.initRemoteConnection()
 
     const { noteId } = getUrlParams()
-    // these events set off the chain that renders the app
+
     createEvent(NoteEvents.GetAll).dispatch()
     if (!noteId) {
       editor.setDisabled(true)
@@ -129,6 +134,7 @@ window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
   const notification = new AppNotification({
     id: 'note-saved',
+    testId: 'save-notification',
     icon: checkIcon,
     text: `Saved`,
   })
