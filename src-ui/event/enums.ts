@@ -18,7 +18,6 @@ export enum KeyboardEvents {
   Keydown = 'keydown',
 }
 
-// TODO: need a new name for LifeCycleEvents enum
 export enum LifeCycleEvents {
   Init = 'init',
   WidthChanged = 'width-changed',
@@ -26,6 +25,7 @@ export enum LifeCycleEvents {
   SidebarClosed = 'sidebar-closed',
   SidebarOpenOrClose = 'sidebar-open-or-close',
   ShowSaveNotification = 'show-save-notification',
+  NoNoteSelected = 'no-note-selected',
 }
 
 export enum LoggerEvents {

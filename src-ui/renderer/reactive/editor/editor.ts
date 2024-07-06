@@ -21,7 +21,7 @@ import type { MarkOptions, Note } from 'types'
 import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
 
-const STARTING_CONTENT = `<h1>Get started</h1><p>Create a note from the sidebar.</p>`
+const STARTING_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
 
 class Editor {
   private editor: TipTapEditor | null = null

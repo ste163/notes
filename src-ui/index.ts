@@ -23,21 +23,21 @@
  *      - could include info about the application, its version, its license and the remix icon license
  * - FEATURES
  *   - auto-save at debounced interval
+ *   - sidebar is resizable and saves to localStorage, loading on refresh
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
- *   - sidebar is resizable and saves to localStorage, loading on refresh
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - resize-able sidebar that saves and loads its state to localStorage
+ *   - e2e:
+ *    - if it's main branch, use production link (new action?)
+ *    - otherwise, build environment and use that (what's currently setup)
  * - BRANDING
  *   - make favicon
  *   - make icons for desktop
  * - BUGS (which also need tests)
  *    - on the initial fresh load, the get fails because of no default index. All re-renders/refreshes work
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
- *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
- *    - if there is an error when connecting to the db on initial startup, we're not logging that error in the UI
- *      - the error also gets triggered/logged before vite connects (in the logs)
  *    - if unable to find data, need to be able to delete the undefined notes
  * - Add test reports for unit and e2e to readme
  *  - DATABASE INTERACTIONS
@@ -77,23 +77,20 @@ import type { Note } from 'types'
 
 let isMobile: boolean
 
-window.addEventListener('resize', handleScreenWidth)
-
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
+    database.initRemoteConnection() // must not await or it locks UI
+
     sidebar.render()
     statusBar.render()
     statusBar.renderRemoteDb({ isConnected: false })
     statusBar.renderActiveNote(null)
-    handleScreenWidth()
 
-    // by this point, the local db has been setup
-    // so begin connecting in the background; do not await
-    database.initRemoteConnection()
+    handleScreenWidth()
+    createEvent(NoteEvents.GetAll).dispatch()
 
     const { noteId } = getUrlParams()
 
-    createEvent(NoteEvents.GetAll).dispatch()
     if (!noteId) {
       editor.setDisabled(true)
       editor.setNote(null)
@@ -103,6 +100,13 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     logger.log('Error in LifeCycleEvents.Init.', 'error', error)
   }
 })
+
+window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
+  editor.setNote(null)
+  statusBar.renderActiveNote(null)
+})
+
+window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   const { noteId } = getUrlParams()
@@ -168,7 +172,11 @@ window.addEventListener(NoteEvents.GetAll, async () => {
 window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     const eventNoteId: string = (event as CustomEvent)?.detail?._id
-    if (!eventNoteId) throw new Error('No noteId provided to NoteEvents.Select')
+
+    if (!eventNoteId) {
+      createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
+      return
+    }
 
     const note = await database.getById(eventNoteId)
     if (editor.getIsDirty()) await saveNote()
@@ -259,7 +267,7 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
     setUrl({})
     createEvent(DialogEvents.Closed).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
-    createEvent(NoteEvents.Select, { _id: '' }).dispatch() // TODO: this causes an error
+    createEvent(NoteEvents.Select, { _id: null }).dispatch()
   } catch (error) {
     logger.log('Error deleting note.', 'error', error)
   }

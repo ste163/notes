@@ -57,6 +57,9 @@ class StatusBar {
   public renderActiveNote(note: Note | null) {
     this.renderSaveButton(note)
     this.renderSettingsButton(note)
+    this.renderSavedOn(
+      note?.updatedAt ? new Date(note.updatedAt).toLocaleString() : null
+    )
   }
 
   public renderRemoteDb({
@@ -90,6 +93,7 @@ class StatusBar {
       selector: '#status-bar-saved-on',
       date,
       label: 'Saved on',
+      testId: 'status-bar-saved-on',
     })
   }
 
@@ -98,6 +102,7 @@ class StatusBar {
       selector: '#status-bar-synced-on',
       date,
       label: 'Synced on',
+      testId: 'status-bar-synced-on',
     })
   }
 
@@ -150,16 +155,19 @@ class StatusBar {
     selector,
     date,
     label,
+    testId,
   }: {
     selector: string
     date: Date | string | null
     label: string
+    testId: string
   }) {
     const container = document.querySelector(selector)
     if (container) container.innerHTML = ''
     if (!date) return // then keep the container cleared
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(`${label}: ${date}`))
+    span.setAttribute('data-testid', testId)
     container?.appendChild(span)
   }
 }
