@@ -16,11 +16,11 @@ const locators = {
     save: '[data-testid="save-notification"]',
   },
   statusBar: {
-    save: '[data-testid="save-note-button"]',
-    delete: '[data-testid="note-delete-button"]',
+    save: '[data-testid="save-note"]',
+    delete: '[data-testid="delete-note"]',
   },
   sidebar: {
-    note: '[data-testid="note-select-button"]',
+    note: '[data-testid="note-select"]',
   },
 }
 

@@ -26,6 +26,7 @@
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
+ *   - sidebar is resizable and saves to localStorage, loading on refresh
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - resize-able sidebar that saves and loads its state to localStorage
  * - BRANDING
