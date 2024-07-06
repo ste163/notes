@@ -24,6 +24,14 @@ const locators = {
   },
 }
 
+/**
+ * Tests the main application flow; however,
+ * this is not testing the connection to a CouchDB instance.
+ * That requires more infrastructure setup as it needs to
+ * create the docker container to run CouchDB.
+ *
+ * Current tests use IndexedDB.
+ */
 describe('application flow', () => {
   before(async () => {
     const clearIndexDb = async () => {
@@ -77,6 +85,7 @@ describe('application flow', () => {
 
     // expect save notification from updating title rendered
     cy.get(locators.notification.save).should('exist')
+    cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
     // created note renders in sidebar
     cy.get(locators.sidebar.note).should('have.length', 1)
@@ -93,18 +102,71 @@ describe('application flow', () => {
 
     cy.get(locators.statusBar.save).click()
     cy.get(locators.notification.save).should('exist')
-  })
-  // TODOs for the first test
-  // can edit the note title and it shows up in sidebar and title section (and renders save)
-  // can edit note content and save it (from save button in status bar) (renders save notification)
-  // can create another note and swap between the two. (notes save between swapping if dirty)
-  // - cannot click an already selected note
-  // can delete a note and it routes to the next note in the list (or the empty selection view?)
-  // can delete all notes and see get started view again.
-  // TEST that the sidebar can be opened and closed, hiding and showing the note list
-  //
-  // Eventually, setup the docker container to include a pouchdb instance
-  // and test the connection and syncing works as expected
+    cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
-  // need some mobile only tests for the sidebar being full screen if no note selected
+    /**
+     * Can create another note and swap between the two.
+     * If the note is dirty, content is saved before swapping
+     */
+    cy.get(locators.createNote.button).click()
+    cy.get(locators.createNote.input).type('My second note')
+    cy.get(locators.createNote.save).click()
+
+    cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
+
+    // should have opened the second note, check the title and content
+    cy.get(locators.editTitle.button).click()
+    cy.get(locators.editTitle.input).should('have.value', 'My second note')
+    cy.get(locators.editor.content).click()
+    // because the value wasn't changed, don't save
+    cy.get(locators.notification.save).should('not.exist')
+
+    // editor content empty
+    cy.get(locators.editor.content).children().first().should('have.value', '')
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .type('Second note content')
+
+    // sidebar renders the two notes
+    cy.get(locators.sidebar.note).should('have.length', 2)
+    cy.get(locators.sidebar.note).eq(0).should('contain.text', 'My second note')
+    cy.get(locators.sidebar.note).eq(0).should('be.disabled')
+    cy.get(locators.sidebar.note)
+      .eq(1)
+      .should('contain.text', 'My first note - updated')
+    cy.get(locators.sidebar.note).eq(1).should('be.enabled')
+
+    // select first note and renders it
+    cy.get(locators.sidebar.note).eq(1).click()
+    cy.wait(500) // cypress is moving too quickly, need to wait for the editor to render
+
+    cy.get(locators.editTitle.button).click()
+    cy.get(locators.editTitle.input).should(
+      'have.value',
+      'My first note - updated'
+    )
+    cy.get(locators.editor.content).click()
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .should('contain.text', 'Lets add some content!')
+
+    // swapping to the second note renders it and its content was saved
+    // because the editor was dirty
+    cy.get(locators.sidebar.note).eq(0).click()
+    cy.get(locators.editTitle.button).click()
+    cy.get(locators.editTitle.input).should('have.value', 'My second note')
+    cy.get(locators.editor.content).click()
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .should('contain.text', 'Second note content')
+  })
+  // TODOs
+  // - can delete a note and it routes to the next note in the list (or the empty selection view?)
+  // - can delete all notes and see get started view again.
+  // - the sidebar can be opened and closed, hiding and showing the note list
+  //    - should add this once the query param has been added to the URL
+  // - test that the mobile view works as expected (ie, mobile sidebar)
 })
