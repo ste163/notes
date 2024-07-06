@@ -24,6 +24,8 @@ const locators = {
   statusBar: {
     save: '[data-testid="save-note"]',
     delete: '[data-testid="delete-note"]',
+    savedOn: '[data-testid="status-bar-saved-on"]',
+    syncedOn: '[data-testid="status-bar-synced-on"]', // TODO: test when CouchDB is connected
   },
   sidebar: {
     note: '[data-testid="note-select"]',
@@ -49,7 +51,13 @@ describe('application flow', () => {
 
   it('can create, edit, write, select, and delete notes', () => {
     cy.visit('/')
+
+    /**
+     * Get started view without data, status bar actions are disabled
+     */
     cy.get('h1').should('contain', 'Get started')
+    cy.get(locators.statusBar.save).should('be.disabled')
+    cy.get(locators.statusBar.delete).should('be.disabled')
 
     // TODO: fix this bug, sort on fields createdAt when using default index throws error during getAll
     // the app should load without any errors
@@ -65,6 +73,7 @@ describe('application flow', () => {
     cy.get(locators.createNote.save).should('be.disabled')
     cy.get(locators.createNote.input).type('My first note')
     cy.get(locators.createNote.save).should('be.enabled')
+    cy.get(locators.statusBar.savedOn).should('not.exist')
 
     // canceling stops note create and hides input
     cy.get(locators.createNote.cancel).click()
@@ -82,6 +91,12 @@ describe('application flow', () => {
     /**
      * Adding note content and saving
      */
+    // status bar is now enabled
+    cy.get(locators.statusBar.save).should('be.enabled')
+    cy.get(locators.statusBar.delete).should('be.enabled')
+    cy.wait(500)
+    cy.get(locators.statusBar.savedOn).should('be.visible')
+
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should('have.value', 'My first note')
 
@@ -190,6 +205,7 @@ describe('application flow', () => {
     // the status bar save and delete are disabled
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')
+    cy.get(locators.statusBar.savedOn).should('not.exist')
     // only one note renders in sidebar
     cy.get(locators.sidebar.note).should('have.length', 1)
     cy.get(locators.sidebar.note).should(
@@ -200,6 +216,7 @@ describe('application flow', () => {
     cy.get(locators.sidebar.note).click()
     cy.get(locators.statusBar.save).should('be.enabled')
     cy.get(locators.statusBar.delete).should('be.enabled')
+    cy.get(locators.statusBar.savedOn).should('be.visible')
 
     // can delete first note and the app is reset to the get started screen
     cy.get(locators.statusBar.delete).click()
@@ -207,6 +224,7 @@ describe('application flow', () => {
     cy.get('h1').should('contain', 'Get started')
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')
+    cy.get(locators.statusBar.savedOn).should('not.exist')
     cy.get(locators.sidebar.note).should('have.length', 0)
   })
   // TODOs:
