@@ -8,6 +8,7 @@
  *       the button copy from Reconnect to Connect (as it has changed)
  *
  *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
+ *      - also add the e2e around this
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
@@ -30,7 +31,7 @@
  * - BRANDING
  *   - make favicon
  *   - make icons for desktop
- * - BUGS
+ * - BUGS (which also need tests)
  *    - on the initial fresh load, the get fails because of no default index. All re-renders/refreshes work
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if note is deleted (ie, none selected, emit a an event to set ui to a non-selected state/get-started state)
