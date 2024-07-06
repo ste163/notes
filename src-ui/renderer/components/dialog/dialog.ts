@@ -44,7 +44,7 @@ class Dialog {
       <div role="document">
         <header id="dialog-header-${this.id}" class="dialog-header">
           <h2 id="dialog-title-${this.id}" class="dialog-title">Title</h2>
-          <button id="dialog-close-${this.id}" class="dialog-close">${closeIcon}</button>
+          <button testid="dialog-close" id="dialog-close-${this.id}" class="dialog-close">${closeIcon}</button>
         </header>
         <div id="dialog-content-${this.id}" class="dialog-content"></div>
       </div>

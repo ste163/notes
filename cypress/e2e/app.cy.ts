@@ -5,6 +5,12 @@ const locators = {
     save: '[data-testid="create-note-save"]',
     cancel: '[data-testid="create-note-cancel"]',
   },
+  dialog: {
+    close: '[testid="dialog-close"]',
+  },
+  deleteDialog: {
+    button: '[data-testid="delete-forever"]',
+  },
   editor: {
     content: '#editor',
   },
@@ -115,7 +121,9 @@ describe('application flow', () => {
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
     // should have opened the second note, check the title and content
+    cy.wait(500)
     cy.get(locators.editTitle.button).click()
+    cy.wait(500)
     cy.get(locators.editTitle.input).should('have.value', 'My second note')
     cy.get(locators.editor.content).click()
     // because the value wasn't changed, don't save
@@ -162,10 +170,48 @@ describe('application flow', () => {
       .children()
       .first()
       .should('contain.text', 'Second note content')
+
+    /**
+     * Can delete a note
+     */
+    cy.get(locators.statusBar.delete).click()
+    cy.get('h2').should('contain', 'Delete')
+
+    // can close modal and the editor is enabled again
+    cy.get(locators.dialog.close).click()
+    cy.get(locators.editor.content).children().first().type(' More content!')
+
+    // and then the note can really be deleted
+    cy.get(locators.statusBar.delete).click()
+    cy.get(locators.deleteDialog.button).click()
+
+    // renders the get started screen
+    cy.get('h1').should('contain', 'Get started')
+    // the status bar save and delete are disabled
+    cy.get(locators.statusBar.save).should('be.disabled')
+    cy.get(locators.statusBar.delete).should('be.disabled')
+    // only one note renders in sidebar
+    cy.get(locators.sidebar.note).should('have.length', 1)
+    cy.get(locators.sidebar.note).should(
+      'contain.text',
+      'My first note - updated'
+    )
+    // can select the first note and the status bar is enabled again
+    cy.get(locators.sidebar.note).click()
+    cy.get(locators.statusBar.save).should('be.enabled')
+    cy.get(locators.statusBar.delete).should('be.enabled')
+
+    // can delete first note and the app is reset to the get started screen
+    cy.get(locators.statusBar.delete).click()
+    cy.get(locators.deleteDialog.button).click()
+    cy.get('h1').should('contain', 'Get started')
+    cy.get(locators.statusBar.save).should('be.disabled')
+    cy.get(locators.statusBar.delete).should('be.disabled')
+    cy.get(locators.sidebar.note).should('have.length', 0)
   })
-  // TODOs
-  // - can delete a note and it routes to the next note in the list (or the empty selection view?)
-  // - can delete all notes and see get started view again.
+  // TODOs:
+  // - BUG that tests need to solve for: the savedOn date doesn't get removed if there is no note.
+  // it always renders. So I need to setup a test id for that and check its existence.
   // - the sidebar can be opened and closed, hiding and showing the note list
   //    - should add this once the query param has been added to the URL
   // - test that the mobile view works as expected (ie, mobile sidebar)

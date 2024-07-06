@@ -21,6 +21,7 @@ class NoteDeleteDialog {
 
     dialogContent.appendChild(
       new Button({
+        testId: 'delete-forever',
         title: 'Delete note',
         html: `${deleteIcon}<span>Delete forever</span>`,
         onClick: () =>
