@@ -72,6 +72,7 @@ import {
   noteDeleteDialog,
 } from 'renderer/reactive'
 import { AppNotification } from 'components'
+import { urlController } from 'url-controller'
 import { checkIcon } from 'icons'
 import type { Note } from 'types'
 
@@ -89,7 +90,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     handleScreenWidth()
     createEvent(NoteEvents.GetAll).dispatch()
 
-    const { noteId } = getUrlParams()
+    const { noteId } = urlController.getAllParams()
 
     if (!noteId) {
       editor.setDisabled(true)
@@ -101,6 +102,27 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
   }
 })
 
+window.addEventListener(LifeCycleEvents.UrlChanged, () => {
+  const { noteId, dialog } = urlController.getAllParams()
+  console.log('URL CHANGED', noteId, dialog)
+
+  // // based on URL params, render dialogs
+  // // TODO: use consts
+  // switch (dialog) {
+  //   case 'delete':
+  //     noteId && createEvent(DialogEvents.OpenNoteDelete).dispatch()
+  //     break
+  //   case 'database':
+  //     // TODO: bug where this still needs to be opened if no note is selected
+  //     // there should be an event that is dispatched to handle dialog url opening
+  //     // ie: handle url params whenever they're read or set
+  //     createEvent(DialogEvents.OpenDatabase).dispatch()
+  //     break
+  //   default:
+  //     break
+  // }
+})
+
 window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
   editor.setNote(null)
   statusBar.renderActiveNote(null)
@@ -109,7 +131,7 @@ window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
 window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
-  const { noteId } = getUrlParams()
+  const { noteId } = urlController.getAllParams()
   const isNoteSelected = !!noteId
 
   if (isNoteSelected) {
@@ -154,7 +176,7 @@ window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
 window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     const notes = await database.getAll()
-    const { noteId } = getUrlParams()
+    const { noteId } = urlController.getAllParams()
     // TODO: if no notes, then emit a new event
     // to handle that state so that we can reset the UI
     // TODO: only renderNoteList if there are notes
@@ -181,7 +203,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     const note = await database.getById(eventNoteId)
     if (editor.getIsDirty()) await saveNote()
 
-    const { noteId, dialog } = getUrlParams()
+    const { noteId, dialog } = urlController.getAllParams()
 
     // setup url routing based on the note
     note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
@@ -196,22 +218,6 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 
     editor.setNote(note)
     editor.setCursorPosition('start')
-
-    // based on URL params, render dialogs
-    // TODO: use consts
-    switch (dialog) {
-      case 'delete':
-        note && createEvent(DialogEvents.OpenNoteDelete).dispatch()
-        break
-      case 'database':
-        // TODO: bug where this still needs to be opened if no note is selected
-        // there should be an event that is dispatched to handle dialog url opening
-        // ie: handle url params whenever they're read or set
-        createEvent(DialogEvents.OpenDatabase).dispatch()
-        break
-      default:
-        break
-    }
 
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
@@ -333,6 +339,8 @@ window.addEventListener(DatabaseEvents.SyncingPaused, (event) => {
  */
 window.addEventListener(DialogEvents.Opened, (event) => {
   const focusDialog = () => {
+    // because there is not a singleton dialog, find first for now.
+    // The dialog component supports 'n' amount, but the app only uses one at a time
     const dialog = document.querySelectorAll('[role="dialog"]')[0]
     ;(dialog as HTMLElement)?.focus()
   }
@@ -347,20 +355,20 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   // should come from the dialog Class
   if (dialogTitle === 'database') statusBar.renderAlert('') // clear the statusBar's alert state
 
-  const { noteId } = getUrlParams()
+  const { noteId } = urlController.getAllParams()
   setUrl({ noteId, dialog: dialogTitle })
 
   editor.setDisabled(true)
 })
 
 window.addEventListener(DialogEvents.Closed, () => {
-  const { noteId } = getUrlParams()
+  const { noteId } = urlController.getAllParams()
   if (noteId) editor.setDisabled(false)
   setUrl({ noteId })
 })
 
 window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
-  const { noteId } = getUrlParams()
+  const { noteId } = urlController.getAllParams()
   if (!noteId) return
   const note = await database.getById(noteId)
   if (note) noteDeleteDialog.render(note)
@@ -465,19 +473,11 @@ function handleScreenWidth() {
 }
 
 async function fetchNoteFromUrl() {
-  const { noteId } = getUrlParams()
+  const { noteId } = urlController.getAllParams()
   if (!noteId) throw new Error('No note selected.')
   const note = await database.getById(noteId)
   if (!note) throw new Error('No note found.')
   return note
-}
-
-function getUrlParams() {
-  const searchParams = new URLSearchParams(window.location.search)
-  return {
-    dialog: searchParams.get('dialog') ?? '',
-    noteId: searchParams.get('noteId') ?? '',
-  }
 }
 
 function setUrl({
@@ -504,6 +504,7 @@ function setUrl({
 
     url.search = params ? new URLSearchParams(params).toString() : ''
     window.history.replaceState({}, '', url.toString())
+    createEvent(LifeCycleEvents.UrlChanged).dispatch()
   } catch (error) {
     logger.log('Error setting URL.', 'error', error)
   }

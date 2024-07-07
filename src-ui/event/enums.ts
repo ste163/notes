@@ -26,6 +26,7 @@ export enum LifeCycleEvents {
   SidebarOpenOrClose = 'sidebar-open-or-close',
   ShowSaveNotification = 'show-save-notification',
   NoNoteSelected = 'no-note-selected',
+  UrlChanged = 'url-changed',
 }
 
 export enum LoggerEvents {
