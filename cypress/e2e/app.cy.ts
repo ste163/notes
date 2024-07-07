@@ -277,6 +277,7 @@ describe('application flow', () => {
     cy.get('h2').should('not.exist', 'Database')
 
     // delete note dialog opens properly
+    cy.wait(500)
     cy.get(locators.statusBar.delete).click()
     cy.get('h2').should('contain', 'Delete')
     cy.reload()
