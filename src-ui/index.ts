@@ -204,6 +204,15 @@ window.addEventListener(NoteEvents.Select, async (event) => {
         note && createEvent(DialogEvents.OpenNoteDelete).dispatch()
         break
       case 'database':
+        // TODO: bug where this still needs to be opened if no note is selected
+        // there should be an event that is dispatched to handle dialog url opening
+        // ie: handle url params whenever they're read or set
+        //
+        // E2E needs to test for dialog opening after refresh for all possible scenarios
+        // - note selected, opens db
+        // - note selected, opens delete
+        // - no note selected, opens db
+        // - no note selected, DOES NOT open delete, even if it is in param
         createEvent(DialogEvents.OpenDatabase).dispatch()
         break
       default:
@@ -264,7 +273,7 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
     await database.delete(note)
     logger.log(`Note deleted: ${note.title}`, 'info')
     // reset state
-    setUrl({})
+    setUrl({}) // this approach won't work with a openSidebar query
     createEvent(DialogEvents.Closed).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(NoteEvents.Select, { _id: null }).dispatch()
@@ -490,7 +499,6 @@ function setUrl({
       window.location.origin
     )
     const allowedParams = ['noteId', 'dialog']
-    // only prepare to set defined, allowed params
     const params = allowedParams.reduce(
       (acc, key) => {
         if (key === 'noteId' && noteId) acc[key] = noteId
