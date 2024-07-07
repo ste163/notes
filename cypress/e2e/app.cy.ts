@@ -24,6 +24,7 @@ const locators = {
   statusBar: {
     save: '[data-testid="save-note"]',
     delete: '[data-testid="delete-note"]',
+    database: '[data-testid="setup-database"]',
     savedOn: '[data-testid="status-bar-saved-on"]',
     syncedOn: '[data-testid="status-bar-synced-on"]', // TODO: test when CouchDB is connected
   },
@@ -41,7 +42,7 @@ const locators = {
  * Current tests use IndexedDB.
  */
 describe('application flow', () => {
-  before(async () => {
+  beforeEach(async () => {
     const clearIndexDb = async () => {
       const indexedDBs = await indexedDB.databases()
       indexedDBs.forEach(({ name }) => name && indexedDB.deleteDatabase(name))
@@ -138,7 +139,7 @@ describe('application flow', () => {
     // should have opened the second note, check the title and content
     cy.wait(500)
     cy.get(locators.editTitle.button).click()
-    cy.wait(500)
+    cy.wait(1000)
     cy.get(locators.editTitle.input).should('have.value', 'My second note')
     cy.get(locators.editor.content).click()
     // because the value wasn't changed, don't save
@@ -227,6 +228,69 @@ describe('application flow', () => {
     cy.get(locators.statusBar.savedOn).should('not.exist')
     cy.get(locators.sidebar.note).should('have.length', 0)
   })
+
+  it('Dialogs render properly if no note selected', () => {
+    cy.visit('/')
+
+    // database dialog renders properly on reload
+    cy.get(locators.statusBar.database).click()
+    cy.get('h2').should('contain', 'Database')
+    cy.reload()
+    cy.wait(500)
+    cy.get('h2').should('contain', 'Database')
+
+    // closing the dialog and reloading does not render it
+    cy.get(locators.dialog.close).click()
+    cy.get('h2').should('not.exist', 'Database')
+    cy.reload()
+    cy.wait(500)
+    cy.get('h2').should('not.exist', 'Database')
+
+    // delete note dialog should not render as no note was selected
+    cy.get(locators.statusBar.delete).should('be.disabled')
+    // and visiting the url directly should not render the dialog
+    cy.visit('/?dialog=delete')
+    cy.wait(500)
+    cy.get('h2').should('not.exist', 'Delete')
+  })
+
+  it('Dialogs render properly if a note is selected', () => {
+    cy.visit('/')
+
+    cy.get(locators.createNote.button).click()
+    cy.get(locators.createNote.input).type('Dialog test note')
+    cy.get(locators.createNote.save).click()
+
+    cy.get(locators.statusBar.database).click()
+
+    // database dialog can be reloaded
+    cy.get('h2').should('contain', 'Database')
+    cy.reload()
+    cy.wait(500)
+    cy.get('h2').should('contain', 'Database')
+
+    // closing the dialog and reloading does not render it
+    cy.get(locators.dialog.close).click()
+    cy.get('h2').should('not.exist', 'Database')
+    cy.reload()
+    cy.wait(500)
+    cy.get('h2').should('not.exist', 'Database')
+
+    // delete note dialog opens properly
+    cy.get(locators.statusBar.delete).click()
+    cy.get('h2').should('contain', 'Delete')
+    cy.reload()
+    cy.wait(500)
+    cy.get('h2').should('contain', 'Delete')
+
+    // closing the dialog and reloading does not render it
+    cy.get(locators.dialog.close).click()
+    cy.get('h2').should('not.exist', 'Delete')
+    cy.reload()
+    cy.wait(500)
+    cy.get('h2').should('not.exist', 'Delete')
+  })
+
   // TODOs:
   // - the sidebar can be opened and closed, hiding and showing the note list
   //    - should add this once the query param has been added to the URL

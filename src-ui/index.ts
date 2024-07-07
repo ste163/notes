@@ -207,12 +207,6 @@ window.addEventListener(NoteEvents.Select, async (event) => {
         // TODO: bug where this still needs to be opened if no note is selected
         // there should be an event that is dispatched to handle dialog url opening
         // ie: handle url params whenever they're read or set
-        //
-        // E2E needs to test for dialog opening after refresh for all possible scenarios
-        // - note selected, opens db
-        // - note selected, opens delete
-        // - no note selected, opens db
-        // - no note selected, DOES NOT open delete, even if it is in param
         createEvent(DialogEvents.OpenDatabase).dispatch()
         break
       default:

@@ -73,6 +73,7 @@ class StatusBar {
     if (container) container.innerHTML = ''
     container?.appendChild(
       new Button({
+        testId: 'setup-database',
         title: 'Setup database',
         style: {
           textWrap: 'nowrap',
