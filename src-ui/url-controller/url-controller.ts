@@ -1,10 +1,3 @@
-/**
- * Goal here is to be a singleton
- * that ALWAYS has the lastest URL state
- * and can be used to update the URL
- * and get URL params
- */
-
 import { config } from 'config'
 
 type UrlSearchParams = 'noteId' | 'dialog'
@@ -31,18 +24,18 @@ class UrlController {
   public setParam(name: UrlSearchParams, value: string) {
     if (!this.allowedParams.includes(name))
       throw new Error(`Invalid param name: ${name}`)
+    this.url = new URL(window.location.href)
     this.url.searchParams.set(name, value)
+    window.history.pushState({}, '', this.url.href)
   }
 
   public removeParam(name: UrlSearchParams) {
     if (!this.allowedParams.includes(name))
       throw new Error(`Invalid param name: ${name}`)
+    this.url = new URL(window.location.href)
     this.url.searchParams.delete(name)
+    window.history.pushState({}, '', this.url.href)
   }
-
-  //   updateUrl() {
-  //     window.history.pushState({}, '', this.url.href)
-  //   }
 }
 
 const urlController = new UrlController()

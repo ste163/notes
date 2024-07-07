@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
-import { NoteEvents, DialogEvents, createEvent } from 'event'
+import { NoteEvents, createEvent, LifeCycleEvents } from 'event'
 import { statusBar } from './status-bar'
 import pkg from '../../../../package.json'
 
@@ -43,7 +43,8 @@ describe('status-bar', () => {
 
     await userEvent.click(deleteButton)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DialogEvents.OpenNoteDelete
+      LifeCycleEvents.UrlChanged,
+      { dialog: 'delete' }
     )
   })
 
@@ -63,7 +64,8 @@ describe('status-bar', () => {
     statusBar.renderAlert('Error message')
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DialogEvents.OpenDatabase
+      LifeCycleEvents.UrlChanged,
+      { dialog: 'database' }
     )
   })
 
@@ -74,7 +76,8 @@ describe('status-bar', () => {
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
     await userEvent.click(getByText(OFFLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DialogEvents.OpenDatabase
+      LifeCycleEvents.UrlChanged,
+      { dialog: 'database' }
     )
   })
 
@@ -86,7 +89,8 @@ describe('status-bar', () => {
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
     await userEvent.click(getByText(ONLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      DialogEvents.OpenDatabase
+      LifeCycleEvents.UrlChanged,
+      { dialog: 'database' }
     )
   })
 

@@ -229,7 +229,7 @@ describe('application flow', () => {
     cy.get(locators.sidebar.note).should('have.length', 0)
   })
 
-  it('Dialogs render properly if no note selected', () => {
+  it('dialogs render properly if no note selected', () => {
     cy.visit('/')
 
     // database dialog renders properly on reload
@@ -254,7 +254,7 @@ describe('application flow', () => {
     cy.get('h2').should('not.exist', 'Delete')
   })
 
-  it('Dialogs render properly if a note is selected', () => {
+  it('dialogs render properly if a note is selected', () => {
     cy.visit('/')
 
     cy.get(locators.createNote.button).click()

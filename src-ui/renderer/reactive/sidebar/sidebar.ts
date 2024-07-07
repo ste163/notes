@@ -64,7 +64,8 @@ class Sidebar {
           id: _id,
           testId: 'note-select',
           title: 'Select note',
-          onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
+          onClick: () =>
+            createEvent(LifeCycleEvents.UrlChanged, { noteId: _id }).dispatch(),
           html: `
         <div>
           <div>${title}</div>

@@ -10,8 +10,6 @@ export enum DatabaseEvents {
 export enum DialogEvents {
   Opened = 'opened-dialog',
   Closed = 'closed-dialog',
-  OpenNoteDelete = 'open-note-delete-dialog',
-  OpenDatabase = 'open-database-dialog',
 }
 
 export enum KeyboardEvents {
