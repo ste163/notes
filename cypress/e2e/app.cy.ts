@@ -292,8 +292,33 @@ describe('application flow', () => {
     cy.get('h2').should('not.exist', 'Delete')
   })
 
-  // TODOs:
-  // - the sidebar can be opened and closed, hiding and showing the note list
-  //    - should add this once the query param has been added to the URL
-  // - test that the mobile view works as expected (ie, mobile sidebar)
+  it('tracks sidebar open/closed state across page reloads', () => {
+    // TODO
+    // visit the home page and the sidebar is open (check that ?sidebar=open was added to url)
+    // validate the sidebar has rendered with create button
+    // refresh page and it stays open
+    //
+    // close sidebar from sidebar CLOSE button and the url updates and the sidebar is closed
+    // refresh ensure this works
+    //
+    // open sidebar from status bar and the url updates and the sidebar is open
+    // close sidebar from status bar and the url updates and the sidebar is closed
+  })
+
+  // TODOs
+  //
+  // MOBILE
+  // - no selected note shows the sidebar only with the create note button
+  // - creating a note opens the selected note in the editor
+  // - refreshing the page opens to the selected note with the sidebar hidden
+  // - opening the sidebar and refreshing keeps the sidebar open
+  //
+  // RESIZING
+  // - if the sidebar is open, in mobile, it stay open in desktop
+  //   - moving the window back to mobile, the sidebar is still open
+  // - if the sidebar is closed in mobile, it stays closed in desktop
+  //   - moving the window back to mobile, the sidebar is still closed
+  //
+  // FUTURE INFRASTRUCTURE DB SYNCING
+  // ... (all db syncing interactions)
 })
