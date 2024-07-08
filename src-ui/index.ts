@@ -7,14 +7,9 @@
  *       on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
  *
- *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
- *      - also add the e2e around this
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - (?) add a warning banner for web-only builds that says:
- *      "Running: web version. This is version is for demo purposes only. Please download
- *       the application for the best experience."
  *    - move all console.logs and console.errors to the logger()
  *      so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
@@ -28,7 +23,6 @@
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
- *   - resize-able sidebar that saves and loads its state to localStorage
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
@@ -52,8 +46,6 @@
  *
  *
  */
-import { config } from 'config'
-import { logger } from 'logger'
 import { database } from 'database'
 import {
   LifeCycleEvents,
@@ -72,7 +64,9 @@ import {
   noteDeleteDialog,
 } from 'renderer/reactive'
 import { AppNotification } from 'components'
+import { urlController } from 'url-controller'
 import { checkIcon } from 'icons'
+import { logger } from 'logger'
 import type { Note } from 'types'
 
 let isMobile: boolean
@@ -87,52 +81,119 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     statusBar.renderActiveNote(null)
 
     handleScreenWidth()
-    createEvent(NoteEvents.GetAll).dispatch()
 
-    const { noteId } = getUrlParams()
+    const { noteId, dialog, sidebar: sidebarParam } = urlController.getParams()
+
+    sidebarParam
+      ? createEvent(LifeCycleEvents.QueryParamUpdate, {
+          sidebar: sidebarParam,
+        }).dispatch()
+      : createEvent(LifeCycleEvents.QueryParamUpdate, {
+          sidebar: 'open',
+        }).dispatch()
 
     if (!noteId) {
       editor.setDisabled(true)
       editor.setNote(null)
     }
-    if (noteId) createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
+
+    noteId
+      ? createEvent(LifeCycleEvents.QueryParamUpdate, { noteId }).dispatch()
+      : createEvent(NoteEvents.GetAll).dispatch()
+
+    if (dialog)
+      createEvent(LifeCycleEvents.QueryParamUpdate, { dialog }).dispatch()
   } catch (error) {
     logger.log('Error in LifeCycleEvents.Init.', 'error', error)
+  }
+})
+
+/**
+ * URL Update event that handles rendering and state
+ * based on query params
+ */
+window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
+  const noteId: string = (event as CustomEvent)?.detail?.noteId
+  const dialog: string = (event as CustomEvent)?.detail?.dialog
+  const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar
+
+  if (sidebarParam) {
+    const openSidebar = () => {
+      isMobile ? setMobileView() : setDesktopView()
+      statusBar.setSidebarButtonActive(true)
+      sidebar.open()
+    }
+
+    const closeSidebar = () => {
+      setDesktopView()
+      statusBar.setSidebarButtonActive(false)
+      sidebar.close()
+    }
+
+    urlController.setParam('sidebar', sidebarParam)
+    sidebarParam === 'open' ? openSidebar() : closeSidebar()
+  }
+
+  if (noteId) {
+    if (editor.getIsDirty()) await saveNote()
+    urlController.setParam('noteId', noteId)
+    createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
+    createEvent(NoteEvents.GetAll).dispatch()
+  }
+
+  if (noteId === null) {
+    urlController.removeParam('noteId')
+    createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
+  }
+
+  if (dialog) {
+    const { noteId } = urlController.getParams()
+    urlController.setParam('dialog', dialog)
+
+    const openDeleteDialog = async () => {
+      const { noteId } = urlController.getParams()
+      if (!noteId) return
+      const note = await database.getById(noteId)
+      if (note) noteDeleteDialog.render(note)
+    }
+
+    // TODO: use consts from dialog class
+    // use an object instead of switch
+    switch (dialog) {
+      case 'delete':
+        noteId && (await openDeleteDialog())
+        break
+      case 'database':
+        databaseDialog.render()
+        break
+      default:
+        break
+    }
+  }
+
+  if (dialog === null) {
+    urlController.removeParam('dialog')
+    // clear the local state of the dialogs
+    noteDeleteDialog.clear()
+    databaseDialog.clear()
   }
 })
 
 window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
   editor.setNote(null)
   statusBar.renderActiveNote(null)
+  createEvent(NoteEvents.GetAll).dispatch()
 })
 
 window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
-  const { noteId } = getUrlParams()
-  const isNoteSelected = !!noteId
-
-  if (isNoteSelected) {
-    sidebar.close()
-  }
-
-  if (!isNoteSelected) {
-    isMobile ? setMobileView() : setDesktopView()
-  }
-})
-
-window.addEventListener(LifeCycleEvents.SidebarOpenOrClose, () => {
-  sidebar.getIsOpen() ? sidebar.close() : sidebar.open()
-})
-
-window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
-  isMobile ? setMobileView() : setDesktopView()
-  statusBar.setSidebarButtonActive(true)
-})
-
-window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
-  setDesktopView()
-  statusBar.setSidebarButtonActive(false)
+  if (isMobile) {
+    setMobileView()
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
+      sidebar: 'open',
+    }).dispatch()
+  } else setDesktopView()
 })
 
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
@@ -154,7 +215,7 @@ window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
 window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     const notes = await database.getAll()
-    const { noteId } = getUrlParams()
+    const { noteId } = urlController.getParams()
     // TODO: if no notes, then emit a new event
     // to handle that state so that we can reset the UI
     // TODO: only renderNoteList if there are notes
@@ -173,42 +234,23 @@ window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     const eventNoteId: string = (event as CustomEvent)?.detail?._id
 
-    if (!eventNoteId) {
-      createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
-      return
-    }
+    if (!eventNoteId) return
 
     const note = await database.getById(eventNoteId)
-    if (editor.getIsDirty()) await saveNote()
 
-    const { noteId, dialog } = getUrlParams()
+    if (isMobile)
+      createEvent(LifeCycleEvents.QueryParamUpdate, {
+        sidebar: 'close',
+      }).dispatch()
 
-    // setup url routing based on the note
-    note ? setUrl({ noteId: eventNoteId, dialog }) : setUrl({ noteId, dialog })
+    if (note) {
+      sidebar.setActiveNote(note?._id)
+      statusBar.renderSavedOn(new Date(note?.updatedAt).toLocaleString())
+    }
 
-    if (isMobile) sidebar.close()
-
-    sidebar.setActiveNote(noteId)
     statusBar.renderActiveNote(note)
-
-    if (note?.updatedAt)
-      statusBar.renderSavedOn(new Date(note.updatedAt).toLocaleString())
-
     editor.setNote(note)
     editor.setCursorPosition('start')
-
-    // based on URL params, render dialogs
-    // TODO: use consts
-    switch (dialog) {
-      case 'delete':
-        note && createEvent(DialogEvents.OpenNoteDelete).dispatch()
-        break
-      case 'database':
-        createEvent(DialogEvents.OpenDatabase).dispatch()
-        break
-      default:
-        break
-    }
 
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
@@ -221,8 +263,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     const { _id } = await database.put({ title, content: '' })
     sidebar.closeInput()
-    createEvent(NoteEvents.Select, { _id }).dispatch()
-    createEvent(NoteEvents.GetAll).dispatch()
+    createEvent(LifeCycleEvents.QueryParamUpdate, { noteId: _id }).dispatch()
   } catch (error) {
     logger.log('Error creating note.', 'error', error)
   }
@@ -263,11 +304,12 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.delete(note)
     logger.log(`Note deleted: ${note.title}`, 'info')
-    // reset state
-    setUrl({})
-    createEvent(DialogEvents.Closed).dispatch()
-    createEvent(NoteEvents.GetAll).dispatch()
-    createEvent(NoteEvents.Select, { _id: null }).dispatch()
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
+      noteId: null,
+    }).dispatch()
+    // specially handling for closing this dialog
+    // as the dialog close event handles the URL update
+    noteDeleteDialog.close()
   } catch (error) {
     logger.log('Error deleting note.', 'error', error)
   }
@@ -330,6 +372,8 @@ window.addEventListener(DatabaseEvents.SyncingPaused, (event) => {
  */
 window.addEventListener(DialogEvents.Opened, (event) => {
   const focusDialog = () => {
+    // because there is not a singleton dialog, find first for now.
+    // The dialog component supports 'n' amount, but the app only uses one at a time
     const dialog = document.querySelectorAll('[role="dialog"]')[0]
     ;(dialog as HTMLElement)?.focus()
   }
@@ -339,32 +383,17 @@ window.addEventListener(DialogEvents.Opened, (event) => {
     100 // need timeout delay to allow dialog to render
   )
 
-  const dialogTitle = (event as CustomEvent)?.detail?.param as string
-  // TODO: dialog titles need to be a const so I can do safer checks.
-  // should come from the dialog Class
-  if (dialogTitle === 'database') statusBar.renderAlert('') // clear the statusBar's alert state
-
-  const { noteId } = getUrlParams()
-  setUrl({ noteId, dialog: dialogTitle })
-
+  const dialogTitle = (event as CustomEvent)?.detail?.dialog as string
+  // TODO: dialog titles need to be a const so I can do safer checks
+  //
+  // clear alert from status bar if the user is opening the db dialog
+  // as that contains the alert information
+  if (dialogTitle === 'database') statusBar.renderAlert('')
   editor.setDisabled(true)
 })
 
 window.addEventListener(DialogEvents.Closed, () => {
-  const { noteId } = getUrlParams()
-  if (noteId) editor.setDisabled(false)
-  setUrl({ noteId })
-})
-
-window.addEventListener(DialogEvents.OpenNoteDelete, async () => {
-  const { noteId } = getUrlParams()
-  if (!noteId) return
-  const note = await database.getById(noteId)
-  if (note) noteDeleteDialog.render(note)
-})
-
-window.addEventListener(DialogEvents.OpenDatabase, () => {
-  databaseDialog.render()
+  editor.setDisabled(false)
 })
 
 /**
@@ -462,47 +491,9 @@ function handleScreenWidth() {
 }
 
 async function fetchNoteFromUrl() {
-  const { noteId } = getUrlParams()
+  const { noteId } = urlController.getParams()
   if (!noteId) throw new Error('No note selected.')
   const note = await database.getById(noteId)
   if (!note) throw new Error('No note found.')
   return note
-}
-
-function getUrlParams() {
-  const searchParams = new URLSearchParams(window.location.search)
-  return {
-    dialog: searchParams.get('dialog') ?? '',
-    noteId: searchParams.get('noteId') ?? '',
-  }
-}
-
-function setUrl({
-  noteId = '',
-  dialog = '',
-}: {
-  noteId?: string
-  dialog?: string
-}) {
-  try {
-    const url = new URL(
-      config.BASE_URL === '/' ? window.location.origin : config.BASE_URL,
-      window.location.origin
-    )
-    const allowedParams = ['noteId', 'dialog']
-    // only prepare to set defined, allowed params
-    const params = allowedParams.reduce(
-      (acc, key) => {
-        if (key === 'noteId' && noteId) acc[key] = noteId
-        if (key === 'dialog' && dialog) acc[key] = dialog
-        return acc
-      },
-      {} as Record<string, string>
-    )
-
-    url.search = params ? new URLSearchParams(params).toString() : ''
-    window.history.replaceState({}, '', url.toString())
-  } catch (error) {
-    logger.log('Error setting URL.', 'error', error)
-  }
 }

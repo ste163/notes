@@ -2,7 +2,7 @@ import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { renderComponent } from 'test-utils'
 import { sidebar } from './sidebar'
-import { NoteEvents, createEvent } from 'event'
+import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import type { Notes } from 'types'
 
 vi.mock('event')
@@ -76,9 +76,12 @@ describe('sidebar', () => {
 
     // clicking note emits event
     await userEvent.click(buttons[2]) // click the first note
-    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Select, {
-      _id: '1',
-    })
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
+      LifeCycleEvents.QueryParamUpdate,
+      {
+        noteId: '1',
+      }
+    )
   })
 
   it('renders active note as disabled', () => {

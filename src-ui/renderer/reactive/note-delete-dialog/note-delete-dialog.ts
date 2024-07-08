@@ -9,7 +9,7 @@ class NoteDeleteDialog {
   private dialog: Dialog | null = null
 
   public render(note: Note) {
-    this.reset()
+    if (this.dialog) this.close()
     this.note = note
     const dialogContent = document.createElement('div')
 
@@ -34,13 +34,18 @@ class NoteDeleteDialog {
     this.dialog.setContent({
       title: 'Delete',
       content: dialogContent,
-      url: 'delete',
+      queryParam: 'delete',
     })
     this.dialog.open()
   }
 
-  private reset() {
-    if (this.dialog) this.dialog.close()
+  public close() {
+    this.dialog?.close()
+  }
+
+  public clear() {
+    this.dialog = null
+    this.note = null
   }
 }
 

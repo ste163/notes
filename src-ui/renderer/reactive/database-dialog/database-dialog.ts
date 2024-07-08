@@ -40,7 +40,7 @@ class DatabaseDialog {
   private formClearButton: HTMLButtonElement | null = null
 
   public render() {
-    this.reset()
+    if (this.dialog) this.close()
     const dialogContent = document.createElement('div')
 
     dialogContent.innerHTML = `
@@ -57,7 +57,7 @@ class DatabaseDialog {
     this.dialog.setContent({
       title: 'Database',
       content: dialogContent,
-      url: 'database',
+      queryParam: 'database',
       classList: 'database-dialog',
     })
 
@@ -66,9 +66,13 @@ class DatabaseDialog {
     this.renderConnectionForm()
   }
 
-  private reset() {
-    if (this.dialog) this.dialog.close()
+  private close() {
+    this.dialog?.close()
     this.areLogsShown = false
+  }
+
+  public clear() {
+    this.dialog = null
   }
 
   public setSyncedOn(date: string | null) {

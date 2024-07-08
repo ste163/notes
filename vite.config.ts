@@ -26,6 +26,7 @@ export default defineConfig({
       'renderer/reactive': '/src-ui/renderer/reactive',
       types: '/src-ui/types',
       'test-utils': '/src-ui/test-utils',
+      'url-controller': '/src-ui/url-controller',
     },
   },
   // TODO: make the build less reliant on TAURI specifically. (or separate the vite configs based on build)

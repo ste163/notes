@@ -8,7 +8,6 @@ class Sidebar {
   private notes: Notes = {}
   private activeNoteId: string = ''
   private inputContainerId = 'note-input-container'
-  private isOpen: boolean = false
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -40,9 +39,10 @@ class Sidebar {
 
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
+        testId: 'close-sidebar',
         id: 'close-sidebar',
         title: 'Close sidebar',
-        onClick: this.close.bind(this),
+        onClick: this.emitClose.bind(this),
         html: `${closeIcon}`,
         style: { border: 'none' },
       }).getElement()
@@ -64,7 +64,10 @@ class Sidebar {
           id: _id,
           testId: 'note-select',
           title: 'Select note',
-          onClick: () => createEvent(NoteEvents.Select, { _id }).dispatch(),
+          onClick: () =>
+            createEvent(LifeCycleEvents.QueryParamUpdate, {
+              noteId: _id,
+            }).dispatch(),
           html: `
         <div>
           <div>${title}</div>
@@ -103,18 +106,10 @@ class Sidebar {
     container.classList.remove('sidebar-opened')
     container.classList.add('sidebar-closed')
     container.innerHTML = '' // reset container
-    this.isOpen = false
-    dispatchEvent(new Event(LifeCycleEvents.SidebarClosed))
   }
 
   public open() {
     this.render()
-    this.isOpen = true
-    dispatchEvent(new Event(LifeCycleEvents.SidebarOpened))
-  }
-
-  public getIsOpen() {
-    return this.isOpen
   }
 
   public closeInput() {
@@ -127,6 +122,12 @@ class Sidebar {
     isFullscreen
       ? container?.classList.add('sidebar-fullscreen')
       : container?.classList.remove('sidebar-fullscreen')
+  }
+
+  private emitClose() {
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
+      sidebar: 'close',
+    }).dispatch()
   }
 
   private setActiveNoteInList() {

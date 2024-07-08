@@ -13,6 +13,7 @@
     "test": "vitest --watch=false",
     "test:watch": "vitest --watch=true",
     "test:e2e": "cypress open",
+    "test:e2e:headless": "cypress run --headless",
     "pre-commit": "tsc --noEmit && eslint .",
     "pre-push": "pnpm test",
     "prepare": "husky install"

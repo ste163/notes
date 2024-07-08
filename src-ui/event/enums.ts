@@ -10,8 +10,6 @@ export enum DatabaseEvents {
 export enum DialogEvents {
   Opened = 'opened-dialog',
   Closed = 'closed-dialog',
-  OpenNoteDelete = 'open-note-delete-dialog',
-  OpenDatabase = 'open-database-dialog',
 }
 
 export enum KeyboardEvents {
@@ -21,11 +19,9 @@ export enum KeyboardEvents {
 export enum LifeCycleEvents {
   Init = 'init',
   WidthChanged = 'width-changed',
-  SidebarOpened = 'sidebar-opened',
-  SidebarClosed = 'sidebar-closed',
-  SidebarOpenOrClose = 'sidebar-open-or-close',
   ShowSaveNotification = 'show-save-notification',
   NoNoteSelected = 'no-note-selected',
+  QueryParamUpdate = 'query-param-update',
 }
 
 export enum LoggerEvents {

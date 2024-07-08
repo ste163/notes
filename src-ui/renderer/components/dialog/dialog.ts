@@ -1,12 +1,12 @@
 import { nanoid } from 'nanoid'
-import { DialogEvents, createEvent } from 'event'
+import { DialogEvents, LifeCycleEvents, createEvent } from 'event'
 import { closeIcon } from 'icons'
 import { trapFocus } from './trap-focus'
 import './dialog.css'
 
 class Dialog {
   private id: string = nanoid()
-  private url: string = ''
+  private queryParam: 'database' | 'delete' | null = null
   private dialog: HTMLDivElement
   private dialogBackdrop: HTMLElement
   private previouslyFocusedOutsideElement: HTMLElement | null = null
@@ -70,15 +70,15 @@ class Dialog {
   public setContent({
     title,
     content,
-    url,
+    queryParam,
     classList,
   }: {
     title: string
     content: HTMLElement
-    url: string
+    queryParam: 'database' | 'delete'
     classList?: string
   }) {
-    this.url = url
+    this.queryParam = queryParam
     if (classList) this.dialog?.classList.add(classList)
     document.getElementById(`dialog-title-${this.id}`)!.innerText = title
     document.getElementById(`dialog-content-${this.id}`)!.appendChild(content)
@@ -93,9 +93,9 @@ class Dialog {
 
     this.dialog.addEventListener('keydown', this.trapFocusListener)
     this.dialog.addEventListener('keydown', this.escapePressListener)
-    window.addEventListener(DialogEvents.Closed, this.closeDialogFromEvent)
 
-    createEvent(DialogEvents.Opened, { param: this.url })?.dispatch()
+    window.addEventListener(DialogEvents.Closed, this.closeDialogFromEvent)
+    createEvent(DialogEvents.Opened, { dialog: this.queryParam })?.dispatch()
   }
 
   public close() {
@@ -104,8 +104,7 @@ class Dialog {
     this.delete()
     if (this.previouslyFocusedOutsideElement)
       this.previouslyFocusedOutsideElement.focus()
-
-    createEvent(DialogEvents.Closed)?.dispatch()
+    createEvent(LifeCycleEvents.QueryParamUpdate, { dialog: null })?.dispatch()
   }
 
   public delete() {

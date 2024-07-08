@@ -25,3 +25,6 @@ dist-ssr
 
 # Tauri specific
 src-tauri/target/
+
+# Cypress
+cypress/screenshots

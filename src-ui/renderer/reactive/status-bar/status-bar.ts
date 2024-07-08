@@ -6,7 +6,8 @@ import {
   fileListIcon,
   saveIcon,
 } from 'icons'
-import { createEvent, DialogEvents, LifeCycleEvents, NoteEvents } from 'event'
+import { createEvent, LifeCycleEvents, NoteEvents } from 'event'
+import { urlController } from 'url-controller'
 import pkg from '../../../../package.json'
 import type { Note } from 'types'
 import './status-bar.css'
@@ -26,17 +27,22 @@ class StatusBar {
         <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
         <div id='status-bar-alert'></div>
         <div id='status-bar-save'></div>
-        <div id='status-bar-settings'></div>
+        <div id='status-bar-delete'></div>
         <div>v${pkg.version}</div>
       </div>`
 
     const sidebarContainer = document.querySelector('#sidebar-container')
     sidebarContainer?.appendChild(
       new Button({
-        id: 'open-sidebar-button',
-        title: 'Open sidebar',
-        onClick: () =>
-          createEvent(LifeCycleEvents.SidebarOpenOrClose).dispatch(),
+        testId: 'status-bar-sidebar-toggle',
+        id: 'handle-sidebar-button',
+        title: 'Handle sidebar',
+        onClick: () => {
+          const { sidebar } = urlController.getParams()
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
+            sidebar: sidebar === 'open' ? 'close' : 'open',
+          }).dispatch()
+        },
         html: `${fileListIcon}`,
         style: { border: 'none' },
       }).getElement()
@@ -47,16 +53,16 @@ class StatusBar {
    * Add or remove active class from the sidebar button
    */
   public setSidebarButtonActive(isActive: boolean) {
-    const button = document.querySelector('#open-sidebar-button')
+    const button = document.querySelector('#handle-sidebar-button')
     if (!button) return
     isActive
-      ? button.classList.add('open-sidebar-button-active')
-      : button.classList.remove('open-sidebar-button-active')
+      ? button.classList.add('handle-sidebar-button-active')
+      : button.classList.remove('handle-sidebar-button-active')
   }
 
   public renderActiveNote(note: Note | null) {
     this.renderSaveButton(note)
-    this.renderSettingsButton(note)
+    this.renderDeleteButton(note)
     this.renderSavedOn(
       note?.updatedAt ? new Date(note.updatedAt).toLocaleString() : null
     )
@@ -73,6 +79,7 @@ class StatusBar {
     if (container) container.innerHTML = ''
     container?.appendChild(
       new Button({
+        testId: 'setup-database',
         title: 'Setup database',
         style: {
           textWrap: 'nowrap',
@@ -83,7 +90,10 @@ class StatusBar {
           ${isConnecting ? 'Attempting connection...' : isConnected ? 'Online' : 'Offline'}
         </span>
         `,
-        onClick: () => createEvent(DialogEvents.OpenDatabase)?.dispatch(),
+        onClick: () =>
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
+            dialog: 'database',
+          })?.dispatch(),
       }).getElement()
     )
   }
@@ -120,7 +130,10 @@ class StatusBar {
           Error
         </span>
         `,
-        onClick: () => createEvent(DialogEvents.OpenDatabase)?.dispatch(),
+        onClick: () =>
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
+            dialog: 'database',
+          })?.dispatch(),
       }).getElement()
     )
   }
@@ -138,14 +151,17 @@ class StatusBar {
     container?.appendChild(saveButton.getElement())
   }
 
-  private renderSettingsButton(note: Note | null) {
-    const container = document.querySelector('#status-bar-settings')
+  private renderDeleteButton(note: Note | null) {
+    const container = document.querySelector('#status-bar-delete')
     if (container) container.innerHTML = ''
     const settingsButton = new Button({
       testId: 'delete-note',
       title: 'Delete note',
       html: deleteIcon,
-      onClick: createEvent(DialogEvents.OpenNoteDelete)?.dispatch,
+      onClick: () =>
+        createEvent(LifeCycleEvents.QueryParamUpdate, {
+          dialog: 'delete',
+        })?.dispatch(),
     })
     settingsButton.setEnabled(!!note)
     container?.appendChild(settingsButton.getElement())
