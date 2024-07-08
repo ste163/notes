@@ -8,7 +8,6 @@ class Sidebar {
   private notes: Notes = {}
   private activeNoteId: string = ''
   private inputContainerId = 'note-input-container'
-  private isOpen: boolean = false
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -113,16 +112,10 @@ class Sidebar {
     container.classList.remove('sidebar-opened')
     container.classList.add('sidebar-closed')
     container.innerHTML = '' // reset container
-    this.isOpen = false
   }
 
   public open() {
     this.render()
-    this.isOpen = true
-  }
-
-  public getIsOpen() {
-    return this.isOpen
   }
 
   public closeInput() {

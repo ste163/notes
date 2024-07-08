@@ -7,14 +7,9 @@
  *       on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
  *
- *  - sidebar state should live in nav bar as a '?sidebar-open=true' query param
- *      - also add the e2e around this
  *  - title edit
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - (?) add a warning banner for web-only builds that says:
- *      "Running: web version. This is version is for demo purposes only. Please download
- *       the application for the best experience."
  *    - move all console.logs and console.errors to the logger()
  *      so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
@@ -28,7 +23,6 @@
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
  *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
- *   - resize-able sidebar that saves and loads its state to localStorage
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
@@ -179,11 +173,9 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
 
   if (dialog === null) {
     urlController.removeParam('dialog')
+    // clear the local state of the dialogs
     noteDeleteDialog.clear()
     databaseDialog.clear()
-    // close dialog event only calls to update the url
-    // because dialog events need to be handled uniquely
-    // due to needing to cleanup the specific instance of the event
   }
 })
 
