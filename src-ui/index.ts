@@ -234,12 +234,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
   try {
     const eventNoteId: string = (event as CustomEvent)?.detail?._id
 
-    // TODO: this can probably be removed, at least the event dispatch
-    // URL event is handling this
-    if (!eventNoteId) {
-      createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
-      return
-    }
+    if (!eventNoteId) return
 
     const note = await database.getById(eventNoteId)
     if (isMobile)
