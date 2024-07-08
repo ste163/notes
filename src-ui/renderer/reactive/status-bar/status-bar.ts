@@ -7,6 +7,7 @@ import {
   saveIcon,
 } from 'icons'
 import { createEvent, LifeCycleEvents, NoteEvents } from 'event'
+import { urlController } from 'url-controller'
 import pkg from '../../../../package.json'
 import type { Note } from 'types'
 import './status-bar.css'
@@ -35,9 +36,12 @@ class StatusBar {
       new Button({
         id: 'open-sidebar-button',
         title: 'Open sidebar',
-        onClick: () =>
-          // TODO: will be done through URL
-          createEvent(LifeCycleEvents.SidebarOpenOrClose).dispatch(),
+        onClick: () => {
+          const { sidebar } = urlController.getParams()
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
+            sidebar: sidebar === 'open' ? 'close' : 'open',
+          }).dispatch()
+        },
         html: `${fileListIcon}`,
         style: { border: 'none' },
       }).getElement()
@@ -86,7 +90,7 @@ class StatusBar {
         </span>
         `,
         onClick: () =>
-          createEvent(LifeCycleEvents.UrlChanged, {
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
             dialog: 'database',
           })?.dispatch(),
       }).getElement()
@@ -126,7 +130,7 @@ class StatusBar {
         </span>
         `,
         onClick: () =>
-          createEvent(LifeCycleEvents.UrlChanged, {
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
             dialog: 'database',
           })?.dispatch(),
       }).getElement()
@@ -154,7 +158,7 @@ class StatusBar {
       title: 'Delete note',
       html: deleteIcon,
       onClick: () =>
-        createEvent(LifeCycleEvents.UrlChanged, {
+        createEvent(LifeCycleEvents.QueryParamUpdate, {
           dialog: 'delete',
         })?.dispatch(),
     })

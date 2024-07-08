@@ -43,7 +43,7 @@ describe('status-bar', () => {
 
     await userEvent.click(deleteButton)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      LifeCycleEvents.UrlChanged,
+      LifeCycleEvents.QueryParamUpdate,
       { dialog: 'delete' }
     )
   })
@@ -64,7 +64,7 @@ describe('status-bar', () => {
     statusBar.renderAlert('Error message')
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      LifeCycleEvents.UrlChanged,
+      LifeCycleEvents.QueryParamUpdate,
       { dialog: 'database' }
     )
   })
@@ -76,7 +76,7 @@ describe('status-bar', () => {
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
     await userEvent.click(getByText(OFFLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      LifeCycleEvents.UrlChanged,
+      LifeCycleEvents.QueryParamUpdate,
       { dialog: 'database' }
     )
   })
@@ -89,7 +89,7 @@ describe('status-bar', () => {
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
     await userEvent.click(getByText(ONLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      LifeCycleEvents.UrlChanged,
+      LifeCycleEvents.QueryParamUpdate,
       { dialog: 'database' }
     )
   })

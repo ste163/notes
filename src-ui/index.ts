@@ -88,7 +88,15 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 
     handleScreenWidth()
 
-    const { noteId, dialog } = urlController.getAllParams()
+    const { noteId, dialog, sidebar: sidebarParam } = urlController.getParams()
+
+    sidebarParam
+      ? createEvent(LifeCycleEvents.QueryParamUpdate, {
+          sidebar: sidebarParam,
+        }).dispatch()
+      : createEvent(LifeCycleEvents.QueryParamUpdate, {
+          sidebar: 'open',
+        }).dispatch()
 
     if (!noteId) {
       editor.setDisabled(true)
@@ -96,25 +104,41 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     }
 
     noteId
-      ? createEvent(LifeCycleEvents.UrlChanged, { noteId }).dispatch()
+      ? createEvent(LifeCycleEvents.QueryParamUpdate, { noteId }).dispatch()
       : createEvent(NoteEvents.GetAll).dispatch()
 
-    if (dialog) createEvent(LifeCycleEvents.UrlChanged, { dialog }).dispatch()
+    if (dialog)
+      createEvent(LifeCycleEvents.QueryParamUpdate, { dialog }).dispatch()
   } catch (error) {
     logger.log('Error in LifeCycleEvents.Init.', 'error', error)
   }
 })
 
-// TODO:
-// rename to urlUpdate
-
 /**
  * URL Update event that handles rendering and state
  * based on query params
  */
-window.addEventListener(LifeCycleEvents.UrlChanged, async (event) => {
+window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
   const noteId: string = (event as CustomEvent)?.detail?.noteId
   const dialog: string = (event as CustomEvent)?.detail?.dialog
+  const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar
+
+  if (sidebarParam) {
+    const openSidebar = () => {
+      isMobile ? setMobileView() : setDesktopView()
+      statusBar.setSidebarButtonActive(true)
+      sidebar.open()
+    }
+
+    const closeSidebar = () => {
+      setDesktopView()
+      statusBar.setSidebarButtonActive(false)
+      sidebar.close()
+    }
+
+    urlController.setParam('sidebar', sidebarParam)
+    sidebarParam === 'open' ? openSidebar() : closeSidebar()
+  }
 
   if (noteId) {
     if (editor.getIsDirty()) await saveNote()
@@ -129,11 +153,11 @@ window.addEventListener(LifeCycleEvents.UrlChanged, async (event) => {
   }
 
   if (dialog) {
-    const { noteId } = urlController.getAllParams()
+    const { noteId } = urlController.getParams()
     urlController.setParam('dialog', dialog)
 
     const openDeleteDialog = async () => {
-      const { noteId } = urlController.getAllParams()
+      const { noteId } = urlController.getParams()
       if (!noteId) return
       const note = await database.getById(noteId)
       if (note) noteDeleteDialog.render(note)
@@ -172,30 +196,12 @@ window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
 window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
-  const { noteId } = urlController.getAllParams()
-  const isNoteSelected = !!noteId
-
-  if (isNoteSelected) {
-    sidebar.close()
-  }
-
-  if (!isNoteSelected) {
-    isMobile ? setMobileView() : setDesktopView()
-  }
-})
-
-window.addEventListener(LifeCycleEvents.SidebarOpenOrClose, () => {
-  sidebar.getIsOpen() ? sidebar.close() : sidebar.open()
-})
-
-window.addEventListener(LifeCycleEvents.SidebarOpened, () => {
-  isMobile ? setMobileView() : setDesktopView()
-  statusBar.setSidebarButtonActive(true)
-})
-
-window.addEventListener(LifeCycleEvents.SidebarClosed, () => {
-  setDesktopView()
-  statusBar.setSidebarButtonActive(false)
+  if (isMobile) {
+    setMobileView()
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
+      sidebar: 'open',
+    }).dispatch()
+  } else setDesktopView()
 })
 
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
@@ -217,7 +223,7 @@ window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
 window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     const notes = await database.getAll()
-    const { noteId } = urlController.getAllParams()
+    const { noteId } = urlController.getParams()
     // TODO: if no notes, then emit a new event
     // to handle that state so that we can reset the UI
     // TODO: only renderNoteList if there are notes
@@ -244,8 +250,10 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     }
 
     const note = await database.getById(eventNoteId)
-
-    if (isMobile) sidebar.close()
+    if (isMobile)
+      createEvent(LifeCycleEvents.QueryParamUpdate, {
+        sidebar: 'close',
+      }).dispatch()
 
     if (note) {
       sidebar.setActiveNote(note?._id)
@@ -267,7 +275,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     const { _id } = await database.put({ title, content: '' })
     sidebar.closeInput()
-    createEvent(LifeCycleEvents.UrlChanged, { noteId: _id }).dispatch()
+    createEvent(LifeCycleEvents.QueryParamUpdate, { noteId: _id }).dispatch()
   } catch (error) {
     logger.log('Error creating note.', 'error', error)
   }
@@ -308,7 +316,7 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.delete(note)
     logger.log(`Note deleted: ${note.title}`, 'info')
-    createEvent(LifeCycleEvents.UrlChanged, {
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
       noteId: null,
     }).dispatch()
     // specially handling for closing this dialog
@@ -492,7 +500,7 @@ function handleScreenWidth() {
 }
 
 async function fetchNoteFromUrl() {
-  const { noteId } = urlController.getAllParams()
+  const { noteId } = urlController.getParams()
   if (!noteId) throw new Error('No note selected.')
   const note = await database.getById(noteId)
   if (!note) throw new Error('No note found.')

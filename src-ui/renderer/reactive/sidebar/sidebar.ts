@@ -42,7 +42,7 @@ class Sidebar {
       new Button({
         id: 'close-sidebar',
         title: 'Close sidebar',
-        onClick: this.close.bind(this),
+        onClick: this.emitClose.bind(this),
         html: `${closeIcon}`,
         style: { border: 'none' },
       }).getElement()
@@ -65,7 +65,9 @@ class Sidebar {
           testId: 'note-select',
           title: 'Select note',
           onClick: () =>
-            createEvent(LifeCycleEvents.UrlChanged, { noteId: _id }).dispatch(),
+            createEvent(LifeCycleEvents.QueryParamUpdate, {
+              noteId: _id,
+            }).dispatch(),
           html: `
         <div>
           <div>${title}</div>
@@ -98,6 +100,12 @@ class Sidebar {
     this.setActiveNoteInList()
   }
 
+  public emitClose() {
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
+      sidebar: 'close',
+    }).dispatch()
+  }
+
   public close() {
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
@@ -105,13 +113,11 @@ class Sidebar {
     container.classList.add('sidebar-closed')
     container.innerHTML = '' // reset container
     this.isOpen = false
-    dispatchEvent(new Event(LifeCycleEvents.SidebarClosed))
   }
 
   public open() {
     this.render()
     this.isOpen = true
-    dispatchEvent(new Event(LifeCycleEvents.SidebarOpened))
   }
 
   public getIsOpen() {

@@ -1,10 +1,10 @@
 import { config } from 'config'
 
-type UrlSearchParams = 'noteId' | 'dialog'
+type UrlSearchParams = 'sidebar' | 'noteId' | 'dialog'
 
 class UrlController {
   private url: URL
-  private allowedParams: UrlSearchParams[] = ['noteId', 'dialog']
+  private allowedParams: UrlSearchParams[] = ['sidebar', 'noteId', 'dialog']
 
   constructor() {
     this.url = new URL(
@@ -13,11 +13,12 @@ class UrlController {
     )
   }
 
-  public getAllParams() {
+  public getParams() {
     const searchParams = new URLSearchParams(window.location.search)
     return {
-      dialog: searchParams.get('dialog') ?? '',
+      sidebar: searchParams.get('sidebar') ?? '',
       noteId: searchParams.get('noteId') ?? '',
+      dialog: searchParams.get('dialog') ?? '',
     }
   }
 

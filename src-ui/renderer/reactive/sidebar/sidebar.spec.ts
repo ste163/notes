@@ -77,7 +77,7 @@ describe('sidebar', () => {
     // clicking note emits event
     await userEvent.click(buttons[2]) // click the first note
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
-      LifeCycleEvents.UrlChanged,
+      LifeCycleEvents.QueryParamUpdate,
       {
         noteId: '1',
       }

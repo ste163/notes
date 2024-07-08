@@ -19,12 +19,9 @@ export enum KeyboardEvents {
 export enum LifeCycleEvents {
   Init = 'init',
   WidthChanged = 'width-changed',
-  SidebarOpened = 'sidebar-opened',
-  SidebarClosed = 'sidebar-closed',
-  SidebarOpenOrClose = 'sidebar-open-or-close',
   ShowSaveNotification = 'show-save-notification',
   NoNoteSelected = 'no-note-selected',
-  UrlChanged = 'url-changed',
+  QueryParamUpdate = 'query-param-update',
 }
 
 export enum LoggerEvents {

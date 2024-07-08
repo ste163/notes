@@ -104,7 +104,7 @@ class Dialog {
     this.delete()
     if (this.previouslyFocusedOutsideElement)
       this.previouslyFocusedOutsideElement.focus()
-    createEvent(LifeCycleEvents.UrlChanged, { dialog: null })?.dispatch()
+    createEvent(LifeCycleEvents.QueryParamUpdate, { dialog: null })?.dispatch()
   }
 
   public delete() {
