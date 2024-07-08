@@ -34,8 +34,9 @@ class StatusBar {
     const sidebarContainer = document.querySelector('#sidebar-container')
     sidebarContainer?.appendChild(
       new Button({
-        id: 'open-sidebar-button',
-        title: 'Open sidebar',
+        testId: 'status-bar-sidebar-toggle',
+        id: 'handle-sidebar-button',
+        title: 'Handle sidebar',
         onClick: () => {
           const { sidebar } = urlController.getParams()
           createEvent(LifeCycleEvents.QueryParamUpdate, {
@@ -52,11 +53,11 @@ class StatusBar {
    * Add or remove active class from the sidebar button
    */
   public setSidebarButtonActive(isActive: boolean) {
-    const button = document.querySelector('#open-sidebar-button')
+    const button = document.querySelector('#handle-sidebar-button')
     if (!button) return
     isActive
-      ? button.classList.add('open-sidebar-button-active')
-      : button.classList.remove('open-sidebar-button-active')
+      ? button.classList.add('handle-sidebar-button-active')
+      : button.classList.remove('handle-sidebar-button-active')
   }
 
   public renderActiveNote(note: Note | null) {

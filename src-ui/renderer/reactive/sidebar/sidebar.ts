@@ -40,6 +40,7 @@ class Sidebar {
 
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
+        testId: 'close-sidebar',
         id: 'close-sidebar',
         title: 'Close sidebar',
         onClick: this.emitClose.bind(this),

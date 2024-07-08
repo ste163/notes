@@ -1,15 +1,9 @@
 const locators = {
-  createNote: {
-    button: '[data-testid="create-note"]',
-    input: '[data-testid="create-note-input"]',
-    save: '[data-testid="create-note-save"]',
-    cancel: '[data-testid="create-note-cancel"]',
+  deleteDialog: {
+    button: '[data-testid="delete-forever"]',
   },
   dialog: {
     close: '[testid="dialog-close"]',
-  },
-  deleteDialog: {
-    button: '[data-testid="delete-forever"]',
   },
   editor: {
     content: '#editor',
@@ -22,13 +16,21 @@ const locators = {
     save: '[data-testid="save-notification"]',
   },
   statusBar: {
-    save: '[data-testid="save-note"]',
-    delete: '[data-testid="delete-note"]',
     database: '[data-testid="setup-database"]',
+    delete: '[data-testid="delete-note"]',
+    save: '[data-testid="save-note"]',
+    sidebarToggle: '[data-testid="status-bar-sidebar-toggle"]',
     savedOn: '[data-testid="status-bar-saved-on"]',
     syncedOn: '[data-testid="status-bar-synced-on"]', // TODO: test when CouchDB is connected
   },
   sidebar: {
+    close: '[data-testid="close-sidebar"]',
+    createNote: {
+      button: '[data-testid="create-note"]',
+      input: '[data-testid="create-note-input"]',
+      save: '[data-testid="create-note-save"]',
+      cancel: '[data-testid="create-note-cancel"]',
+    },
     note: '[data-testid="note-select"]',
   },
 }
@@ -69,25 +71,25 @@ describe('application flow', () => {
     /**
      * Creating note and resetting the input
      */
-    cy.get(locators.createNote.button).click()
+    cy.get(locators.sidebar.createNote.button).click()
 
-    cy.get(locators.createNote.save).should('be.disabled')
-    cy.get(locators.createNote.input).type('My first note')
-    cy.get(locators.createNote.save).should('be.enabled')
+    cy.get(locators.sidebar.createNote.save).should('be.disabled')
+    cy.get(locators.sidebar.createNote.input).type('My first note')
+    cy.get(locators.sidebar.createNote.save).should('be.enabled')
     cy.get(locators.statusBar.savedOn).should('not.exist')
 
     // canceling stops note create and hides input
-    cy.get(locators.createNote.cancel).click()
-    cy.get(locators.createNote.input).should('not.exist')
+    cy.get(locators.sidebar.createNote.cancel).click()
+    cy.get(locators.sidebar.createNote.input).should('not.exist')
 
     // re-opening has cleared inputted value
-    cy.get(locators.createNote.button).click()
-    cy.get(locators.createNote.input).should('have.value', '')
-    cy.get(locators.createNote.save).should('be.disabled')
+    cy.get(locators.sidebar.createNote.button).click()
+    cy.get(locators.sidebar.createNote.input).should('have.value', '')
+    cy.get(locators.sidebar.createNote.save).should('be.disabled')
 
     // can create it
-    cy.get(locators.createNote.input).type('My first note')
-    cy.get(locators.createNote.save).click()
+    cy.get(locators.sidebar.createNote.input).type('My first note')
+    cy.get(locators.sidebar.createNote.save).click()
 
     /**
      * Adding note content and saving
@@ -130,9 +132,9 @@ describe('application flow', () => {
      * Can create another note and swap between the two.
      * If the note is dirty, content is saved before swapping
      */
-    cy.get(locators.createNote.button).click()
-    cy.get(locators.createNote.input).type('My second note')
-    cy.get(locators.createNote.save).click()
+    cy.get(locators.sidebar.createNote.button).click()
+    cy.get(locators.sidebar.createNote.input).type('My second note')
+    cy.get(locators.sidebar.createNote.save).click()
 
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
@@ -257,9 +259,9 @@ describe('application flow', () => {
   it('dialogs render properly if a note is selected', () => {
     cy.visit('/')
 
-    cy.get(locators.createNote.button).click()
-    cy.get(locators.createNote.input).type('Dialog test note')
-    cy.get(locators.createNote.save).click()
+    cy.get(locators.sidebar.createNote.button).click()
+    cy.get(locators.sidebar.createNote.input).type('Dialog test note')
+    cy.get(locators.sidebar.createNote.save).click()
 
     cy.get(locators.statusBar.database).click()
 
@@ -293,16 +295,39 @@ describe('application flow', () => {
   })
 
   it('tracks sidebar open/closed state across page reloads', () => {
-    // TODO
-    // visit the home page and the sidebar is open (check that ?sidebar=open was added to url)
-    // validate the sidebar has rendered with create button
-    // refresh page and it stays open
-    //
-    // close sidebar from sidebar CLOSE button and the url updates and the sidebar is closed
-    // refresh ensure this works
-    //
-    // open sidebar from status bar and the url updates and the sidebar is open
-    // close sidebar from status bar and the url updates and the sidebar is closed
+    cy.visit('/')
+    // default sidebar value added
+    cy.location('search').should('eq', '?sidebar=open')
+
+    // sidebar was opened and stays open on refresh
+    cy.get(locators.sidebar.createNote.button).should('be.visible')
+    cy.reload()
+    cy.wait(500)
+    cy.location('search').should('eq', '?sidebar=open')
+    cy.get(locators.sidebar.createNote.button).should('be.visible')
+
+    // closing sidebar from sidebar close button
+    cy.get(locators.sidebar.close).click()
+    cy.location('search').should('eq', '?sidebar=close')
+    cy.get(locators.sidebar.createNote.button).should('not.exist')
+    cy.reload()
+    cy.wait(500)
+    cy.location('search').should('eq', '?sidebar=close')
+    cy.get(locators.sidebar.createNote.button).should('not.exist')
+
+    // handle sidebar open close from status bar
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.location('search').should('eq', '?sidebar=open')
+    cy.get(locators.sidebar.createNote.button).should('be.visible')
+    cy.reload()
+    cy.wait(500)
+    cy.location('search').should('eq', '?sidebar=open')
+    cy.get(locators.sidebar.createNote.button).should('be.visible')
+
+    // and we can close it
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.location('search').should('eq', '?sidebar=close')
+    cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
   // TODOs
