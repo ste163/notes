@@ -100,12 +100,6 @@ class Sidebar {
     this.setActiveNoteInList()
   }
 
-  public emitClose() {
-    createEvent(LifeCycleEvents.QueryParamUpdate, {
-      sidebar: 'close',
-    }).dispatch()
-  }
-
   public close() {
     const container = document.querySelector('#sidebar')
     if (!container) throw new Error('Sidebar container not found')
@@ -128,6 +122,12 @@ class Sidebar {
     isFullscreen
       ? container?.classList.add('sidebar-fullscreen')
       : container?.classList.remove('sidebar-fullscreen')
+  }
+
+  private emitClose() {
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
+      sidebar: 'close',
+    }).dispatch()
   }
 
   private setActiveNoteInList() {

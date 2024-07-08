@@ -384,8 +384,11 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   )
 
   const dialogTitle = (event as CustomEvent)?.detail?.dialog as string
-  // TODO: dialog titles need to be a const so I can do safer checks; should come from the dialog Class
-  if (dialogTitle === 'database') statusBar.renderAlert('') // clear the statusBar's alert state
+  // TODO: dialog titles need to be a const so I can do safer checks
+  //
+  // clear alert from status bar if the user is opening the db dialog
+  // as that contains the alert information
+  if (dialogTitle === 'database') statusBar.renderAlert('')
   editor.setDisabled(true)
 })
 
