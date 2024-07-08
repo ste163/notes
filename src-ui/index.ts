@@ -237,6 +237,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     if (!eventNoteId) return
 
     const note = await database.getById(eventNoteId)
+
     if (isMobile)
       createEvent(LifeCycleEvents.QueryParamUpdate, {
         sidebar: 'close',
