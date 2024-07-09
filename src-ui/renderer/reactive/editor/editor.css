@@ -1,3 +1,9 @@
+/* TODO:
+editor's 'mobile' view state
+actually needs to be based on the width of the editor element
+so that it shrinks properly when the sidebar
+grows and shrinks */
+
 #editor {
   flex-grow: 1;
   display: flex;

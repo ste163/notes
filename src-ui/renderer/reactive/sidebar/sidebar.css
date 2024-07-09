@@ -1,36 +1,47 @@
 #sidebar {
   display: flex;
   grid-area: sidebar;
+  overflow-y: scroll;
 }
 
 .sidebar-main {
   display: flex;
   flex-direction: column;
+  width: 13.5rem;
 }
 
-#sidebar-resizer {
+/* The handle allows for easier grabbing of the resizing element */
+#sidebar-resizer-handle {
+  display: flex;
+  cursor: ew-resize;
+  width: 10px;
+  height: 100%;
+  position: relative;
+  justify-content: center;
+}
+
+#sidebar-resizer-bar {
   cursor: ew-resize;
   width: 0.13rem;
   background-color: var(--outline-color);
   transition: width 0.1s ease;
-  position: relative; /* Needed for absolute positioning of ::after */
 }
 
-#sidebar-resizer::after {
+#sidebar-resizer-handle::after {
   content: '';
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
   height: 100%;
-  width: 0.13rem; /* Initial width of the pseudo-element */
-  background-color: transparent; /* Initial background-color */
+  width: 0.13rem;
+  background-color: transparent;
   transition:
     width 0.1s ease,
     background-color 0.1s ease;
 }
 
-#sidebar-resizer:hover::after {
+#sidebar-resizer-handle:hover::after {
   width: 0.26rem;
   background-color: var(--outline-color);
 }
@@ -98,7 +109,9 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 13.5rem;
+  /* TODO: these need to follow with the resized container */
+  /* and need to be a percentage smaller */
+  max-width: 12.5rem;
 }
 
 .note-select-container > button:hover {

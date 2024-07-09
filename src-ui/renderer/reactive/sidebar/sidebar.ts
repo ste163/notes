@@ -27,7 +27,9 @@ class Sidebar {
         </div>
         <div id='sidebar-list'></div>
       </div>
-      <div id='sidebar-resizer'></div>`
+      <div id='sidebar-resizer-handle'>
+        <div id='sidebar-resizer-bar'></div>
+      </div>`
 
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
@@ -60,19 +62,32 @@ class Sidebar {
       function handleMouseMove(e: MouseEvent) {
         if (!main) return
         const screenWidth = window.innerWidth
-        const maxWidth = screenWidth * 0.8 // 80% of the screen width
+        const maxWidth = screenWidth * 0.8
         const newWidth = e.clientX - main.getBoundingClientRect().left
         const clampedWidth = Math.max(160, Math.min(newWidth, maxWidth)) // Clamp the width
         main.style.width = `${clampedWidth}px`
       }
 
+      /**
+       * Not explicitly cleaning up event listeners elsewhere
+       * as whenever the user clicks they're added and removed
+       * when they stop clicking. Testing proves this works as expected.
+       * Leaving as is unless an issue arises.
+       */
       function stopResizing() {
+        // get the current width that the element is set to
+        const currentWidth = main?.style.width
+        console.log('currentWidth', currentWidth)
+        // save to local storage
+        // TODO: refactor useDatabaseDetails to
+        // be useLocalStorage
+
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', stopResizing)
       }
 
       const resizer = document.querySelector(
-        '#sidebar-resizer'
+        '#sidebar-resizer-handle'
       ) as HTMLDivElement
 
       resizer.addEventListener('mousedown', (e) => {
@@ -80,6 +95,9 @@ class Sidebar {
         document.addEventListener('mousemove', handleMouseMove)
         document.addEventListener('mouseup', stopResizing)
       })
+
+      // TODO:
+      // load width from local storage
     }
 
     setupResizer()

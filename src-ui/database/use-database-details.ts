@@ -1,13 +1,12 @@
 import { logger } from 'logger'
 
-// NOTE:
-// this could very easily live inside the Database class instance.
-// consider that approach during the DB refactor
-//
+// TODO:
 // actually, because I know there is more data for local storage
-// this could be a LocalStorage class or UseLocalStorage
+// this could be a UseLocalStorage
 // and then it passes in a "type" and content
 // so that it can do the runtime validation
+//
+// and then move it to a separate index
 interface DatabaseDetails {
   [key: string]: string // needed for correct type indexing
   username: string
