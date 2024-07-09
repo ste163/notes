@@ -1,13 +1,38 @@
 #sidebar {
   display: flex;
-  flex-direction: column;
   grid-area: sidebar;
-  overflow-y: hidden;
 }
 
-.sidebar-opened {
-  width: 12rem;
-  border-right: var(--outline-color) 0.13rem solid;
+.sidebar-main {
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar-resizer {
+  cursor: ew-resize;
+  width: 0.13rem;
+  background-color: var(--outline-color);
+  transition: width 0.1s ease;
+  position: relative; /* Needed for absolute positioning of ::after */
+}
+
+#sidebar-resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  width: 0.13rem; /* Initial width of the pseudo-element */
+  background-color: transparent; /* Initial background-color */
+  transition:
+    width 0.1s ease,
+    background-color 0.1s ease;
+}
+
+#sidebar-resizer:hover::after {
+  width: 0.26rem;
+  background-color: var(--outline-color);
 }
 
 .sidebar-closed {

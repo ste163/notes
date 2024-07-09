@@ -15,16 +15,19 @@ class Sidebar {
   }
 
   public render() {
-    const container = document.querySelector('#sidebar')
+    const container = document.querySelector('#sidebar') as HTMLDivElement
     if (!container) throw new Error('Sidebar container not found')
     container.classList.remove('sidebar-closed')
     container.classList.add('sidebar-opened')
     container.innerHTML = '' // reset container
     container.innerHTML = `
-      <div id='sidebar-menu'>
-        <div id='sidebar-menu-controls'></div>
+      <div class='sidebar-main'>
+        <div id='sidebar-menu'>
+          <div id='sidebar-menu-controls'></div>
+        </div>
+        <div id='sidebar-list'></div>
       </div>
-      <div id='sidebar-list'></div>`
+      <div id='sidebar-resizer'></div>`
 
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
@@ -50,6 +53,36 @@ class Sidebar {
 
     this.renderNoteList(this.notes)
     this.setActiveNoteInList()
+
+    const setupResizer = () => {
+      const main = document.querySelector('.sidebar-main') as HTMLDivElement
+
+      function handleMouseMove(e: MouseEvent) {
+        if (!main) return
+        const screenWidth = window.innerWidth
+        const maxWidth = screenWidth * 0.8 // 80% of the screen width
+        const newWidth = e.clientX - main.getBoundingClientRect().left
+        const clampedWidth = Math.max(160, Math.min(newWidth, maxWidth)) // Clamp the width
+        main.style.width = `${clampedWidth}px`
+      }
+
+      function stopResizing() {
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', stopResizing)
+      }
+
+      const resizer = document.querySelector(
+        '#sidebar-resizer'
+      ) as HTMLDivElement
+
+      resizer.addEventListener('mousedown', (e) => {
+        e.preventDefault()
+        document.addEventListener('mousemove', handleMouseMove)
+        document.addEventListener('mouseup', stopResizing)
+      })
+    }
+
+    setupResizer()
   }
 
   public renderNoteList(notes: Notes = {}) {
