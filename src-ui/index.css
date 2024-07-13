@@ -117,12 +117,6 @@ strong {
   margin-left: 2rem;
 }
 
-@media (max-width: 640px) {
-  .hide-on-mobile {
-    display: none !important;
-  }
-}
-
 /* Cleaner styling for scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
@@ -134,7 +128,7 @@ strong {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
+  border-radius: 5px;
   border: 0px solid transparent;
   background-clip: content-box;
 }

@@ -28,17 +28,64 @@ class Editor {
   private note: Note | null = null
   private isDirty = false
 
+  private resizeObserver: ResizeObserver | null = null
+  private editorTitleContainer: HTMLDivElement | null = null
+  private editorMenuContainer: HTMLDivElement | null = null
+  private editorContainer: HTMLDivElement | null = null
+
   public render() {
     const container = document.querySelector('#main')
     if (!container) throw new Error('Main container not found')
 
     container.innerHTML = ''
-    container.innerHTML = `
-      <div id='editor-title-container'></div>
-      <div id='editor-menu'></div>
-      <div id='editor'></div>`
+
+    const resetResizeObserver = (container: Element) => {
+      if (this.resizeObserver) this.resizeObserver.disconnect()
+      const handleResize = (entries: ResizeObserverEntry[]) => {
+        const main = entries[0] // only watching one element
+        console.log(
+          'I am MAIN being resized, so assign mobile classes based on this',
+          main.contentRect.width
+        )
+
+        // todo: based on the width of #main, we're going to apply different classes
+        // to the editor, title, and menu.
+        // the most important now is:
+        // MENU
+        // TITLE
+        // as editor is pretty responsive already
+      }
+      this.resizeObserver = new ResizeObserver(handleResize)
+      this.resizeObserver.observe(container)
+    }
+
+    const resetContainers = () => {
+      this.editorTitleContainer = null
+      this.editorMenuContainer = null
+      this.editorContainer = null
+
+      const editorTitleDiv = document.createElement('div')
+      editorTitleDiv.id = 'editor-title-container'
+      const editorMenuDiv = document.createElement('div')
+      editorMenuDiv.id = 'editor-menu'
+      const editorDiv = document.createElement('div')
+      editorDiv.id = 'editor'
+
+      container?.appendChild(editorTitleDiv)
+      container?.appendChild(editorMenuDiv)
+      container?.appendChild(editorDiv)
+
+      this.editorTitleContainer = editorTitleDiv
+      this.editorMenuContainer = editorMenuDiv
+      this.editorContainer = editorDiv
+    }
+
+    resetResizeObserver(container)
+    resetContainers()
+
     this.isDirty = false
-    this.editor = this.instantiateTipTap(this.note)
+    const tipTap = this.instantiateTipTap(this.note)
+    if (tipTap) this.editor = tipTap
     this.renderMenu()
     // only render title if there is a note
     // and only have the editor enabled if there is a note
@@ -47,9 +94,8 @@ class Editor {
   }
 
   public renderMenu(isDisabled = false) {
-    const container = document.querySelector('#editor-menu')
-    if (!container) return
-    container.innerHTML = '' // reset container before rendering
+    if (!this.editorMenuContainer) return
+    this.editorMenuContainer.innerHTML = '' // reset container before rendering
 
     const buttons = instantiateMenuButtons(this.editor)
     buttons.forEach((button) => {
@@ -64,10 +110,9 @@ class Editor {
         if (!groupContainer) {
           groupContainer = document.createElement('div')
           groupContainer.id = groupId
-          if (group === '1') groupContainer.classList.add('hide-on-mobile')
         }
 
-        container.appendChild(groupContainer)
+        this.editorMenuContainer?.appendChild(groupContainer)
         groupContainer.appendChild(button)
       }
 
@@ -84,6 +129,7 @@ class Editor {
   }
 
   public setNote(note: Note | null) {
+    console.log('NOTE SET')
     this.note = note
     this.render()
   }
@@ -117,21 +163,21 @@ class Editor {
   }
 
   private updateTitle(title: string) {
-    const container = document.querySelector('#editor-title-container')
-    if (container) container.innerHTML = ''
+    if (!this.editorTitleContainer) return
+    this.editorTitleContainer.innerHTML = ''
 
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(title))
     span.classList.add(title ? 'editor-title' : 'editor-title-disabled')
 
-    container?.appendChild(
+    this.editorTitleContainer?.appendChild(
       new Button({
         testId: 'edit-title-button',
         title: 'Edit title',
         html: span.outerHTML, // inject the full span element
         style: { border: 'none', width: 'inherit' },
         onClick: () => {
-          this.renderTitleEdit(container as Element)
+          this.renderTitleEdit(this.editorTitleContainer as Element)
         },
       }).getElement()
     )
@@ -191,8 +237,9 @@ class Editor {
   }
 
   private instantiateTipTap(note: Note | null) {
+    if (!this.editorContainer) return
     const editor = new TipTapEditor({
-      element: document.querySelector('#editor') as Element,
+      element: this.editorContainer,
       extensions: [
         Document,
         History,

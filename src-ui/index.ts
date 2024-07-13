@@ -469,16 +469,17 @@ function setMobileView() {
 }
 
 function toggleEditorVisibility(isVisible: boolean) {
-  const body = document.body
-  const mainElement = document.querySelector('#main') as HTMLElement
+  // TODO: revisit this once the resizing is implemented
+  // const body = document.body
+  // const mainElement = document.querySelector('#main') as HTMLElement
   if (isVisible) {
-    mainElement.style.display = 'flex'
-    body.classList.remove('body-invisible')
-    body.classList.add('body-visible')
+    // mainElement.style.display = 'flex'
+    // body.classList.remove('body-invisible')
+    // body.classList.add('body-visible')
   } else {
-    mainElement.style.display = 'none'
-    body.classList.remove('body-visible')
-    body.classList.add('body-invisible')
+    // mainElement.style.display = 'none'
+    // body.classList.remove('body-visible')
+    // body.classList.add('body-invisible')
   }
 }
 

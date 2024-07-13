@@ -57,15 +57,16 @@ class Sidebar {
     this.setActiveNoteInList()
 
     const setupResizer = () => {
-      const main = document.querySelector('.sidebar-main') as HTMLDivElement
+      const element = document.querySelector('.sidebar-main') as HTMLDivElement
 
       function handleMouseMove(e: MouseEvent) {
-        if (!main) return
+        if (!element) return
         const screenWidth = window.innerWidth
-        const maxWidth = screenWidth * 0.8
-        const newWidth = e.clientX - main.getBoundingClientRect().left
-        const clampedWidth = Math.max(160, Math.min(newWidth, maxWidth)) // Clamp the width
-        main.style.width = `${clampedWidth}px`
+        const minWidth = 200
+        const maxWidth = screenWidth * 0.5
+        const newWidth = e.clientX - element.getBoundingClientRect().left
+        const clampedWidth = Math.max(minWidth, Math.min(newWidth, maxWidth)) // Clamp the width
+        element.style.width = `${clampedWidth}px`
       }
 
       /**
@@ -76,8 +77,8 @@ class Sidebar {
        */
       function stopResizing() {
         // get the current width that the element is set to
-        const currentWidth = main?.style.width
-        console.log('currentWidth', currentWidth)
+        const currentWidth = element?.style.width
+        console.log('SIDEBAR WIDTH:', currentWidth)
         // save to local storage
         // TODO: refactor useDatabaseDetails to
         // be useLocalStorage
@@ -168,8 +169,10 @@ class Sidebar {
     container?.remove()
   }
 
+  // TODO: fix as this is broken
   public toggleFullscreen(isFullscreen: boolean) {
-    const container = document.querySelector('#sidebar')
+    // probably apply using the sidebarMain container living as a private variable on this class?
+    const container = document.querySelector('.sidebar-main')
     isFullscreen
       ? container?.classList.add('sidebar-fullscreen')
       : container?.classList.remove('sidebar-fullscreen')
