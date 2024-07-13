@@ -90,7 +90,17 @@ class Editor {
         console.log({ lastGroupIndexInEllipsisMenu })
 
         // tests are below, can be moved into a good setup config
-        // once i get it all working and see the pattern
+        // once i get it all working and see the patterns
+
+        if (width > 700 && lastGroupIndexInEllipsisMenu === 4) {
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInEllipsisMenu}`
+          )
+          if (lastGroup.length) {
+            lastGroup.forEach((group) => editorMenu?.appendChild(group))
+          }
+        }
+
         if (width < 700 && lastGroupIndexInMainMenu === 4) {
           const ellipsisMenu = document.querySelector(
             '.editor-ellipsis-menu-hidden'
@@ -103,6 +113,15 @@ class Editor {
           }
         }
 
+        if (width > 600 && lastGroupIndexInEllipsisMenu === 3) {
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInEllipsisMenu}`
+          )
+          if (lastGroup.length) {
+            lastGroup.forEach((group) => editorMenu?.appendChild(group))
+          }
+        }
+
         if (width < 600 && lastGroupIndexInMainMenu === 3) {
           const ellipsisMenu = document.querySelector(
             '.editor-ellipsis-menu-hidden'
@@ -112,6 +131,15 @@ class Editor {
           )
           if (ellipsisMenu && lastGroup.length) {
             lastGroup.forEach((group) => ellipsisMenu.appendChild(group))
+          }
+        }
+
+        if (width > 500 && lastGroupIndexInEllipsisMenu === 2) {
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInEllipsisMenu}`
+          )
+          if (lastGroup.length) {
+            lastGroup.forEach((group) => editorMenu?.appendChild(group))
           }
         }
 
