@@ -43,10 +43,89 @@ class Editor {
       if (this.resizeObserver) this.resizeObserver.disconnect()
       const handleResize = (entries: ResizeObserverEntry[]) => {
         const main = entries[0] // only watching one element
-        console.log(
-          'I am MAIN being resized, so assign mobile classes based on this',
-          main.contentRect.width
+        const width = main.contentRect.width
+
+        const editorMenu = document.querySelector('#editor-menu')
+        const editorMenuGroups = editorMenu?.querySelectorAll('[data-group]')
+
+        const ellipsisMenu = document.querySelector(
+          '.editor-ellipsis-menu-hidden'
         )
+        const ellipsisMenuGroups =
+          ellipsisMenu?.querySelectorAll('[data-group]')
+
+        const getGroupIndex = (
+          elements: NodeListOf<Element> | undefined,
+          order: 'asc' | 'dsc'
+        ) => {
+          return parseInt(
+            Array.from(elements || [])
+              .sort((a, b) =>
+                order === 'asc'
+                  ? parseInt(a?.getAttribute('data-group') || '0') -
+                    parseInt(b?.getAttribute('data-group') || '0')
+                  : parseInt(b?.getAttribute('data-group') || '0') -
+                    parseInt(a?.getAttribute('data-group') || '0')
+              )?.[0]
+              ?.getAttribute('data-group') || '0'
+          )
+        }
+
+        // NOTE:
+        // this is working to shift MAIN to ELLIPSIS
+        // need to setup shifting ELLIPSIS to MAIN
+        //
+        // note: the ordering of the groups is important when appending them
+        // and that currently isn't being tracked (current setup is appending only)
+        console.log({ ellipsisMenuGroups })
+        console.log({ editorMenuGroups })
+        const lastGroupIndexInEllipsisMenu = getGroupIndex(
+          ellipsisMenuGroups,
+          'asc'
+        )
+        const lastGroupIndexInMainMenu = lastGroupIndexInEllipsisMenu
+          ? lastGroupIndexInEllipsisMenu - 1
+          : getGroupIndex(editorMenuGroups, 'dsc')
+        console.log({ lastGroupIndexInMainMenu })
+        console.log({ lastGroupIndexInEllipsisMenu })
+
+        // tests are below, can be moved into a good setup config
+        // once i get it all working and see the pattern
+        if (width < 700 && lastGroupIndexInMainMenu === 4) {
+          const ellipsisMenu = document.querySelector(
+            '.editor-ellipsis-menu-hidden'
+          )
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInMainMenu}`
+          )
+          if (ellipsisMenu && lastGroup.length) {
+            lastGroup.forEach((group) => ellipsisMenu.appendChild(group))
+          }
+        }
+
+        if (width < 600 && lastGroupIndexInMainMenu === 3) {
+          const ellipsisMenu = document.querySelector(
+            '.editor-ellipsis-menu-hidden'
+          )
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInMainMenu}`
+          )
+          if (ellipsisMenu && lastGroup.length) {
+            lastGroup.forEach((group) => ellipsisMenu.appendChild(group))
+          }
+        }
+
+        if (width < 500 && lastGroupIndexInMainMenu === 2) {
+          const ellipsisMenu = document.querySelector(
+            '.editor-ellipsis-menu-hidden'
+          )
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInMainMenu}`
+          )
+          if (ellipsisMenu && lastGroup.length) {
+            lastGroup.forEach((group) => ellipsisMenu.appendChild(group))
+          }
+        }
 
         // todo: based on the width of #main, we're going to apply different classes
         // to the editor, title, and menu.
@@ -101,15 +180,12 @@ class Editor {
   public renderMenu(isDisabled = false) {
     if (!this.editorMenuContainer) return
 
-    const createButtonGroups = (
-      button: HTMLButtonElement,
-      groupIdentifier: 'main' | 'ellipsis'
-    ) => {
+    const createButtonGroups = (button: HTMLButtonElement) => {
       if (isDisabled) button.disabled = true
       const group = button.dataset.group
       if (!group) throw new Error('button is not assigned to a group')
 
-      const groupId = `menu-${groupIdentifier}-group-${group}`
+      const groupId = `menu-group-${group}`
       let groupContainer = document.querySelector(`#${groupId}`)
       if (!groupContainer) {
         groupContainer = document.createElement('div')
@@ -120,30 +196,18 @@ class Editor {
     }
 
     this.editorMenuContainer.innerHTML = '' // reset container before rendering
+
+    const buttons = instantiateMenuButtons(this.editor)
+    buttons
+      .map(createButtonGroups)
+      .forEach((groupContainer) =>
+        this.editorMenuContainer?.appendChild(groupContainer)
+      )
+
+    // TODO: once the moving into the containers is working properly
+    // add the ellipsis button itself that will open toggle the hidden menu
     const ellipsisMenu = document.createElement('div')
     ellipsisMenu.classList.add('editor-ellipsis-menu-hidden')
-
-    const mainButtons = instantiateMenuButtons(this.editor)
-    const ellipsisButtons = instantiateMenuButtons(this.editor)
-
-    mainButtons
-      .map((button) => createButtonGroups(button, 'main'))
-      .forEach((groupContainer) => {
-        this.editorMenuContainer?.appendChild(groupContainer)
-      })
-
-    // TODO: now that both are rendering, add an ellipsis button that toggles
-    // the visibility of the ellipsis menu
-    // - then only show the ellipsis menu when we're on smaller sizes
-    // - and hide some of the other buttons
-    // - starting with the code blocks and checks, and moving to the left (group, by group)
-    // - MAY need to do a different approach to this setup; however, this is the first idea
-
-    ellipsisButtons
-      .map((button) => createButtonGroups(button, 'ellipsis'))
-      .forEach((groupContainer) => {
-        ellipsisMenu.appendChild(groupContainer)
-      })
 
     this.editorMenuContainer.appendChild(ellipsisMenu)
   }

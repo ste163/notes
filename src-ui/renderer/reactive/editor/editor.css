@@ -70,7 +70,9 @@ grows and shrinks */
 }
 
 .editor-ellipsis-menu-hidden {
-  display: none !important;
+  /* will need to use !important
+  or re-adjust how the classes are handled here (probs that) */
+  display: none;
 }
 
 /* TipTap/ProseMirror specific */
