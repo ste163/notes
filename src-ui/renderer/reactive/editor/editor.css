@@ -69,6 +69,10 @@ grows and shrinks */
   border: none;
 }
 
+.editor-ellipsis-menu-hidden {
+  display: none !important;
+}
+
 /* TipTap/ProseMirror specific */
 .ProseMirror {
   height: 100%;

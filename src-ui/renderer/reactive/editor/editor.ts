@@ -54,6 +54,11 @@ class Editor {
         // MENU
         // TITLE
         // as editor is pretty responsive already
+        //
+        //TODO
+        // for the menu bar, create a new button that holds most of the buttons
+        // under an ellipsis menu that opens a popout that includes all the buttons.
+        // - it will always be in the DOM, but hidden unless the div is small
       }
       this.resizeObserver = new ResizeObserver(handleResize)
       this.resizeObserver.observe(container)
@@ -95,29 +100,52 @@ class Editor {
 
   public renderMenu(isDisabled = false) {
     if (!this.editorMenuContainer) return
-    this.editorMenuContainer.innerHTML = '' // reset container before rendering
 
-    const buttons = instantiateMenuButtons(this.editor)
-    buttons.forEach((button) => {
+    const createButtonGroups = (
+      button: HTMLButtonElement,
+      groupIdentifier: 'main' | 'ellipsis'
+    ) => {
       if (isDisabled) button.disabled = true
+      const group = button.dataset.group
+      if (!group) throw new Error('button is not assigned to a group')
 
-      const assignButtonToGroup = () => {
-        const group = button.dataset.group
-        if (!group) throw new Error('button is not assigned to a group')
-
-        const groupId = `menu-group-${group}`
-        let groupContainer = document.querySelector(`#${groupId}`)
-        if (!groupContainer) {
-          groupContainer = document.createElement('div')
-          groupContainer.id = groupId
-        }
-
-        this.editorMenuContainer?.appendChild(groupContainer)
-        groupContainer.appendChild(button)
+      const groupId = `menu-${groupIdentifier}-group-${group}`
+      let groupContainer = document.querySelector(`#${groupId}`)
+      if (!groupContainer) {
+        groupContainer = document.createElement('div')
+        groupContainer.id = groupId
       }
+      groupContainer.appendChild(button)
+      return groupContainer
+    }
 
-      assignButtonToGroup()
-    })
+    this.editorMenuContainer.innerHTML = '' // reset container before rendering
+    const ellipsisMenu = document.createElement('div')
+    ellipsisMenu.classList.add('editor-ellipsis-menu-hidden')
+
+    const mainButtons = instantiateMenuButtons(this.editor)
+    const ellipsisButtons = instantiateMenuButtons(this.editor)
+
+    mainButtons
+      .map((button) => createButtonGroups(button, 'main'))
+      .forEach((groupContainer) => {
+        this.editorMenuContainer?.appendChild(groupContainer)
+      })
+
+    // TODO: now that both are rendering, add an ellipsis button that toggles
+    // the visibility of the ellipsis menu
+    // - then only show the ellipsis menu when we're on smaller sizes
+    // - and hide some of the other buttons
+    // - starting with the code blocks and checks, and moving to the left (group, by group)
+    // - MAY need to do a different approach to this setup; however, this is the first idea
+
+    ellipsisButtons
+      .map((button) => createButtonGroups(button, 'ellipsis'))
+      .forEach((groupContainer) => {
+        ellipsisMenu.appendChild(groupContainer)
+      })
+
+    this.editorMenuContainer.appendChild(ellipsisMenu)
   }
 
   public getIsDirty() {

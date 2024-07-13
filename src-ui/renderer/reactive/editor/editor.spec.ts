@@ -18,7 +18,7 @@ const note: Note = {
 
 describe('editor', () => {
   it('if title was not changed, then the original title renders', async () => {
-    const { getByRole, queryByRole } = renderComponent(
+    const { getByRole, getAllByRole, queryByRole } = renderComponent(
       editor.render.bind(editor)
     )
     editor.setNote(note)
@@ -31,7 +31,7 @@ describe('editor', () => {
     expect(getByRole('textbox')).toHaveValue(note.title)
 
     // remove focus from the text input
-    await userEvent.click(getByRole('button', { name: 'Bold' }))
+    await userEvent.click(getAllByRole('button', { name: 'Bold' })[0])
 
     // the input is now gone and the button renders
     expect(queryByRole('textbox')).toBeNull()
@@ -42,7 +42,7 @@ describe('editor', () => {
   })
 
   it('if the title was set to an empty string, then the original title renders', async () => {
-    const { getByRole, queryByRole } = renderComponent(
+    const { getByRole, getAllByRole, queryByRole } = renderComponent(
       editor.render.bind(editor)
     )
     editor.setNote(note)
@@ -54,7 +54,7 @@ describe('editor', () => {
     await userEvent.clear(input)
 
     // remove focus from the text input
-    await userEvent.click(getByRole('button', { name: 'Bold' }))
+    await userEvent.click(getAllByRole('button', { name: 'Bold' })[0])
 
     // the input is now gone and the button renders
     expect(queryByRole('textbox')).toBeNull()
@@ -65,7 +65,9 @@ describe('editor', () => {
   })
 
   it('if the title was changed, then calls the update title event', async () => {
-    const { getByRole } = renderComponent(editor.render.bind(editor))
+    const { getByRole, getAllByRole } = renderComponent(
+      editor.render.bind(editor)
+    )
     editor.setNote(note)
 
     // open input
@@ -76,7 +78,7 @@ describe('editor', () => {
     await userEvent.type(input, 'New title!')
 
     // remove focus from the text input
-    await userEvent.click(getByRole('button', { name: 'Bold' }))
+    await userEvent.click(getAllByRole('button', { name: 'Bold' })[0])
 
     expect(createEvent).toHaveBeenCalledWith(NoteEvents.UpdateTitle, {
       title: 'New title!',

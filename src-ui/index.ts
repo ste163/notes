@@ -188,7 +188,8 @@ window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
 window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
-  if (isMobile) {
+  const { noteId } = urlController.getParams()
+  if (isMobile && !noteId) {
     setMobileView()
     createEvent(LifeCycleEvents.QueryParamUpdate, {
       sidebar: 'open',
