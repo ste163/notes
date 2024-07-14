@@ -55,7 +55,7 @@ class Editor {
 
       const handleResize = (entries: ResizeObserverEntry[]) => {
         const main = entries[0] // only watching one element
-        const width = main.contentRect.width
+        const editorWidth = main.contentRect.width
 
         const editorMenuGroups =
           this.editorMenuMainContainer?.querySelectorAll('[data-group]')
@@ -84,11 +84,10 @@ class Editor {
           ellipsisMenuGroups,
           'asc'
         )
+
         const lastGroupIndexInMainMenu = lastGroupIndexInEllipsisMenu
           ? lastGroupIndexInEllipsisMenu - 1
           : getGroupIndex(editorMenuGroups, 'dsc')
-        console.log({ lastGroupIndexInMainMenu })
-        console.log({ lastGroupIndexInEllipsisMenu })
 
         const showHideEllipsisButton = () => {
           const ellipsisButton = document.querySelector(
@@ -102,97 +101,78 @@ class Editor {
             : 'none'
         }
 
+        type Config = {
+          width: number
+          groupIndex: number
+        }[]
+
+        const appendConfig: Config = [
+          {
+            width: 700,
+            groupIndex: 4,
+          },
+          {
+            width: 600,
+            groupIndex: 3,
+          },
+          {
+            width: 500,
+            groupIndex: 2,
+          },
+        ]
+
+        const prependConfig: Config = [
+          {
+            width: 700,
+            groupIndex: 4,
+          },
+          {
+            width: 600,
+            groupIndex: 3,
+          },
+          {
+            width: 500,
+            groupIndex: 2,
+          },
+        ]
+
+        // NOTE: i think the problem is that we actually need to fetch the last group index
+        // AFTER each append/prepend operation
+        // because it hasn't been updated
+        // TODO: move it to a function
+
+        appendConfig.forEach(({ width, groupIndex }) => {
+          if (editorWidth < width && lastGroupIndexInMainMenu === groupIndex) {
+            const lastGroup = document.querySelectorAll(
+              `#menu-group-${lastGroupIndexInMainMenu}`
+            )
+            if (lastGroup.length) {
+              lastGroup.forEach((group) =>
+                this.editorMenuEllipsisContainer?.prepend(group)
+              )
+            }
+          }
+        })
+
+        prependConfig.forEach(({ width, groupIndex }) => {
+          if (
+            editorWidth > width &&
+            lastGroupIndexInEllipsisMenu === groupIndex
+          ) {
+            const lastGroup = document.querySelectorAll(
+              `#menu-group-${lastGroupIndexInEllipsisMenu}`
+            )
+            if (lastGroup.length) {
+              lastGroup.forEach((group) =>
+                this.editorMenuMainContainer?.appendChild(group)
+              )
+            }
+          }
+        })
+
         showHideEllipsisButton()
 
-        // TODO:
-        // the issue is that this doesn't work on load!
-        // why? We only do ONE loop through of this instead of checking everything
-        // so this needs to load and be able to process the entire state of the dom.
-        // possibly recursively to check each group, move items over, then check to see if it's
-        // at a small enough width to shift the other group over.
-        // after each loop it needs to show/hide the ellipsis button
-
-        // tests are below, can be moved into a good setup config
-        // once i get it all working and see the patterns
-
-        if (width > 700 && lastGroupIndexInEllipsisMenu === 4) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInEllipsisMenu}`
-          )
-          if (lastGroup.length) {
-            lastGroup.forEach((group) =>
-              this.editorMenuMainContainer?.appendChild(group)
-            )
-          }
-        }
-
-        if (width < 700 && lastGroupIndexInMainMenu === 4) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInMainMenu}`
-          )
-
-          if (lastGroup.length) {
-            lastGroup.forEach((group) => {
-              this.editorMenuEllipsisContainer?.prepend(group)
-            })
-          }
-        }
-
-        if (width > 600 && lastGroupIndexInEllipsisMenu === 3) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInEllipsisMenu}`
-          )
-          if (lastGroup.length) {
-            lastGroup.forEach((group) =>
-              this.editorMenuMainContainer?.appendChild(group)
-            )
-          }
-        }
-
-        if (width < 600 && lastGroupIndexInMainMenu === 3) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInMainMenu}`
-          )
-          if (lastGroup.length) {
-            lastGroup.forEach((group) =>
-              this.editorMenuEllipsisContainer?.prepend(group)
-            )
-          }
-        }
-
-        if (width > 500 && lastGroupIndexInEllipsisMenu === 2) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInEllipsisMenu}`
-          )
-          if (lastGroup.length) {
-            lastGroup.forEach((group) =>
-              this.editorMenuMainContainer?.appendChild(group)
-            )
-          }
-        }
-
-        if (width < 500 && lastGroupIndexInMainMenu === 2) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInMainMenu}`
-          )
-          if (lastGroup.length) {
-            lastGroup.forEach((group) =>
-              this.editorMenuEllipsisContainer?.prepend(group)
-            )
-          }
-        }
-
-        // todo: based on the width of #main, we're going to apply different classes
-        // to the editor, title, and menu.
-        // the most important now is:
-        // MENU
-        // TITLE
-        // as editor is pretty responsive already
-        //
-        //TODO
-        // for the menu bar, create a new button that holds most of the buttons
-        // under an ellipsis menu that opens a popout that includes all the buttons.
-        // - it will always be in the DOM, but hidden unless the div is small
+        // TODO: handle the title
       }
 
       this.resizeObserver = new ResizeObserver(handleResize)
