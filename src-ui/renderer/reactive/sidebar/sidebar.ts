@@ -1,6 +1,7 @@
 import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
 import { addNoteIcon, closeIcon } from 'icons'
+import { useLocalStorage } from 'use-local-storage'
 import type { Notes } from 'types'
 import './sidebar.css'
 
@@ -78,9 +79,7 @@ class Sidebar {
       function stopResizing() {
         // get the current width that the element is set to
         const currentWidth = element?.style.width
-        console.log('SIDEBAR WIDTH:', currentWidth)
-        // TODO:
-        // save to local storage
+        useLocalStorage.set('sidebar-width', { width: currentWidth })
 
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', stopResizing)
@@ -96,8 +95,8 @@ class Sidebar {
         document.addEventListener('mouseup', stopResizing)
       })
 
-      // TODO:
-      // load width from local storage
+      const sidebarWidth = useLocalStorage.get('sidebar-width')?.width
+      if (sidebarWidth) element.style.width = sidebarWidth
     }
 
     setupResizer()
