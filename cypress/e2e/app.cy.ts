@@ -35,6 +35,8 @@ const locators = {
   },
 }
 
+const DEFAULT_WAIT = 1000
+
 /**
  * Tests the main application flow; however,
  * this is not testing the connection to a CouchDB instance.
@@ -69,7 +71,7 @@ describe('application flow', () => {
     // TODO: fix this bug, sort on fields createdAt when using default index throws error during getAll
     // the app should load without any errors
     // need to wait for all async events to finish
-    // cy.wait(1000)
+    // cy.wait(DEFAULT_WAIT)
     // cy.get('[data-testid="alert-error"]').should('not.exist')
 
     /**
@@ -101,7 +103,7 @@ describe('application flow', () => {
     // status bar is now enabled
     cy.get(locators.statusBar.save).should('be.enabled')
     cy.get(locators.statusBar.delete).should('be.enabled')
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.statusBar.savedOn).should('be.visible')
 
     cy.get(locators.editTitle.button).click()
@@ -143,9 +145,9 @@ describe('application flow', () => {
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
     // should have opened the second note, check the title and content
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.editTitle.button).click()
-    cy.wait(1000)
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.editTitle.input).should('have.value', 'My second note')
     cy.get(locators.editor.content).click()
     // because the value wasn't changed, don't save
@@ -169,7 +171,7 @@ describe('application flow', () => {
 
     // select first note and renders it
     cy.get(locators.sidebar.note).eq(1).click()
-    cy.wait(500) // cypress is moving too quickly, need to wait for the editor to render
+    cy.wait(DEFAULT_WAIT) // cypress is moving too quickly, need to wait for the editor to render
 
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should(
@@ -242,21 +244,21 @@ describe('application flow', () => {
     cy.get(locators.statusBar.database).click()
     cy.get('h2').should('contain', 'Database')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('contain', 'Database')
 
     // closing the dialog and reloading does not render it
     cy.get(locators.dialog.close).click()
     cy.get('h2').should('not.exist', 'Database')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('not.exist', 'Database')
 
     // delete note dialog should not render as no note was selected
     cy.get(locators.statusBar.delete).should('be.disabled')
     // and visiting the url directly should not render the dialog
     cy.visit('/?dialog=delete')
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('not.exist', 'Delete')
   })
 
@@ -272,29 +274,29 @@ describe('application flow', () => {
     // database dialog can be reloaded
     cy.get('h2').should('contain', 'Database')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('contain', 'Database')
 
     // closing the dialog and reloading does not render it
     cy.get(locators.dialog.close).click()
     cy.get('h2').should('not.exist', 'Database')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('not.exist', 'Database')
 
     // delete note dialog opens properly
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.statusBar.delete).click()
     cy.get('h2').should('contain', 'Delete')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('contain', 'Delete')
 
     // closing the dialog and reloading does not render it
     cy.get(locators.dialog.close).click()
     cy.get('h2').should('not.exist', 'Delete')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('not.exist', 'Delete')
   })
 
@@ -306,7 +308,7 @@ describe('application flow', () => {
     // sidebar was opened and stays open on refresh
     cy.get(locators.sidebar.createNote.button).should('be.visible')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.location('search').should('eq', '?sidebar=open')
     cy.get(locators.sidebar.createNote.button).should('be.visible')
 
@@ -315,7 +317,7 @@ describe('application flow', () => {
     cy.location('search').should('eq', '?sidebar=close')
     cy.get(locators.sidebar.createNote.button).should('not.exist')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.location('search').should('eq', '?sidebar=close')
     cy.get(locators.sidebar.createNote.button).should('not.exist')
 
@@ -324,7 +326,7 @@ describe('application flow', () => {
     cy.location('search').should('eq', '?sidebar=open')
     cy.get(locators.sidebar.createNote.button).should('be.visible')
     cy.reload()
-    cy.wait(500)
+    cy.wait(DEFAULT_WAIT)
     cy.location('search').should('eq', '?sidebar=open')
     cy.get(locators.sidebar.createNote.button).should('be.visible')
 
