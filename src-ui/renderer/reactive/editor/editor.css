@@ -63,7 +63,7 @@ grows and shrinks */
   margin: 0.4rem 0.2rem;
 }
 
-#editor-menu > div > button {
+.editor-menu-button {
   margin: 0.2rem;
   padding: 0.2rem 0.4rem;
   border: none;

@@ -17,6 +17,7 @@ import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
 import { Button, Input } from 'components'
 import { NoteEvents, createEvent } from 'event'
+import { ellipsisIcon } from 'icons'
 import type { MarkOptions, Note } from 'types'
 import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
@@ -31,6 +32,8 @@ class Editor {
   private resizeObserver: ResizeObserver | null = null
   private editorTitleContainer: HTMLDivElement | null = null
   private editorMenuContainer: HTMLDivElement | null = null
+  private editorMenuMainContainer: HTMLDivElement | null = null
+  private editorMenuEllipsisContainer: HTMLDivElement | null = null
   private editorContainer: HTMLDivElement | null = null
 
   public render() {
@@ -45,14 +48,11 @@ class Editor {
         const main = entries[0] // only watching one element
         const width = main.contentRect.width
 
-        const editorMenu = document.querySelector('#editor-menu')
-        const editorMenuGroups = editorMenu?.querySelectorAll('[data-group]')
+        const editorMenuGroups =
+          this.editorMenuMainContainer?.querySelectorAll('[data-group]')
 
-        const ellipsisMenu = document.querySelector(
-          '.editor-ellipsis-menu-hidden'
-        )
         const ellipsisMenuGroups =
-          ellipsisMenu?.querySelectorAll('[data-group]')
+          this.editorMenuEllipsisContainer?.querySelectorAll('[data-group]')
 
         const getGroupIndex = (
           elements: NodeListOf<Element> | undefined,
@@ -71,12 +71,6 @@ class Editor {
           )
         }
 
-        // NOTE:
-        // this is working to shift MAIN to ELLIPSIS
-        // need to setup shifting ELLIPSIS to MAIN
-        //
-        // note: the ordering of the groups is important when appending them
-        // and that currently isn't being tracked (current setup is appending only)
         console.log({ ellipsisMenuGroups })
         console.log({ editorMenuGroups })
         const lastGroupIndexInEllipsisMenu = getGroupIndex(
@@ -97,19 +91,20 @@ class Editor {
             `#menu-group-${lastGroupIndexInEllipsisMenu}`
           )
           if (lastGroup.length) {
-            lastGroup.forEach((group) => editorMenu?.appendChild(group))
+            lastGroup.forEach((group) =>
+              this.editorMenuMainContainer?.appendChild(group)
+            )
           }
         }
 
         if (width < 700 && lastGroupIndexInMainMenu === 4) {
-          const ellipsisMenu = document.querySelector(
-            '.editor-ellipsis-menu-hidden'
-          )
           const lastGroup = document.querySelectorAll(
             `#menu-group-${lastGroupIndexInMainMenu}`
           )
-          if (ellipsisMenu && lastGroup.length) {
-            lastGroup.forEach((group) => ellipsisMenu.appendChild(group))
+          if (lastGroup.length) {
+            lastGroup.forEach((group) =>
+              this.editorMenuEllipsisContainer?.prepend(group)
+            )
           }
         }
 
@@ -118,19 +113,20 @@ class Editor {
             `#menu-group-${lastGroupIndexInEllipsisMenu}`
           )
           if (lastGroup.length) {
-            lastGroup.forEach((group) => editorMenu?.appendChild(group))
+            lastGroup.forEach((group) =>
+              this.editorMenuMainContainer?.appendChild(group)
+            )
           }
         }
 
         if (width < 600 && lastGroupIndexInMainMenu === 3) {
-          const ellipsisMenu = document.querySelector(
-            '.editor-ellipsis-menu-hidden'
-          )
           const lastGroup = document.querySelectorAll(
             `#menu-group-${lastGroupIndexInMainMenu}`
           )
-          if (ellipsisMenu && lastGroup.length) {
-            lastGroup.forEach((group) => ellipsisMenu.appendChild(group))
+          if (lastGroup.length) {
+            lastGroup.forEach((group) =>
+              this.editorMenuEllipsisContainer?.prepend(group)
+            )
           }
         }
 
@@ -139,19 +135,20 @@ class Editor {
             `#menu-group-${lastGroupIndexInEllipsisMenu}`
           )
           if (lastGroup.length) {
-            lastGroup.forEach((group) => editorMenu?.appendChild(group))
+            lastGroup.forEach((group) =>
+              this.editorMenuMainContainer?.appendChild(group)
+            )
           }
         }
 
         if (width < 500 && lastGroupIndexInMainMenu === 2) {
-          const ellipsisMenu = document.querySelector(
-            '.editor-ellipsis-menu-hidden'
-          )
           const lastGroup = document.querySelectorAll(
             `#menu-group-${lastGroupIndexInMainMenu}`
           )
-          if (ellipsisMenu && lastGroup.length) {
-            lastGroup.forEach((group) => ellipsisMenu.appendChild(group))
+          if (lastGroup.length) {
+            lastGroup.forEach((group) =>
+              this.editorMenuEllipsisContainer?.prepend(group)
+            )
           }
         }
 
@@ -209,6 +206,7 @@ class Editor {
     if (!this.editorMenuContainer) return
 
     const createButtonGroups = (button: HTMLButtonElement) => {
+      button.classList.add('editor-menu-button')
       if (isDisabled) button.disabled = true
       const group = button.dataset.group
       if (!group) throw new Error('button is not assigned to a group')
@@ -225,19 +223,35 @@ class Editor {
 
     this.editorMenuContainer.innerHTML = '' // reset container before rendering
 
+    const mainButtonDiv = document.createElement('div')
+    mainButtonDiv.id = 'main-editor-button-section'
+    this.editorMenuMainContainer = mainButtonDiv
+
     const buttons = instantiateMenuButtons(this.editor)
     buttons
       .map(createButtonGroups)
-      .forEach((groupContainer) =>
-        this.editorMenuContainer?.appendChild(groupContainer)
-      )
+      .forEach((groupContainer) => mainButtonDiv?.appendChild(groupContainer))
 
     // TODO: once the moving into the containers is working properly
     // add the ellipsis button itself that will open toggle the hidden menu
     const ellipsisMenu = document.createElement('div')
     ellipsisMenu.classList.add('editor-ellipsis-menu-hidden')
+    ellipsisMenu.id = 'ellipsis-editor-menu'
+    this.editorMenuEllipsisContainer = ellipsisMenu
 
-    this.editorMenuContainer.appendChild(ellipsisMenu)
+    const ellipsisButton = new Button({
+      testId: 'ellipsis-button',
+      title: 'More options',
+      html: ellipsisIcon,
+      className: 'editor-menu-button',
+      onClick: () => {
+        console.log('toggle visibility')
+      },
+    }).getElement()
+
+    this.editorMenuContainer.appendChild(this.editorMenuMainContainer)
+    this.editorMenuContainer.appendChild(ellipsisButton)
+    this.editorMenuContainer.appendChild(this.editorMenuEllipsisContainer)
   }
 
   public getIsDirty() {
