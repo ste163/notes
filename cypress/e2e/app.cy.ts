@@ -406,6 +406,9 @@ describe('application flow', () => {
   //   - moving the window back to mobile, the sidebar is still open
   // - if the sidebar is closed in mobile, it stays closed in desktop
   //   - moving the window back to mobile, the sidebar is still closed
+  // - OPENING the dialog on a smaller size where the ellipsis menu is open
+  //   does not re-render the editor menu. Ie: all the same buttons are render, nothing changed
+  //   - including on dialog close
   //
   // FUTURE INFRASTRUCTURE DB SYNCING
   // ... (all db syncing interactions)
