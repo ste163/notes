@@ -175,16 +175,18 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
   }
 
   if (dialog === null) {
+    const { noteId } = urlController.getParams()
     urlController.removeParam('dialog')
     // clear the local state of the dialogs
     noteDeleteDialog.clear()
     databaseDialog.clear()
     // editor is enabled again as the dialog has closed
-    editor.setDisabled(false)
+    if (noteId) editor.setDisabled(false)
   }
 })
 
 window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
+  editor.setDisabled(true)
   editor.setNote(null)
   statusBar.renderActiveNote(null)
   createEvent(NoteEvents.GetAll).dispatch()

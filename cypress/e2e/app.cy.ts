@@ -86,6 +86,9 @@ describe('application flow', () => {
      * Get started view without data, status bar actions are disabled
      */
     cy.get('h1').should('contain', 'Get started')
+
+    // TODO: trying to edit content is not possible (figure out how to test)
+
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')
 
@@ -232,6 +235,10 @@ describe('application flow', () => {
 
     // renders the get started screen
     cy.get('h1').should('contain', 'Get started')
+
+    // TODO:
+    // editor state is disabled, no ability to modify get started text
+
     // the status bar save and delete are disabled
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')

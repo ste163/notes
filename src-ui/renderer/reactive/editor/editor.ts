@@ -160,7 +160,6 @@ class Editor {
     this.render()
   }
 
-  // TODO: consider a new approach to disabling this
   public setDisabled(isDisabled: boolean) {
     this.editor?.setEditable(!isDisabled)
     this.renderMenu(isDisabled)
