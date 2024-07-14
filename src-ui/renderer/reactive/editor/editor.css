@@ -1,9 +1,3 @@
-/* TODO:
-editor's 'mobile' view state
-actually needs to be based on the width of the editor element
-so that it shrinks properly when the sidebar
-grows and shrinks */
-
 #editor {
   flex-grow: 1;
   display: flex;
@@ -67,12 +61,27 @@ grows and shrinks */
   margin: 0.2rem;
   padding: 0.2rem 0.4rem;
   border: none;
+  position: relative;
 }
 
-.editor-ellipsis-menu-hidden {
-  /* will need to use !important
-  or re-adjust how the classes are handled here (probs that) */
-  display: none;
+#ellipsis-editor-menu {
+  display: flex;
+  flex-direction: row;
+}
+
+#ellipsis-pop-out {
+  display: flex;
+  visibility: hidden;
+  position: absolute;
+  z-index: 999;
+
+  top: 2rem;
+  right: 1px;
+}
+
+.show-ellipsis-pop-out {
+  visibility: visible !important;
+  animation: fadeIn 1s;
 }
 
 /* TipTap/ProseMirror specific */

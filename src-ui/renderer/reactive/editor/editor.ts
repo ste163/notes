@@ -24,6 +24,14 @@ import './editor.css'
 
 const STARTING_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
 
+// NOTE:
+// some of this could be moved into sub classes.
+// ie: a EditorRenderer class that handles the rendering
+// that inherits from the main Editor that instantiates TipTap?
+
+// TODO:
+// pop-out menu needs to close
+// on any click inside/outside of its menu
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
@@ -44,6 +52,7 @@ class Editor {
 
     const resetResizeObserver = (container: Element) => {
       if (this.resizeObserver) this.resizeObserver.disconnect()
+
       const handleResize = (entries: ResizeObserverEntry[]) => {
         const main = entries[0] // only watching one element
         const width = main.contentRect.width
@@ -71,8 +80,6 @@ class Editor {
           )
         }
 
-        console.log({ ellipsisMenuGroups })
-        console.log({ editorMenuGroups })
         const lastGroupIndexInEllipsisMenu = getGroupIndex(
           ellipsisMenuGroups,
           'asc'
@@ -82,6 +89,28 @@ class Editor {
           : getGroupIndex(editorMenuGroups, 'dsc')
         console.log({ lastGroupIndexInMainMenu })
         console.log({ lastGroupIndexInEllipsisMenu })
+
+        const showHideEllipsisButton = () => {
+          const ellipsisButton = document.querySelector(
+            '#ellipsis-button'
+          ) as HTMLElement
+
+          if (!ellipsisMenuGroups) return
+
+          ellipsisButton.style.display = lastGroupIndexInEllipsisMenu
+            ? 'flex'
+            : 'none'
+        }
+
+        showHideEllipsisButton()
+
+        // TODO:
+        // the issue is that this doesn't work on load!
+        // why? We only do ONE loop through of this instead of checking everything
+        // so this needs to load and be able to process the entire state of the dom.
+        // possibly recursively to check each group, move items over, then check to see if it's
+        // at a small enough width to shift the other group over.
+        // after each loop it needs to show/hide the ellipsis button
 
         // tests are below, can be moved into a good setup config
         // once i get it all working and see the patterns
@@ -101,10 +130,11 @@ class Editor {
           const lastGroup = document.querySelectorAll(
             `#menu-group-${lastGroupIndexInMainMenu}`
           )
+
           if (lastGroup.length) {
-            lastGroup.forEach((group) =>
+            lastGroup.forEach((group) => {
               this.editorMenuEllipsisContainer?.prepend(group)
-            )
+            })
           }
         }
 
@@ -164,6 +194,7 @@ class Editor {
         // under an ellipsis menu that opens a popout that includes all the buttons.
         // - it will always be in the DOM, but hidden unless the div is small
       }
+
       this.resizeObserver = new ResizeObserver(handleResize)
       this.resizeObserver.observe(container)
     }
@@ -232,26 +263,29 @@ class Editor {
       .map(createButtonGroups)
       .forEach((groupContainer) => mainButtonDiv?.appendChild(groupContainer))
 
-    // TODO: once the moving into the containers is working properly
-    // add the ellipsis button itself that will open toggle the hidden menu
     const ellipsisMenu = document.createElement('div')
-    ellipsisMenu.classList.add('editor-ellipsis-menu-hidden')
     ellipsisMenu.id = 'ellipsis-editor-menu'
     this.editorMenuEllipsisContainer = ellipsisMenu
 
     const ellipsisButton = new Button({
+      id: 'ellipsis-button',
       testId: 'ellipsis-button',
       title: 'More options',
-      html: ellipsisIcon,
+      html: `${ellipsisIcon}
+              <div id='ellipsis-pop-out'></div>`,
       className: 'editor-menu-button',
       onClick: () => {
-        console.log('toggle visibility')
+        const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
+        ellipsisPopOut?.classList.toggle('show-ellipsis-pop-out')
       },
     }).getElement()
 
     this.editorMenuContainer.appendChild(this.editorMenuMainContainer)
     this.editorMenuContainer.appendChild(ellipsisButton)
-    this.editorMenuContainer.appendChild(this.editorMenuEllipsisContainer)
+
+    // need to append the ellipsis menu to the ellipsis button
+    const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
+    ellipsisPopOut?.appendChild(ellipsisMenu)
   }
 
   public getIsDirty() {
@@ -263,7 +297,6 @@ class Editor {
   }
 
   public setNote(note: Note | null) {
-    console.log('NOTE SET')
     this.note = note
     this.render()
   }
