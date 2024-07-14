@@ -57,10 +57,10 @@ class Editor {
         const main = entries[0] // only watching one element
         const editorWidth = main.contentRect.width
 
-        const editorMenuGroups =
+        const getEditorMenuGroups = () =>
           this.editorMenuMainContainer?.querySelectorAll('[data-group]')
 
-        const ellipsisMenuGroups =
+        const getEllipsisMenuGroups = () =>
           this.editorMenuEllipsisContainer?.querySelectorAll('[data-group]')
 
         const getGroupIndex = (
@@ -80,33 +80,27 @@ class Editor {
           )
         }
 
-        const lastGroupIndexInEllipsisMenu = getGroupIndex(
-          ellipsisMenuGroups,
-          'asc'
-        )
-
-        const lastGroupIndexInMainMenu = lastGroupIndexInEllipsisMenu
-          ? lastGroupIndexInEllipsisMenu - 1
-          : getGroupIndex(editorMenuGroups, 'dsc')
-
         const showHideEllipsisButton = () => {
           const ellipsisButton = document.querySelector(
             '#ellipsis-button'
           ) as HTMLElement
 
-          if (!ellipsisMenuGroups) return
+          if (!getEllipsisMenuGroups()) return
+
+          const lastGroupIndexInEllipsisMenu = getGroupIndex(
+            getEllipsisMenuGroups(),
+            'asc'
+          )
 
           ellipsisButton.style.display = lastGroupIndexInEllipsisMenu
             ? 'flex'
             : 'none'
         }
 
-        type Config = {
+        const responsivenessConfig: {
           width: number
           groupIndex: number
-        }[]
-
-        const appendConfig: Config = [
+        }[] = [
           {
             width: 700,
             groupIndex: 4,
@@ -121,40 +115,31 @@ class Editor {
           },
         ]
 
-        const prependConfig: Config = [
-          {
-            width: 700,
-            groupIndex: 4,
-          },
-          {
-            width: 600,
-            groupIndex: 3,
-          },
-          {
-            width: 500,
-            groupIndex: 2,
-          },
-        ]
+        responsivenessConfig.forEach(({ width, groupIndex }) => {
+          const startingGroupIndexInEllipsisMenu = getGroupIndex(
+            getEllipsisMenuGroups(),
+            'asc'
+          )
 
-        // NOTE: i think the problem is that we actually need to fetch the last group index
-        // AFTER each append/prepend operation
-        // because it hasn't been updated
-        // TODO: move it to a function
+          const lastGroupIndexInMainMenu = startingGroupIndexInEllipsisMenu
+            ? startingGroupIndexInEllipsisMenu - 1
+            : getGroupIndex(getEditorMenuGroups(), 'dsc')
 
-        appendConfig.forEach(({ width, groupIndex }) => {
           if (editorWidth < width && lastGroupIndexInMainMenu === groupIndex) {
             const lastGroup = document.querySelectorAll(
               `#menu-group-${lastGroupIndexInMainMenu}`
             )
-            if (lastGroup.length) {
+            if (lastGroup.length)
               lastGroup.forEach((group) =>
                 this.editorMenuEllipsisContainer?.prepend(group)
               )
-            }
           }
-        })
 
-        prependConfig.forEach(({ width, groupIndex }) => {
+          const lastGroupIndexInEllipsisMenu = getGroupIndex(
+            getEllipsisMenuGroups(),
+            'asc'
+          )
+
           if (
             editorWidth > width &&
             lastGroupIndexInEllipsisMenu === groupIndex
