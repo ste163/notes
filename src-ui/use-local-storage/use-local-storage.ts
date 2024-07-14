@@ -8,13 +8,16 @@ interface DatabaseDetails {
   port: string
 }
 
-type AllowedKeys = 'remote-db-details'
+interface SidebarWidth {
+  width: string
+}
 
-type ValidatorFunction<T = DatabaseDetails> = (arg: T) => boolean
+type AllowedKeys = 'remote-db-details' | 'sidebar-width'
 
 class UseLocalStorage {
-  private validators: Record<AllowedKeys, ValidatorFunction> = {
+  private validators = {
     'remote-db-details': this.validateDetails,
+    'sidebar-width': this.validateSidebarWidth,
   }
 
   private defaults: Record<AllowedKeys, unknown> = {
@@ -24,6 +27,7 @@ class UseLocalStorage {
       host: '',
       port: '',
     },
+    'sidebar-width': { width: '170px' },
   }
 
   public get(key: AllowedKeys) {
@@ -33,8 +37,10 @@ class UseLocalStorage {
     return isValid ? parsed : this.defaults[key]
   }
 
-  public set(key: AllowedKeys, object: DatabaseDetails) {
-    const isValid = this.validators[key](object)
+  public set(key: AllowedKeys, object: DatabaseDetails | SidebarWidth) {
+    const isValid = this.validators[key](
+      object as unknown as DatabaseDetails & SidebarWidth
+    )
     if (!isValid) {
       logger.log(
         `Invalid ${key}. Attempted to set local storage with: ` +
@@ -55,9 +61,14 @@ class UseLocalStorage {
       typeof detail?.port === 'string'
     )
   }
+
+  private validateSidebarWidth(sidebarWidth: SidebarWidth): boolean {
+    // should be any number appended by 'px'
+    return /^\d+px$/.test(sidebarWidth?.width)
+  }
 }
 
 const useLocalStorage = new UseLocalStorage()
 
 export { useLocalStorage }
-export type { DatabaseDetails }
+export type { DatabaseDetails, SidebarWidth }

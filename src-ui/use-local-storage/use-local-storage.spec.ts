@@ -1,14 +1,18 @@
-import { describe, it, vi, expect } from 'vitest'
+import { describe, it, vi, expect, beforeEach } from 'vitest'
 import { logger } from 'logger'
 import { useLocalStorage } from './use-local-storage'
 import type { DatabaseDetails } from './use-local-storage'
 
 vi.mock('logger')
 
+vi.mocked(logger.log).mockImplementation(vi.fn())
+const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
+const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
+
 describe('use-local-storage', () => {
-  vi.mocked(logger.log).mockImplementation(vi.fn())
-  const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
-  const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   it('get details returns default object if no details', () => {
     expect(useLocalStorage.get('remote-db-details')).toEqual({
@@ -40,9 +44,9 @@ describe('use-local-storage', () => {
     expect(useLocalStorage.get('remote-db-details')).toEqual(details)
   })
 
-  it('set details returns undefined if details are not valid', () => {
+  it('set details logs error details are not valid', () => {
     const details = { db: 'test' } as unknown as DatabaseDetails
-    expect(useLocalStorage.set('remote-db-details', details)).toBeUndefined()
+    useLocalStorage.set('remote-db-details', details)
     expect(logger.log).toHaveBeenCalledOnce()
     expect(localStorageSetSpy).not.toHaveBeenCalledWith(
       'remote-db-details',
@@ -57,10 +61,38 @@ describe('use-local-storage', () => {
       host: 'host',
       port: 'port',
     }
-    expect(useLocalStorage.set('remote-db-details', details)).toBeUndefined()
+    useLocalStorage.set('remote-db-details', details)
     expect(localStorageSetSpy).toHaveBeenCalledWith(
       'remote-db-details',
       JSON.stringify(details)
     )
+  })
+
+  it('returns default sidebar width if none given', () => {
+    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: '170px' })
+  })
+
+  it('does not retrieve sidebar width if invalid data is stored', () => {
+    localStorageGetSpy.mockReturnValue(JSON.stringify({ width: '910' }))
+    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: '170px' })
+  })
+
+  it('does not set sidebar width if invalid value', () => {
+    useLocalStorage.set('sidebar-width', { width: '910' })
+    expect(logger.log).toHaveBeenCalledOnce()
+    expect(localStorageSetSpy).not.toHaveBeenCalled()
+  })
+
+  it('sets the sidebar width if valid', () => {
+    useLocalStorage.set('sidebar-width', { width: '200px' })
+    expect(localStorageSetSpy).toHaveBeenCalledWith(
+      'sidebar-width',
+      JSON.stringify({ width: '200px' })
+    )
+  })
+
+  it('returns valid sidebar width if stored', () => {
+    localStorageGetSpy.mockReturnValue(JSON.stringify({ width: '200px' }))
+    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: '200px' })
   })
 })
