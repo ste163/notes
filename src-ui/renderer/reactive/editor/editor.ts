@@ -28,15 +28,12 @@ const STARTING_CONTENT = `<h1>Get started</h1><p>Create or select a note from th
 // some of this could be moved into sub classes.
 // ie: a EditorRenderer class that handles the rendering
 // that inherits from the main Editor that instantiates TipTap?
-
-// TODO:
-// pop-out menu needs to close
-// on any click inside/outside of its menu
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
   private isDirty = false
 
+  private globalClickHandler: (event: MouseEvent) => void = () => {}
   private resizeObserver: ResizeObserver | null = null
   private editorTitleContainer: HTMLDivElement | null = null
   private editorMenuContainer: HTMLDivElement | null = null
@@ -236,6 +233,7 @@ class Editor {
     ellipsisMenu.id = 'ellipsis-editor-menu'
     this.editorMenuEllipsisContainer = ellipsisMenu
 
+    this.removeGlobalPopOutListener()
     const ellipsisButton = new Button({
       id: 'ellipsis-button',
       testId: 'ellipsis-button',
@@ -243,9 +241,9 @@ class Editor {
       html: `${ellipsisIcon}
               <div id='ellipsis-pop-out'></div>`,
       className: 'editor-menu-button',
-      onClick: () => {
-        const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
-        ellipsisPopOut?.classList.toggle('show-ellipsis-pop-out')
+      onClick: (event: Event) => {
+        event.stopPropagation()
+        this.toggleEllipsisPopOut()
       },
     }).getElement()
 
@@ -277,6 +275,29 @@ class Editor {
 
   public setCursorPosition(position: FocusPosition) {
     this.editor?.commands.focus(position)
+  }
+
+  private toggleEllipsisPopOut() {
+    const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
+    const isVisible = ellipsisPopOut?.classList.toggle('show-ellipsis-pop-out')
+    isVisible
+      ? this.addGlobalPopOutListener()
+      : this.removeGlobalPopOutListener()
+  }
+
+  private addGlobalPopOutListener() {
+    this.globalClickHandler = (event: MouseEvent) => {
+      const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
+      if (!ellipsisPopOut?.contains(event.target as Node)) {
+        ellipsisPopOut?.classList.remove('show-ellipsis-pop-out')
+        this.removeGlobalPopOutListener()
+      }
+    }
+    document.addEventListener('click', this.globalClickHandler)
+  }
+
+  private removeGlobalPopOutListener() {
+    document.removeEventListener('click', this.globalClickHandler)
   }
 
   private toggleActiveEditorClass({

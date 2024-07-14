@@ -52,7 +52,7 @@
   padding: 0.25rem;
 }
 
-#editor-menu > div {
+#main-editor-button-section {
   display: flex;
   margin: 0.4rem 0.2rem;
 }
@@ -75,7 +75,11 @@
   position: absolute;
   z-index: 999;
 
-  top: 2rem;
+  background-color: var(--background-color);
+  box-shadow: 0 0.15rem 0.2rem 0 rgba(80, 80, 80, 0.099);
+  border-radius: 0.3rem;
+
+  top: 2.25rem;
   right: 1px;
 }
 

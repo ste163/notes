@@ -11,7 +11,7 @@ button {
 
   cursor: pointer;
 
-  color: var(--outline-color);
+  color: var(--text-primary);
   background-color: var(--background-color);
 
   transition: background-color 0.1s ease-in-out;
