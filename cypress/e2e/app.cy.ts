@@ -7,6 +7,9 @@ const locators = {
   },
   editor: {
     content: '#editor',
+    menu: {
+      ellipsisButton: '[data-testid="ellipsis-button"]',
+    },
   },
   editTitle: {
     button: '[data-testid="edit-title-button"]',
@@ -15,15 +18,9 @@ const locators = {
   notification: {
     save: '[data-testid="save-notification"]',
   },
-  statusBar: {
-    database: '[data-testid="setup-database"]',
-    delete: '[data-testid="delete-note"]',
-    save: '[data-testid="save-note"]',
-    sidebarToggle: '[data-testid="status-bar-sidebar-toggle"]',
-    savedOn: '[data-testid="status-bar-saved-on"]',
-    syncedOn: '[data-testid="status-bar-synced-on"]', // TODO: test when CouchDB is connected
-  },
   sidebar: {
+    mainElement: '.sidebar-main',
+    resizeHandle: '[data-testid="sidebar-resize-handle"]',
     close: '[data-testid="close-sidebar"]',
     createNote: {
       button: '[data-testid="create-note"]',
@@ -32,6 +29,14 @@ const locators = {
       cancel: '[data-testid="create-note-cancel"]',
     },
     note: '[data-testid="note-select"]',
+  },
+  statusBar: {
+    database: '[data-testid="setup-database"]',
+    delete: '[data-testid="delete-note"]',
+    save: '[data-testid="save-note"]',
+    sidebarToggle: '[data-testid="status-bar-sidebar-toggle"]',
+    savedOn: '[data-testid="status-bar-saved-on"]',
+    syncedOn: '[data-testid="status-bar-synced-on"]', // TODO: test when CouchDB is connected
   },
 }
 
@@ -52,10 +57,7 @@ describe('application flow', () => {
       indexedDBs.forEach(({ name }) => name && indexedDB.deleteDatabase(name))
     }
     await clearIndexDb()
-
-    // TODO:
-    // once localStorage saving is setup properly
-    // clear that as well
+    // by default, cypress always clears localStorage between test runs
   })
 
   it('can create, edit, write, select, and delete notes', () => {
@@ -336,18 +338,36 @@ describe('application flow', () => {
     cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
-  // NOTE: the two below tests could be moved together
-  it('editor menu buttons move to the ellipsis menu properly on different sizes', () => {
+  it.skip('editor menu buttons move to the ellipsis menu properly on different sizes', () => {
     // at 1000px all buttons are visible AND the ellipsis menu is hidden
     // ... etc for all the different amounts
+    // clicking the ellipsis menu opens the menu
+    // - clicking an item inside it closes it
+    // - clicking outside it closes it
   })
 
   it('resizing the sidebar saves it to local storage', () => {
-    // load the page
-    // check the sidebar width
+    cy.clearLocalStorage()
+    cy.visit('/')
+    cy.wait(DEFAULT_WAIT)
+    // check the sidebar width is the default
+    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '170px')
+    // no ellipsis button as the editor is wide
+    cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
+
     // drag and move the sidebar
+    cy.get(locators.sidebar.resizeHandle).trigger('mousedown', { which: 1 })
+    cy.get(locators.sidebar.resizeHandle).trigger('mousemove', { clientX: 400 })
+    cy.get(locators.sidebar.resizeHandle).trigger('mouseup')
+
+    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
+
     // reload the page
-    // sidebar should be at the new width
+    cy.reload()
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
+    // ellipsis button renders as the editor was resized
+    cy.get(locators.editor.menu.ellipsisButton).should('be.visible')
   })
 
   // TODOs

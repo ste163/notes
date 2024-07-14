@@ -28,7 +28,7 @@ class Sidebar {
         </div>
         <div id='sidebar-list'></div>
       </div>
-      <div id='sidebar-resizer-handle'>
+      <div id='sidebar-resizer-handle' data-testid='sidebar-resize-handle'>
         <div id='sidebar-resizer-bar'></div>
       </div>`
 
