@@ -179,6 +179,8 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
     // clear the local state of the dialogs
     noteDeleteDialog.clear()
     databaseDialog.clear()
+    // editor is enabled again as the dialog has closed
+    editor.setDisabled(false)
   }
 })
 
@@ -401,10 +403,6 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   // as that contains the alert information
   if (dialogTitle === 'database') statusBar.renderAlert('')
   editor.setDisabled(true)
-})
-
-window.addEventListener(DialogEvents.Closed, () => {
-  editor.setDisabled(false)
 })
 
 /**

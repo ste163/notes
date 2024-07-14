@@ -229,11 +229,17 @@ class Editor {
       .map(createButtonGroups)
       .forEach((groupContainer) => mainButtonDiv?.appendChild(groupContainer))
 
+    // TODO: because the dialog open event triggers
+    // the menus to re-render as disabled
+    // this re-attaches the ellipsis menu regardless
+    // of the editor state
+
     const ellipsisMenu = document.createElement('div')
     ellipsisMenu.id = 'ellipsis-editor-menu'
     this.editorMenuEllipsisContainer = ellipsisMenu
 
     this.removeGlobalPopOutListener()
+
     const ellipsisButton = new Button({
       id: 'ellipsis-button',
       testId: 'ellipsis-button',
@@ -268,6 +274,7 @@ class Editor {
     this.render()
   }
 
+  // TODO: consider a new approach to disabling this
   public setDisabled(isDisabled: boolean) {
     this.editor?.setEditable(!isDisabled)
     this.renderMenu(isDisabled)
