@@ -27,7 +27,7 @@ class UseLocalStorage {
       host: '',
       port: '',
     },
-    'sidebar-width': { width: '170px' },
+    'sidebar-width': { width: 170 },
   }
 
   public get(key: AllowedKeys) {

@@ -69,12 +69,12 @@ describe('use-local-storage', () => {
   })
 
   it('returns default sidebar width if none given', () => {
-    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: '170px' })
+    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: 170 })
   })
 
   it('does not retrieve sidebar width if invalid data is stored', () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify({ width: '910' }))
-    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: '170px' })
+    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: 170 })
   })
 
   it('does not set sidebar width if invalid value', () => {

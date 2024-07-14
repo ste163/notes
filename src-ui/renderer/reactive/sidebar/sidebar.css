@@ -7,7 +7,8 @@
 .sidebar-main {
   display: flex;
   flex-direction: column;
-  width: 13.5rem;
+  /* Width is setup by ResizeObserver */
+  width: 170px;
 }
 
 /* The handle allows for easier grabbing of the resizing element */

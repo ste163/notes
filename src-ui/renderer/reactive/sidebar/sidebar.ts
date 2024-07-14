@@ -62,7 +62,7 @@ class Sidebar {
 
       const getClampedWidth = (newWidth: number) => {
         const screenWidth = window.innerWidth
-        const minWidth = 200
+        const minWidth = 170
         const maxWidth = screenWidth * 0.5
         return Math.max(minWidth, Math.min(newWidth, maxWidth))
       }
