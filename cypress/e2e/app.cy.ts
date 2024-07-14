@@ -42,6 +42,25 @@ const locators = {
 
 const DEFAULT_WAIT = 1000
 
+// TODO: implement dimensions
+// when going for the full mobile support
+// (resolving sidebar open state for small screen sizes)
+//
+// const dimensions = {
+//   mobile: {
+//     viewPortWidth: 375,
+//     viewPortHeight: 667,
+//   },
+//   tablet: {
+//     viewPortWidth: 768,
+//     viewPortHeight: 1024,
+//   },
+//   desktop: {
+//     viewPortWidth: 1920,
+//     viewPortHeight: 1080,
+//   },
+// }
+
 /**
  * Tests the main application flow; however,
  * this is not testing the connection to a CouchDB instance.
@@ -338,6 +357,7 @@ describe('application flow', () => {
     cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
+  // TODO: to implement with mobile tests
   it.skip('editor menu buttons move to the ellipsis menu properly on different sizes', () => {
     // at 1000px all buttons are visible AND the ellipsis menu is hidden
     // ... etc for all the different amounts
@@ -374,9 +394,12 @@ describe('application flow', () => {
   //
   // MOBILE
   // - no selected note shows the sidebar only with the create note button
-  // - creating a note opens the selected note in the editor
+  // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
+  // - creating a note opens the selected note in the editor, closing sidebar
   // - refreshing the page opens to the selected note with the sidebar hidden
-  // - opening the sidebar and refreshing keeps the sidebar open
+  // - opening the sidebar and refreshing keeps the sidebar open (full screen)
+  // - selecting a note from the sidebar closes the sidebar and opens the note
+  // - selecting the already selected note closes the sidebar
   //
   // RESIZING
   // - if the sidebar is open, in mobile, it stay open in desktop
