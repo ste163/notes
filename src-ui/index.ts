@@ -79,7 +79,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 
     sidebar.render()
     statusBar.render()
-    statusBar.renderRemoteDb({ isConnected: false })
+    statusBar.renderRemoteDb()
     statusBar.renderActiveNote(null)
 
     handleScreenWidth()
@@ -326,18 +326,24 @@ window.addEventListener(DatabaseEvents.Setup, () => {
 })
 
 window.addEventListener(DatabaseEvents.Connecting, () => {
-  statusBar.renderRemoteDb({ isConnected: false, isConnecting: true })
+  statusBar.setIsConnected(false)
+  statusBar.setIsConnecting(true)
+  statusBar.renderRemoteDb()
   databaseDialog.setIsConnecting(true)
 })
 
 window.addEventListener(DatabaseEvents.ConnectingError, () => {
   // TODO: consider after testing: should probably update text to say "Unable to connect"
-  statusBar.renderRemoteDb({ isConnected: false, isConnecting: false })
+  statusBar.setIsConnected(false)
+  statusBar.setIsConnecting(false)
+  statusBar.renderRemoteDb()
   databaseDialog.setIsConnecting(false)
 })
 
 window.addEventListener(DatabaseEvents.Connected, () => {
-  statusBar.renderRemoteDb({ isConnected: true })
+  statusBar.setIsConnected(true)
+  statusBar.setIsConnecting(false)
+  statusBar.renderRemoteDb()
   databaseDialog.setIsConnecting(false)
   databaseDialog.setIsConnected(true)
 
@@ -351,7 +357,8 @@ window.addEventListener(DatabaseEvents.Connected, () => {
 window.addEventListener(DatabaseEvents.Disconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
   if (successfulDisconnect) {
-    statusBar.renderRemoteDb({ isConnected: false })
+    statusBar.setIsConnected(false)
+    statusBar.renderRemoteDb()
     databaseDialog.setIsConnected(false)
   }
 })

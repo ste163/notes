@@ -1,6 +1,6 @@
 import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
-import { useDatabaseDetails } from './use-database-details'
+import { useLocalStorage } from 'use-local-storage'
 import { config } from 'config'
 import { logger } from 'logger'
 import { nanoid } from 'nanoid'
@@ -151,7 +151,8 @@ class Database {
   }
 
   private createRemoteUrl() {
-    const { username, password, host, port } = useDatabaseDetails.get()
+    const { username, password, host, port } =
+      useLocalStorage.get('remote-db-details')
     return username && password && host && port
       ? `http://${username}:${password}@${host}:${port}`
       : null

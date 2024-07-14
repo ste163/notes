@@ -1,9 +1,9 @@
 import { Button, Dialog, Input, Loader } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
-import { useDatabaseDetails } from 'database'
+import { useLocalStorage } from 'use-local-storage'
 import { databaseIcon, errorIcon, checkIcon } from 'icons'
-import type { DatabaseDetails } from 'database'
+import type { DatabaseDetails } from 'use-local-storage'
 import './database-dialog.css'
 
 // TODO:
@@ -222,7 +222,7 @@ class DatabaseDialog {
               [input.getId()]: input.getValue(),
             }
           }, {} as DatabaseDetails)
-          useDatabaseDetails.set(details)
+          useLocalStorage.set('remote-db-details', details)
           createEvent(DatabaseEvents.Setup).dispatch()
         },
       })
@@ -239,7 +239,7 @@ class DatabaseDialog {
           this.formInputs?.forEach((input) => {
             input.setValue('')
           })
-          useDatabaseDetails.set({
+          useLocalStorage.set('remote-db-details', {
             username: '',
             password: '',
             host: '',
@@ -253,7 +253,7 @@ class DatabaseDialog {
     }
 
     const createInputs = () => {
-      const savedDetails = useDatabaseDetails.get()
+      const savedDetails = useLocalStorage.get('remote-db-details')
       return [
         {
           id: 'username',

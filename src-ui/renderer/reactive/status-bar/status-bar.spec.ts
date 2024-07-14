@@ -71,7 +71,7 @@ describe('status-bar', () => {
 
   it('renders offline status and emits dialog open', async () => {
     const { getByText, queryByText } = renderComponent(statusBar.render)
-    statusBar.renderRemoteDb({ isConnected: false })
+    statusBar.renderRemoteDb()
     expect(queryByText(ONLINE_TEXT)).toBeNull()
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
     await userEvent.click(getByText(OFFLINE_TEXT))
@@ -83,7 +83,8 @@ describe('status-bar', () => {
 
   it('renders online status and emits dialog open', async () => {
     const { getByText, queryByText } = renderComponent(statusBar.render)
-    statusBar.renderRemoteDb({ isConnected: true })
+    statusBar.setIsConnected(true)
+    statusBar.renderRemoteDb()
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
@@ -98,7 +99,9 @@ describe('status-bar', () => {
     const { getByRole, getByText, queryByText } = renderComponent(
       statusBar.render
     )
-    statusBar.renderRemoteDb({ isConnecting: true, isConnected: false })
+    statusBar.setIsConnected(false)
+    statusBar.setIsConnecting(true)
+    statusBar.renderRemoteDb()
     expect(queryByText(ONLINE_TEXT)).toBeNull()
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
     expect(getByText(CONNECTING_TEXT)).toBeInTheDocument()

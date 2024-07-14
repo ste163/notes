@@ -334,6 +334,7 @@ describe('application flow', () => {
     cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
+  // NOTE: the two below tests could be moved together
   it('editor menu buttons move to the ellipsis menu properly on different sizes', () => {
     // at 1000px all buttons are visible AND the ellipsis menu is hidden
     // ... etc for all the different amounts

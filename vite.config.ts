@@ -24,9 +24,10 @@ export default defineConfig({
       icons: '/src-ui/renderer/icons',
       logger: '/src-ui/logger',
       'renderer/reactive': '/src-ui/renderer/reactive',
-      types: '/src-ui/types',
       'test-utils': '/src-ui/test-utils',
+      types: '/src-ui/types',
       'url-controller': '/src-ui/url-controller',
+      'use-local-storage': '/src-ui/use-local-storage',
     },
   },
   // TODO: make the build less reliant on TAURI specifically. (or separate the vite configs based on build)

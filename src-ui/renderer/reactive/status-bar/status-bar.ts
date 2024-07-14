@@ -13,6 +13,9 @@ import type { Note } from 'types'
 import './status-bar.css'
 
 class StatusBar {
+  private isConnecting = false
+  private isConnected = false
+
   public render() {
     const container = document.querySelector('#status-bar')
     if (!container) throw new Error('Status bar container not found')
@@ -49,6 +52,14 @@ class StatusBar {
     )
   }
 
+  public setIsConnecting(isConnecting: boolean) {
+    this.isConnecting = isConnecting
+  }
+
+  public setIsConnected(isConnected: boolean) {
+    this.isConnected = isConnected
+  }
+
   /**
    * Add or remove active class from the sidebar button
    */
@@ -68,13 +79,7 @@ class StatusBar {
     )
   }
 
-  public renderRemoteDb({
-    isConnected,
-    isConnecting = false,
-  }: {
-    isConnected: boolean
-    isConnecting?: boolean
-  }) {
+  public renderRemoteDb() {
     const container = document.querySelector('#remote-db-setup-container')
     if (container) container.innerHTML = ''
     container?.appendChild(
@@ -85,9 +90,9 @@ class StatusBar {
           textWrap: 'nowrap',
         },
         html: `
-        ${isConnecting ? new Loader().getElement().outerHTML : databaseIcon}
+        ${this.isConnecting ? new Loader().getElement().outerHTML : databaseIcon}
         <span>
-          ${isConnecting ? 'Attempting connection...' : isConnected ? 'Online' : 'Offline'}
+          ${this.isConnecting ? 'Attempting connection...' : this.isConnected ? 'Online' : 'Offline'}
         </span>
         `,
         onClick: () =>

@@ -4,12 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { databaseDialog } from './database-dialog'
 import { DatabaseEvents, createEvent } from 'event'
 import { logger } from 'logger'
-import type { DatabaseDetails } from 'database'
+import type { DatabaseDetails } from 'use-local-storage'
 
 vi.mock('event')
 
-// spying on local storage to ensure that the integration
-// of the useDatabaseDetails is working as expected
+// spying on local storage to ensure that the integration works properly
 const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
 const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 

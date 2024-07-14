@@ -79,9 +79,8 @@ class Sidebar {
         // get the current width that the element is set to
         const currentWidth = element?.style.width
         console.log('SIDEBAR WIDTH:', currentWidth)
+        // TODO:
         // save to local storage
-        // TODO: refactor useDatabaseDetails to
-        // be useLocalStorage
 
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', stopResizing)
