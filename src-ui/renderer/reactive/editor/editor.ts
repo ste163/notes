@@ -54,7 +54,7 @@ class Editor {
       if (this.resizeObserver) this.resizeObserver.disconnect()
 
       const handleResize = (entries: ResizeObserverEntry[]) => {
-        const main = entries[0] // only watching one element
+        const main = entries[0] // only watching the #main element
         const editorWidth = main.contentRect.width
 
         const getEditorMenuGroups = () =>
@@ -85,14 +85,14 @@ class Editor {
             '#ellipsis-button'
           ) as HTMLElement
 
-          if (!getEllipsisMenuGroups()) return
+          if (!getEllipsisMenuGroups() || !ellipsisButton) return
 
-          const lastGroupIndexInEllipsisMenu = getGroupIndex(
+          const doesEllipsisMenuHaveItems = getGroupIndex(
             getEllipsisMenuGroups(),
             'asc'
           )
 
-          ellipsisButton.style.display = lastGroupIndexInEllipsisMenu
+          ellipsisButton.style.display = doesEllipsisMenuHaveItems
             ? 'flex'
             : 'none'
         }
@@ -115,6 +115,10 @@ class Editor {
           },
         ]
 
+        /**
+         * Process the width of the editor element
+         * and move editor buttons to the main or ellipsis/overflow menus
+         */
         responsivenessConfig.forEach(({ width, groupIndex }) => {
           const startingGroupIndexInEllipsisMenu = getGroupIndex(
             getEllipsisMenuGroups(),
@@ -157,7 +161,7 @@ class Editor {
 
         showHideEllipsisButton()
 
-        // TODO: handle the title
+        // TODO: resize very long titles and the title input
       }
 
       this.resizeObserver = new ResizeObserver(handleResize)

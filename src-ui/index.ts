@@ -1,5 +1,9 @@
 /**
  * TODO PRIORITY ORDER
+ *  - Responsiveness
+ *    - Note title + input needs to be revisited when width changes
+ *    - sidebar buttons need to have their width match the element (inherit?)
+ *
  *  - DATABASE DIALOG FORM:
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
  *     - Disable the submit button UNTIL all inputs are filled.
@@ -43,8 +47,6 @@
  *
  *     I delete data on my local and not the remote.
  *     Does it stay deleted? (Accidental deletions?)
- *
- *
  */
 import { database } from 'database'
 import {

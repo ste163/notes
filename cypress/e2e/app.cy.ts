@@ -50,6 +50,10 @@ describe('application flow', () => {
       indexedDBs.forEach(({ name }) => name && indexedDB.deleteDatabase(name))
     }
     await clearIndexDb()
+
+    // TODO:
+    // once localStorage saving is setup properly
+    // clear that as well
   })
 
   it('can create, edit, write, select, and delete notes', () => {
@@ -328,6 +332,19 @@ describe('application flow', () => {
     cy.get(locators.statusBar.sidebarToggle).click()
     cy.location('search').should('eq', '?sidebar=close')
     cy.get(locators.sidebar.createNote.button).should('not.exist')
+  })
+
+  it('editor menu buttons move to the ellipsis menu properly on different sizes', () => {
+    // at 1000px all buttons are visible AND the ellipsis menu is hidden
+    // ... etc for all the different amounts
+  })
+
+  it('resizing the sidebar saves it to local storage', () => {
+    // load the page
+    // check the sidebar width
+    // drag and move the sidebar
+    // reload the page
+    // sidebar should be at the new width
   })
 
   // TODOs
