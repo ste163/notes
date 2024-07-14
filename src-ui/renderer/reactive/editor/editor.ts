@@ -47,124 +47,6 @@ class Editor {
 
     container.innerHTML = ''
 
-    const resetResizeObserver = (container: Element) => {
-      if (this.resizeObserver) this.resizeObserver.disconnect()
-
-      const handleResize = (entries: ResizeObserverEntry[]) => {
-        const main = entries[0] // only watching the #main element
-        const editorWidth = main.contentRect.width
-
-        const getEditorMenuGroups = () =>
-          this.editorMenuMainContainer?.querySelectorAll('[data-group]')
-
-        const getEllipsisMenuGroups = () =>
-          this.editorMenuEllipsisContainer?.querySelectorAll('[data-group]')
-
-        const getGroupIndex = (
-          elements: NodeListOf<Element> | undefined,
-          order: 'asc' | 'dsc'
-        ) => {
-          return parseInt(
-            Array.from(elements || [])
-              .sort((a, b) =>
-                order === 'asc'
-                  ? parseInt(a?.getAttribute('data-group') || '0') -
-                    parseInt(b?.getAttribute('data-group') || '0')
-                  : parseInt(b?.getAttribute('data-group') || '0') -
-                    parseInt(a?.getAttribute('data-group') || '0')
-              )?.[0]
-              ?.getAttribute('data-group') || '0'
-          )
-        }
-
-        const showHideEllipsisButton = () => {
-          const ellipsisButton = document.querySelector(
-            '#ellipsis-button'
-          ) as HTMLElement
-
-          if (!getEllipsisMenuGroups() || !ellipsisButton) return
-
-          const doesEllipsisMenuHaveItems = getGroupIndex(
-            getEllipsisMenuGroups(),
-            'asc'
-          )
-
-          ellipsisButton.style.display = doesEllipsisMenuHaveItems
-            ? 'flex'
-            : 'none'
-        }
-
-        const responsivenessConfig: {
-          width: number
-          groupIndex: number
-        }[] = [
-          {
-            width: 700,
-            groupIndex: 4,
-          },
-          {
-            width: 600,
-            groupIndex: 3,
-          },
-          {
-            width: 500,
-            groupIndex: 2,
-          },
-        ]
-
-        /**
-         * Process the width of the editor element
-         * and move editor buttons to the main or ellipsis/overflow menus
-         */
-        responsivenessConfig.forEach(({ width, groupIndex }) => {
-          const startingGroupIndexInEllipsisMenu = getGroupIndex(
-            getEllipsisMenuGroups(),
-            'asc'
-          )
-
-          const lastGroupIndexInMainMenu = startingGroupIndexInEllipsisMenu
-            ? startingGroupIndexInEllipsisMenu - 1
-            : getGroupIndex(getEditorMenuGroups(), 'dsc')
-
-          if (editorWidth < width && lastGroupIndexInMainMenu === groupIndex) {
-            const lastGroup = document.querySelectorAll(
-              `#menu-group-${lastGroupIndexInMainMenu}`
-            )
-            if (lastGroup.length)
-              lastGroup.forEach((group) =>
-                this.editorMenuEllipsisContainer?.prepend(group)
-              )
-          }
-
-          const lastGroupIndexInEllipsisMenu = getGroupIndex(
-            getEllipsisMenuGroups(),
-            'asc'
-          )
-
-          if (
-            editorWidth > width &&
-            lastGroupIndexInEllipsisMenu === groupIndex
-          ) {
-            const lastGroup = document.querySelectorAll(
-              `#menu-group-${lastGroupIndexInEllipsisMenu}`
-            )
-            if (lastGroup.length) {
-              lastGroup.forEach((group) =>
-                this.editorMenuMainContainer?.appendChild(group)
-              )
-            }
-          }
-        })
-
-        showHideEllipsisButton()
-
-        // TODO: resize very long titles and the title input
-      }
-
-      this.resizeObserver = new ResizeObserver(handleResize)
-      this.resizeObserver.observe(container)
-    }
-
     const resetContainers = () => {
       this.editorTitleContainer = null
       this.editorMenuContainer = null
@@ -186,7 +68,7 @@ class Editor {
       this.editorContainer = editorDiv
     }
 
-    resetResizeObserver(container)
+    this.resetResizeObserver(container)
     resetContainers()
 
     this.isDirty = false
@@ -230,14 +112,17 @@ class Editor {
       .forEach((groupContainer) => mainButtonDiv?.appendChild(groupContainer))
 
     // TODO: because the dialog open event triggers
-    // the menus to re-render as disabled
-    // this re-attaches the ellipsis menu regardless
-    // of the editor state
+    // the menu buttons all re-render and lose the observer state
 
-    const ellipsisMenu = document.createElement('div')
-    ellipsisMenu.id = 'ellipsis-editor-menu'
-    this.editorMenuEllipsisContainer = ellipsisMenu
+    const createEllipsisElement = () => {
+      const ellipsisMenu = document.createElement('div')
+      ellipsisMenu.id = 'ellipsis-editor-menu'
+      return ellipsisMenu
+    }
 
+    this.editorMenuEllipsisContainer = createEllipsisElement()
+
+    // cleanup listener on any re-render, just in case
     this.removeGlobalPopOutListener()
 
     const ellipsisButton = new Button({
@@ -258,7 +143,8 @@ class Editor {
 
     // need to append the ellipsis menu to the ellipsis button
     const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
-    ellipsisPopOut?.appendChild(ellipsisMenu)
+    ellipsisPopOut?.appendChild(this.editorMenuEllipsisContainer)
+    this.resetResizeObserver(document.querySelector('#main') as Element)
   }
 
   public getIsDirty() {
@@ -282,6 +168,123 @@ class Editor {
 
   public setCursorPosition(position: FocusPosition) {
     this.editor?.commands.focus(position)
+  }
+
+  private resetResizeObserver(container: Element) {
+    if (this.resizeObserver) this.resizeObserver.disconnect()
+    const handleResize = (entries: ResizeObserverEntry[]) => {
+      const main = entries[0] // only watching the #main element
+      const editorWidth = main.contentRect.width
+
+      const getEditorMenuGroups = () =>
+        this.editorMenuMainContainer?.querySelectorAll('[data-group]')
+
+      const getEllipsisMenuGroups = () =>
+        this.editorMenuEllipsisContainer?.querySelectorAll('[data-group]')
+
+      const getGroupIndex = (
+        elements: NodeListOf<Element> | undefined,
+        order: 'asc' | 'dsc'
+      ) => {
+        return parseInt(
+          Array.from(elements || [])
+            .sort((a, b) =>
+              order === 'asc'
+                ? parseInt(a?.getAttribute('data-group') || '0') -
+                  parseInt(b?.getAttribute('data-group') || '0')
+                : parseInt(b?.getAttribute('data-group') || '0') -
+                  parseInt(a?.getAttribute('data-group') || '0')
+            )?.[0]
+            ?.getAttribute('data-group') || '0'
+        )
+      }
+
+      const showHideEllipsisButton = () => {
+        const ellipsisButton = document.querySelector(
+          '#ellipsis-button'
+        ) as HTMLElement
+
+        if (!getEllipsisMenuGroups() || !ellipsisButton) return
+
+        const doesEllipsisMenuHaveItems = getGroupIndex(
+          getEllipsisMenuGroups(),
+          'asc'
+        )
+
+        ellipsisButton.style.display = doesEllipsisMenuHaveItems
+          ? 'flex'
+          : 'none'
+      }
+
+      const responsivenessConfig: {
+        width: number
+        groupIndex: number
+      }[] = [
+        {
+          width: 700,
+          groupIndex: 4,
+        },
+        {
+          width: 600,
+          groupIndex: 3,
+        },
+        {
+          width: 500,
+          groupIndex: 2,
+        },
+      ]
+
+      /**
+       * Process the width of the editor element
+       * and move editor buttons to the main or ellipsis/overflow menus
+       */
+      responsivenessConfig.forEach(({ width, groupIndex }) => {
+        const startingGroupIndexInEllipsisMenu = getGroupIndex(
+          getEllipsisMenuGroups(),
+          'asc'
+        )
+
+        const lastGroupIndexInMainMenu = startingGroupIndexInEllipsisMenu
+          ? startingGroupIndexInEllipsisMenu - 1
+          : getGroupIndex(getEditorMenuGroups(), 'dsc')
+
+        if (editorWidth < width && lastGroupIndexInMainMenu === groupIndex) {
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInMainMenu}`
+          )
+          if (lastGroup.length)
+            lastGroup.forEach((group) =>
+              this.editorMenuEllipsisContainer?.prepend(group)
+            )
+        }
+
+        const lastGroupIndexInEllipsisMenu = getGroupIndex(
+          getEllipsisMenuGroups(),
+          'asc'
+        )
+
+        if (
+          editorWidth > width &&
+          lastGroupIndexInEllipsisMenu === groupIndex
+        ) {
+          const lastGroup = document.querySelectorAll(
+            `#menu-group-${lastGroupIndexInEllipsisMenu}`
+          )
+          if (lastGroup.length) {
+            lastGroup.forEach((group) =>
+              this.editorMenuMainContainer?.appendChild(group)
+            )
+          }
+        }
+      })
+
+      showHideEllipsisButton()
+
+      // TODO: resize very long titles and the title input
+    }
+
+    this.resizeObserver = new ResizeObserver(handleResize)
+    this.resizeObserver.observe(container)
   }
 
   private toggleEllipsisPopOut() {
