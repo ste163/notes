@@ -60,14 +60,17 @@ class Sidebar {
     const setupResizer = () => {
       const element = document.querySelector('.sidebar-main') as HTMLDivElement
 
-      function handleMouseMove(e: MouseEvent) {
-        if (!element) return
+      const getClampedWidth = (newWidth: number) => {
         const screenWidth = window.innerWidth
         const minWidth = 200
         const maxWidth = screenWidth * 0.5
+        return Math.max(minWidth, Math.min(newWidth, maxWidth))
+      }
+
+      function handleMouseMove(e: MouseEvent) {
+        if (!element) return
         const newWidth = e.clientX - element.getBoundingClientRect().left
-        const clampedWidth = Math.max(minWidth, Math.min(newWidth, maxWidth)) // Clamp the width
-        element.style.width = `${clampedWidth}px`
+        element.style.width = `${getClampedWidth(newWidth)}px`
       }
 
       /**
@@ -79,7 +82,7 @@ class Sidebar {
       function stopResizing() {
         // get the current width that the element is set to
         const currentWidth = element?.style.width
-        useLocalStorage.set('sidebar-width', { width: currentWidth })
+        useLocalStorage.set('sidebar-width', { width: parseInt(currentWidth) })
 
         document.removeEventListener('mousemove', handleMouseMove)
         document.removeEventListener('mouseup', stopResizing)
@@ -95,8 +98,8 @@ class Sidebar {
         document.addEventListener('mouseup', stopResizing)
       })
 
-      const sidebarWidth = useLocalStorage.get('sidebar-width')?.width
-      if (sidebarWidth) element.style.width = sidebarWidth
+      const storedWidth = useLocalStorage.get('sidebar-width')?.width
+      if (storedWidth) element.style.width = `${getClampedWidth(storedWidth)}px`
     }
 
     setupResizer()

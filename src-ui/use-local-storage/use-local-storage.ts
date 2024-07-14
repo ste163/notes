@@ -9,7 +9,7 @@ interface DatabaseDetails {
 }
 
 interface SidebarWidth {
-  width: string
+  width: number
 }
 
 type AllowedKeys = 'remote-db-details' | 'sidebar-width'
@@ -63,8 +63,7 @@ class UseLocalStorage {
   }
 
   private validateSidebarWidth(sidebarWidth: SidebarWidth): boolean {
-    // should be any number appended by 'px'
-    return /^\d+px$/.test(sidebarWidth?.width)
+    return typeof sidebarWidth?.width === 'number'
   }
 }
 

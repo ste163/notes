@@ -1,7 +1,7 @@
 import { describe, it, vi, expect, beforeEach } from 'vitest'
 import { logger } from 'logger'
 import { useLocalStorage } from './use-local-storage'
-import type { DatabaseDetails } from './use-local-storage'
+import type { DatabaseDetails, SidebarWidth } from './use-local-storage'
 
 vi.mock('logger')
 
@@ -78,21 +78,23 @@ describe('use-local-storage', () => {
   })
 
   it('does not set sidebar width if invalid value', () => {
-    useLocalStorage.set('sidebar-width', { width: '910' })
+    useLocalStorage.set('sidebar-width', {
+      width: '900',
+    } as unknown as SidebarWidth)
     expect(logger.log).toHaveBeenCalledOnce()
     expect(localStorageSetSpy).not.toHaveBeenCalled()
   })
 
   it('sets the sidebar width if valid', () => {
-    useLocalStorage.set('sidebar-width', { width: '200px' })
+    useLocalStorage.set('sidebar-width', { width: 300 })
     expect(localStorageSetSpy).toHaveBeenCalledWith(
       'sidebar-width',
-      JSON.stringify({ width: '200px' })
+      JSON.stringify({ width: 300 })
     )
   })
 
   it('returns valid sidebar width if stored', () => {
-    localStorageGetSpy.mockReturnValue(JSON.stringify({ width: '200px' }))
-    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: '200px' })
+    localStorageGetSpy.mockReturnValue(JSON.stringify({ width: 200 }))
+    expect(useLocalStorage.get('sidebar-width')).toEqual({ width: 200 })
   })
 })
