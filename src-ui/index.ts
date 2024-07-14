@@ -1,8 +1,8 @@
 /**
  * TODO PRIORITY ORDER
  *  - Responsiveness
- *    - Note title + input needs to be revisited when width changes
- *    - sidebar buttons need to have their width match the element (inherit?)
+ *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
+ *    - sidebar buttons need to have their width match the element (using JS)
  *
  *  - DATABASE DIALOG FORM:
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
@@ -12,17 +12,18 @@
  *       the button copy from Reconnect to Connect (as it has changed)
  *
  *  - title edit
+ *      - cleanup styling
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *    - move all console.logs and console.errors to the logger()
- *      so that all interactions with the database are logged
+ *  - move all console.logs and console.errors to the logger()
+ *    so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
- *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
+ *  - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
+ *
  * - FEATURES
  *   - auto-save at debounced interval
- *   - sidebar is resizable and saves to localStorage, loading on refresh
  *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
