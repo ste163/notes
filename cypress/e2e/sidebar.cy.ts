@@ -15,7 +15,8 @@ describe('sidebar', () => {
   // - opening the sidebar and refreshing keeps the sidebar open (full screen)
   // - selecting a note from the sidebar closes the sidebar and opens the note
   // - selecting the already selected note closes the sidebar
-  // RESIZING
+  //
+  // RESIZING (this is actually done through viewport commands, not dragging)
   // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
   // - if the sidebar is open, in mobile, it stay open in desktop
   //   - moving the window back to mobile, the sidebar is still open
