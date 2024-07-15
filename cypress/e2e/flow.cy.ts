@@ -1,4 +1,5 @@
 import { locators, DEFAULT_WAIT } from '../constants'
+import { clearIndexDb } from '../utils'
 
 /**
  * Tests the main application flow; however,
@@ -8,15 +9,14 @@ import { locators, DEFAULT_WAIT } from '../constants'
  *
  * Current tests use IndexedDB.
  */
-describe('application flow', () => {
+describe('flow', () => {
   beforeEach(async () => {
-    const clearIndexDb = async () => {
-      const indexedDBs = await indexedDB.databases()
-      indexedDBs.forEach(({ name }) => name && indexedDB.deleteDatabase(name))
-    }
     await clearIndexDb()
     // by default, cypress always clears localStorage between test runs
   })
+
+  // TODO: this should be the "flow"
+  // and the more in-depth tests should come in separate specs. (ie, all the input possibilities)?
 
   it('can create, edit, write, select, and delete notes', () => {
     cy.visit('/')
@@ -202,160 +202,10 @@ describe('application flow', () => {
     cy.get(locators.statusBar.delete).should('be.disabled')
     cy.get(locators.statusBar.savedOn).should('not.exist')
     cy.get(locators.sidebar.note).should('have.length', 0)
+
+    // TODOs
+    //
+    // FUTURE INFRASTRUCTURE DB SYNCING
+    // ... (all db syncing interactions)
   })
-
-  it('dialogs render properly if no note selected', () => {
-    cy.visit('/')
-
-    // database dialog renders properly on reload
-    cy.get(locators.statusBar.database).click()
-    cy.get('h2').should('contain', 'Database')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.get('h2').should('contain', 'Database')
-
-    // closing the dialog and reloading does not render it
-    cy.get(locators.dialog.close).click()
-    cy.get('h2').should('not.exist', 'Database')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.get('h2').should('not.exist', 'Database')
-
-    // delete note dialog should not render as no note was selected
-    cy.get(locators.statusBar.delete).should('be.disabled')
-    // and visiting the url directly should not render the dialog
-    cy.visit('/?dialog=delete')
-    cy.wait(DEFAULT_WAIT)
-    cy.get('h2').should('not.exist', 'Delete')
-  })
-
-  it('dialogs render properly if a note is selected', () => {
-    cy.visit('/')
-
-    cy.get(locators.sidebar.createNote.button).click()
-    cy.get(locators.sidebar.createNote.input).type('Dialog test note')
-    cy.get(locators.sidebar.createNote.save).click()
-
-    cy.get(locators.statusBar.database).click()
-
-    // database dialog can be reloaded
-    cy.get('h2').should('contain', 'Database')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.get('h2').should('contain', 'Database')
-
-    // closing the dialog and reloading does not render it
-    cy.get(locators.dialog.close).click()
-    cy.get('h2').should('not.exist', 'Database')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.get('h2').should('not.exist', 'Database')
-
-    // delete note dialog opens properly
-    cy.wait(DEFAULT_WAIT)
-    cy.get(locators.statusBar.delete).click()
-    cy.get('h2').should('contain', 'Delete')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.get('h2').should('contain', 'Delete')
-
-    // closing the dialog and reloading does not render it
-    cy.get(locators.dialog.close).click()
-    cy.get('h2').should('not.exist', 'Delete')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.get('h2').should('not.exist', 'Delete')
-  })
-
-  it('tracks sidebar open/closed state across page reloads', () => {
-    cy.visit('/')
-    // default sidebar value added
-    cy.location('search').should('eq', '?sidebar=open')
-
-    // sidebar was opened and stays open on refresh
-    cy.get(locators.sidebar.createNote.button).should('be.visible')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.location('search').should('eq', '?sidebar=open')
-    cy.get(locators.sidebar.createNote.button).should('be.visible')
-
-    // closing sidebar from sidebar close button
-    cy.get(locators.sidebar.close).click()
-    cy.location('search').should('eq', '?sidebar=close')
-    cy.get(locators.sidebar.createNote.button).should('not.exist')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.location('search').should('eq', '?sidebar=close')
-    cy.get(locators.sidebar.createNote.button).should('not.exist')
-
-    // handle sidebar open close from status bar
-    cy.get(locators.statusBar.sidebarToggle).click()
-    cy.location('search').should('eq', '?sidebar=open')
-    cy.get(locators.sidebar.createNote.button).should('be.visible')
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.location('search').should('eq', '?sidebar=open')
-    cy.get(locators.sidebar.createNote.button).should('be.visible')
-
-    // and we can close it
-    cy.get(locators.statusBar.sidebarToggle).click()
-    cy.location('search').should('eq', '?sidebar=close')
-    cy.get(locators.sidebar.createNote.button).should('not.exist')
-  })
-
-  // TODO: to implement with mobile tests
-  it.skip('editor menu buttons move to the ellipsis menu properly on different sizes', () => {
-    // at 1000px all buttons are visible AND the ellipsis menu is hidden
-    // ... etc for all the different amounts
-    // clicking the ellipsis menu opens the menu
-    // - clicking an item inside it closes it
-    // - clicking outside it closes it
-  })
-
-  it('resizing the sidebar saves it to local storage', () => {
-    cy.clearLocalStorage()
-    cy.visit('/')
-    cy.wait(DEFAULT_WAIT)
-    // check the sidebar width is the default
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '170px')
-    // no ellipsis button as the editor is wide
-    cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
-
-    // drag and move the sidebar
-    cy.get(locators.sidebar.resizeHandle).trigger('mousedown', { which: 1 })
-    cy.get(locators.sidebar.resizeHandle).trigger('mousemove', { clientX: 400 })
-    cy.get(locators.sidebar.resizeHandle).trigger('mouseup')
-
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
-
-    // reload the page
-    cy.reload()
-    cy.wait(DEFAULT_WAIT)
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
-    // ellipsis button renders as the editor was resized
-    cy.get(locators.editor.menu.ellipsisButton).should('be.visible')
-  })
-
-  // TODOs
-  //
-  // MOBILE
-  // - no selected note shows the sidebar only with the create note button
-  // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
-  // - creating a note opens the selected note in the editor, closing sidebar
-  // - refreshing the page opens to the selected note with the sidebar hidden
-  // - opening the sidebar and refreshing keeps the sidebar open (full screen)
-  // - selecting a note from the sidebar closes the sidebar and opens the note
-  // - selecting the already selected note closes the sidebar
-  //
-  // RESIZING
-  // - if the sidebar is open, in mobile, it stay open in desktop
-  //   - moving the window back to mobile, the sidebar is still open
-  // - if the sidebar is closed in mobile, it stays closed in desktop
-  //   - moving the window back to mobile, the sidebar is still closed
-  // - OPENING the dialog on a smaller size where the ellipsis menu is open
-  //   does not re-render the editor menu. Ie: all the same buttons are render, nothing changed
-  //   - including on dialog close
-  //
-  // FUTURE INFRASTRUCTURE DB SYNCING
-  // ... (all db syncing interactions)
 })
