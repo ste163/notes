@@ -22,6 +22,34 @@ describe('sidebar', () => {
   // - if the sidebar is closed in mobile, it stays closed in desktop
   //   - moving the window back to mobile, the sidebar is still closed
 
+  it('handles creating a note', () => {
+    cy.visit('/')
+    // tests all scenarios on note creating
+    //
+    // TODO: what happens when you:
+    // - click create note again?
+    // - have the note input open but close then reopen the sidebar?
+    // ADD TESTS FOR THESE WITH EXPECTATIONS
+
+    cy.get(locators.sidebar.createNote.button).click()
+
+    // no value, so saving is disabled
+    cy.get(locators.sidebar.createNote.save).should('be.disabled')
+    cy.get(locators.sidebar.createNote.input).type('My first note')
+    cy.get(locators.sidebar.createNote.save).should('be.enabled')
+    // removing the value disabled save again
+    // TODO: implement the above comment
+
+    // canceling stops note create and hides input
+    cy.get(locators.sidebar.createNote.cancel).click()
+    cy.get(locators.sidebar.createNote.input).should('not.exist')
+
+    // re-opening has cleared inputted value
+    cy.get(locators.sidebar.createNote.button).click()
+    cy.get(locators.sidebar.createNote.input).should('have.value', '')
+    cy.get(locators.sidebar.createNote.save).should('be.disabled')
+  })
+
   it('tracks sidebar open/closed state across page reloads', () => {
     cy.visit('/')
     // default sidebar value added

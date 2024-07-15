@@ -2,8 +2,11 @@ import { locators, DEFAULT_WAIT } from '../constants'
 import { clearIndexDb } from '../utils'
 
 /**
- * Tests the main application flow; however,
- * this is not testing the connection to a CouchDB instance.
+ * Tests the main application flow
+ * without errors being mocked, so it should run successfully.
+ * In-depth testing of interactions happen in other test files.
+ *
+ * However, this is not testing the connection to a CouchDB instance.
  * That requires more infrastructure setup as it needs to
  * create the docker container to run CouchDB.
  *
@@ -15,21 +18,17 @@ describe('flow', () => {
     // by default, cypress always clears localStorage between test runs
   })
 
-  // TODO: this should be the "flow"
-  // and the more in-depth tests should come in separate specs. (ie, all the input possibilities)?
-
   it('can create, edit, write, select, and delete notes', () => {
     cy.visit('/')
 
-    /**
-     * Get started view without data, status bar actions are disabled
-     */
+    // render the getting started section as there is no data
     cy.get('h1').should('contain', 'Get started')
-
     // TODO: trying to edit content is not possible (figure out how to test)
 
+    // status bar state is expected (ie, disabled)
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')
+    cy.get(locators.statusBar.savedOn).should('not.exist')
 
     // TODO: fix this bug, sort on fields createdAt when using default index throws error during getAll
     // the app should load without any errors
@@ -37,41 +36,21 @@ describe('flow', () => {
     // cy.wait(DEFAULT_WAIT)
     // cy.get('[data-testid="alert-error"]').should('not.exist')
 
-    /**
-     * Creating note and resetting the input
-     */
+    // can create note
     cy.get(locators.sidebar.createNote.button).click()
-
     cy.get(locators.sidebar.createNote.save).should('be.disabled')
-    cy.get(locators.sidebar.createNote.input).type('My first note')
-    cy.get(locators.sidebar.createNote.save).should('be.enabled')
-    cy.get(locators.statusBar.savedOn).should('not.exist')
-
-    // canceling stops note create and hides input
-    cy.get(locators.sidebar.createNote.cancel).click()
-    cy.get(locators.sidebar.createNote.input).should('not.exist')
-
-    // re-opening has cleared inputted value
-    cy.get(locators.sidebar.createNote.button).click()
-    cy.get(locators.sidebar.createNote.input).should('have.value', '')
-    cy.get(locators.sidebar.createNote.save).should('be.disabled')
-
-    // can create it
     cy.get(locators.sidebar.createNote.input).type('My first note')
     cy.get(locators.sidebar.createNote.save).click()
 
-    /**
-     * Adding note content and saving
-     */
     // status bar is now enabled
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.statusBar.save).should('be.enabled')
     cy.get(locators.statusBar.delete).should('be.enabled')
-    cy.wait(DEFAULT_WAIT)
     cy.get(locators.statusBar.savedOn).should('be.visible')
 
+    // can edit the title
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should('have.value', 'My first note')
-
     cy.get(locators.editTitle.input).type(' - updated')
     // get the first child element of editor to trigger saving
     cy.get(locators.editor.content).children().first().click()
@@ -97,14 +76,10 @@ describe('flow', () => {
     cy.get(locators.notification.save).should('exist')
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
-    /**
-     * Can create another note and swap between the two.
-     * If the note is dirty, content is saved before swapping
-     */
+    // can create another note
     cy.get(locators.sidebar.createNote.button).click()
     cy.get(locators.sidebar.createNote.input).type('My second note')
     cy.get(locators.sidebar.createNote.save).click()
-
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
     // should have opened the second note, check the title and content
@@ -118,6 +93,7 @@ describe('flow', () => {
 
     // editor content empty
     cy.get(locators.editor.content).children().first().should('have.value', '')
+    // add content
     cy.get(locators.editor.content)
       .children()
       .first()
@@ -134,7 +110,7 @@ describe('flow', () => {
 
     // select first note and renders it
     cy.get(locators.sidebar.note).eq(1).click()
-    cy.wait(DEFAULT_WAIT) // cypress is moving too quickly, need to wait for the editor to render
+    cy.wait(DEFAULT_WAIT)
 
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should(
@@ -147,8 +123,8 @@ describe('flow', () => {
       .first()
       .should('contain.text', 'Lets add some content!')
 
-    // swapping to the second note renders it and its content was saved
-    // because the editor was dirty
+    // select the second note renders its content
+    // because of the isDirty check to auto-save unsaved notes
     cy.get(locators.sidebar.note).eq(0).click()
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should('have.value', 'My second note')
@@ -158,9 +134,7 @@ describe('flow', () => {
       .first()
       .should('contain.text', 'Second note content')
 
-    /**
-     * Can delete a note
-     */
+    // can delete a note
     cy.get(locators.statusBar.delete).click()
     cy.get('h2').should('contain', 'Delete')
 
@@ -177,6 +151,7 @@ describe('flow', () => {
 
     // TODO:
     // editor state is disabled, no ability to modify get started text
+    // ie: trying to modify the Get started text doesn't work
 
     // the status bar save and delete are disabled
     cy.get(locators.statusBar.save).should('be.disabled')
@@ -193,6 +168,8 @@ describe('flow', () => {
     cy.get(locators.statusBar.save).should('be.enabled')
     cy.get(locators.statusBar.delete).should('be.enabled')
     cy.get(locators.statusBar.savedOn).should('be.visible')
+    // TODO: modify the note content again and save it
+    // because this means the editor is FULLY ACTIVE AGAIN!
 
     // can delete first note and the app is reset to the get started screen
     cy.get(locators.statusBar.delete).click()
@@ -202,8 +179,9 @@ describe('flow', () => {
     cy.get(locators.statusBar.delete).should('be.disabled')
     cy.get(locators.statusBar.savedOn).should('not.exist')
     cy.get(locators.sidebar.note).should('have.length', 0)
+    // TODO: cannot modify the get started text
 
-    // TODOs
+    // TODO
     //
     // FUTURE INFRASTRUCTURE DB SYNCING
     // ... (all db syncing interactions)
