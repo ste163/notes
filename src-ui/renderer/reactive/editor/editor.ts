@@ -283,6 +283,12 @@ class Editor {
        * and move editor buttons to the main or
        * ellipsis/overflow menus
        */
+
+      // potential solution: as long as the editorWidth is greater
+      // than the lowest responsiveConfig width, continue to process
+      // the config? Why? Because we should be continuously processing the config
+      // not just once, but based on the actual editor width
+
       responsivenessConfig.forEach(processResponsiveConfig)
 
       // TODO (bug to solve for): and this horribly solves it.
