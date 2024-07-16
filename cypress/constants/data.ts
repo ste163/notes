@@ -1,15 +1,15 @@
 export const data = {
   expected: {
     editor: {
-      mainButtonSectionButtonCount: {
-        desktop: 11,
-        tablet: 7,
-        mobile: 4,
+      mainToolbarButtonCount: {
+        small: 4,
+        medium: 7,
+        large: 11,
       },
-      ellipsisButtonSectionButtonCount: {
-        desktop: 0,
-        tablet: 4,
-        mobile: 7,
+      ellipsisToolbarButtonCount: {
+        small: 7,
+        medium: 4,
+        large: 0,
       },
     },
   },

@@ -8,8 +8,8 @@ export const locators = {
   editor: {
     content: '#editor',
     menu: {
-      mainButtonSection: '[data-testid="main-editor-button-section"]',
-      ellipsisButtonSection: '[data-testid="ellipsis-editor-button-section"]',
+      mainSection: '[data-testid="main-editor-button-section"]',
+      ellipsisSection: '[data-testid="ellipsis-editor-button-section"]',
       ellipsisButton: '[data-testid="ellipsis-button"]',
     },
   },

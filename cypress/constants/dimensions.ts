@@ -1,13 +1,13 @@
 export const dimensions = {
-  mobile: {
+  small: {
     viewPortWidth: 375,
     viewPortHeight: 667,
   },
-  tablet: {
+  medium: {
     viewPortWidth: 768,
     viewPortHeight: 1024,
   },
-  desktop: {
+  large: {
     viewPortWidth: 1920,
     viewPortHeight: 1080,
   },
