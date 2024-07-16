@@ -22,6 +22,26 @@ import type { MarkOptions, Note } from 'types'
 import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
 
+interface ResponsivenessConfig {
+  width: number
+  groupIndex: number
+}
+
+const responsivenessConfig: ResponsivenessConfig[] = [
+  {
+    width: 700,
+    groupIndex: 4,
+  },
+  {
+    width: 600,
+    groupIndex: 3,
+  },
+  {
+    width: 500,
+    groupIndex: 2,
+  },
+]
+
 const STARTING_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
 
 // NOTE:
@@ -217,74 +237,51 @@ class Editor {
           : 'none'
       }
 
-      const responsivenessConfig: {
-        width: number
-        groupIndex: number
-      }[] = [
-        {
-          width: 700,
-          groupIndex: 4,
-        },
-        {
-          width: 600,
-          groupIndex: 3,
-        },
-        {
-          width: 500,
-          groupIndex: 2,
-        },
-      ]
+      const processResponsiveConfig = ({
+        width,
+        groupIndex,
+      }: ResponsivenessConfig) => {
+        const getLastGroupElements = (index: number) =>
+          document.querySelectorAll(`#menu-group-${index}`)
 
-      const processResponsiveConfig = (config: {
-        width: number
-        groupIndex: number
-      }) => {
-        const { width, groupIndex } = config
-        const startingGroupIndexInEllipsisMenu = getGroupIndex(
+        const startingIndexInEllipsis = getGroupIndex(
           getEllipsisMenuGroups(),
           'asc'
         )
+        const getLastGroupIndexInMainMenu = () =>
+          startingIndexInEllipsis
+            ? startingIndexInEllipsis - 1
+            : getGroupIndex(getEditorMenuGroups(), 'dsc')
 
-        const lastGroupIndexInMainMenu = startingGroupIndexInEllipsisMenu
-          ? startingGroupIndexInEllipsisMenu - 1
-          : getGroupIndex(getEditorMenuGroups(), 'dsc')
-
+        // process main menu
+        const lastMainIndex = getLastGroupIndexInMainMenu()
         const shouldMoveButtonsIntoEllipsis =
-          editorWidth < width && lastGroupIndexInMainMenu === groupIndex
-
-        if (shouldMoveButtonsIntoEllipsis) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInMainMenu}`
+          editorWidth < width &&
+          lastMainIndex === groupIndex &&
+          getLastGroupElements(lastMainIndex).length
+        if (shouldMoveButtonsIntoEllipsis)
+          getLastGroupElements(lastMainIndex).forEach((group) =>
+            this.editorMenuEllipsisContainer?.prepend(group)
           )
-          if (lastGroup.length)
-            lastGroup.forEach((group) =>
-              this.editorMenuEllipsisContainer?.prepend(group)
-            )
-        }
 
-        const lastGroupIndexInEllipsisMenu = getGroupIndex(
+        // process ellipsis menu
+        const lastIndexInEllipsis = getGroupIndex(
           getEllipsisMenuGroups(),
           'asc'
         )
-
         const shouldMoveButtonsOutOfEllipsis =
-          editorWidth > width && lastGroupIndexInEllipsisMenu === groupIndex
-
-        if (shouldMoveButtonsOutOfEllipsis) {
-          const lastGroup = document.querySelectorAll(
-            `#menu-group-${lastGroupIndexInEllipsisMenu}`
+          editorWidth > width &&
+          lastIndexInEllipsis === groupIndex &&
+          getLastGroupElements(lastIndexInEllipsis).length
+        if (shouldMoveButtonsOutOfEllipsis)
+          getLastGroupElements(lastIndexInEllipsis).forEach((group) =>
+            this.editorMenuMainContainer?.appendChild(group)
           )
-          if (lastGroup.length) {
-            lastGroup.forEach((group) =>
-              this.editorMenuMainContainer?.appendChild(group)
-            )
-          }
-        }
       }
-
       /**
        * Process the width of the editor element
-       * and move editor buttons to the main or ellipsis/overflow menus
+       * and move editor buttons to the main or
+       * ellipsis/overflow menus
        */
       responsivenessConfig.forEach(processResponsiveConfig)
 
