@@ -1,13 +1,15 @@
 export const locators = {
-  deleteDialog: {
-    button: '[data-testid="delete-forever"]',
-  },
   dialog: {
     close: '[testid="dialog-close"]',
+    deleteDialog: {
+      confirmButton: '[data-testid="delete-forever"]',
+    },
   },
   editor: {
     content: '#editor',
     menu: {
+      mainButtonSection: '[data-testid="main-editor-button-section"]',
+      ellipsisButtonSection: '[data-testid="ellipsis-editor-button-section"]',
       ellipsisButton: '[data-testid="ellipsis-button"]',
     },
   },

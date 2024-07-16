@@ -1,4 +1,3 @@
-// TODO: not used yet
 export const dimensions = {
   mobile: {
     viewPortWidth: 375,

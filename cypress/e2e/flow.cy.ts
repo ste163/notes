@@ -144,7 +144,7 @@ describe('flow', () => {
 
     // and then the note can really be deleted
     cy.get(locators.statusBar.delete).click()
-    cy.get(locators.deleteDialog.button).click()
+    cy.get(locators.dialog.deleteDialog.confirmButton).click()
 
     // renders the get started screen
     cy.get('h1').should('contain', 'Get started')
@@ -173,7 +173,7 @@ describe('flow', () => {
 
     // can delete first note and the app is reset to the get started screen
     cy.get(locators.statusBar.delete).click()
-    cy.get(locators.deleteDialog.button).click()
+    cy.get(locators.dialog.deleteDialog.confirmButton).click()
     cy.get('h1').should('contain', 'Get started')
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')

@@ -104,6 +104,7 @@ class Editor {
 
     const mainButtonDiv = document.createElement('div')
     mainButtonDiv.id = 'main-editor-button-section'
+    mainButtonDiv.setAttribute('data-testid', 'main-editor-button-section')
     this.editorMenuMainContainer = mainButtonDiv
 
     const buttons = instantiateMenuButtons(this.editor)
@@ -117,6 +118,7 @@ class Editor {
     const createEllipsisElement = () => {
       const ellipsisMenu = document.createElement('div')
       ellipsisMenu.id = 'ellipsis-editor-menu'
+      ellipsisMenu.setAttribute('data-testid', 'ellipsis-editor-button-section')
       return ellipsisMenu
     }
 
@@ -205,7 +207,7 @@ class Editor {
 
         if (!getEllipsisMenuGroups() || !ellipsisButton) return
 
-        const doesEllipsisMenuHaveItems = getGroupIndex(
+        const doesEllipsisMenuHaveItems = !!getGroupIndex(
           getEllipsisMenuGroups(),
           'asc'
         )
@@ -233,11 +235,11 @@ class Editor {
         },
       ]
 
-      /**
-       * Process the width of the editor element
-       * and move editor buttons to the main or ellipsis/overflow menus
-       */
-      responsivenessConfig.forEach(({ width, groupIndex }) => {
+      const processResponsiveConfig = (config: {
+        width: number
+        groupIndex: number
+      }) => {
+        const { width, groupIndex } = config
         const startingGroupIndexInEllipsisMenu = getGroupIndex(
           getEllipsisMenuGroups(),
           'asc'
@@ -247,7 +249,10 @@ class Editor {
           ? startingGroupIndexInEllipsisMenu - 1
           : getGroupIndex(getEditorMenuGroups(), 'dsc')
 
-        if (editorWidth < width && lastGroupIndexInMainMenu === groupIndex) {
+        const shouldMoveButtonsIntoEllipsis =
+          editorWidth < width && lastGroupIndexInMainMenu === groupIndex
+
+        if (shouldMoveButtonsIntoEllipsis) {
           const lastGroup = document.querySelectorAll(
             `#menu-group-${lastGroupIndexInMainMenu}`
           )
@@ -262,10 +267,10 @@ class Editor {
           'asc'
         )
 
-        if (
-          editorWidth > width &&
-          lastGroupIndexInEllipsisMenu === groupIndex
-        ) {
+        const shouldMoveButtonsOutOfEllipsis =
+          editorWidth > width && lastGroupIndexInEllipsisMenu === groupIndex
+
+        if (shouldMoveButtonsOutOfEllipsis) {
           const lastGroup = document.querySelectorAll(
             `#menu-group-${lastGroupIndexInEllipsisMenu}`
           )
@@ -275,7 +280,29 @@ class Editor {
             )
           }
         }
-      })
+      }
+
+      /**
+       * Process the width of the editor element
+       * and move editor buttons to the main or ellipsis/overflow menus
+       */
+      responsivenessConfig.forEach(processResponsiveConfig)
+
+      // TODO (bug to solve for): and this horribly solves it.
+      // When the sidebar is opened at it's fullest
+      // and then closed, the ellipsis menu will still render.
+      // Why? Because we only loop through once and process
+      // the config on the current screen size. So it's not
+      // moving all the items out. By running it 3 times,
+      // we always ensure it is processed
+      // this needs to be resolved in a better way
+      // that only calls the function once
+      //
+      // e2e is in place to track this bug
+      if (editorWidth > 700)
+        responsivenessConfig.forEach(processResponsiveConfig)
+      if (editorWidth > 500)
+        responsivenessConfig.forEach(processResponsiveConfig)
 
       showHideEllipsisButton()
 
