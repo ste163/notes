@@ -74,10 +74,13 @@ import type { Note } from 'types'
 
 let isMobile: boolean
 
+/**
+ * Main UI concept:
+ * Rendering and State are separate.
+ * State can be set without components needing to be rendered
+ */
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
-    database.initRemoteConnection() // must not await or it locks UI
-
     sidebar.render()
     statusBar.render()
     statusBar.renderRemoteDb()
@@ -100,15 +103,22 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
       editor.setNote(null)
     }
 
-    noteId
-      ? createEvent(LifeCycleEvents.QueryParamUpdate, { noteId }).dispatch()
-      : createEvent(NoteEvents.GetAll).dispatch()
-
     if (dialog)
       createEvent(LifeCycleEvents.QueryParamUpdate, { dialog }).dispatch()
   } catch (error) {
     logger.log('Error in LifeCycleEvents.Init.', 'error', error)
   }
+})
+
+window.addEventListener(DatabaseEvents.Init, async () => {
+  await database.createIndexes()
+  database.initRemoteConnection() // not awaiting or else UI is locked
+
+  // can only fetch notes after the database has been fully initialized
+  const { noteId } = urlController.getParams()
+  noteId
+    ? createEvent(LifeCycleEvents.QueryParamUpdate, { noteId }).dispatch()
+    : createEvent(NoteEvents.GetAll).dispatch()
 })
 
 /**
@@ -452,7 +462,8 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
  * and the client is ready to be initialized
  */
 window.addEventListener('DOMContentLoaded', async () => {
-  dispatchEvent(new Event(LifeCycleEvents.Init))
+  createEvent(DatabaseEvents.Init).dispatch()
+  createEvent(LifeCycleEvents.Init).dispatch()
 })
 
 async function saveNote() {

@@ -9,8 +9,8 @@ export const locators = {
     content: '#editor',
     menu: {
       mainSection: '[data-testid="main-editor-button-section"]',
-      ellipsisSection: '[data-testid="ellipsis-editor-button-section"]',
       ellipsisButton: '[data-testid="ellipsis-button"]',
+      ellipsisSection: '[data-testid="ellipsis-editor-button-section"]',
     },
   },
   editTitle: {
@@ -21,23 +21,24 @@ export const locators = {
     save: '[data-testid="save-notification"]',
   },
   sidebar: {
-    mainElement: '.sidebar-main',
-    resizeHandle: '[data-testid="sidebar-resize-handle"]',
     close: '[data-testid="close-sidebar"]',
     createNote: {
       button: '[data-testid="create-note"]',
+      cancel: '[data-testid="create-note-cancel"]',
       input: '[data-testid="create-note-input"]',
       save: '[data-testid="create-note-save"]',
-      cancel: '[data-testid="create-note-cancel"]',
     },
+    mainElement: '.sidebar-main',
     note: '[data-testid="note-select"]',
+    resizeHandle: '[data-testid="sidebar-resize-handle"]',
   },
   statusBar: {
+    alert: '[data-testid="alert-error"]',
     database: '[data-testid="setup-database"]',
     delete: '[data-testid="delete-note"]',
     save: '[data-testid="save-note"]',
-    sidebarToggle: '[data-testid="status-bar-sidebar-toggle"]',
     savedOn: '[data-testid="status-bar-saved-on"]',
+    sidebarToggle: '[data-testid="status-bar-sidebar-toggle"]',
     syncedOn: '[data-testid="status-bar-synced-on"]', // TODO: test when CouchDB is connected
   },
 }

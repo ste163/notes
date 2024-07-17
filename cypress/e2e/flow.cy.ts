@@ -30,11 +30,9 @@ describe('flow', () => {
     cy.get(locators.statusBar.delete).should('be.disabled')
     cy.get(locators.statusBar.savedOn).should('not.exist')
 
-    // TODO: fix this bug, sort on fields createdAt when using default index throws error during getAll
-    // the app should load without any errors
-    // need to wait for all async events to finish
-    // cy.wait(DEFAULT_WAIT)
-    // cy.get('[data-testid="alert-error"]').should('not.exist')
+    // no alerts render on fresh load
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.statusBar.alert).should('not.exist')
 
     // can create note
     cy.createNote('My first note')
