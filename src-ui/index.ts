@@ -111,8 +111,8 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 })
 
 window.addEventListener(DatabaseEvents.Init, async () => {
-  await database.createIndexes()
-  database.initRemoteConnection() // not awaiting or else UI is locked
+  await database.createIndexes() // must be async to fully initialize the db
+  database.initRemoteConnection() // not awaiting or else UI is locked. This is a background process
 
   // can only fetch notes after the database has been fully initialized
   const { noteId } = urlController.getParams()
