@@ -8,7 +8,7 @@ describe('sidebar', () => {
   })
 
   // TODO
-  // MOBILE
+  // MOBILE/SMALL
   // - no selected note shows the sidebar only with the create note button
   // - creating a note opens the selected note in the editor, closing sidebar
   // - refreshing the page opens to the selected note with the sidebar hidden
@@ -19,9 +19,9 @@ describe('sidebar', () => {
   // RESIZING (this is actually done through viewport commands, not dragging)
   // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
   // - if the sidebar is open, in mobile, it stay open in desktop
-  //   - moving the window back to mobile, the sidebar is still open
+  //    moving the window back to mobile, the sidebar is still open
   // - if the sidebar is closed in mobile, it stays closed in desktop
-  //   - moving the window back to mobile, the sidebar is still closed
+  //    moving the window back to mobile, the sidebar is still closed
 
   it('handles creating a note', () => {
     cy.visit('/')

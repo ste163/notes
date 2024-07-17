@@ -1,4 +1,4 @@
-import { locators, DEFAULT_WAIT } from '../constants'
+import { locators, DEFAULT_WAIT, data } from '../constants'
 import { clearIndexDb } from '../utils'
 
 /**
@@ -22,8 +22,10 @@ describe('flow', () => {
     cy.visit('/')
 
     // render the getting started section as there is no data
-    cy.get('h1').should('contain', 'Get started')
-    // TODO: trying to edit content is not possible (figure out how to test)
+    cy.validateContent(data.expected.editor.content.default)
+    // user can't edit the get started text
+    cy.writeContent('This should not work')
+    cy.validateContent(data.expected.editor.content.default)
 
     // status bar state is expected (ie, disabled)
     cy.get(locators.statusBar.save).should('be.disabled')
@@ -62,10 +64,15 @@ describe('flow', () => {
       'My first note - updated'
     )
 
-    cy.get(locators.editor.content)
-      .children()
-      .first()
-      .type('Lets add some content!')
+    // can write and save content
+    cy.writeContent('Lets add some content!')
+    // and can add content after opening and closing a dialog
+    // (to ensure the editor is still enabled)
+    cy.get(locators.statusBar.delete).click()
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.dialog.close).click()
+    cy.writeContent(' Extra.')
+    cy.validateContent('Lets add some content! Extra.')
 
     cy.get(locators.statusBar.save).click()
     cy.get(locators.notification.save).should('exist')
@@ -86,12 +93,9 @@ describe('flow', () => {
     cy.get(locators.notification.save).should('not.exist')
 
     // editor content empty
-    cy.get(locators.editor.content).children().first().should('have.value', '')
+    cy.validateContent('')
     // add content
-    cy.get(locators.editor.content)
-      .children()
-      .first()
-      .type('Second note content')
+    cy.writeContent('Second note content')
 
     // sidebar renders the two notes
     cy.get(locators.sidebar.note).should('have.length', 2)
@@ -112,10 +116,9 @@ describe('flow', () => {
       'My first note - updated'
     )
     cy.get(locators.editor.content).click()
-    cy.get(locators.editor.content)
-      .children()
-      .first()
-      .should('contain.text', 'Lets add some content!')
+
+    // validate the first content was loaded
+    cy.validateContent('Lets add some content! Extra.')
 
     // select the second note renders its content
     // because of the isDirty check to auto-save unsaved notes
@@ -123,10 +126,7 @@ describe('flow', () => {
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should('have.value', 'My second note')
     cy.get(locators.editor.content).click()
-    cy.get(locators.editor.content)
-      .children()
-      .first()
-      .should('contain.text', 'Second note content')
+    cy.validateContent('Second note content')
 
     // can delete a note
     cy.get(locators.statusBar.delete).click()
@@ -134,18 +134,17 @@ describe('flow', () => {
 
     // can close modal and the editor is enabled again
     cy.get(locators.dialog.close).click()
-    cy.get(locators.editor.content).children().first().type(' More content!')
+    cy.writeContent('More content! ')
 
     // and then the note can really be deleted
     cy.get(locators.statusBar.delete).click()
     cy.get(locators.dialog.deleteDialog.confirmButton).click()
 
     // renders the get started screen
-    cy.get('h1').should('contain', 'Get started')
-
-    // TODO:
-    // editor state is disabled, no ability to modify get started text
-    // ie: trying to modify the Get started text doesn't work
+    cy.validateContent(data.expected.editor.content.default)
+    // user can't edit the get started text
+    cy.writeContent('This should not work')
+    cy.validateContent(data.expected.editor.content.default)
 
     // the status bar save and delete are disabled
     cy.get(locators.statusBar.save).should('be.disabled')
@@ -162,18 +161,24 @@ describe('flow', () => {
     cy.get(locators.statusBar.save).should('be.enabled')
     cy.get(locators.statusBar.delete).should('be.enabled')
     cy.get(locators.statusBar.savedOn).should('be.visible')
-    // TODO: modify the note content again and save it
-    // because this means the editor is FULLY ACTIVE AGAIN!
+    // and the editor is still active
+    cy.writeContent('More content! ')
+    cy.validateContent('More content! Lets add some content! Extra.')
 
     // can delete first note and the app is reset to the get started screen
     cy.get(locators.statusBar.delete).click()
     cy.get(locators.dialog.deleteDialog.confirmButton).click()
-    cy.get('h1').should('contain', 'Get started')
+
+    // renders the get started screen
+    cy.validateContent(data.expected.editor.content.default)
+    // user can't edit the get started text
+    cy.writeContent('This should not work')
+    cy.validateContent(data.expected.editor.content.default)
+    // and everything is disabled
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')
     cy.get(locators.statusBar.savedOn).should('not.exist')
     cy.get(locators.sidebar.note).should('have.length', 0)
-    // TODO: cannot modify the get started text
 
     // TODO
     //
