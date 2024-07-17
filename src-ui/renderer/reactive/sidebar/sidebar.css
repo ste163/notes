@@ -52,7 +52,7 @@
 }
 
 .sidebar-fullscreen {
-  width: auto;
+  width: 100vw !important;
   border-right: none;
 }
 

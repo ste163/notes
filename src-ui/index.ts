@@ -85,7 +85,6 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     statusBar.render()
     statusBar.renderRemoteDb()
     statusBar.renderActiveNote(null)
-
     handleScreenWidth()
 
     const { noteId, dialog, sidebar: sidebarParam } = urlController.getParams()
@@ -132,13 +131,13 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
 
   if (sidebarParam) {
     const openSidebar = () => {
-      isMobile ? setMobileView() : setDesktopView()
+      toggleFullscreenSidebar(isMobile)
       statusBar.setSidebarButtonActive(true)
       sidebar.open()
     }
 
     const closeSidebar = () => {
-      setDesktopView()
+      toggleFullscreenSidebar(false)
       statusBar.setSidebarButtonActive(false)
       sidebar.close()
     }
@@ -207,11 +206,11 @@ window.addEventListener('resize', handleScreenWidth)
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
   const { noteId } = urlController.getParams()
   if (isMobile && !noteId) {
-    setMobileView()
+    toggleFullscreenSidebar(true)
     createEvent(LifeCycleEvents.QueryParamUpdate, {
       sidebar: 'open',
     }).dispatch()
-  } else setDesktopView()
+  } else toggleFullscreenSidebar(false)
 })
 
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
@@ -281,6 +280,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     const { _id } = await database.put({ title, content: '' })
     sidebar.closeInput()
+    if (isMobile) sidebar.close()
     createEvent(LifeCycleEvents.QueryParamUpdate, { noteId: _id }).dispatch()
   } catch (error) {
     logger.log('Error creating note.', 'error', error)
@@ -480,37 +480,36 @@ async function saveNote() {
   }
 }
 
-function setDesktopView() {
-  sidebar.toggleFullscreen(false)
-  toggleEditorVisibility(true)
-}
-
-function setMobileView() {
-  sidebar.toggleFullscreen(true)
-  toggleEditorVisibility(false)
+function toggleFullscreenSidebar(isFullscreen: boolean) {
+  if (isFullscreen) {
+    sidebar.setFullScreen(true)
+    toggleEditorVisibility(false)
+  } else {
+    sidebar.setFullScreen(false)
+    toggleEditorVisibility(true)
+  }
 }
 
 function toggleEditorVisibility(isVisible: boolean) {
   // TODO: revisit this once the resizing is implemented
-  // const body = document.body
-  // const mainElement = document.querySelector('#main') as HTMLElement
+  const body = document.body
+  const mainElement = document.querySelector('#main') as HTMLElement
   if (isVisible) {
-    // mainElement.style.display = 'flex'
-    // body.classList.remove('body-invisible')
-    // body.classList.add('body-visible')
+    mainElement.style.display = 'flex'
+    body.classList.remove('body-invisible')
+    body.classList.add('body-visible')
   } else {
-    // mainElement.style.display = 'none'
-    // body.classList.remove('body-visible')
-    // body.classList.add('body-invisible')
+    mainElement.style.display = 'none'
+    body.classList.remove('body-visible')
+    body.classList.add('body-invisible')
   }
 }
 
 function handleScreenWidth() {
-  const width = window.innerWidth
-  const previousIsMobile = isMobile
-  isMobile = width < 640
-  if (previousIsMobile !== isMobile)
-    dispatchEvent(new Event(LifeCycleEvents.WidthChanged))
+  const previous = isMobile
+  isMobile = window.innerWidth < 640
+  if (previous !== isMobile)
+    createEvent(LifeCycleEvents.WidthChanged).dispatch()
 }
 
 async function fetchNoteFromUrl() {

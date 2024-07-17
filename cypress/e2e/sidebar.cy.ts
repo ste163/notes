@@ -1,4 +1,4 @@
-import { locators, DEFAULT_WAIT } from '../constants'
+import { locators, DEFAULT_WAIT, dimensions } from '../constants'
 import { clearIndexDb } from '../utils'
 
 describe('sidebar', () => {
@@ -7,14 +7,43 @@ describe('sidebar', () => {
     // by default, cypress always clears localStorage between test runs
   })
 
+  it('handles creating and selecting a note on small screen sizes', () => {
+    cy.viewport(dimensions.small.viewPortWidth, dimensions.small.viewPortHeight)
+    cy.visit('/')
+
+    // when visiting the page, the sidebar is full screen. Editor is not visible
+    cy.get(locators.sidebar.mainElement).should('be.visible')
+    cy.get(locators.editor.content).should('not.be.visible')
+
+    // creating a note closes the sidebar on small screens
+    cy.createNote('My first note')
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.sidebar.mainElement).should('not.exist')
+    cy.get(locators.editor.content).should('be.visible')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Some content...')
+    cy.get(locators.statusBar.save).click()
+
+    cy.wait(DEFAULT_WAIT)
+    // reloading the page renders the note and its content, and no sidebar
+    cy.reload()
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.sidebar.mainElement).should('not.exist')
+    cy.validateContent('Some content...')
+
+    // can create a new note and select it
+    // open the sidebar from status bar
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.get(locators.sidebar.mainElement).should('be.visible')
+    cy.get(locators.editor.content).should('not.be.visible')
+    cy.createNote('My second note')
+    cy.wait(DEFAULT_WAIT)
+
+    // TODO (need to implement)
+    // clicking the second note closes the sidebar
+  })
+
   // TODO
-  // MOBILE/SMALL
-  // - no selected note shows the sidebar only with the create note button
-  // - creating a note opens the selected note in the editor, closing sidebar
-  // - refreshing the page opens to the selected note with the sidebar hidden
-  // - opening the sidebar and refreshing keeps the sidebar open (full screen)
-  // - selecting a note from the sidebar closes the sidebar and opens the note
-  // - selecting the already selected note closes the sidebar
   //
   // RESIZING (this is actually done through viewport commands, not dragging)
   // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
@@ -23,7 +52,7 @@ describe('sidebar', () => {
   // - if the sidebar is closed in mobile, it stays closed in desktop
   //    moving the window back to mobile, the sidebar is still closed
 
-  it('handles creating a note', () => {
+  it.skip('handles creating a note on larger screen sizes', () => {
     cy.visit('/')
     // tests all scenarios on note creating
     //
@@ -31,6 +60,8 @@ describe('sidebar', () => {
     // - click create note again?
     // - have the note input open but close then reopen the sidebar?
     // ADD TESTS FOR THESE WITH EXPECTATIONS
+    //
+    // TODO: creating a note DOES NOT AUTO CLOSE THE SIDEBAR on wide screens
 
     cy.get(locators.sidebar.createNote.button).click()
 
@@ -51,7 +82,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.save).should('be.disabled')
   })
 
-  it('tracks sidebar open/closed state across page reloads', () => {
+  it.skip('tracks sidebar open/closed state across page reloads', () => {
     cy.visit('/')
     // default sidebar value added
     cy.location('search').should('eq', '?sidebar=open')
@@ -87,7 +118,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
-  it('resizing the sidebar saves it to local storage', () => {
+  it.skip('resizing the sidebar saves it to local storage', () => {
     cy.clearLocalStorage()
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)

@@ -9,6 +9,7 @@ class Sidebar {
   private notes: Notes = {}
   private activeNoteId: string = ''
   private inputContainerId = 'note-input-container'
+  private isFullscreen = false
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -103,6 +104,7 @@ class Sidebar {
     }
 
     setupResizer()
+    this.assignFullscreenClasses()
   }
 
   public renderNoteList(notes: Notes = {}) {
@@ -170,13 +172,31 @@ class Sidebar {
     container?.remove()
   }
 
-  // TODO: fix as this is broken
-  public toggleFullscreen(isFullscreen: boolean) {
-    // probably apply using the sidebarMain container living as a private variable on this class?
-    const container = document.querySelector('.sidebar-main')
-    isFullscreen
-      ? container?.classList.add('sidebar-fullscreen')
-      : container?.classList.remove('sidebar-fullscreen')
+  public setFullScreen(isFullscreen: boolean) {
+    this.isFullscreen = isFullscreen
+    this.assignFullscreenClasses()
+  }
+
+  private assignFullscreenClasses() {
+    const styleMainContainer = () => {
+      const element = document.querySelector('.sidebar-main')
+      this.isFullscreen
+        ? element?.classList.add('sidebar-fullscreen')
+        : element?.classList.remove('sidebar-fullscreen')
+    }
+
+    const styleResizeHandle = () => {
+      const resizeHandle = document.querySelector(
+        '#sidebar-resizer-handle'
+      ) as HTMLElement
+      if (!resizeHandle) return
+      this.isFullscreen
+        ? (resizeHandle.style.display = 'none')
+        : (resizeHandle.style.display = 'flex')
+    }
+
+    styleMainContainer()
+    styleResizeHandle()
   }
 
   private emitClose() {

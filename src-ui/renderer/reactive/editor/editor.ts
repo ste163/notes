@@ -88,7 +88,7 @@ class Editor {
       this.editorContainer = editorDiv
     }
 
-    this.resetResizeObserver(container)
+    this.resetResizeObserver()
     resetContainers()
 
     this.isDirty = false
@@ -166,7 +166,6 @@ class Editor {
     // need to append the ellipsis menu to the ellipsis button
     const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
     ellipsisPopOut?.appendChild(this.editorMenuEllipsisContainer)
-    this.resetResizeObserver(document.querySelector('#main') as Element)
   }
 
   public getIsDirty() {
@@ -185,13 +184,33 @@ class Editor {
   public setDisabled(isDisabled: boolean) {
     this.editor?.setEditable(!isDisabled)
     this.renderMenu(isDisabled)
+    // this triggers the re-rendering of the menu buttons
+    // into their correct containers after they have been enabled/disabled
+    this.resetResizeObserver()
   }
 
   public setCursorPosition(position: FocusPosition) {
     this.editor?.commands.focus(position)
   }
 
-  private resetResizeObserver(container: Element) {
+  private resetResizeObserver() {
+    function debounce(
+      func: (args: ResizeObserverEntry[]) => void,
+      wait: number
+    ) {
+      let timeout: NodeJS.Timeout
+      return (args: ResizeObserverEntry[]) => {
+        const later = () => {
+          clearTimeout(timeout)
+          func(args)
+        }
+        clearTimeout(timeout)
+        timeout = setTimeout(later, wait)
+      }
+    }
+
+    const container = document.querySelector('#main')
+    if (!container) return
     if (this.resizeObserver) this.resizeObserver.disconnect()
     const handleResize = (entries: ResizeObserverEntry[]) => {
       const main = entries[0] // only watching the #main element
@@ -312,7 +331,9 @@ class Editor {
       // TODO: resize very long titles and the title input
     }
 
-    this.resizeObserver = new ResizeObserver(handleResize)
+    // must debounce the resize handler by some amount or else e2e fails
+    const debouncedResizeHandler = debounce(handleResize, 5)
+    this.resizeObserver = new ResizeObserver(debouncedResizeHandler)
     this.resizeObserver.observe(container)
   }
 
