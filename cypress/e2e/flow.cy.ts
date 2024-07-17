@@ -37,10 +37,7 @@ describe('flow', () => {
     // cy.get('[data-testid="alert-error"]').should('not.exist')
 
     // can create note
-    cy.get(locators.sidebar.createNote.button).click()
-    cy.get(locators.sidebar.createNote.save).should('be.disabled')
-    cy.get(locators.sidebar.createNote.input).type('My first note')
-    cy.get(locators.sidebar.createNote.save).click()
+    cy.createNote('My first note')
 
     // status bar is now enabled
     cy.wait(DEFAULT_WAIT)
@@ -77,9 +74,8 @@ describe('flow', () => {
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
     // can create another note
-    cy.get(locators.sidebar.createNote.button).click()
-    cy.get(locators.sidebar.createNote.input).type('My second note')
-    cy.get(locators.sidebar.createNote.save).click()
+    cy.createNote('My second note')
+
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
 
     // should have opened the second note, check the title and content

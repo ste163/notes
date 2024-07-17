@@ -26,6 +26,7 @@ describe('dialogs', () => {
 
     // delete note dialog should not render as no note was selected
     cy.get(locators.statusBar.delete).should('be.disabled')
+
     // and visiting the url directly should not render the dialog
     cy.visit('/?dialog=delete')
     cy.wait(DEFAULT_WAIT)

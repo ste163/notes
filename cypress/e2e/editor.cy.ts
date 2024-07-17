@@ -55,20 +55,16 @@ describe('editor', () => {
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)
 
-    // TODO: move note creation to a command
-    //
     // create a note so that we can interact with buttons
-    cy.get(locators.sidebar.createNote.button).click()
-    cy.get(locators.sidebar.createNote.input).type('test note')
-    cy.get(locators.sidebar.createNote.save).click()
+    cy.createNote('test note')
 
-    // on.large, all buttons are visible and no ellipsis button
+    // on large size, all buttons are visible and no ellipsis button
     cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
     cy.get(locators.editor.menu.mainSection)
       .children()
       .should('have.length', data.expected.editor.mainToolbarButtonCount.large)
 
-    // on medium, X main buttons visible and ellipsis button visible
+    // on medium, some main buttons visible and ellipsis button is visible
     cy.viewport(
       dimensions.medium.viewPortWidth,
       dimensions.medium.viewPortHeight
@@ -88,7 +84,7 @@ describe('editor', () => {
         data.expected.editor.ellipsisToolbarButtonCount.medium
       )
 
-    // clicking the first item closes the menu
+    // clicking the first ellipsis menu item closes the menu
     cy.get(locators.editor.menu.ellipsisSection).children().first().click()
     cy.get(locators.editor.menu.ellipsisSection).should('not.be.visible')
 
@@ -98,15 +94,13 @@ describe('editor', () => {
     cy.get(locators.editor.menu.ellipsisSection).should('not.be.visible')
   })
 
-  it('when opening a dialog, the ellipsis menu retains its rendering state --- visible or hidden', () => {
+  it('when opening a dialog, the ellipsis menu retains its rendering state: visible or hidden', () => {
     // on large size, opening then closing a dialog does not render the ellipsis menu
     cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)
 
-    cy.get(locators.sidebar.createNote.button).click()
-    cy.get(locators.sidebar.createNote.input).type('test note')
-    cy.get(locators.sidebar.createNote.save).click()
+    cy.createNote('test note')
 
     // the correct main button count is shown without ellipsis
     cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
