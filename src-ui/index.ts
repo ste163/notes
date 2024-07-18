@@ -116,7 +116,10 @@ window.addEventListener(DatabaseEvents.Init, async () => {
   // can only fetch notes after the database has been fully initialized
   const { noteId } = urlController.getParams()
   noteId
-    ? createEvent(LifeCycleEvents.QueryParamUpdate, { noteId }).dispatch()
+    ? createEvent(LifeCycleEvents.QueryParamUpdate, {
+        noteId,
+        isDbInit: true,
+      }).dispatch()
     : createEvent(NoteEvents.GetAll).dispatch()
 })
 
@@ -124,7 +127,10 @@ window.addEventListener(DatabaseEvents.Init, async () => {
  * URL Update event that handles rendering and state
  * based on query params
  */
+// @ts-expect-error - expecting a ts error here because I am doing
+// a return to exit the function early. This is intentional.
 window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
+  const isDbInit: boolean = !!(event as CustomEvent)?.detail?.isDbInit
   const noteId: string = (event as CustomEvent)?.detail?.noteId
   const dialog: string = (event as CustomEvent)?.detail?.dialog
   const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar
@@ -146,6 +152,16 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
     sidebarParam === 'open' ? openSidebar() : closeSidebar()
   }
 
+  const isSelectingSameNote = noteId === urlController.getParams().noteId
+  if (isSelectingSameNote && !isDbInit)
+    return (
+      isMobile &&
+      createEvent(LifeCycleEvents.QueryParamUpdate, {
+        sidebar: 'close',
+      }).dispatch()
+    )
+
+  // then selecting a new note
   if (noteId) {
     if (editor.getIsDirty()) await saveNote()
     urlController.setParam('noteId', noteId)

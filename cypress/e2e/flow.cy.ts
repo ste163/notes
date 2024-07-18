@@ -58,7 +58,13 @@ describe('flow', () => {
 
     // created note renders in sidebar
     cy.get(locators.sidebar.note).should('have.length', 1)
-    cy.get(locators.sidebar.note).should('be.disabled') // disabled because it's already selected
+    cy.get(locators.sidebar.note).should(
+      'contain.text',
+      'My first note - updated'
+    )
+    // selecting the note again renders the same note
+    cy.get(locators.sidebar.note).click()
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.sidebar.note).should(
       'contain.text',
       'My first note - updated'
@@ -100,7 +106,6 @@ describe('flow', () => {
     // sidebar renders the two notes
     cy.get(locators.sidebar.note).should('have.length', 2)
     cy.get(locators.sidebar.note).eq(0).should('contain.text', 'My second note')
-    cy.get(locators.sidebar.note).eq(0).should('be.disabled')
     cy.get(locators.sidebar.note)
       .eq(1)
       .should('contain.text', 'My first note - updated')

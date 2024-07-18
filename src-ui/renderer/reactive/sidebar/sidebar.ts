@@ -218,24 +218,7 @@ class Sidebar {
         ?.classList.add(activeClass)
     }
 
-    const setDisabledState = () => {
-      document
-        .querySelectorAll('.note-select-container')
-        .forEach((container) => {
-          const button = container.querySelector('button')
-          if (button) {
-            button.disabled = false
-          }
-        })
-
-      const selectedButton = document.querySelector(
-        `#${this.activeNoteId}`
-      ) as HTMLButtonElement
-      if (selectedButton) selectedButton.disabled = true
-    }
-
     setStyling()
-    setDisabledState()
   }
 
   private renderInput() {

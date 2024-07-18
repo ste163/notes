@@ -38,12 +38,16 @@ describe('sidebar', () => {
     cy.get(locators.editor.content).should('not.be.visible')
     cy.createNote('My second note')
     cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Second note content...')
+    // not saving as the note will not be re-selected from a 'code' perspective
 
-    // TODO (need to implement)
-    // clicking the second note closes the sidebar
+    // clicking the second note closes the sidebar only
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.get(locators.sidebar.note).eq(0).click()
+    cy.validateContent('Second note content...')
   })
 
-  // TODO
+  // TODO (need to implement the features for this...)
   //
   // RESIZING (this is actually done through viewport commands, not dragging)
   // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
@@ -52,7 +56,7 @@ describe('sidebar', () => {
   // - if the sidebar is closed in mobile, it stays closed in desktop
   //    moving the window back to mobile, the sidebar is still closed
 
-  it.skip('handles creating a note on larger screen sizes', () => {
+  it('handles creating a note on larger screen sizes', () => {
     cy.visit('/')
     // tests all scenarios on note creating
     //
@@ -82,7 +86,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.save).should('be.disabled')
   })
 
-  it.skip('tracks sidebar open/closed state across page reloads', () => {
+  it('tracks sidebar open/closed state across page reloads', () => {
     cy.visit('/')
     // default sidebar value added
     cy.location('search').should('eq', '?sidebar=open')
@@ -118,7 +122,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
-  it.skip('resizing the sidebar saves it to local storage', () => {
+  it('resizing the sidebar saves it to local storage', () => {
     cy.clearLocalStorage()
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)
