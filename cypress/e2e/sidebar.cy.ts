@@ -20,11 +20,9 @@ describe('sidebar', () => {
     cy.wait(DEFAULT_WAIT)
     cy.get(locators.sidebar.mainElement).should('not.exist')
     cy.get(locators.editor.content).should('be.visible')
-    cy.wait(DEFAULT_WAIT)
     cy.writeContent('Some content...')
     cy.get(locators.statusBar.save).click()
 
-    cy.wait(DEFAULT_WAIT)
     // reloading the page renders the note and its content, and no sidebar
     cy.reload()
     cy.wait(DEFAULT_WAIT)
