@@ -68,7 +68,7 @@ class Editor {
    */
   constructor() {
     const container = document.querySelector('#main')
-    if (!container) throw new Error('Main container not found')
+    if (!container) return
 
     container.innerHTML = ''
 
@@ -209,8 +209,6 @@ class Editor {
 
   public setNote(note: Note | null) {
     this.note = note
-    // TODO: this should only re-render the title and content and not the editor menu
-
     this.render()
   }
 
@@ -547,6 +545,17 @@ class Editor {
     return editor
   }
 }
+
+// NOTE:
+// this fails at the unit tests
+// because this is processed FIRST
+// -
+// What I need to do is STILL have singletons
+// but instantiate them at the index.ts
+// level instead of here (sadly)
+// -
+// TODO: revisit all of these reactive classes
+// and export the Class instead of the instance
 
 const editor = new Editor()
 
