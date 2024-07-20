@@ -220,13 +220,8 @@ window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
 window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
-  const { noteId } = urlController.getParams()
-  if (isMobile && !noteId) {
-    toggleFullscreenSidebar(true)
-    createEvent(LifeCycleEvents.QueryParamUpdate, {
-      sidebar: 'open',
-    }).dispatch()
-  } else toggleFullscreenSidebar(false)
+  const { sidebar } = urlController.getParams()
+  if (sidebar === 'open') toggleFullscreenSidebar(isMobile)
 })
 
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {

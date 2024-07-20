@@ -45,13 +45,69 @@ describe('sidebar', () => {
     cy.validateContent('Second note content...')
   })
 
-  // TODO (need to implement the features for this...)
-  // RESIZING (this is actually done through viewport commands, not dragging)
-  // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
-  // - if the sidebar is open, in mobile, it stay open in desktop
-  //    moving the window back to mobile, the sidebar is still open
-  // - if the sidebar is closed in mobile, it stays closed in desktop
-  //    moving the window back to mobile, the sidebar is still closed
+  it('handles resizing the viewport with the sidebar open', () => {
+    // starting on large screen sizes
+    cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
+    cy.visit('/')
+
+    // the sidebar is open by default
+    // create a note
+    cy.createNote('My first note')
+    cy.wait(DEFAULT_WAIT)
+
+    // the sidebar is still open before resizing
+    cy.get(locators.sidebar.mainElement).should('be.visible')
+
+    // resizing to a smaller screen size
+    cy.viewport(dimensions.small.viewPortWidth, dimensions.small.viewPortHeight)
+    cy.wait(DEFAULT_WAIT)
+
+    // because the sidebar is open, make it full screen and the editor is not visible
+    cy.get(locators.sidebar.mainElement).should('be.visible')
+    cy.get(locators.editor.content).should('not.be.visible')
+
+    // resizing to a medium screen size should keep the sidebar open and show editor
+    cy.viewport(
+      dimensions.medium.viewPortWidth,
+      dimensions.medium.viewPortHeight
+    )
+    cy.wait(DEFAULT_WAIT)
+
+    cy.get(locators.sidebar.mainElement).should('be.visible')
+    cy.get(locators.editor.content).should('be.visible')
+  })
+
+  it('handles resizing the viewport with the sidebar closed', () => {
+    // starting on large screen sizes
+    cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
+    cy.visit('/')
+
+    // the sidebar is open by default
+    // create a note
+    cy.createNote('My first note')
+    cy.wait(DEFAULT_WAIT)
+
+    // close the sidebar
+    cy.get(locators.sidebar.close).click()
+    cy.get(locators.sidebar.mainElement).should('not.exist')
+
+    // when resizing to a smaller screen, sidebar should stay hidden
+    cy.viewport(dimensions.small.viewPortWidth, dimensions.small.viewPortHeight)
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.sidebar.mainElement).should('not.exist')
+    // editor is visible
+    cy.get(locators.editor.content).should('be.visible')
+
+    // resizing to a medium screen size should keep the sidebar closed and show editor
+    cy.viewport(
+      dimensions.medium.viewPortWidth,
+      dimensions.medium.viewPortHeight
+    )
+    cy.wait(DEFAULT_WAIT)
+
+    cy.get(locators.sidebar.mainElement).should('not.exist')
+    cy.get(locators.editor.content).should('be.visible')
+  })
 
   it('handles creating a note on larger screen sizes', () => {
     cy.visit('/')
