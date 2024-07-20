@@ -3,6 +3,9 @@
  *  - Responsiveness
  *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
+ *    - Fix flashing rendering of the sidebar editor menu by only making it render once
+ *      (decouple Editor state from the menu rendering)
+ *    - Cleanup the rendering for the Editor resize observer
  *
  *  - DATABASE DIALOG FORM:
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
@@ -32,8 +35,7 @@
  * - BRANDING
  *   - make favicon
  *   - make icons for desktop
- * - BUGS (which also need tests)
- *    - on the initial fresh load, the get fails because of no default index. All re-renders/refreshes work
+ * - BUGS (which also need e2e tests)
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if unable to find data, need to be able to delete the undefined notes
  *
@@ -502,7 +504,6 @@ function toggleFullscreenSidebar(isFullscreen: boolean) {
 }
 
 function toggleEditorVisibility(isVisible: boolean) {
-  // TODO: revisit this once the resizing is implemented
   const body = document.body
   const mainElement = document.querySelector('#main') as HTMLElement
   if (isVisible) {
@@ -517,9 +518,9 @@ function toggleEditorVisibility(isVisible: boolean) {
 }
 
 function handleScreenWidth() {
-  const previous = isMobile
+  const previousIsMobile = isMobile
   isMobile = window.innerWidth < 640
-  if (previous !== isMobile)
+  if (previousIsMobile !== isMobile)
     createEvent(LifeCycleEvents.WidthChanged).dispatch()
 }
 
