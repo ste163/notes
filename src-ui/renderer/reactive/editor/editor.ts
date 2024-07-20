@@ -17,28 +17,83 @@ import CodeBlock from '@tiptap/extension-code-block'
 import History from '@tiptap/extension-history'
 import { Button, Input } from 'components'
 import { NoteEvents, createEvent } from 'event'
+import { ellipsisIcon } from 'icons'
 import type { MarkOptions, Note } from 'types'
 import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
 
+interface ResponsivenessConfig {
+  width: number
+  groupIndex: number
+}
+
+const responsivenessConfig: ResponsivenessConfig[] = [
+  {
+    width: 700,
+    groupIndex: 4,
+  },
+  {
+    width: 600,
+    groupIndex: 3,
+  },
+  {
+    width: 500,
+    groupIndex: 2,
+  },
+]
+
 const STARTING_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
 
+// NOTE:
+// some of this could be moved into sub classes.
+// ie: a EditorRenderer class that handles the rendering
+// that inherits from the main Editor that instantiates TipTap?
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
   private isDirty = false
+
+  private globalClickHandler: (event: MouseEvent) => void = () => {}
+  private resizeObserver: ResizeObserver | null = null
+  private editorTitleContainer: HTMLDivElement | null = null
+  private editorMenuContainer: HTMLDivElement | null = null
+  private editorMenuMainContainer: HTMLDivElement | null = null
+  private editorMenuEllipsisContainer: HTMLDivElement | null = null
+  private editorContainer: HTMLDivElement | null = null
 
   public render() {
     const container = document.querySelector('#main')
     if (!container) throw new Error('Main container not found')
 
     container.innerHTML = ''
-    container.innerHTML = `
-      <div id='editor-title-container'></div>
-      <div id='editor-menu'></div>
-      <div id='editor'></div>`
+
+    const resetContainers = () => {
+      this.editorTitleContainer = null
+      this.editorMenuContainer = null
+      this.editorContainer = null
+
+      const editorTitleDiv = document.createElement('div')
+      editorTitleDiv.id = 'editor-title-container'
+      const editorMenuDiv = document.createElement('div')
+      editorMenuDiv.id = 'editor-menu'
+      const editorDiv = document.createElement('div')
+      editorDiv.id = 'editor'
+
+      container?.appendChild(editorTitleDiv)
+      container?.appendChild(editorMenuDiv)
+      container?.appendChild(editorDiv)
+
+      this.editorTitleContainer = editorTitleDiv
+      this.editorMenuContainer = editorMenuDiv
+      this.editorContainer = editorDiv
+    }
+
+    this.resetResizeObserver()
+    resetContainers()
+
     this.isDirty = false
-    this.editor = this.instantiateTipTap(this.note)
+    const tipTap = this.instantiateTipTap(this.note)
+    if (tipTap) this.editor = tipTap
     this.renderMenu()
     // only render title if there is a note
     // and only have the editor enabled if there is a note
@@ -47,32 +102,70 @@ class Editor {
   }
 
   public renderMenu(isDisabled = false) {
-    const container = document.querySelector('#editor-menu')
-    if (!container) return
-    container.innerHTML = '' // reset container before rendering
+    if (!this.editorMenuContainer) return
+
+    const createButtonGroups = (button: HTMLButtonElement) => {
+      button.classList.add('editor-menu-button')
+      if (isDisabled) button.disabled = true
+      const group = button.dataset.group
+      if (!group) throw new Error('button is not assigned to a group')
+
+      const groupId = `menu-group-${group}`
+      let groupContainer = document.querySelector(`#${groupId}`)
+      if (!groupContainer) {
+        groupContainer = document.createElement('div')
+        groupContainer.id = groupId
+      }
+      groupContainer.appendChild(button)
+      return groupContainer
+    }
+
+    this.editorMenuContainer.innerHTML = '' // reset container before rendering
+
+    const mainButtonDiv = document.createElement('div')
+    mainButtonDiv.id = 'main-editor-button-section'
+    mainButtonDiv.setAttribute('data-testid', 'main-editor-button-section')
+    this.editorMenuMainContainer = mainButtonDiv
 
     const buttons = instantiateMenuButtons(this.editor)
-    buttons.forEach((button) => {
-      if (isDisabled) button.disabled = true
+    buttons
+      .map(createButtonGroups)
+      .forEach((groupContainer) => mainButtonDiv?.appendChild(groupContainer))
 
-      const assignButtonToGroup = () => {
-        const group = button.dataset.group
-        if (!group) throw new Error('button is not assigned to a group')
+    // TODO: because the dialog open event triggers
+    // the menu buttons all re-render and lose the observer state
 
-        const groupId = `menu-group-${group}`
-        let groupContainer = document.querySelector(`#${groupId}`)
-        if (!groupContainer) {
-          groupContainer = document.createElement('div')
-          groupContainer.id = groupId
-          if (group === '1') groupContainer.classList.add('hide-on-mobile')
-        }
+    const createEllipsisElement = () => {
+      const ellipsisMenu = document.createElement('div')
+      ellipsisMenu.id = 'ellipsis-editor-menu'
+      ellipsisMenu.setAttribute('data-testid', 'ellipsis-editor-button-section')
+      return ellipsisMenu
+    }
 
-        container.appendChild(groupContainer)
-        groupContainer.appendChild(button)
-      }
+    this.editorMenuEllipsisContainer = createEllipsisElement()
 
-      assignButtonToGroup()
-    })
+    // cleanup listener on any re-render, just in case
+    this.removeGlobalPopOutListener()
+
+    const ellipsisButton = new Button({
+      id: 'ellipsis-button',
+      testId: 'ellipsis-button',
+      title: 'More options',
+      html: `${ellipsisIcon}
+              <div id='ellipsis-pop-out'></div>`,
+      className: 'editor-menu-button',
+      onClick: (event: Event) => {
+        event.stopPropagation()
+        this.toggleEllipsisPopOut()
+      },
+    }).getElement()
+
+    this.editorMenuContainer.appendChild(this.editorMenuMainContainer)
+    this.editorMenuContainer.appendChild(ellipsisButton)
+
+    // need to append the ellipsis menu to the ellipsis button
+    const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
+    ellipsisPopOut?.appendChild(this.editorMenuEllipsisContainer)
   }
 
   public getIsDirty() {
@@ -91,10 +184,185 @@ class Editor {
   public setDisabled(isDisabled: boolean) {
     this.editor?.setEditable(!isDisabled)
     this.renderMenu(isDisabled)
+    // this triggers the re-rendering of the menu buttons
+    // into their correct containers after they have been enabled/disabled
+    this.resetResizeObserver()
   }
 
   public setCursorPosition(position: FocusPosition) {
     this.editor?.commands.focus(position)
+  }
+
+  private resetResizeObserver() {
+    function debounce(
+      func: (args: ResizeObserverEntry[]) => void,
+      wait: number
+    ) {
+      let timeout: NodeJS.Timeout
+      return (args: ResizeObserverEntry[]) => {
+        const later = () => {
+          clearTimeout(timeout)
+          func(args)
+        }
+        clearTimeout(timeout)
+        timeout = setTimeout(later, wait)
+      }
+    }
+
+    const container = document.querySelector('#main')
+    if (!container) return
+    if (this.resizeObserver) this.resizeObserver.disconnect()
+    const handleResize = (entries: ResizeObserverEntry[]) => {
+      const main = entries[0] // only watching the #main element
+      const editorWidth = main.contentRect.width
+
+      const getEditorMenuGroups = () =>
+        this.editorMenuMainContainer?.querySelectorAll('[data-group]')
+
+      const getEllipsisMenuGroups = () =>
+        this.editorMenuEllipsisContainer?.querySelectorAll('[data-group]')
+
+      const getGroupIndex = (
+        elements: NodeListOf<Element> | undefined,
+        order: 'asc' | 'dsc'
+      ) => {
+        return parseInt(
+          Array.from(elements || [])
+            .sort((a, b) =>
+              order === 'asc'
+                ? parseInt(a?.getAttribute('data-group') || '0') -
+                  parseInt(b?.getAttribute('data-group') || '0')
+                : parseInt(b?.getAttribute('data-group') || '0') -
+                  parseInt(a?.getAttribute('data-group') || '0')
+            )?.[0]
+            ?.getAttribute('data-group') || '0'
+        )
+      }
+
+      const showHideEllipsisButton = () => {
+        const ellipsisButton = document.querySelector(
+          '#ellipsis-button'
+        ) as HTMLElement
+
+        if (!getEllipsisMenuGroups() || !ellipsisButton) return
+
+        const doesEllipsisMenuHaveItems = !!getGroupIndex(
+          getEllipsisMenuGroups(),
+          'asc'
+        )
+
+        ellipsisButton.style.display = doesEllipsisMenuHaveItems
+          ? 'flex'
+          : 'none'
+      }
+
+      const processResponsiveConfig = ({
+        width,
+        groupIndex,
+      }: ResponsivenessConfig) => {
+        const getLastGroupElements = (index: number) =>
+          document.querySelectorAll(`#menu-group-${index}`)
+
+        const startingIndexInEllipsis = getGroupIndex(
+          getEllipsisMenuGroups(),
+          'asc'
+        )
+        const getLastGroupIndexInMainMenu = () =>
+          startingIndexInEllipsis
+            ? startingIndexInEllipsis - 1
+            : getGroupIndex(getEditorMenuGroups(), 'dsc')
+
+        // process main menu
+        const lastMainIndex = getLastGroupIndexInMainMenu()
+        const shouldMoveButtonsIntoEllipsis =
+          editorWidth < width &&
+          lastMainIndex === groupIndex &&
+          getLastGroupElements(lastMainIndex).length
+        if (shouldMoveButtonsIntoEllipsis)
+          getLastGroupElements(lastMainIndex).forEach((group) =>
+            this.editorMenuEllipsisContainer?.prepend(group)
+          )
+
+        // process ellipsis menu
+        const lastIndexInEllipsis = getGroupIndex(
+          getEllipsisMenuGroups(),
+          'asc'
+        )
+        const shouldMoveButtonsOutOfEllipsis =
+          editorWidth > width &&
+          lastIndexInEllipsis === groupIndex &&
+          getLastGroupElements(lastIndexInEllipsis).length
+        if (shouldMoveButtonsOutOfEllipsis)
+          getLastGroupElements(lastIndexInEllipsis).forEach((group) =>
+            this.editorMenuMainContainer?.appendChild(group)
+          )
+      }
+      /**
+       * Process the width of the editor element
+       * and move editor buttons to the main or
+       * ellipsis/overflow menus
+       */
+
+      // potential solution: as long as the editorWidth is greater
+      // than the lowest responsiveConfig width, continue to process
+      // the config? Why? Because we should be continuously processing the config
+      // not just once, but based on the actual editor width
+
+      responsivenessConfig.forEach(processResponsiveConfig)
+
+      // TODO (bug to solve for): and this horribly solves it.
+      // When the sidebar is opened at it's fullest
+      // and then closed, the ellipsis menu will still render.
+      // Why? Because we only loop through once and process
+      // the config on the current screen size. So it's not
+      // moving all the items out. By running it 3 times,
+      // we always ensure it is processed
+      // this needs to be resolved in a better way
+      // that only calls the function once
+      //
+      // e2e is in place to track this bug
+      if (editorWidth > 700)
+        responsivenessConfig.forEach(processResponsiveConfig)
+      if (editorWidth > 500)
+        responsivenessConfig.forEach(processResponsiveConfig)
+
+      showHideEllipsisButton()
+
+      // TODO: resize very long titles and the title input
+    }
+
+    // TODO: debouncing DOES create a rendering bug however: when selecting a note, the editor re-renders
+    // the menu! It flashes! So to fix this, we do not re-render the menu bar when selecting a note
+    // on the title and the content get updated (along with cursor location, but that's fine).
+    // it comes back to the idea of state vs render
+
+    // must debounce the resize handler by some amount or else e2e fails
+    const debouncedResizeHandler = debounce(handleResize, 5)
+    this.resizeObserver = new ResizeObserver(debouncedResizeHandler)
+    this.resizeObserver.observe(container)
+  }
+
+  private toggleEllipsisPopOut() {
+    const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
+    const isVisible = ellipsisPopOut?.classList.toggle('show-ellipsis-pop-out')
+    isVisible
+      ? this.addGlobalPopOutListener()
+      : this.removeGlobalPopOutListener()
+  }
+
+  private addGlobalPopOutListener() {
+    this.globalClickHandler = (event: MouseEvent) => {
+      const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
+      if (!ellipsisPopOut?.contains(event.target as Node)) {
+        ellipsisPopOut?.classList.remove('show-ellipsis-pop-out')
+        this.removeGlobalPopOutListener()
+      }
+    }
+    document.addEventListener('click', this.globalClickHandler)
+  }
+
+  private removeGlobalPopOutListener() {
+    document.removeEventListener('click', this.globalClickHandler)
   }
 
   private toggleActiveEditorClass({
@@ -117,21 +385,21 @@ class Editor {
   }
 
   private updateTitle(title: string) {
-    const container = document.querySelector('#editor-title-container')
-    if (container) container.innerHTML = ''
+    if (!this.editorTitleContainer) return
+    this.editorTitleContainer.innerHTML = ''
 
     const span = document.createElement('span')
     span.appendChild(document.createTextNode(title))
     span.classList.add(title ? 'editor-title' : 'editor-title-disabled')
 
-    container?.appendChild(
+    this.editorTitleContainer?.appendChild(
       new Button({
         testId: 'edit-title-button',
         title: 'Edit title',
         html: span.outerHTML, // inject the full span element
         style: { border: 'none', width: 'inherit' },
         onClick: () => {
-          this.renderTitleEdit(container as Element)
+          this.renderTitleEdit(this.editorTitleContainer as Element)
         },
       }).getElement()
     )
@@ -191,8 +459,9 @@ class Editor {
   }
 
   private instantiateTipTap(note: Note | null) {
+    if (!this.editorContainer) return
     const editor = new TipTapEditor({
-      element: document.querySelector('#editor') as Element,
+      element: this.editorContainer,
       extensions: [
         Document,
         History,

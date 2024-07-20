@@ -1,6 +1,7 @@
 import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
 import { addNoteIcon, closeIcon } from 'icons'
+import { useLocalStorage } from 'use-local-storage'
 import type { Notes } from 'types'
 import './sidebar.css'
 
@@ -8,6 +9,7 @@ class Sidebar {
   private notes: Notes = {}
   private activeNoteId: string = ''
   private inputContainerId = 'note-input-container'
+  private isFullscreen = false
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -15,22 +17,30 @@ class Sidebar {
   }
 
   public render() {
-    const container = document.querySelector('#sidebar')
+    const container = document.querySelector('#sidebar') as HTMLDivElement
     if (!container) throw new Error('Sidebar container not found')
     container.classList.remove('sidebar-closed')
     container.classList.add('sidebar-opened')
     container.innerHTML = '' // reset container
     container.innerHTML = `
-      <div id='sidebar-menu'>
-        <div id='sidebar-menu-controls'></div>
+      <div class='sidebar-main'>
+        <div id='sidebar-menu'>
+          <div id='sidebar-menu-controls'></div>
+        </div>
+        <div id='sidebar-list'></div>
       </div>
-      <div id='sidebar-list'></div>`
+      <div id='sidebar-resizer-handle' data-testid='sidebar-resize-handle'>
+        <div id='sidebar-resizer-bar'></div>
+      </div>`
 
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
         testId: 'create-note',
         title: 'Create note',
-        onClick: this.renderInput,
+        onClick: () =>
+          document.querySelector(`#${this.inputContainerId}`)
+            ? this.closeInput()
+            : this.renderInput(),
         html: `
           ${addNoteIcon}
           <span>Create<span/>`,
@@ -50,6 +60,54 @@ class Sidebar {
 
     this.renderNoteList(this.notes)
     this.setActiveNoteInList()
+
+    const setupResizer = () => {
+      const element = document.querySelector('.sidebar-main') as HTMLDivElement
+
+      const getClampedWidth = (newWidth: number) => {
+        const screenWidth = window.innerWidth
+        const minWidth = 170
+        const maxWidth = screenWidth * 0.5
+        return Math.max(minWidth, Math.min(newWidth, maxWidth))
+      }
+
+      function handleMouseMove(e: MouseEvent) {
+        if (!element) return
+        const newWidth = e.clientX - element.getBoundingClientRect().left
+        element.style.width = `${getClampedWidth(newWidth)}px`
+      }
+
+      /**
+       * Not explicitly cleaning up event listeners elsewhere
+       * as whenever the user clicks they're added and removed
+       * when they stop clicking. Testing proves this works as expected.
+       * Leaving as is unless an issue arises.
+       */
+      function stopResizing() {
+        // get the current width that the element is set to
+        const currentWidth = element?.style.width
+        useLocalStorage.set('sidebar-width', { width: parseInt(currentWidth) })
+
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', stopResizing)
+      }
+
+      const resizer = document.querySelector(
+        '#sidebar-resizer-handle'
+      ) as HTMLDivElement
+
+      resizer.addEventListener('mousedown', (e) => {
+        e.preventDefault()
+        document.addEventListener('mousemove', handleMouseMove)
+        document.addEventListener('mouseup', stopResizing)
+      })
+
+      const storedWidth = useLocalStorage.get('sidebar-width')?.width
+      if (storedWidth) element.style.width = `${getClampedWidth(storedWidth)}px`
+    }
+
+    setupResizer()
+    this.assignFullscreenClasses()
   }
 
   public renderNoteList(notes: Notes = {}) {
@@ -117,11 +175,31 @@ class Sidebar {
     container?.remove()
   }
 
-  public toggleFullscreen(isFullscreen: boolean) {
-    const container = document.querySelector('#sidebar')
-    isFullscreen
-      ? container?.classList.add('sidebar-fullscreen')
-      : container?.classList.remove('sidebar-fullscreen')
+  public setFullScreen(isFullscreen: boolean) {
+    this.isFullscreen = isFullscreen
+    this.assignFullscreenClasses()
+  }
+
+  private assignFullscreenClasses() {
+    const styleMainContainer = () => {
+      const element = document.querySelector('.sidebar-main')
+      this.isFullscreen
+        ? element?.classList.add('sidebar-fullscreen')
+        : element?.classList.remove('sidebar-fullscreen')
+    }
+
+    const styleResizeHandle = () => {
+      const resizeHandle = document.querySelector(
+        '#sidebar-resizer-handle'
+      ) as HTMLElement
+      if (!resizeHandle) return
+      this.isFullscreen
+        ? (resizeHandle.style.display = 'none')
+        : (resizeHandle.style.display = 'flex')
+    }
+
+    styleMainContainer()
+    styleResizeHandle()
   }
 
   private emitClose() {
@@ -143,24 +221,7 @@ class Sidebar {
         ?.classList.add(activeClass)
     }
 
-    const setDisabledState = () => {
-      document
-        .querySelectorAll('.note-select-container')
-        .forEach((container) => {
-          const button = container.querySelector('button')
-          if (button) {
-            button.disabled = false
-          }
-        })
-
-      const selectedButton = document.querySelector(
-        `#${this.activeNoteId}`
-      ) as HTMLButtonElement
-      if (selectedButton) selectedButton.disabled = true
-    }
-
     setStyling()
-    setDisabledState()
   }
 
   private renderInput() {

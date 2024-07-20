@@ -1,5 +1,12 @@
 /**
  * TODO PRIORITY ORDER
+ *  - Responsiveness
+ *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
+ *    - sidebar buttons need to have their width match the element (using JS)
+ *    - Fix flashing rendering of the sidebar editor menu by only making it render once
+ *      (decouple Editor state from the menu rendering)
+ *    - Cleanup the rendering for the Editor resize observer
+ *
  *  - DATABASE DIALOG FORM:
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
  *     - Disable the submit button UNTIL all inputs are filled.
@@ -8,33 +15,33 @@
  *       the button copy from Reconnect to Connect (as it has changed)
  *
  *  - title edit
+ *      - cleanup styling
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *    - move all console.logs and console.errors to the logger()
- *      so that all interactions with the database are logged
+ *  - move all console.logs and console.errors to the logger()
+ *    so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
- *    - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
+ *  - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
+ *
  * - FEATURES
  *   - auto-save at debounced interval
- *   - sidebar is resizable and saves to localStorage, loading on refresh
- *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
- *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
  * - BRANDING
  *   - make favicon
  *   - make icons for desktop
- * - BUGS (which also need tests)
- *    - on the initial fresh load, the get fails because of no default index. All re-renders/refreshes work
+ * - BUGS (which also need e2e tests)
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if unable to find data, need to be able to delete the undefined notes
- * - Add test reports for unit and e2e to readme
- *  - DATABASE INTERACTIONS
+ *
+ *  - Add test reports for unit and e2e to readme
+ *
+ * - DATABASE INTERACTIONS
  *     Thoroughly manually test db scenarios:
  *
  *     I have been connected to DB A and synced locally.
@@ -43,8 +50,6 @@
  *
  *     I delete data on my local and not the remote.
  *     Does it stay deleted? (Accidental deletions?)
- *
- *
  */
 import { database } from 'database'
 import {
@@ -71,15 +76,17 @@ import type { Note } from 'types'
 
 let isMobile: boolean
 
+/**
+ * Main UI concept:
+ * Rendering and State are separate.
+ * State can be set without components needing to be rendered
+ */
 window.addEventListener(LifeCycleEvents.Init, async () => {
   try {
-    database.initRemoteConnection() // must not await or it locks UI
-
     sidebar.render()
     statusBar.render()
-    statusBar.renderRemoteDb({ isConnected: false })
+    statusBar.renderRemoteDb()
     statusBar.renderActiveNote(null)
-
     handleScreenWidth()
 
     const { noteId, dialog, sidebar: sidebarParam } = urlController.getParams()
@@ -97,10 +104,6 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
       editor.setNote(null)
     }
 
-    noteId
-      ? createEvent(LifeCycleEvents.QueryParamUpdate, { noteId }).dispatch()
-      : createEvent(NoteEvents.GetAll).dispatch()
-
     if (dialog)
       createEvent(LifeCycleEvents.QueryParamUpdate, { dialog }).dispatch()
   } catch (error) {
@@ -108,24 +111,41 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
   }
 })
 
+window.addEventListener(DatabaseEvents.Init, async () => {
+  await database.createIndexes() // must be async to fully initialize the db
+  database.initRemoteConnection() // not awaiting or else UI is locked. This is a background process
+
+  // can only fetch notes after the database has been fully initialized
+  const { noteId } = urlController.getParams()
+  noteId
+    ? createEvent(LifeCycleEvents.QueryParamUpdate, {
+        noteId,
+        isDbInit: true,
+      }).dispatch()
+    : createEvent(NoteEvents.GetAll).dispatch()
+})
+
 /**
  * URL Update event that handles rendering and state
  * based on query params
  */
+// @ts-expect-error - expecting a ts error here because I am doing
+// a return to exit the function early. This is intentional.
 window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
+  const isDbInit: boolean = !!(event as CustomEvent)?.detail?.isDbInit
   const noteId: string = (event as CustomEvent)?.detail?.noteId
   const dialog: string = (event as CustomEvent)?.detail?.dialog
   const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar
 
   if (sidebarParam) {
     const openSidebar = () => {
-      isMobile ? setMobileView() : setDesktopView()
+      toggleFullscreenSidebar(isMobile)
       statusBar.setSidebarButtonActive(true)
       sidebar.open()
     }
 
     const closeSidebar = () => {
-      setDesktopView()
+      toggleFullscreenSidebar(false)
       statusBar.setSidebarButtonActive(false)
       sidebar.close()
     }
@@ -134,6 +154,16 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
     sidebarParam === 'open' ? openSidebar() : closeSidebar()
   }
 
+  const isSelectingSameNote = noteId === urlController.getParams().noteId
+  if (isSelectingSameNote && !isDbInit)
+    return (
+      isMobile &&
+      createEvent(LifeCycleEvents.QueryParamUpdate, {
+        sidebar: 'close',
+      }).dispatch()
+    )
+
+  // then selecting a new note
   if (noteId) {
     if (editor.getIsDirty()) await saveNote()
     urlController.setParam('noteId', noteId)
@@ -172,14 +202,18 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
   }
 
   if (dialog === null) {
+    const { noteId } = urlController.getParams()
     urlController.removeParam('dialog')
     // clear the local state of the dialogs
     noteDeleteDialog.clear()
     databaseDialog.clear()
+    // editor is enabled again as the dialog has closed
+    if (noteId) editor.setDisabled(false)
   }
 })
 
 window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
+  editor.setDisabled(true)
   editor.setNote(null)
   statusBar.renderActiveNote(null)
   createEvent(NoteEvents.GetAll).dispatch()
@@ -188,12 +222,8 @@ window.addEventListener(LifeCycleEvents.NoNoteSelected, () => {
 window.addEventListener('resize', handleScreenWidth)
 
 window.addEventListener(LifeCycleEvents.WidthChanged, () => {
-  if (isMobile) {
-    setMobileView()
-    createEvent(LifeCycleEvents.QueryParamUpdate, {
-      sidebar: 'open',
-    }).dispatch()
-  } else setDesktopView()
+  const { sidebar } = urlController.getParams()
+  if (sidebar === 'open') toggleFullscreenSidebar(isMobile)
 })
 
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
@@ -263,6 +293,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   try {
     const { _id } = await database.put({ title, content: '' })
     sidebar.closeInput()
+    if (isMobile) sidebar.close()
     createEvent(LifeCycleEvents.QueryParamUpdate, { noteId: _id }).dispatch()
   } catch (error) {
     logger.log('Error creating note.', 'error', error)
@@ -323,18 +354,24 @@ window.addEventListener(DatabaseEvents.Setup, () => {
 })
 
 window.addEventListener(DatabaseEvents.Connecting, () => {
-  statusBar.renderRemoteDb({ isConnected: false, isConnecting: true })
+  statusBar.setIsConnected(false)
+  statusBar.setIsConnecting(true)
+  statusBar.renderRemoteDb()
   databaseDialog.setIsConnecting(true)
 })
 
 window.addEventListener(DatabaseEvents.ConnectingError, () => {
   // TODO: consider after testing: should probably update text to say "Unable to connect"
-  statusBar.renderRemoteDb({ isConnected: false, isConnecting: false })
+  statusBar.setIsConnected(false)
+  statusBar.setIsConnecting(false)
+  statusBar.renderRemoteDb()
   databaseDialog.setIsConnecting(false)
 })
 
 window.addEventListener(DatabaseEvents.Connected, () => {
-  statusBar.renderRemoteDb({ isConnected: true })
+  statusBar.setIsConnected(true)
+  statusBar.setIsConnecting(false)
+  statusBar.renderRemoteDb()
   databaseDialog.setIsConnecting(false)
   databaseDialog.setIsConnected(true)
 
@@ -348,7 +385,8 @@ window.addEventListener(DatabaseEvents.Connected, () => {
 window.addEventListener(DatabaseEvents.Disconnect, () => {
   const successfulDisconnect = database.disconnectSyncing()
   if (successfulDisconnect) {
-    statusBar.renderRemoteDb({ isConnected: false })
+    statusBar.setIsConnected(false)
+    statusBar.renderRemoteDb()
     databaseDialog.setIsConnected(false)
   }
 })
@@ -390,10 +428,6 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   // as that contains the alert information
   if (dialogTitle === 'database') statusBar.renderAlert('')
   editor.setDisabled(true)
-})
-
-window.addEventListener(DialogEvents.Closed, () => {
-  editor.setDisabled(false)
 })
 
 /**
@@ -441,7 +475,8 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
  * and the client is ready to be initialized
  */
 window.addEventListener('DOMContentLoaded', async () => {
-  dispatchEvent(new Event(LifeCycleEvents.Init))
+  createEvent(DatabaseEvents.Init).dispatch()
+  createEvent(LifeCycleEvents.Init).dispatch()
 })
 
 async function saveNote() {
@@ -458,14 +493,14 @@ async function saveNote() {
   }
 }
 
-function setDesktopView() {
-  sidebar.toggleFullscreen(false)
-  toggleEditorVisibility(true)
-}
-
-function setMobileView() {
-  sidebar.toggleFullscreen(true)
-  toggleEditorVisibility(false)
+function toggleFullscreenSidebar(isFullscreen: boolean) {
+  if (isFullscreen) {
+    sidebar.setFullScreen(true)
+    toggleEditorVisibility(false)
+  } else {
+    sidebar.setFullScreen(false)
+    toggleEditorVisibility(true)
+  }
 }
 
 function toggleEditorVisibility(isVisible: boolean) {
@@ -483,11 +518,10 @@ function toggleEditorVisibility(isVisible: boolean) {
 }
 
 function handleScreenWidth() {
-  const width = window.innerWidth
   const previousIsMobile = isMobile
-  isMobile = width < 640
+  isMobile = window.innerWidth < 640
   if (previousIsMobile !== isMobile)
-    dispatchEvent(new Event(LifeCycleEvents.WidthChanged))
+    createEvent(LifeCycleEvents.WidthChanged).dispatch()
 }
 
 async function fetchNoteFromUrl() {

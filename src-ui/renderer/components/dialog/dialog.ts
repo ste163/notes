@@ -63,10 +63,6 @@ class Dialog {
     if (event.key === 'Escape') this.close()
   }
 
-  private closeDialogFromEvent = () => {
-    this.close()
-  }
-
   public setContent({
     title,
     content,
@@ -94,12 +90,10 @@ class Dialog {
     this.dialog.addEventListener('keydown', this.trapFocusListener)
     this.dialog.addEventListener('keydown', this.escapePressListener)
 
-    window.addEventListener(DialogEvents.Closed, this.closeDialogFromEvent)
     createEvent(DialogEvents.Opened, { dialog: this.queryParam })?.dispatch()
   }
 
   public close() {
-    window.removeEventListener(DialogEvents.Closed, this.closeDialogFromEvent)
     document.body.style.userSelect = 'text' // re-enable selecting text
     this.delete()
     if (this.previouslyFocusedOutsideElement)

@@ -6,13 +6,14 @@
 
   /* TODO: revisit naming */
   --background-color: rgb(251, 252, 255);
+  --text-primary: rgb(45, 55, 72);
   --outline-color: rgb(45, 55, 72);
   --active-color: #b3bfd4;
   --button-hover-color: rgba(128, 128, 128, 0.2);
   --code-block-color: rgb(45, 55, 72);
   --error-color: rgb(231, 123, 123);
 
-  color: var(--outline-color);
+  color: var(--text-primary);
   background-color: var(--background-color);
 
   font-synthesis: none;
@@ -23,12 +24,12 @@
 }
 
 ::selection {
-  color: var(--outline-color);
+  color: var(--text-primary);
   background: var(--active-color);
 }
 
 svg {
-  fill: var(--outline-color);
+  fill: var(--text-primary);
 }
 
 body {
@@ -117,12 +118,6 @@ strong {
   margin-left: 2rem;
 }
 
-@media (max-width: 640px) {
-  .hide-on-mobile {
-    display: none !important;
-  }
-}
-
 /* Cleaner styling for scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
@@ -134,7 +129,7 @@ strong {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
+  border-radius: 5px;
   border: 0px solid transparent;
   background-clip: content-box;
 }

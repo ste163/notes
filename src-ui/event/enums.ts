@@ -2,6 +2,7 @@ export enum DatabaseEvents {
   Connecting = 'remote-connect',
   ConnectingError = 'remote-connecting-error',
   Connected = 'remote-connected',
+  Init = 'init-database',
   Setup = 'remote-setup',
   SyncingPaused = 'remote-syncing-paused',
   Disconnect = 'remote-disconnect',
@@ -9,7 +10,6 @@ export enum DatabaseEvents {
 
 export enum DialogEvents {
   Opened = 'opened-dialog',
-  Closed = 'closed-dialog',
 }
 
 export enum KeyboardEvents {

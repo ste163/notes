@@ -1,6 +1,6 @@
 import PouchDb from 'pouchdb-browser'
 import PouchDbFind from 'pouchdb-find'
-import { useDatabaseDetails } from './use-database-details'
+import { useLocalStorage } from 'use-local-storage'
 import { config } from 'config'
 import { logger } from 'logger'
 import { nanoid } from 'nanoid'
@@ -27,13 +27,13 @@ class Database {
     // setup local database
     PouchDb.plugin(PouchDbFind)
     this.db = new PouchDb(config.DATABASE_NAME)
-    // this check is for tests only. TODO: fix it
-    if (this.db.createIndex)
-      this.db?.createIndex({
-        index: { fields: ['createdAt'] },
-      })
-
     logger.log('Loaded local database.', 'info')
+  }
+
+  public async createIndexes() {
+    await this.db.createIndex({
+      index: { fields: ['createdAt'] },
+    })
   }
 
   /**
@@ -151,7 +151,8 @@ class Database {
   }
 
   private createRemoteUrl() {
-    const { username, password, host, port } = useDatabaseDetails.get()
+    const { username, password, host, port } =
+      useLocalStorage.get('remote-db-details')
     return username && password && host && port
       ? `http://${username}:${password}@${host}:${port}`
       : null
@@ -203,7 +204,7 @@ class Database {
 
   /**
    * Fetches all note metadata sorted by createdAt
-   * @returns {Promise<Record<string, Note>>} - A record of notes with their ids as keys
+   * @returns {Promise<Record<string, Note>>} record of notes with their ids as keys
    */
   public async getAll(): Promise<Record<string, Note>> {
     const { docs } = await this.db.find({

@@ -22,9 +22,10 @@
       "icons": ["./src-ui/renderer/icons"],
       "logger": ["./src-ui/logger"],
       "renderer/reactive": ["./src-ui/renderer/reactive"],
-      "types": ["./src-ui/types"],
       "test-utils": ["./src-ui/test-utils"],
-      "url-controller": ["./src-ui/url-controller"]
+      "types": ["./src-ui/types"],
+      "url-controller": ["./src-ui/url-controller"],
+      "use-local-storage": ["./src-ui/use-local-storage"]
     }
   },
   "include": ["./src-ui", "./vitest-setup.ts", "./cypress"],
