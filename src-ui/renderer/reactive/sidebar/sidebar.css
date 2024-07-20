@@ -52,6 +52,7 @@
 }
 
 .sidebar-fullscreen {
+  /* This is !import to force overriding of the user-defined sidebar width */
   width: 100vw !important;
   border-right: none;
 }
