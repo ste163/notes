@@ -41,15 +41,13 @@ class UseLocalStorage {
     const isValid = this.validators[key](
       object as unknown as DatabaseDetails & SidebarWidth
     )
-    if (!isValid) {
-      logger.log(
-        `Invalid ${key}. Attempted to set local storage with: ` +
-          JSON.stringify(object),
-        'error'
-      )
-      return
-    }
-    window.localStorage.setItem(key, JSON.stringify(object))
+    isValid
+      ? window.localStorage.setItem(key, JSON.stringify(object))
+      : logger.log(
+          `Invalid ${key}. Attempted to set local storage with: ` +
+            JSON.stringify(object),
+          'error'
+        )
   }
 
   private validateDetails(detail: DatabaseDetails): boolean {
