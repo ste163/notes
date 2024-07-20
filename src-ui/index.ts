@@ -24,10 +24,8 @@
  *
  * - FEATURES
  *   - auto-save at debounced interval
- *   - hyperlinks in the editor
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
- *   - MOBILE ONLY: instead of hiding editor buttons, hide them under an ellipsis pop-out menu
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
@@ -38,8 +36,10 @@
  *    - on the initial fresh load, the get fails because of no default index. All re-renders/refreshes work
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if unable to find data, need to be able to delete the undefined notes
- * - Add test reports for unit and e2e to readme
- *  - DATABASE INTERACTIONS
+ *
+ *  - Add test reports for unit and e2e to readme
+ *
+ * - DATABASE INTERACTIONS
  *     Thoroughly manually test db scenarios:
  *
  *     I have been connected to DB A and synced locally.

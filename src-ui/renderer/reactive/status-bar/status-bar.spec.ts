@@ -9,7 +9,7 @@ vi.mock('event')
 
 const ONLINE_TEXT = 'Online'
 const OFFLINE_TEXT = 'Offline'
-const CONNECTING_TEXT = 'Attempting connection...'
+const CONNECTING_TEXT = 'Connecting...'
 
 // because status bar is managed by the main app,
 // only testing individual render methods and their props

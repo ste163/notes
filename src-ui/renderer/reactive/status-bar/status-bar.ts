@@ -25,10 +25,10 @@ class StatusBar {
         <div id='sidebar-container'></div>
         <div id='remote-db-setup-container'></div>
         <div id='status-bar-synced-on' class='status-bar-date status-bar-hide-on-mobile'></div>
+        <div id='status-bar-alert'></div>
       </div>
       <div class='status-bar-right-container'>
         <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
-        <div id='status-bar-alert'></div>
         <div id='status-bar-save'></div>
         <div id='status-bar-delete'></div>
         <div>v${pkg.version}</div>
@@ -92,7 +92,7 @@ class StatusBar {
         html: `
         ${this.isConnecting ? new Loader().getElement().outerHTML : databaseIcon}
         <span>
-          ${this.isConnecting ? 'Attempting connection...' : this.isConnected ? 'Online' : 'Offline'}
+          ${this.isConnecting ? 'Connecting...' : this.isConnected ? 'Online' : 'Offline'}
         </span>
         `,
         onClick: () =>

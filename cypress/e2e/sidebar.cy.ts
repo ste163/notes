@@ -46,7 +46,6 @@ describe('sidebar', () => {
   })
 
   // TODO (need to implement the features for this...)
-  //
   // RESIZING (this is actually done through viewport commands, not dragging)
   // - resizing viewport from desktop to mobile with sidebar open makes sidebar fullscreen
   // - if the sidebar is open, in mobile, it stay open in desktop
@@ -57,13 +56,6 @@ describe('sidebar', () => {
   it('handles creating a note on larger screen sizes', () => {
     cy.visit('/')
     // tests all scenarios on note creating
-    //
-    // TODO: what happens when you:
-    // - click create note again?
-    // - have the note input open but close then reopen the sidebar?
-    // ADD TESTS FOR THESE WITH EXPECTATIONS
-    //
-    // TODO: creating a note DOES NOT AUTO CLOSE THE SIDEBAR on wide screens
 
     cy.get(locators.sidebar.createNote.button).click()
 
@@ -72,7 +64,10 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.input).type('My first note')
     cy.get(locators.sidebar.createNote.save).should('be.enabled')
     // removing the value disabled save again
-    // TODO: implement the above comment
+    cy.get(locators.sidebar.createNote.input).clear()
+    cy.get(locators.sidebar.createNote.save).should('be.disabled')
+    // typing a value enables save again
+    cy.get(locators.sidebar.createNote.input).type('My first note')
 
     // canceling stops note create and hides input
     cy.get(locators.sidebar.createNote.cancel).click()
@@ -82,6 +77,29 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.button).click()
     cy.get(locators.sidebar.createNote.input).should('have.value', '')
     cy.get(locators.sidebar.createNote.save).should('be.disabled')
+
+    // adding a title and hitting the create button again removes the input
+    // and clicking create again has reset the input
+    cy.get(locators.sidebar.createNote.input).type('My first note')
+    cy.get(locators.sidebar.createNote.button).click()
+    cy.get(locators.sidebar.createNote.input).should('not.exist')
+    cy.get(locators.sidebar.createNote.button).click()
+    cy.get(locators.sidebar.createNote.input).should('have.value', '')
+
+    // opening the create note input, adding a title, but closing the sidebar and then reopening it
+    // has closed the input. Opening the input again does not render the input title
+    cy.get(locators.sidebar.createNote.input).type('My first note')
+    cy.get(locators.sidebar.close).click()
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.get(locators.sidebar.createNote.input).should('not.exist')
+    cy.get(locators.sidebar.createNote.button).click()
+    cy.get(locators.sidebar.createNote.input).should('have.value', '')
+
+    // creating a note does not auto-close the sidebar on wide screen
+    cy.get(locators.sidebar.createNote.input).type('My first note')
+    cy.get(locators.sidebar.createNote.save).click()
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.sidebar.mainElement).should('be.visible')
   })
 
   it('tracks sidebar open/closed state across page reloads', () => {

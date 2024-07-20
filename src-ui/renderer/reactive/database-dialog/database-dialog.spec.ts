@@ -14,7 +14,7 @@ const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
 const OFFLINE_TEXT = 'Offline, saving to this device.'
 const ONLINE_TEXT = 'Online, syncing to database.'
-const CONNECTING_TEXT = 'Attempting connection...'
+const CONNECTING_TEXT = 'Connecting...'
 const NO_ERROR_TEXT = 'Good.'
 
 const MOCK_DETAILS: DatabaseDetails = {

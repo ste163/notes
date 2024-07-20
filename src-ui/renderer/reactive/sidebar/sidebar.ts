@@ -37,7 +37,10 @@ class Sidebar {
       new Button({
         testId: 'create-note',
         title: 'Create note',
-        onClick: this.renderInput,
+        onClick: () =>
+          document.querySelector(`#${this.inputContainerId}`)
+            ? this.closeInput()
+            : this.renderInput(),
         html: `
           ${addNoteIcon}
           <span>Create<span/>`,

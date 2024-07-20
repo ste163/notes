@@ -111,7 +111,7 @@ class DatabaseDialog {
             ${new Loader().getElement().outerHTML}
           </div>
           <div class='database-dialog-status-text-container'>
-            <span>Attempting connection...</span>
+            <span>Connecting...</span>
             <span class='database-dialog-status-small-text'>(will attempt for up to one minute and 30 seconds.)</span>
           </div>`
         : this.isConnectedToRemote
