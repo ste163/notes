@@ -61,31 +61,54 @@ class Editor {
   private editorMenuEllipsisContainer: HTMLDivElement | null = null
   private editorContainer: HTMLDivElement | null = null
 
-  public render() {
+  /**
+   * Initial setup for the editor elements.
+   *
+   * All renders after this point only modify specific elements
+   */
+  constructor() {
     const container = document.querySelector('#main')
     if (!container) throw new Error('Main container not found')
 
     container.innerHTML = ''
 
+    this.editorTitleContainer = null
+    this.editorMenuContainer = null
+    this.editorContainer = null
+
+    const editorTitleDiv = document.createElement('div')
+    editorTitleDiv.id = 'editor-title-container'
+    const editorMenuDiv = document.createElement('div')
+    editorMenuDiv.id = 'editor-menu'
+    const editorDiv = document.createElement('div')
+    editorDiv.id = 'editor'
+
+    container?.appendChild(editorTitleDiv)
+    container?.appendChild(editorMenuDiv)
+    container?.appendChild(editorDiv)
+
+    this.editorTitleContainer = editorTitleDiv
+    this.editorMenuContainer = editorMenuDiv
+    this.editorContainer = editorDiv
+  }
+
+  public render() {
+    const container = document.querySelector('#main')
+    if (!container) throw new Error('Main container not found')
+
+    /**
+     * Resets only the Title and Content,
+     * but not the editor menu buttons as those
+     * are independent of the selected Note
+     */
     const resetContainers = () => {
-      this.editorTitleContainer = null
-      this.editorMenuContainer = null
-      this.editorContainer = null
+      const editorTitle = document.querySelector('#editor-title-container')
+      const editorContent = document.querySelector('#editor')
 
-      const editorTitleDiv = document.createElement('div')
-      editorTitleDiv.id = 'editor-title-container'
-      const editorMenuDiv = document.createElement('div')
-      editorMenuDiv.id = 'editor-menu'
-      const editorDiv = document.createElement('div')
-      editorDiv.id = 'editor'
+      if (!editorTitle || !editorContent) return
 
-      container?.appendChild(editorTitleDiv)
-      container?.appendChild(editorMenuDiv)
-      container?.appendChild(editorDiv)
-
-      this.editorTitleContainer = editorTitleDiv
-      this.editorMenuContainer = editorMenuDiv
-      this.editorContainer = editorDiv
+      editorTitle.innerHTML = ''
+      editorContent.innerHTML = ''
     }
 
     this.resetResizeObserver()
@@ -104,9 +127,20 @@ class Editor {
   public renderMenu(isDisabled = false) {
     if (!this.editorMenuContainer) return
 
+    // If it is a subsequent re-render
+    // then enable/disable buttons instead of a full re-render
+    const renderedButtons = document.querySelectorAll(
+      '.editor-menu-button'
+    ) as NodeListOf<HTMLButtonElement>
+    if (renderedButtons.length) {
+      renderedButtons.forEach((button) => {
+        button.disabled = isDisabled
+      })
+      return
+    }
+
     const createButtonGroups = (button: HTMLButtonElement) => {
       button.classList.add('editor-menu-button')
-      if (isDisabled) button.disabled = true
       const group = button.dataset.group
       if (!group) throw new Error('button is not assigned to a group')
 
@@ -131,9 +165,6 @@ class Editor {
     buttons
       .map(createButtonGroups)
       .forEach((groupContainer) => mainButtonDiv?.appendChild(groupContainer))
-
-    // TODO: because the dialog open event triggers
-    // the menu buttons all re-render and lose the observer state
 
     const createEllipsisElement = () => {
       const ellipsisMenu = document.createElement('div')
@@ -178,6 +209,8 @@ class Editor {
 
   public setNote(note: Note | null) {
     this.note = note
+    // TODO: this should only re-render the title and content and not the editor menu
+
     this.render()
   }
 

@@ -12,6 +12,9 @@ describe('editor', () => {
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)
 
+    // create a note so the editor is enabled
+    cy.createNote('test note')
+
     // confirm that the ellipsis is not visible and only main buttons render
     cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
     cy.get(locators.editor.menu.mainSection)
