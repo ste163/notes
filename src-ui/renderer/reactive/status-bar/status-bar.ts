@@ -193,6 +193,4 @@ class StatusBar {
   }
 }
 
-const statusBar = new StatusBar()
-
-export { statusBar }
+export { StatusBar }

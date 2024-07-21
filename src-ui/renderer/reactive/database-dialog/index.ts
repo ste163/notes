@@ -1,1 +1,1 @@
-export { databaseDialog } from './database-dialog'
+export { DatabaseDialog } from './database-dialog'

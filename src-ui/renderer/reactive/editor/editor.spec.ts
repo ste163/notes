@@ -1,8 +1,8 @@
 import { vi, describe, expect, it } from 'vitest'
-import { renderComponent } from 'test-utils'
+import { render } from 'test-utils'
 import userEvent from '@testing-library/user-event'
 import { NoteEvents, createEvent } from 'event'
-import { editor } from './editor'
+import { Editor } from './editor'
 import type { Note } from 'types'
 
 vi.mock('event')
@@ -18,10 +18,8 @@ const note: Note = {
 
 describe('editor', () => {
   it('if title was not changed, then the original title renders', async () => {
-    const { getByRole, queryByRole } = renderComponent(
-      editor.render.bind(editor)
-    )
-    editor.setNote(note)
+    const { instance, getByRole, queryByRole } = render(Editor)
+    instance.setNote(note)
 
     // open input
     await userEvent.click(getByRole('button', { name: 'Note title' }))
@@ -42,10 +40,8 @@ describe('editor', () => {
   })
 
   it('if the title was set to an empty string, then the original title renders', async () => {
-    const { getByRole, queryByRole } = renderComponent(
-      editor.render.bind(editor)
-    )
-    editor.setNote(note)
+    const { instance, getByRole, queryByRole } = render(Editor)
+    instance.setNote(note)
 
     // open input
     await userEvent.click(getByRole('button', { name: 'Note title' }))
@@ -65,8 +61,8 @@ describe('editor', () => {
   })
 
   it('if the title was changed, then calls the update title event', async () => {
-    const { getByRole } = renderComponent(editor.render.bind(editor))
-    editor.setNote(note)
+    const { instance, getByRole } = render(Editor)
+    instance.setNote(note)
 
     // open input
     await userEvent.click(getByRole('button', { name: 'Note title' }))

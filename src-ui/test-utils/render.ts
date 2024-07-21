@@ -3,24 +3,19 @@ import { readFileSync } from 'fs'
 import { Window } from 'happy-dom'
 import { within } from '@testing-library/dom'
 
-type Props = { [key: string]: unknown } | unknown
-
 /**
- * Render a component and its props
- * in a simulated window and document
+ * Render a class component in the simulated window
  *
- * @param renderFunction
- * @param props
+ * @param Class
  * @returns "within" instance from testing-library/dom of the body
  * This allows for tests to deconstruct selectors from this renderer.
  */
-function renderComponent<T extends Props>(
-  renderFunction: (props: T) => void,
-  props = {} as T
-) {
+function render<T>(Class: new () => T) {
   setupWindowEnvironment()
-  renderFunction(props)
-  return within(window.document.body as unknown as HTMLElement)
+  return {
+    instance: new Class(),
+    ...within(window.document.body as unknown as HTMLElement),
+  }
 }
 
 /**
@@ -49,4 +44,4 @@ function getIndexBodyContent() {
   return bodyContent
 }
 
-export { renderComponent }
+export { render }

@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import { renderComponent } from 'test-utils'
-import { noteDeleteDialog } from './note-delete-dialog'
+import { render } from 'test-utils'
+import { NoteDeleteDialog } from './note-delete-dialog'
 import { NoteEvents, createEvent } from 'event'
 import type { Note } from 'types'
 
@@ -16,12 +16,10 @@ const note: Note = {
   content: 'Note content',
 }
 
-describe('note-delete-dialog', () => {
+describe('NoteDeleteDialog', () => {
   it('renders delete dialog emits delete event on delete', async () => {
-    const { getByRole } = renderComponent(
-      noteDeleteDialog.render.bind(noteDeleteDialog),
-      note
-    )
+    const { instance, getByRole } = render(NoteDeleteDialog)
+    instance.render(note)
     await userEvent.click(
       getByRole('button', { name: 'Delete Delete forever' })
     )

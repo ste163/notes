@@ -289,6 +289,4 @@ class Sidebar {
   }
 }
 
-const sidebar = new Sidebar()
-
-export { sidebar }
+export { Sidebar }

@@ -68,7 +68,7 @@ class Editor {
    */
   constructor() {
     const container = document.querySelector('#main')
-    if (!container) throw new Error('Main container not found')
+    if (!container) return
 
     container.innerHTML = ''
 
@@ -546,17 +546,4 @@ class Editor {
   }
 }
 
-// NOTE:
-// this fails at the unit tests
-// because this is processed FIRST
-// -
-// What I need to do is STILL have singletons
-// but instantiate them at the index.ts
-// level instead of here (sadly)
-// -
-// TODO: revisit all of these reactive classes
-// and export the Class instead of the instance
-
-const editor = new Editor()
-
-export { editor }
+export { Editor }

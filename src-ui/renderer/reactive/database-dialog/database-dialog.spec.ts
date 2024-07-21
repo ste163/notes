@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
-import { renderComponent } from 'test-utils'
+import { render } from 'test-utils'
 import userEvent from '@testing-library/user-event'
-import { databaseDialog } from './database-dialog'
+import { DatabaseDialog } from './database-dialog'
 import { DatabaseEvents, createEvent } from 'event'
 import { logger } from 'logger'
 import type { DatabaseDetails } from 'use-local-storage'
@@ -26,12 +26,18 @@ const MOCK_DETAILS: DatabaseDetails = {
 
 describe('DatabaseDialog', () => {
   it('when offline without saved details, renders empty form; renders offline setup and ok if no errors', () => {
-    const { getByRole, queryByRole, getAllByRole, queryByText, getByText } =
-      renderComponent(databaseDialog.render.bind(databaseDialog))
-
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setIsConnected(false)
-    databaseDialog.setError(null)
+    const {
+      instance,
+      getByRole,
+      queryByRole,
+      getAllByRole,
+      queryByText,
+      getByText,
+    } = render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(false)
+    instance.setIsConnected(false)
+    instance.setError(null)
 
     expect(queryByText(ONLINE_TEXT)).toBeNull()
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
@@ -53,13 +59,12 @@ describe('DatabaseDialog', () => {
   it('when offline with saved details and a recent error, render form and error', async () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify(MOCK_DETAILS))
 
-    const { getByRole, queryByRole, getAllByRole, getByText } = renderComponent(
-      databaseDialog.render.bind(databaseDialog)
-    )
-
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setIsConnected(false)
-    databaseDialog.setError('Test error')
+    const { instance, getByRole, queryByRole, getAllByRole, getByText } =
+      render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(false)
+    instance.setIsConnected(false)
+    instance.setError('Test error')
 
     expect(getByText('Test error')).toBeInTheDocument()
 
@@ -82,12 +87,18 @@ describe('DatabaseDialog', () => {
   it('when online, renders online setup and no errors', async () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify(MOCK_DETAILS))
 
-    const { getByRole, queryByRole, getAllByRole, queryByText, getByText } =
-      renderComponent(databaseDialog.render.bind(databaseDialog))
-
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setIsConnected(true)
-    databaseDialog.setError(null)
+    const {
+      instance,
+      getByRole,
+      queryByRole,
+      getAllByRole,
+      queryByText,
+      getByText,
+    } = render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(false)
+    instance.setIsConnected(true)
+    instance.setError(null)
 
     // status section renders properly
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
@@ -130,7 +141,7 @@ describe('DatabaseDialog', () => {
 
     // must manually update the connections status as that is controlled by events
     // to know if it was successful or not
-    databaseDialog.setIsConnected(false)
+    instance.setIsConnected(false)
 
     // can fill form with new data and submit it
     for await (const input of formInputs)
@@ -154,65 +165,59 @@ describe('DatabaseDialog', () => {
   })
 
   it('when online, renders error if there is an error', () => {
-    const { getByText } = renderComponent(
-      databaseDialog.render.bind(databaseDialog)
-    )
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setIsConnected(true)
-    databaseDialog.setError('Test error')
+    const { instance, getByText } = render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(false)
+    instance.setIsConnected(true)
+    instance.setError('Test error')
     expect(getByText('Test error')).toBeInTheDocument()
   })
 
   it('when online, renders last synced on date if available', () => {
     const date = new Date().toLocaleString()
 
-    const { queryByText, getByText } = renderComponent(
-      databaseDialog.render.bind(databaseDialog)
-    )
-
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setIsConnected(true)
-    databaseDialog.setError(null)
-    databaseDialog.setSyncedOn(date)
+    const { instance, queryByText, getByText } = render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(false)
+    instance.setIsConnected(true)
+    instance.setError(null)
+    instance.setSyncedOn(date)
 
     expect(getByText(`Last synced on: ${date}`)).toBeInTheDocument()
 
     // when offline, does not render
-    databaseDialog.setIsConnected(false)
+    instance.setIsConnected(false)
     expect(queryByText(`Last synced on: ${date}`)).toBeNull()
   })
 
   it('setting the error state re-renders the status section', () => {
-    const { getByText } = renderComponent(
-      databaseDialog.render.bind(databaseDialog)
-    )
-
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setIsConnected(true)
-    databaseDialog.setError('Test error')
+    const { instance, getByText } = render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(false)
+    instance.setIsConnected(true)
+    instance.setError('Test error')
 
     expect(getByText('Test error')).toBeInTheDocument()
 
     // state update that would be controlled by an event
-    databaseDialog.setError(null)
+    instance.setError(null)
     expect(getByText(NO_ERROR_TEXT)).toBeInTheDocument()
   })
 
   it('setting the connection state re-renders the status section', () => {
-    const { getByText, queryByText } = renderComponent(
-      databaseDialog.render.bind(databaseDialog)
-    )
+    const { instance, getByText, queryByText } = render(DatabaseDialog)
+    instance.render()
 
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setError(null)
-    databaseDialog.setIsConnected(false)
+    instance.setIsConnecting(false)
+    instance.setError(null)
+    instance.setIsConnected(false)
 
     expect(getByText(OFFLINE_TEXT)).toBeInTheDocument()
     expect(queryByText(ONLINE_TEXT)).toBeNull()
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
 
     // state update that would be controlled by an event
-    databaseDialog.setIsConnected(true)
+    instance.setIsConnected(true)
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
   })
@@ -220,14 +225,13 @@ describe('DatabaseDialog', () => {
   it('when attempting to connect, form is disabled and loading indicator is shown', () => {
     // when connection status is set to false, then the form is disabled
     // and the loading indicator and text is removed
-    const { getByRole, getAllByRole, getByText, queryByText } = renderComponent(
-      databaseDialog.render.bind(databaseDialog)
-    )
-
-    databaseDialog.setIsConnecting(true)
-    databaseDialog.setIsConnected(false)
-    databaseDialog.setSyncedOn(null)
-    databaseDialog.setError(null)
+    const { instance, getByRole, getAllByRole, getByText, queryByText } =
+      render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(true)
+    instance.setIsConnected(false)
+    instance.setSyncedOn(null)
+    instance.setError(null)
 
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
     expect(queryByText(ONLINE_TEXT)).toBeNull()
@@ -251,13 +255,12 @@ describe('DatabaseDialog', () => {
     const loggerSpy = vi.spyOn(logger, 'getLogs')
     loggerSpy.mockReturnValue([MOCK_LOG])
 
-    const { getByRole, getByText, queryByText } = renderComponent(
-      databaseDialog.render.bind(databaseDialog)
-    )
-
-    databaseDialog.setIsConnecting(false)
-    databaseDialog.setIsConnected(false)
-    databaseDialog.setError(null)
+    const { instance, getByRole, getByText, queryByText } =
+      render(DatabaseDialog)
+    instance.render()
+    instance.setIsConnecting(false)
+    instance.setIsConnected(false)
+    instance.setError(null)
 
     // logger section is not displayed
     expect(queryByText(MOCK_LOG)).toBeNull()

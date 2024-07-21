@@ -1,1 +1,1 @@
-export { editor } from './editor'
+export { Editor } from './editor'
