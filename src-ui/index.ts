@@ -1,5 +1,6 @@
 /**
  * TODO PRIORITY ORDER
+ *  - Save indicator: move from being a Component to being ONLY in the StatusBar
  *  - Responsiveness
  *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
