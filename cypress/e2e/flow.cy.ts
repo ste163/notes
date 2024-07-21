@@ -23,9 +23,13 @@ describe('flow', () => {
 
     // render the getting started section as there is no data
     cy.validateContent(data.expected.editor.content.default)
+
     // user can't edit the get started text
-    cy.writeContent('This should not work')
-    cy.validateContent(data.expected.editor.content.default)
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .invoke('attr', 'contenteditable')
+      .should('eq', 'false')
 
     // status bar state is expected (ie, disabled)
     cy.get(locators.statusBar.save).should('be.disabled')
@@ -148,8 +152,11 @@ describe('flow', () => {
     // renders the get started screen
     cy.validateContent(data.expected.editor.content.default)
     // user can't edit the get started text
-    cy.writeContent('This should not work')
-    cy.validateContent(data.expected.editor.content.default)
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .invoke('attr', 'contenteditable')
+      .should('eq', 'false')
 
     // the status bar save and delete are disabled
     cy.get(locators.statusBar.save).should('be.disabled')
@@ -177,8 +184,11 @@ describe('flow', () => {
     // renders the get started screen
     cy.validateContent(data.expected.editor.content.default)
     // user can't edit the get started text
-    cy.writeContent('This should not work')
-    cy.validateContent(data.expected.editor.content.default)
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .invoke('attr', 'contenteditable')
+      .should('eq', 'false')
     // and everything is disabled
     cy.get(locators.statusBar.save).should('be.disabled')
     cy.get(locators.statusBar.delete).should('be.disabled')
