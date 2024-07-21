@@ -68,7 +68,7 @@ class Editor {
    */
   constructor() {
     const container = document.querySelector('#main')
-    if (!container) return
+    if (!container) throw new Error('Main container not found')
 
     container.innerHTML = ''
 
