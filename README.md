@@ -39,7 +39,7 @@ flowchart LR
       A[(PouchDb instance)]
     end
 
-    subgraph Client - browser or tauri-based desktop application
+    subgraph Client
       B[(IndexedDB)]
       D[Database API] <-- Requests --> C[Event manager]
       D <-- CRUD --> B
