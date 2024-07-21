@@ -49,6 +49,4 @@ class NoteDeleteDialog {
   }
 }
 
-const noteDeleteDialog = new NoteDeleteDialog()
-
-export { noteDeleteDialog }
+export { NoteDeleteDialog }

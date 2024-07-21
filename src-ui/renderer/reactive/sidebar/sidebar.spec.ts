@@ -1,7 +1,7 @@
 import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import { renderComponent } from 'test-utils'
-import { sidebar } from './sidebar'
+import { render } from 'test-utils'
+import { Sidebar } from './sidebar'
 import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import type { Notes } from 'types'
 
@@ -9,9 +9,8 @@ vi.mock('event')
 
 describe('sidebar', () => {
   it('renders base input that can cancel and submit a note, if not loading and no error', async () => {
-    const { getByRole, queryByRole } = renderComponent(
-      sidebar.render.bind(sidebar)
-    )
+    const { instance, getByRole, queryByRole } = render(Sidebar)
+    instance.render()
 
     // renders input on create click
     const createButton = getByRole('button', { name: 'Add Create' })
@@ -43,9 +42,9 @@ describe('sidebar', () => {
   })
 
   it('renders no notes if no notes are present', () => {
-    const { getAllByRole } = renderComponent(sidebar.render.bind(sidebar))
-    sidebar.renderNoteList()
-
+    const { instance, getAllByRole } = render(Sidebar)
+    instance.render()
+    instance.renderNoteList()
     // notes are rendered as buttons, but the first two are the create and close buttons
     expect(getAllByRole('button')).toHaveLength(2)
   })
@@ -67,8 +66,9 @@ describe('sidebar', () => {
         content: '',
       },
     }
-    const { getAllByRole } = renderComponent(sidebar.render.bind(sidebar))
-    sidebar.renderNoteList(notes)
+    const { instance, getAllByRole } = render(Sidebar)
+    instance.render()
+    instance.renderNoteList(notes)
 
     // notes are rendered as buttons
     const buttons = getAllByRole('button')

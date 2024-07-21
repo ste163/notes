@@ -1,1 +1,1 @@
-export { noteDeleteDialog } from './note-delete-dialog'
+export { NoteDeleteDialog } from './note-delete-dialog'

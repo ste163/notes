@@ -335,6 +335,4 @@ class DatabaseDialog {
   }
 }
 
-const databaseDialog = new DatabaseDialog()
-
-export { databaseDialog }
+export { DatabaseDialog }

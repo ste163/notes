@@ -1,8 +1,8 @@
 import { vi, describe, it, expect } from 'vitest'
 import userEvent from '@testing-library/user-event'
-import { renderComponent } from 'test-utils'
+import { render } from 'test-utils'
 import { NoteEvents, createEvent, LifeCycleEvents } from 'event'
-import { statusBar } from './status-bar'
+import { StatusBar } from './status-bar'
 import pkg from '../../../../package.json'
 
 vi.mock('event')
@@ -15,16 +15,18 @@ const CONNECTING_TEXT = 'Connecting...'
 // only testing individual render methods and their props
 describe('status-bar', () => {
   it('renders disabled save button and settings button if no note selected', () => {
-    const { getByRole } = renderComponent(statusBar.render)
-    statusBar.renderActiveNote(null)
+    const { instance, getByRole } = render(StatusBar)
+    instance.render()
+    instance.renderActiveNote(null)
 
     expect(getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(getByRole('button', { name: 'Delete' })).toBeDisabled()
   })
 
   it('renders enabled save button and settings button and calls events on click', async () => {
-    const { getByRole } = renderComponent(statusBar.render)
-    statusBar.renderActiveNote({
+    const { instance, getByRole } = render(StatusBar)
+    instance.render()
+    instance.renderActiveNote({
       _id: 'abc',
       title: 'Note title',
       updatedAt: new Date(),
@@ -49,19 +51,24 @@ describe('status-bar', () => {
   })
 
   it('renders package version number', () => {
-    const { getByText } = renderComponent(statusBar.render)
+    const { instance, getByText } = render(StatusBar)
+    instance.render()
     expect(getByText(`v${pkg.version}`)).toBeInTheDocument()
   })
 
   it('error alert does not render, if not present', () => {
-    const { queryByRole } = renderComponent(statusBar.render)
-    statusBar.renderAlert('')
+    const { instance, queryByRole } = render(StatusBar)
+    instance.render()
+    instance.renderAlert('')
     expect(queryByRole('button', { name: 'Error Error' })).toBeNull()
   })
 
   it('renders error alert button and emits dialog open', async () => {
-    const { getByRole } = renderComponent(statusBar.render)
-    statusBar.renderAlert('Error message')
+    const { instance, getByRole } = render(StatusBar)
+    instance.render()
+
+    instance.render()
+    instance.renderAlert('Error message')
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
@@ -70,8 +77,9 @@ describe('status-bar', () => {
   })
 
   it('renders offline status and emits dialog open', async () => {
-    const { getByText, queryByText } = renderComponent(statusBar.render)
-    statusBar.renderRemoteDb()
+    const { instance, getByText, queryByText } = render(StatusBar)
+    instance.render()
+    instance.renderRemoteDb()
     expect(queryByText(ONLINE_TEXT)).toBeNull()
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
     await userEvent.click(getByText(OFFLINE_TEXT))
@@ -82,9 +90,10 @@ describe('status-bar', () => {
   })
 
   it('renders online status and emits dialog open', async () => {
-    const { getByText, queryByText } = renderComponent(statusBar.render)
-    statusBar.setIsConnected(true)
-    statusBar.renderRemoteDb()
+    const { instance, getByText, queryByText } = render(StatusBar)
+    instance.render()
+    instance.setIsConnected(true)
+    instance.renderRemoteDb()
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
     expect(queryByText(CONNECTING_TEXT)).toBeNull()
     expect(getByText(ONLINE_TEXT)).toBeInTheDocument()
@@ -96,12 +105,11 @@ describe('status-bar', () => {
   })
 
   it('renders connecting state if connecting', () => {
-    const { getByRole, getByText, queryByText } = renderComponent(
-      statusBar.render
-    )
-    statusBar.setIsConnected(false)
-    statusBar.setIsConnecting(true)
-    statusBar.renderRemoteDb()
+    const { instance, getByRole, getByText, queryByText } = render(StatusBar)
+    instance.render()
+    instance.setIsConnected(false)
+    instance.setIsConnecting(true)
+    instance.renderRemoteDb()
     expect(queryByText(ONLINE_TEXT)).toBeNull()
     expect(queryByText(OFFLINE_TEXT)).toBeNull()
     expect(getByText(CONNECTING_TEXT)).toBeInTheDocument()
@@ -109,28 +117,32 @@ describe('status-bar', () => {
   })
 
   it('does not render saved on date if null', () => {
-    const { queryByText } = renderComponent(statusBar.render)
-    statusBar.renderSavedOn(null)
+    const { instance, queryByText } = render(StatusBar)
+    instance.render()
+    instance.renderSavedOn(null)
     expect(queryByText('Saved on')).toBeNull()
   })
 
   it('renders saved on date if provided', () => {
-    const { getByText } = renderComponent(statusBar.render)
+    const { instance, getByText } = render(StatusBar)
+    instance.render()
     const date = new Date().toLocaleString()
-    statusBar.renderSavedOn(date)
+    instance.renderSavedOn(date)
     expect(getByText(`Saved on: ${date}`)).toBeInTheDocument()
   })
 
   it('does not render synced on date if null', () => {
-    const { queryByText } = renderComponent(statusBar.render)
-    statusBar.renderSyncedOn(null)
+    const { instance, queryByText } = render(StatusBar)
+    instance.render()
+    instance.renderSyncedOn(null)
     expect(queryByText('Synced on')).toBeNull()
   })
 
   it('renders synced on date', () => {
-    const { getByText } = renderComponent(statusBar.render)
+    const { instance, getByText } = render(StatusBar)
+    instance.render()
     const date = new Date().toLocaleString()
-    statusBar.renderSyncedOn(date)
+    instance.renderSyncedOn(date)
     expect(getByText(`Synced on: ${date}`)).toBeInTheDocument()
   })
 })
