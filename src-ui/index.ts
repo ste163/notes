@@ -1,6 +1,7 @@
 /**
  * TODO PRIORITY ORDER
  *  - Save indicator: move from being a Component to being ONLY in the StatusBar
+ *
  *  - Responsiveness
  *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
@@ -15,15 +16,17 @@
  *       on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
  *
- *  - title edit
+ *  - Title edit
  *      - cleanup styling
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - move all console.logs and console.errors to the logger()
+ *
+ *  - Move all console.logs and console.errors to the logger()
  *    so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
- *  - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
+ *
+ *  - Include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  *
  * - FEATURES
