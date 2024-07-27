@@ -73,9 +73,7 @@ import {
   Sidebar,
   StatusBar,
 } from 'renderer/reactive'
-import { AppNotification } from 'components'
 import { urlController } from 'url-controller'
-import { checkIcon } from 'icons'
 import { logger } from 'logger'
 import type { Note } from 'types'
 
@@ -239,15 +237,9 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
 })
 
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
-  const notification = new AppNotification({
-    id: 'note-saved',
-    testId: 'save-notification',
-    icon: checkIcon,
-    text: `Saved`,
-  })
-  notification.show()
+  statusBar.renderSaveAlert(true)
   setTimeout(() => {
-    notification.remove()
+    statusBar.renderSaveAlert(false)
   }, 2000)
 })
 
@@ -438,7 +430,7 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   //
   // clear alert from status bar if the user is opening the db dialog
   // as that contains the alert information
-  if (dialogTitle === 'database') statusBar.renderAlert('')
+  if (dialogTitle === 'database') statusBar.renderErrorAlert(false)
   editor.setDisabled(true)
 })
 
@@ -454,12 +446,12 @@ window.addEventListener(LoggerEvents.Update, (event) => {
   const { log, type } = detail
 
   if (type === 'info') {
-    statusBar.renderAlert(null)
+    statusBar.renderErrorAlert(false)
     databaseDialog.setError(null)
   }
 
   if (type === 'error') {
-    statusBar.renderAlert(log)
+    statusBar.renderErrorAlert(true)
     databaseDialog.setError(log)
   }
 })

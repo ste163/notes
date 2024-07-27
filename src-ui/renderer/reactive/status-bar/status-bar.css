@@ -7,6 +7,7 @@
   padding: 0.25rem 0.5rem;
   overflow-y: hidden;
   overflow-x: auto;
+  user-select: none; /* Prevents text selection */
 }
 
 #status-bar button {
@@ -36,14 +37,28 @@
   margin: 0 0.2rem;
 }
 
-#status-bar-alert button {
+#status-bar-error-alert button {
   font-weight: bold;
   background-color: var(--error-color);
   padding-right: 0.3rem;
 }
 
-#status-bar-alert button:hover {
+#status-bar-error-alert button:hover {
   background-color: var(--error-color);
+}
+
+#status-bar-save-alert > div {
+  display: flex;
+  align-items: center;
+  padding: 0.1rem 0.3rem;
+  font-weight: bold;
+  border-radius: 0.3rem;
+  background-color: var(--active-color);
+}
+
+#status-bar-save-alert > div > svg {
+  margin-right: 0.2rem;
+  width: 1.2rem;
 }
 
 .open-sidebar-button-active {
