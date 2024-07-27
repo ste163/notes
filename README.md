@@ -86,8 +86,3 @@ cargo update
 
 - Trigger re-build of Github Pages
 - Trigger Tauri build
-
-# credits: Remix Icons
-
-(TODO: before releasing app, need to properly share the license)
-https://remixicon.com/license
