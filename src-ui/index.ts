@@ -484,6 +484,8 @@ async function saveNote() {
     ...note,
     content,
   })
+  editor.setIsDirty(false)
+  editor.setLastSavedContent(content)
   return {
     ...note,
     content,

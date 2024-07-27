@@ -52,6 +52,7 @@ class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
   private isDirty = false
+  private lastSavedContent = '' // used to locally compare if the content has changed
   private saveTimer: NodeJS.Timeout | null = null
 
   private globalClickHandler: (event: MouseEvent) => void = () => {}
@@ -116,6 +117,7 @@ class Editor {
     resetContainers()
 
     this.isDirty = false
+    this.lastSavedContent = this.note?.content ?? ''
     const tipTap = this.instantiateTipTap(this.note)
     if (tipTap) this.editor = tipTap
     this.renderMenu()
@@ -202,6 +204,21 @@ class Editor {
 
   public getIsDirty() {
     return this.isDirty
+  }
+
+  public setIsDirty(isDirty: boolean) {
+    this.isDirty = isDirty
+  }
+
+  /**
+   * Used to compare the current editor content state
+   * with what was last saved to check isDirty for auto-saving.
+   *
+   * This is not used the DB state of the note because that would
+   * re-render the entire Editor
+   */
+  public setLastSavedContent(content: string) {
+    this.lastSavedContent = content
   }
 
   public getContent() {
@@ -527,11 +544,15 @@ class Editor {
       ],
       content: note?.content ?? STARTING_CONTENT,
       onUpdate: ({ editor }) => {
-        const setIsDirty = () => {
+        const compareContentForIsDirty = () => {
           if (this.isDirty) return
           const currentContent = editor.getHTML()
-          if (currentContent === STARTING_CONTENT) return
-          this.isDirty = currentContent !== note?.content
+          if (currentContent !== this.lastSavedContent) {
+            this.isDirty = true
+            this.lastSavedContent = currentContent
+          } else {
+            this.isDirty = false
+          }
         }
 
         const debounceSave = () => {
@@ -541,8 +562,10 @@ class Editor {
           }, 800)
         }
 
-        setIsDirty()
-        if (this.note) debounceSave()
+        compareContentForIsDirty()
+
+        const shouldSave = this.isDirty && !!this.note
+        if (shouldSave) debounceSave()
       },
       onTransaction: () => {
         /**
