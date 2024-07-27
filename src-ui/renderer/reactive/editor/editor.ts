@@ -537,7 +537,7 @@ class Editor {
         }
 
         setIsDirty()
-        debounceSave()
+        if (this.note) debounceSave()
       },
       onTransaction: () => {
         /**
