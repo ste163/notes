@@ -568,8 +568,6 @@ class Editor {
 
         compareContentForIsDirty()
 
-        console.log('SELECTED NOTE', this.note)
-        console.log('IS DIRTY', this.isDirty)
         const shouldSave = this.isDirty && !!this.note
         if (shouldSave) debounceSave()
       },
