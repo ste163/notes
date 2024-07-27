@@ -1,3 +1,4 @@
+import { DIALOGS } from 'const'
 import { Button, Dialog, Input, Loader } from 'components'
 import { logger } from 'logger'
 import { DatabaseEvents, createEvent } from 'event'
@@ -57,7 +58,7 @@ class DatabaseDialog {
     this.dialog.setContent({
       title: 'Database',
       content: dialogContent,
-      queryParam: 'database',
+      queryParam: DIALOGS.DATABASE,
       classList: 'database-dialog',
     })
 

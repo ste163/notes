@@ -1,3 +1,4 @@
+import { DIALOGS } from 'const'
 import { NoteEvents, createEvent } from 'event'
 import { Dialog, Button } from 'components'
 import { deleteIcon } from 'icons'
@@ -34,7 +35,7 @@ class NoteDeleteDialog {
     this.dialog.setContent({
       title: 'Delete',
       content: dialogContent,
-      queryParam: 'delete',
+      queryParam: DIALOGS.DELETE,
     })
     this.dialog.open()
   }

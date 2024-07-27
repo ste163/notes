@@ -63,6 +63,7 @@ import {
   createEvent,
 } from 'event'
 import {
+  AboutDialog,
   DatabaseDialog,
   Editor,
   NoteDeleteDialog,
@@ -76,8 +77,9 @@ import type { Note } from 'types'
 
 let isMobile: boolean
 
-const editor = new Editor()
+const aboutDialog = new AboutDialog()
 const databaseDialog = new DatabaseDialog()
+const editor = new Editor()
 const noteDeleteDialog = new NoteDeleteDialog()
 const sidebar = new Sidebar()
 const statusBar = new StatusBar()
@@ -196,7 +198,7 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
 
     const dialogHandlers: Record<string, () => Promise<void> | void> = {
       [DIALOGS.ABOUT]: () => {
-        console.log('RENDER ABOUT')
+        aboutDialog.render()
       },
       [DIALOGS.DATABASE]: () => {
         databaseDialog.render()
@@ -205,17 +207,17 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
         if (noteId) await openDeleteDialog()
       },
     }
-
     const handler = dialogHandlers[dialog]
     if (handler) await handler()
   }
 
   if (dialog === null) {
     const { noteId } = urlController.getParams()
-    urlController.removeParam('dialog')
+    urlController.removeParam(PARAMS.DIALOG)
     // clear the local state of the dialogs
     noteDeleteDialog.clear()
     databaseDialog.clear()
+    aboutDialog.clear()
     // editor is enabled again as the dialog has closed
     if (noteId) editor.setDisabled(false)
   }

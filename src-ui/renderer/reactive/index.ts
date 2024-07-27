@@ -1,5 +1,6 @@
-export { Editor } from './editor'
+export { AboutDialog } from './about-dialog'
 export { DatabaseDialog } from './database-dialog'
+export { Editor } from './editor'
 export { NoteDeleteDialog } from './note-delete-dialog'
 export { Sidebar } from './sidebar'
 export { StatusBar } from './status-bar'
