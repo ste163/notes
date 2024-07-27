@@ -71,6 +71,7 @@ import {
 } from 'renderer/reactive'
 import { urlController } from 'url-controller'
 import { logger } from 'logger'
+import { DIALOGS, PARAMS } from 'const'
 import type { Note } from 'types'
 
 let isMobile: boolean
@@ -156,7 +157,7 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
       sidebar.close()
     }
 
-    urlController.setParam('sidebar', sidebarParam)
+    urlController.setParam(PARAMS.SIDEBAR, sidebarParam)
     sidebarParam === 'open' ? openSidebar() : closeSidebar()
   }
 
@@ -172,19 +173,19 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
   // then selecting a new note
   if (noteId) {
     if (editor.getIsDirty()) await saveNote()
-    urlController.setParam('noteId', noteId)
+    urlController.setParam(PARAMS.NOTE_ID, noteId)
     createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
   }
 
   if (noteId === null) {
-    urlController.removeParam('noteId')
+    urlController.removeParam(PARAMS.NOTE_ID)
     createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
   }
 
   if (dialog) {
     const { noteId } = urlController.getParams()
-    urlController.setParam('dialog', dialog)
+    urlController.setParam(PARAMS.DIALOG, dialog)
 
     const openDeleteDialog = async () => {
       const { noteId } = urlController.getParams()
@@ -194,16 +195,15 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
     }
 
     // TODO:
-    // use a CONST object for dialog titles
-    // use an object and function approach instead of a SWITCH
+    // use an object instead of switch
     switch (dialog) {
-      case 'about':
+      case DIALOGS.ABOUT:
         console.log('RENDER ABOUT')
         break
-      case 'database':
+      case DIALOGS.DATABASE:
         databaseDialog.render()
         break
-      case 'delete':
+      case DIALOGS.DELETE:
         noteId && (await openDeleteDialog())
         break
       default:

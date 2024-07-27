@@ -8,6 +8,7 @@ import {
   saveIcon,
 } from 'icons'
 import { createEvent, LifeCycleEvents, NoteEvents } from 'event'
+import { DIALOGS } from 'const'
 import { urlController } from 'url-controller'
 import pkg from '../../../../package.json'
 import type { Note } from 'types'
@@ -91,7 +92,7 @@ class StatusBar {
         title: 'About',
         onClick: () =>
           createEvent(LifeCycleEvents.QueryParamUpdate, {
-            dialog: 'about',
+            dialog: DIALOGS.ABOUT,
           })?.dispatch(),
         html: `v${pkg.version}`,
       }).getElement()
@@ -116,7 +117,7 @@ class StatusBar {
         `,
         onClick: () =>
           createEvent(LifeCycleEvents.QueryParamUpdate, {
-            dialog: 'database',
+            dialog: DIALOGS.DATABASE,
           })?.dispatch(),
       }).getElement()
     )
@@ -168,7 +169,7 @@ class StatusBar {
         `,
         onClick: () =>
           createEvent(LifeCycleEvents.QueryParamUpdate, {
-            dialog: 'database',
+            dialog: DIALOGS.DATABASE,
           })?.dispatch(),
       }).getElement()
     )
@@ -196,7 +197,7 @@ class StatusBar {
       html: deleteIcon,
       onClick: () =>
         createEvent(LifeCycleEvents.QueryParamUpdate, {
-          dialog: 'delete',
+          dialog: DIALOGS.DELETE,
         })?.dispatch(),
     })
     settingsButton.setEnabled(!!note)

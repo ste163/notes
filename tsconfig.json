@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "paths": {
       "config": ["./src-ui/config"],
+      "const": ["./src-ui/const"],
       "components": ["./src-ui/renderer/components"],
       "database": ["./src-ui/database"],
       "event": ["./src-ui/event"],

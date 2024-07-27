@@ -1,6 +1,7 @@
 import { config } from 'config'
+import { PARAMS } from 'const'
 
-type UrlSearchParams = 'sidebar' | 'noteId' | 'dialog'
+type UrlSearchParams = (typeof PARAMS)[keyof typeof PARAMS]
 
 class UrlController {
   private url: URL
@@ -16,9 +17,9 @@ class UrlController {
   public getParams() {
     const searchParams = new URLSearchParams(window.location.search)
     return {
-      sidebar: searchParams.get('sidebar') ?? '',
-      noteId: searchParams.get('noteId') ?? '',
-      dialog: searchParams.get('dialog') ?? '',
+      sidebar: searchParams.get(PARAMS.SIDEBAR) ?? '',
+      noteId: searchParams.get(PARAMS.NOTE_ID) ?? '',
+      dialog: searchParams.get(PARAMS.DIALOG) ?? '',
     }
   }
 

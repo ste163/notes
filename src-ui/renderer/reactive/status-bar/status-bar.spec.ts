@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { render } from 'test-utils'
 import { NoteEvents, createEvent, LifeCycleEvents } from 'event'
 import { StatusBar } from './status-bar'
+import { DIALOGS } from 'const'
 import pkg from '../../../../package.json'
 
 vi.mock('event')
@@ -46,7 +47,7 @@ describe('status-bar', () => {
     await userEvent.click(deleteButton)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'delete' }
+      { dialog: DIALOGS.DELETE }
     )
   })
 
@@ -57,7 +58,7 @@ describe('status-bar', () => {
     await userEvent.click(button)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'about' }
+      { dialog: DIALOGS.ABOUT }
     )
   })
 
@@ -72,7 +73,7 @@ describe('status-bar', () => {
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'database' }
+      { dialog: DIALOGS.DATABASE }
     )
   })
 
@@ -96,7 +97,7 @@ describe('status-bar', () => {
     await userEvent.click(getByText(OFFLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'database' }
+      { dialog: DIALOGS.DATABASE }
     )
   })
 
@@ -111,7 +112,7 @@ describe('status-bar', () => {
     await userEvent.click(getByText(ONLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'database' }
+      { dialog: DIALOGS.DATABASE }
     )
   })
 
