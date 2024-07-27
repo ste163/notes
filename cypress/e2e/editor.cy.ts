@@ -131,4 +131,23 @@ describe('editor', () => {
       .children()
       .should('have.length', data.expected.editor.mainToolbarButtonCount.medium)
   })
+
+  it('handles debounced auto-saving when changes are made', () => {
+    cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
+    cy.visit('/')
+    cy.wait(DEFAULT_WAIT)
+
+    cy.createNote('test note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Here is some unsaved content')
+
+    // wait a bit for the save notification to appear
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.notification.save).should('exist')
+
+    // because debounced saved, reloading the page should render the same note
+    cy.reload()
+    cy.wait(DEFAULT_WAIT)
+    cy.validateContent('Here is some unsaved content')
+  })
 })

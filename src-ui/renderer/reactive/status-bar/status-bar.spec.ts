@@ -56,24 +56,30 @@ describe('status-bar', () => {
     expect(getByText(`v${pkg.version}`)).toBeInTheDocument()
   })
 
-  it('error alert does not render, if not present', () => {
-    const { instance, queryByRole } = render(StatusBar)
+  it('error alert renders properly', async () => {
+    const { instance, queryByRole, getByRole } = render(StatusBar)
     instance.render()
-    instance.renderAlert('')
+    // does not render if false
+    instance.renderErrorAlert(false)
     expect(queryByRole('button', { name: 'Error Error' })).toBeNull()
-  })
-
-  it('renders error alert button and emits dialog open', async () => {
-    const { instance, getByRole } = render(StatusBar)
-    instance.render()
-
-    instance.render()
-    instance.renderAlert('Error message')
+    // renders if true
+    instance.renderErrorAlert(true)
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
       { dialog: 'database' }
     )
+  })
+
+  it('renders save alert', () => {
+    const { instance, getByText, queryByText } = render(StatusBar)
+    instance.render()
+    instance.renderSaveAlert(true)
+    expect(getByText('Saved')).toBeInTheDocument()
+
+    // and removes it if false
+    instance.renderSaveAlert(false)
+    expect(queryByText('Saved')).toBeNull()
   })
 
   it('renders offline status and emits dialog open', async () => {

@@ -1,5 +1,6 @@
 import { Button, Loader } from 'components'
 import {
+  checkIcon,
   databaseIcon,
   deleteIcon,
   errorIcon,
@@ -25,9 +26,10 @@ class StatusBar {
         <div id='sidebar-container'></div>
         <div id='remote-db-setup-container'></div>
         <div id='status-bar-synced-on' class='status-bar-date status-bar-hide-on-mobile'></div>
-        <div id='status-bar-alert'></div>
+        <div id='status-bar-error-alert'></div>
       </div>
       <div class='status-bar-right-container'>
+        <div id='status-bar-save-alert'></div>
         <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
         <div id='status-bar-save'></div>
         <div id='status-bar-delete'></div>
@@ -121,10 +123,22 @@ class StatusBar {
     })
   }
 
-  public renderAlert(message: string | null) {
-    const container = document.querySelector('#status-bar-alert')
+  public renderSaveAlert(shouldShow: boolean) {
+    const container = document.querySelector('#status-bar-save-alert')
+    if (!container) return
+    container.innerHTML = '' // reset container
+    if (!shouldShow) return // then keep the container cleared
+    container.innerHTML = `
+      <div data-testid='save-notification'>
+        ${checkIcon}
+        <span>Saved</span>
+      </div>`
+  }
+
+  public renderErrorAlert(shouldShow: boolean) {
+    const container = document.querySelector('#status-bar-error-alert')
     if (container) container.innerHTML = ''
-    if (!message) return
+    if (!shouldShow) return // then keep the container cleared
     container?.appendChild(
       new Button({
         testId: 'alert-error',

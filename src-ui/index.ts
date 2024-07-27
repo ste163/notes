@@ -1,10 +1,8 @@
 /**
- * TODO PRIORITY ORDER
+ * TODO PRIORITY ORDER *
  *  - Responsiveness
  *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
- *    - Fix flashing rendering of the sidebar editor menu by only making it render once
- *      (decouple Editor state from the menu rendering)
  *    - Cleanup the rendering for the Editor resize observer
  *
  *  - DATABASE DIALOG FORM:
@@ -14,19 +12,20 @@
  *       on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
  *
- *  - title edit
+ *  - Title edit
  *      - cleanup styling
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
- *  - move all console.logs and console.errors to the logger()
+ *
+ *  - Move all console.logs and console.errors to the logger()
  *    so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
- *  - include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
+ *
+ *  - Include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
  *      - could include info about the application, its version, its license and the remix icon license
  *
  * - FEATURES
- *   - auto-save at debounced interval
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
  *   - e2e:
@@ -69,9 +68,7 @@ import {
   Sidebar,
   StatusBar,
 } from 'renderer/reactive'
-import { AppNotification } from 'components'
 import { urlController } from 'url-controller'
-import { checkIcon } from 'icons'
 import { logger } from 'logger'
 import type { Note } from 'types'
 
@@ -235,15 +232,9 @@ window.addEventListener(LifeCycleEvents.WidthChanged, () => {
 })
 
 window.addEventListener(LifeCycleEvents.ShowSaveNotification, () => {
-  const notification = new AppNotification({
-    id: 'note-saved',
-    testId: 'save-notification',
-    icon: checkIcon,
-    text: `Saved`,
-  })
-  notification.show()
+  statusBar.renderSaveAlert(true)
   setTimeout(() => {
-    notification.remove()
+    statusBar.renderSaveAlert(false)
   }, 2000)
 })
 
@@ -434,7 +425,7 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   //
   // clear alert from status bar if the user is opening the db dialog
   // as that contains the alert information
-  if (dialogTitle === 'database') statusBar.renderAlert('')
+  if (dialogTitle === 'database') statusBar.renderErrorAlert(false)
   editor.setDisabled(true)
 })
 
@@ -450,12 +441,12 @@ window.addEventListener(LoggerEvents.Update, (event) => {
   const { log, type } = detail
 
   if (type === 'info') {
-    statusBar.renderAlert(null)
+    statusBar.renderErrorAlert(false)
     databaseDialog.setError(null)
   }
 
   if (type === 'error') {
-    statusBar.renderAlert(log)
+    statusBar.renderErrorAlert(true)
     databaseDialog.setError(log)
   }
 })

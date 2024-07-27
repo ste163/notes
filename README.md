@@ -35,7 +35,7 @@ This application structure allows for real-time data syncing and a SPA-like user
 
 ```mermaid
 flowchart LR
-    subgraph Optional Docker Container
+    subgraph Docker Container (Optional)
       A[(PouchDb instance)]
     end
 
