@@ -44,6 +44,12 @@ describe('editor', () => {
         data.expected.editor.ellipsisToolbarButtonCount.small
       )
 
+    // and the first item is H1, so that we know items were ordered correctly
+    cy.get(locators.editor.menu.ellipsisSection)
+      .children()
+      .eq(0)
+      .should('contain.text', 'Heading 1')
+
     // closing the sidebar renders all the buttons without ellipsis
     cy.get(locators.sidebar.close).click()
     cy.wait(DEFAULT_WAIT)
