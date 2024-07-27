@@ -33,7 +33,7 @@ class StatusBar {
         <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
         <div id='status-bar-save'></div>
         <div id='status-bar-delete'></div>
-        <div>v${pkg.version}</div>
+        <div id='status-bar-about'></div>
       </div>`
 
     const sidebarContainer = document.querySelector('#sidebar-container')
@@ -52,6 +52,7 @@ class StatusBar {
         style: { border: 'none' },
       }).getElement()
     )
+    this.renderAbout()
   }
 
   public setIsConnecting(isConnecting: boolean) {
@@ -78,6 +79,22 @@ class StatusBar {
     this.renderDeleteButton(note)
     this.renderSavedOn(
       note?.updatedAt ? new Date(note.updatedAt).toLocaleString() : null
+    )
+  }
+
+  public renderAbout() {
+    const container = document.querySelector('#status-bar-about')
+    if (container) container.innerHTML = ''
+    container?.appendChild(
+      new Button({
+        testId: 'about',
+        title: 'About',
+        onClick: () =>
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
+            dialog: 'about',
+          })?.dispatch(),
+        html: `v${pkg.version}`,
+      }).getElement()
     )
   }
 

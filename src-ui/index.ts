@@ -1,5 +1,10 @@
 /**
  * TODO PRIORITY ORDER *
+ *  - About/Legal Dialog
+ *     - Clicking the Version Number in Status Bar opens a new dialog
+ *     - This Dialog has About information and button toggles to show the licenses for the main packages
+ *       as per the License requirements. Double check, but for sure need (Remix Icons, PouchDB, Tauri)
+ *
  *  - Responsiveness
  *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
@@ -21,9 +26,6 @@
  *    so that all interactions with the database are logged
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
- *
- *  - Include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
- *      - could include info about the application, its version, its license and the remix icon license
  *
  * - FEATURES
  *   - save cursor position to the note object so we can re-open at the correct location
@@ -191,14 +193,18 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
       if (note) noteDeleteDialog.render(note)
     }
 
-    // TODO: use consts from dialog class
-    // use an object instead of switch
+    // TODO:
+    // use a CONST object for dialog titles
+    // use an object and function approach instead of a SWITCH
     switch (dialog) {
-      case 'delete':
-        noteId && (await openDeleteDialog())
+      case 'about':
+        console.log('RENDER ABOUT')
         break
       case 'database':
         databaseDialog.render()
+        break
+      case 'delete':
+        noteId && (await openDeleteDialog())
         break
       default:
         break
