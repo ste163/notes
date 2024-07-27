@@ -1,12 +1,8 @@
 /**
- * TODO PRIORITY ORDER
- *  - Save indicator: move from being a Component to being ONLY in the StatusBar
- *
+ * TODO PRIORITY ORDER *
  *  - Responsiveness
  *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
- *    - Fix flashing rendering of the sidebar editor menu by only making it render once
- *      (decouple Editor state from the menu rendering)
  *    - Cleanup the rendering for the Editor resize observer
  *
  *  - DATABASE DIALOG FORM:
@@ -30,7 +26,6 @@
  *      - could include info about the application, its version, its license and the remix icon license
  *
  * - FEATURES
- *   - auto-save at debounced interval
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
  *   - e2e:
