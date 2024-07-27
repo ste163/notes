@@ -50,7 +50,7 @@
 #status-bar-save-alert > div {
   display: flex;
   align-items: center;
-  padding: 0.1rem 0.3rem;
+  padding: 0.1rem 0.3rem 0.1rem 0.15rem;
   font-weight: bold;
   border-radius: 0.3rem;
   background-color: var(--active-color);
