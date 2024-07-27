@@ -37,7 +37,6 @@
  * - BUGS (which also need e2e tests)
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if unable to find data, need to be able to delete the undefined notes
- *    - when menu item groups are added to the ellipsis, they are backwards: h1, h2, h3 from the main bar become h3, h2, h1 (add e2e around this)
  *
  *  - Add test reports for unit and e2e to readme
  *

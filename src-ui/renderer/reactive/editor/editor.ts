@@ -310,10 +310,15 @@ class Editor {
           editorWidth < width &&
           lastMainIndex === groupIndex &&
           getLastGroupElements(lastMainIndex).length
-        if (shouldMoveButtonsIntoEllipsis)
-          getLastGroupElements(lastMainIndex).forEach((group) =>
+        if (shouldMoveButtonsIntoEllipsis) {
+          // put the items in the ellipsis menu in the correct order.
+          // Must .reverse() and .prepend() to ensure the order becomes:
+          // H1, H2, H3 in the main menu and consistent in the ellipsis menu
+          const groups = Array.from(getLastGroupElements(lastMainIndex))
+          groups.reverse().forEach((group) => {
             this.editorMenuEllipsisContainer?.prepend(group)
-          )
+          })
+        }
 
         // process ellipsis menu
         const lastIndexInEllipsis = getGroupIndex(
