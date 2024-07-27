@@ -42,7 +42,7 @@ const responsivenessConfig: ResponsivenessConfig[] = [
   },
 ]
 
-const STARTING_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
+const NO_NOTE_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
 
 // NOTE:
 // some of this could be moved into sub classes.
@@ -542,11 +542,15 @@ class Editor {
           },
         }),
       ],
-      content: note?.content ?? STARTING_CONTENT,
+      content: note?.content ?? NO_NOTE_CONTENT,
       onUpdate: ({ editor }) => {
         const compareContentForIsDirty = () => {
           if (this.isDirty) return
           const currentContent = editor.getHTML()
+          if (currentContent === NO_NOTE_CONTENT) {
+            this.isDirty = false
+            return
+          }
           if (currentContent !== this.lastSavedContent) {
             this.isDirty = true
             this.lastSavedContent = currentContent
@@ -564,6 +568,8 @@ class Editor {
 
         compareContentForIsDirty()
 
+        console.log('SELECTED NOTE', this.note)
+        console.log('IS DIRTY', this.isDirty)
         const shouldSave = this.isDirty && !!this.note
         if (shouldSave) debounceSave()
       },
