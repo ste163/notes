@@ -211,11 +211,10 @@ class Editor {
   }
 
   /**
-   * Used to compare the current editor content state
-   * with what was last saved to check isDirty for auto-saving.
-   *
-   * This is not used the DB state of the note because that would
-   * re-render the entire Editor
+   * Last Saved Content is used to compare
+   * currently typed content to check dirty state
+   * for auto-saving. Not using the Note object's
+   * content as setting a note triggers a full re-render.
    */
   public setLastSavedContent(content: string) {
     this.lastSavedContent = content
