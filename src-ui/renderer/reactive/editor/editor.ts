@@ -42,7 +42,7 @@ const responsivenessConfig: ResponsivenessConfig[] = [
   },
 ]
 
-const STARTING_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
+const NO_NOTE_CONTENT = `<h1>Get started</h1><p>Create or select a note from the sidebar.</p>`
 
 // NOTE:
 // some of this could be moved into sub classes.
@@ -52,6 +52,7 @@ class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
   private isDirty = false
+  private lastSavedContent = '' // used to locally compare if the content has changed
   private saveTimer: NodeJS.Timeout | null = null
 
   private globalClickHandler: (event: MouseEvent) => void = () => {}
@@ -116,6 +117,7 @@ class Editor {
     resetContainers()
 
     this.isDirty = false
+    this.lastSavedContent = this.note?.content ?? ''
     const tipTap = this.instantiateTipTap(this.note)
     if (tipTap) this.editor = tipTap
     this.renderMenu()
@@ -202,6 +204,20 @@ class Editor {
 
   public getIsDirty() {
     return this.isDirty
+  }
+
+  public setIsDirty(isDirty: boolean) {
+    this.isDirty = isDirty
+  }
+
+  /**
+   * Last Saved Content is used to compare
+   * currently typed content to check dirty state
+   * for auto-saving. Not using the Note object's
+   * content as setting a note triggers a full re-render.
+   */
+  public setLastSavedContent(content: string) {
+    this.lastSavedContent = content
   }
 
   public getContent() {
@@ -525,13 +541,21 @@ class Editor {
           },
         }),
       ],
-      content: note?.content ?? STARTING_CONTENT,
+      content: note?.content ?? NO_NOTE_CONTENT,
       onUpdate: ({ editor }) => {
-        const setIsDirty = () => {
+        const compareContentForIsDirty = () => {
           if (this.isDirty) return
           const currentContent = editor.getHTML()
-          if (currentContent === STARTING_CONTENT) return
-          this.isDirty = currentContent !== note?.content
+          if (currentContent === NO_NOTE_CONTENT) {
+            this.isDirty = false
+            return
+          }
+          if (currentContent !== this.lastSavedContent) {
+            this.isDirty = true
+            this.lastSavedContent = currentContent
+          } else {
+            this.isDirty = false
+          }
         }
 
         const debounceSave = () => {
@@ -541,8 +565,10 @@ class Editor {
           }, 800)
         }
 
-        setIsDirty()
-        if (this.note) debounceSave()
+        compareContentForIsDirty()
+
+        const shouldSave = this.isDirty && !!this.note
+        if (shouldSave) debounceSave()
       },
       onTransaction: () => {
         /**
