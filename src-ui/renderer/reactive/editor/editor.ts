@@ -52,6 +52,7 @@ class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
   private isDirty = false
+  private saveTimer: NodeJS.Timeout | null = null
 
   private globalClickHandler: (event: MouseEvent) => void = () => {}
   private resizeObserver: ResizeObserver | null = null
@@ -521,10 +522,22 @@ class Editor {
       ],
       content: note?.content ?? STARTING_CONTENT,
       onUpdate: ({ editor }) => {
-        if (this.isDirty) return
-        const currentContent = editor.getHTML()
-        if (currentContent === STARTING_CONTENT) return
-        this.isDirty = currentContent !== note?.content
+        const setIsDirty = () => {
+          if (this.isDirty) return
+          const currentContent = editor.getHTML()
+          if (currentContent === STARTING_CONTENT) return
+          this.isDirty = currentContent !== note?.content
+        }
+
+        const debounceSave = () => {
+          if (this.saveTimer) clearTimeout(this.saveTimer)
+          this.saveTimer = setTimeout(() => {
+            createEvent(NoteEvents.Save).dispatch()
+          }, 800)
+        }
+
+        setIsDirty()
+        debounceSave()
       },
       onTransaction: () => {
         /**
