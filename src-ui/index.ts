@@ -194,21 +194,20 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
       if (note) noteDeleteDialog.render(note)
     }
 
-    // TODO:
-    // use an object instead of switch
-    switch (dialog) {
-      case DIALOGS.ABOUT:
+    const dialogHandlers: Record<string, () => Promise<void> | void> = {
+      [DIALOGS.ABOUT]: () => {
         console.log('RENDER ABOUT')
-        break
-      case DIALOGS.DATABASE:
+      },
+      [DIALOGS.DATABASE]: () => {
         databaseDialog.render()
-        break
-      case DIALOGS.DELETE:
-        noteId && (await openDeleteDialog())
-        break
-      default:
-        break
+      },
+      [DIALOGS.DELETE]: async () => {
+        if (noteId) await openDeleteDialog()
+      },
     }
+
+    const handler = dialogHandlers[dialog]
+    if (handler) await handler()
   }
 
   if (dialog === null) {
