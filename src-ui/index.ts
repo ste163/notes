@@ -1,10 +1,5 @@
 /**
- * TODO PRIORITY ORDER *
- *  - Title edit
- *      - cleanup styling
- *      - on hover show edit icon?
- *      - ENTER press saves when input is open (calls onBlur function)
- *
+ * TODO PRIORITY ORDER
  *  - Responsiveness
  *    - sidebar buttons need to have their width match the element (using JS)
  *

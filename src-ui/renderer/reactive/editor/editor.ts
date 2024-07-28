@@ -460,13 +460,11 @@ class Editor {
       if (!this.note) throw new Error('Note not set')
       let inputValue = this.note.title
 
-      // todo: use a custom input for this?
-      // because I DO NOT want a title here
-      // The layout CANNOT shift when we swap inputs
       const inputInstance = new Input({
         testId: 'edit-title-input',
         id: 'edit-title',
-        label: '', // TODO: consider how to handle this in an accessible way
+        label: 'Edit title',
+        isLabelHidden: true,
         placeholder: 'Note title',
         value: inputValue,
       })
@@ -489,7 +487,13 @@ class Editor {
           }).dispatch()
       }
 
-      // TODO: on ENTER click, call the onblur's function
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') input.blur() // This will trigger the onblur event
+
+        if (event.key === 'Escape')
+          // close input, and render title again
+          this.updateTitle(this.note?.title || 'Error')
+      })
 
       input.addEventListener('input', (event) => {
         if (!this.note) throw new Error('Note not set')
