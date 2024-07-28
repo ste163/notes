@@ -52,13 +52,28 @@ describe('flow', () => {
     // can edit the title
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should('have.value', 'My first note')
-    cy.get(locators.editTitle.input).type(' - updated')
-    // get the first child element of editor to trigger saving
-    cy.get(locators.editor.content).children().first().click()
+    cy.get(locators.editTitle.input).type(' - updated{enter}')
+    cy.wait(DEFAULT_WAIT)
 
-    // expect save notification from updating title rendered
     cy.get(locators.notification.save).should('exist')
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
+
+    // can attempt to update title but can hit escape to cancel
+    cy.get(locators.editTitle.button).click()
+    cy.get(locators.editTitle.input).should(
+      'have.value',
+      'My first note - updated'
+    )
+    cy.get(locators.editTitle.input).type(' - Do not save this!')
+    cy.get(locators.editTitle.input).type('{esc}')
+    cy.wait(DEFAULT_WAIT)
+    // the note update was cancelled
+    cy.get(locators.notification.save).should('not.exist')
+    cy.get(locators.editTitle.button).click()
+    cy.get(locators.editTitle.input).should(
+      'have.value',
+      'My first note - updated'
+    )
 
     // created note renders in sidebar
     cy.get(locators.sidebar.note).should('have.length', 1)
@@ -124,7 +139,7 @@ describe('flow', () => {
       'have.value',
       'My first note - updated'
     )
-    cy.get(locators.editor.content).click()
+    cy.get(locators.editTitle.input).type('{enter}')
 
     // validate the first content was loaded
     cy.validateContent('Lets add some content! Extra.')
@@ -133,8 +148,9 @@ describe('flow', () => {
     // because of the isDirty check to auto-save unsaved notes
     cy.get(locators.sidebar.note).eq(0).click()
     cy.get(locators.editTitle.button).click()
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.editTitle.input).should('have.value', 'My second note')
-    cy.get(locators.editor.content).click()
+    cy.get(locators.editTitle.input).type('{enter}')
     cy.validateContent('Second note content')
 
     // can delete a note
@@ -176,6 +192,7 @@ describe('flow', () => {
     // and the editor is still active
     cy.writeContent('More content! ')
     cy.validateContent('More content! Lets add some content! Extra.')
+    cy.wait(DEFAULT_WAIT)
 
     // can delete first note and the app is reset to the get started screen
     cy.get(locators.statusBar.delete).click()
@@ -195,6 +212,9 @@ describe('flow', () => {
     cy.get(locators.statusBar.savedOn).should('not.exist')
     cy.get(locators.sidebar.note).should('have.length', 0)
 
+    // no alerts have occurred
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.statusBar.alert).should('not.exist')
     // TODO
     //
     // FUTURE INFRASTRUCTURE DB SYNCING

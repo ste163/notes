@@ -12,6 +12,20 @@
   align-self: center;
   margin-top: 1rem;
   text-align: center;
+  height: 2rem;
+}
+
+#editor-title-container > .input-container {
+  width: 100vw;
+  max-width: 15rem;
+}
+
+#editor-title-container > .input-container > input {
+  /* Make the input more similar to the button */
+  font-weight: bold;
+  font-size: 0.85rem;
+  border-radius: 0.3rem;
+  border: none;
 }
 
 .editor-title,
@@ -24,6 +38,7 @@
   white-space: nowrap;
   overflow: hidden;
   padding: 0 0.4rem;
+  max-width: 50vw;
 }
 
 .editor-title-disabled {

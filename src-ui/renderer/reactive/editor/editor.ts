@@ -459,37 +459,45 @@ class Editor {
     const instantiateInput = () => {
       if (!this.note) throw new Error('Note not set')
       let inputValue = this.note.title
+      let isOnBlurSaveEnabled = true
 
-      // todo: use a custom input for this?
-      // because I DO NOT want a title here
-      // The layout CANNOT shift when we swap inputs
       const inputInstance = new Input({
         testId: 'edit-title-input',
         id: 'edit-title',
-        label: '', // TODO: consider how to handle this in an accessible way
+        label: 'Edit title',
+        isLabelHidden: true,
         placeholder: 'Note title',
         value: inputValue,
       })
 
       const input = inputInstance.getInput()
 
-      input.onblur = () => {
-        const isValueEmpty = inputValue?.trim() === ''
+      const attemptSaveOrReset = () => {
+        const hasValue = inputValue?.trim() !== ''
         const wasTitleChanged = this.note?.title !== inputValue
-
-        if (isValueEmpty || !wasTitleChanged)
-          // close input, and render title again
-          this.updateTitle(this.note?.title || 'Error')
-
-        const canUpdate = wasTitleChanged && !isValueEmpty
-
-        if (canUpdate)
-          createEvent(NoteEvents.UpdateTitle, {
-            title: inputValue.trim(),
-          }).dispatch()
+        const canUpdate = wasTitleChanged && hasValue
+        canUpdate
+          ? createEvent(NoteEvents.UpdateTitle, {
+              title: inputValue.trim(),
+            }).dispatch()
+          : this.updateTitle(this.note?.title || 'Error')
       }
 
-      // TODO: on ENTER click, call the onblur's function
+      input.onblur = () => isOnBlurSaveEnabled && attemptSaveOrReset()
+
+      input.addEventListener('keydown', ({ key }) => {
+        const keyMap: Record<string, () => void> = {
+          ['Enter']: () => {
+            isOnBlurSaveEnabled = false
+            attemptSaveOrReset()
+          },
+          ['Escape']: () => {
+            isOnBlurSaveEnabled = false
+            this.updateTitle(this.note?.title || 'Error')
+          },
+        }
+        keyMap[key] && keyMap[key]()
+      })
 
       input.addEventListener('input', (event) => {
         if (!this.note) throw new Error('Note not set')
@@ -538,6 +546,12 @@ class Editor {
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
       onUpdate: ({ editor }) => {
+        // TODO: the duplicating of editor content
+        // and checking is pretty heavy.
+        // Attempt to say: 'if there is an onUpdate, we're DIRTY'
+        // so then we can err on the side of save often
+        // instead of these extra checks
+
         const compareContentForIsDirty = () => {
           if (this.isDirty) return
           const currentContent = editor.getHTML()

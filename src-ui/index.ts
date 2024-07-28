@@ -1,9 +1,7 @@
 /**
- * TODO PRIORITY ORDER *
+ * TODO PRIORITY ORDER
  *  - Responsiveness
- *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
- *    - Cleanup the rendering for the Editor resize observer
  *
  *  - DATABASE DIALOG FORM:
  *     - Must have a way to STOP a connection attempt: cancel button in the status section
@@ -11,11 +9,8 @@
  *       Need to disable the submit if the full form hasn't been entered
  *       on CHANGE not just initial. If the form has been changed, updated
  *       the button copy from Reconnect to Connect (as it has changed)
+ *     - password input needs to be **** instead of not hidden
  *
- *  - Title edit
- *      - cleanup styling
- *      - on hover show edit icon (pencil?) = new functionality
- *      - ENTER press saves when input is open (calls onBlur function)
  *
  * - FEATURES
  *   - save cursor position to the note object so we can re-open at the correct location
@@ -23,14 +18,13 @@
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
+ *
  * - BRANDING
  *   - make favicon
- *   - make icons for desktop
+ *
  * - BUGS (which also need e2e tests)
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if unable to find data, need to be able to delete the undefined notes
- *
- *  - Add test reports for unit and e2e to readme
  *
  * - DATABASE INTERACTIONS
  *     Thoroughly manually test db scenarios:

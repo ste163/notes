@@ -6,6 +6,7 @@ interface InputOptions {
   label: string
   placeholder: string
   value?: string
+  isLabelHidden?: boolean
 }
 
 class Input {
@@ -13,13 +14,21 @@ class Input {
   private input: HTMLInputElement
   private label: HTMLLabelElement
 
-  constructor({ id, testId, label, placeholder, value }: InputOptions) {
+  constructor({
+    id,
+    testId,
+    label,
+    placeholder,
+    value,
+    isLabelHidden = false,
+  }: InputOptions) {
     this.container = document.createElement('div')
     this.container.classList.add('input-container')
 
     this.label = document.createElement('label')
     this.label.textContent = label
     this.label.htmlFor = id
+    if (isLabelHidden) this.label.classList.add('label-hidden')
     this.container.appendChild(this.label)
 
     this.input = document.createElement('input')
