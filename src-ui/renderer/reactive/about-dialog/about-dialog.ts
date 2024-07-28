@@ -8,8 +8,6 @@ import './about-dialog.css'
 class AboutDialog {
   private dialog: Dialog | null = null
 
-  // Use the same toggling and styling method as the Database Dialog developer console
-
   public render() {
     if (this.dialog) this.close()
     const dialogContent = document.createElement('div')
