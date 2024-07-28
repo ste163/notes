@@ -51,9 +51,8 @@ const NO_NOTE_CONTENT = `<h1>Get started</h1><p>Create or select a note from the
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
-  private isDirty = false
-  private lastSavedContent = '' // used to locally compare if the content has changed
   private saveTimer: NodeJS.Timeout | null = null
+  private isDirty = false
 
   private globalClickHandler: (event: MouseEvent) => void = () => {}
   private resizeObserver: ResizeObserver | null = null
@@ -116,8 +115,6 @@ class Editor {
     this.resetResizeObserver()
     resetContainers()
 
-    this.isDirty = false
-    this.lastSavedContent = this.note?.content ?? ''
     const tipTap = this.instantiateTipTap(this.note)
     if (tipTap) this.editor = tipTap
     this.renderMenu()
@@ -125,6 +122,7 @@ class Editor {
     // and only have the editor enabled if there is a note
     if (this.note) this.updateTitle(this.note.title)
     if (!this.note) this.setDisabled(true)
+    this.isDirty = false
   }
 
   public renderMenu(isDisabled = false) {
@@ -208,16 +206,6 @@ class Editor {
 
   public setIsDirty(isDirty: boolean) {
     this.isDirty = isDirty
-  }
-
-  /**
-   * Last Saved Content is used to compare
-   * currently typed content to check dirty state
-   * for auto-saving. Not using the Note object's
-   * content as setting a note triggers a full re-render.
-   */
-  public setLastSavedContent(content: string) {
-    this.lastSavedContent = content
   }
 
   public getContent() {
@@ -545,41 +533,17 @@ class Editor {
         }),
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
-      onUpdate: ({ editor }) => {
-        // TODO: the duplicating of editor content
-        // and checking is pretty heavy.
-        // Attempt to say: 'if there is an onUpdate, we're DIRTY'
-        // so then we can err on the side of save often
-        // instead of these extra checks
-
-        const compareContentForIsDirty = () => {
-          if (this.isDirty) return
-          const currentContent = editor.getHTML()
-          if (currentContent === NO_NOTE_CONTENT) {
-            this.isDirty = false
-            return
-          }
-          if (currentContent !== this.lastSavedContent) {
-            this.isDirty = true
-            this.lastSavedContent = currentContent
-          } else {
-            this.isDirty = false
-          }
-        }
-
+      onUpdate: ({ transaction }) => {
+        this.isDirty = transaction.docChanged
         const debounceSave = () => {
           if (this.saveTimer) clearTimeout(this.saveTimer)
           this.saveTimer = setTimeout(() => {
             createEvent(NoteEvents.Save, {
               shouldShowNotification: false,
             }).dispatch()
-          }, 500)
+          }, 300)
         }
-
-        compareContentForIsDirty()
-
-        const shouldSave = this.isDirty && !!this.note
-        if (shouldSave) debounceSave()
+        if (this.isDirty) debounceSave()
       },
       onTransaction: () => {
         /**

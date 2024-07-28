@@ -11,10 +11,10 @@
  *       the button copy from Reconnect to Connect (as it has changed)
  *     - password input needs to be **** instead of not hidden
  *
- *
  * - FEATURES
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
+ *   - right click a note allows you to delete it from the sidebar.
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
@@ -24,7 +24,6 @@
  *
  * - BUGS (which also need e2e tests)
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
- *    - if unable to find data, need to be able to delete the undefined notes
  *
  * - DATABASE INTERACTIONS
  *     Thoroughly manually test db scenarios:
@@ -286,8 +285,8 @@ window.addEventListener(NoteEvents.Create, async (event) => {
 
 window.addEventListener(NoteEvents.Save, async (event) => {
   try {
-    const shouldShowNotification = (event as CustomEvent)?.detail
-      ?.shouldShowNotification
+    const detail = (event as CustomEvent)?.detail
+    const shouldShowNotification = detail?.shouldShowNotification
     const { updatedAt } = await saveNote()
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
@@ -451,7 +450,9 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
   // to the save event
   if (event.ctrlKey && event.key === 's') {
     event.preventDefault() // prevent default save behavior
-    createEvent(NoteEvents.Save).dispatch()
+    createEvent(NoteEvents.Save, {
+      shouldShowNotification: true,
+    }).dispatch()
   }
 })
 
@@ -473,7 +474,6 @@ async function saveNote() {
   })
   logger.log('info', `Note saved: ${note.title}.`)
   editor.setIsDirty(false)
-  editor.setLastSavedContent(content)
   return {
     ...note,
     content,

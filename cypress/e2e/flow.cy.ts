@@ -144,8 +144,7 @@ describe('flow', () => {
     // validate the first content was loaded
     cy.validateContent('Lets add some content! Extra.')
 
-    // select the second note renders its content
-    // because of the isDirty check to auto-save unsaved notes
+    // auto saving works
     cy.get(locators.sidebar.note).eq(0).click()
     cy.get(locators.editTitle.button).click()
     cy.wait(DEFAULT_WAIT)
