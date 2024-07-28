@@ -546,6 +546,12 @@ class Editor {
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
       onUpdate: ({ editor }) => {
+        // TODO: the duplicating of editor content
+        // and checking is pretty heavy.
+        // Attempt to say: 'if there is an onUpdate, we're DIRTY'
+        // so then we can err on the side of save often
+        // instead of these extra checks
+
         const compareContentForIsDirty = () => {
           if (this.isDirty) return
           const currentContent = editor.getHTML()
