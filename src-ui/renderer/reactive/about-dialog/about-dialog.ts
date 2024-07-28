@@ -2,6 +2,7 @@ import { DIALOGS } from 'const'
 import { Dialog, Button } from 'components'
 import pkg from '../../../../package.json'
 import { markdown as agplLicense } from '../../../../LICENSE.md'
+import { markdown as apacheLicense } from '../../../../apache-license.md'
 import './about-dialog.css'
 
 class AboutDialog {
@@ -38,7 +39,10 @@ class AboutDialog {
           <p>
             Tauri, PouchDb, and Remix Icons are all licensed under the Apache License 2.0 or MIT.
           </p>
-        <button>View Apache 2.0 License</button>
+        <div>
+          <div id='other-license-button'></div>
+          <div id='other-license-block-container'></div>
+        </div>
       </div>`
 
     this.dialog = new Dialog()
@@ -49,8 +53,8 @@ class AboutDialog {
     })
     this.dialog.open()
 
-    // it's on the DOM, so we can add the buttons
     this.renderNotesLicense()
+    this.renderOtherLicense()
   }
 
   public close() {
@@ -74,16 +78,43 @@ class AboutDialog {
           const isAlreadyOnDOM = document.querySelector('#notes-license-block')
           isAlreadyOnDOM
             ? (container.innerHTML = '')
-            : this.renderLicenseBlock(container, agplLicense)
+            : this.renderLicenseBlock(
+                'notes-license-block',
+                container,
+                agplLicense
+              )
         },
       }).getElement()
     )
   }
 
-  private renderLicenseBlock(element: Element, license: string) {
+  private renderOtherLicense() {
+    document.querySelector('#other-license-button')?.appendChild(
+      new Button({
+        title: 'View Apache 2.0 License',
+        html: 'View Apache 2.0 License',
+        onClick: () => {
+          const container = document.querySelector(
+            '#other-license-block-container'
+          )
+          if (!container) return
+          const isAlreadyOnDOM = document.querySelector('#other-license-block')
+          isAlreadyOnDOM
+            ? (container.innerHTML = '')
+            : this.renderLicenseBlock(
+                'other-license-block',
+                container,
+                apacheLicense
+              )
+        },
+      }).getElement()
+    )
+  }
+
+  private renderLicenseBlock(id: string, element: Element, license: string) {
     element.innerHTML = '' // reset container
     const licenseBlock = document.createElement('div')
-    licenseBlock.id = 'notes-license-block'
+    licenseBlock.id = id
     licenseBlock.classList.add('code-block')
     licenseBlock.innerHTML = license
     element.appendChild(licenseBlock)

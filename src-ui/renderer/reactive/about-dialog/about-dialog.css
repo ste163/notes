@@ -10,7 +10,8 @@
   }
 }
 
-#notes-license-block {
+#notes-license-block,
+#other-license-block {
   display: block;
   margin-top: 1rem;
   font-size: smaller;
