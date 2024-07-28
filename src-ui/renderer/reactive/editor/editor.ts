@@ -487,12 +487,12 @@ class Editor {
           }).dispatch()
       }
 
-      input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') input.blur() // This will trigger the onblur event
-
-        if (event.key === 'Escape')
-          // close input, and render title again
-          this.updateTitle(this.note?.title || 'Error')
+      input.addEventListener('keydown', ({ key }) => {
+        const keyMap: Record<string, () => void> = {
+          ['Enter']: () => input.blur(),
+          ['Escape']: () => this.updateTitle(this.note?.title || 'Error'),
+        }
+        keyMap[key] && keyMap[key]()
       })
 
       input.addEventListener('input', (event) => {
