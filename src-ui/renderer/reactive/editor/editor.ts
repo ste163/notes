@@ -51,8 +51,6 @@ const NO_NOTE_CONTENT = `<h1>Get started</h1><p>Create or select a note from the
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
-  private isDirty = false
-  private lastSavedContent = '' // used to locally compare if the content has changed
   private saveTimer: NodeJS.Timeout | null = null
 
   private globalClickHandler: (event: MouseEvent) => void = () => {}
@@ -116,8 +114,6 @@ class Editor {
     this.resetResizeObserver()
     resetContainers()
 
-    this.isDirty = false
-    this.lastSavedContent = this.note?.content ?? ''
     const tipTap = this.instantiateTipTap(this.note)
     if (tipTap) this.editor = tipTap
     this.renderMenu()
@@ -202,29 +198,20 @@ class Editor {
     ellipsisPopOut?.appendChild(this.editorMenuEllipsisContainer)
   }
 
-  public getIsDirty() {
-    return this.isDirty
-  }
-
-  public setIsDirty(isDirty: boolean) {
-    this.isDirty = isDirty
-  }
-
-  /**
-   * Last Saved Content is used to compare
-   * currently typed content to check dirty state
-   * for auto-saving. Not using the Note object's
-   * content as setting a note triggers a full re-render.
-   */
-  public setLastSavedContent(content: string) {
-    this.lastSavedContent = content
-  }
-
   public getContent() {
     return this.editor?.getHTML() ?? ''
   }
 
+  // TODO:
+  // when selecting a note, always save the previous note
+  // but this means we need to wait for an event.
   public setNote(note: Note | null) {
+    if (note !== null) {
+      console.log('SAVE ME!', note.title)
+      createEvent(NoteEvents.Save, {
+        shouldShowNotification: false,
+      }).dispatch()
+    }
     this.note = note
     this.render()
   }
@@ -545,41 +532,21 @@ class Editor {
         }),
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
-      onUpdate: ({ editor }) => {
-        // TODO: the duplicating of editor content
-        // and checking is pretty heavy.
-        // Attempt to say: 'if there is an onUpdate, we're DIRTY'
-        // so then we can err on the side of save often
-        // instead of these extra checks
-
-        const compareContentForIsDirty = () => {
-          if (this.isDirty) return
-          const currentContent = editor.getHTML()
-          if (currentContent === NO_NOTE_CONTENT) {
-            this.isDirty = false
-            return
-          }
-          if (currentContent !== this.lastSavedContent) {
-            this.isDirty = true
-            this.lastSavedContent = currentContent
-          } else {
-            this.isDirty = false
-          }
-        }
-
+      onUpdate: () => {
+        // TODO: need a simpler isDirty state. Why?
+        // opening and closing dialogs triggers an update
+        //
+        // I want to err on the side of more saves, but this is too much
+        console.log('update happened')
         const debounceSave = () => {
           if (this.saveTimer) clearTimeout(this.saveTimer)
           this.saveTimer = setTimeout(() => {
             createEvent(NoteEvents.Save, {
               shouldShowNotification: false,
             }).dispatch()
-          }, 500)
+          }, 300)
         }
-
-        compareContentForIsDirty()
-
-        const shouldSave = this.isDirty && !!this.note
-        if (shouldSave) debounceSave()
+        debounceSave()
       },
       onTransaction: () => {
         /**
