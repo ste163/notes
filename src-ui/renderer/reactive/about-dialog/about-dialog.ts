@@ -19,18 +19,21 @@ class AboutDialog {
           To view information on the latest release,
           visit the <a target="_blank" href="https://github.com/ste163/notes/releases" >project's github repository</a>.
           It is licensed under the <strong>AGPL-3.0</strong>.
-          <button>View AGPL-3.0 License</button>
         </p>
-        <h3>Other open source projects</h3>
+        <button>View AGPL-3.0 License</button>
+        <h3>Open source licenses</h3>
         <p>
             Notes would not be possible without the following open source projects:
-            <ul>
-                <li>TipTap (writing editor)</li>
-                <li>PouchDb (cloud-syncing database)</li>
-                <li>Tauri (desktop and mobile application support)</li>
-            </ul>
-            Tauri, PouchDb, and the icon pack from Remix Icons are all licensed under the Apache License 2.0 or MIT.
         </p>
+          <ul>
+              <li>PouchDb (cloud-syncing database)</li>
+              <li>Remix Icons (icon pack)</li>
+              <li>Tauri (desktop and mobile application support)</li>
+              <li>TipTap (writing editor)</li>
+          </ul>
+          <p>
+            Tauri, PouchDb, and Remix Icons are all licensed under the Apache License 2.0 or MIT.
+          </p>
         <button>View Apache 2.0 License</button>
       </div>`
 
