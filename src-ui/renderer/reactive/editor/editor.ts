@@ -384,11 +384,6 @@ class Editor {
       // TODO: resize very long titles and the title input
     }
 
-    // TODO: debouncing DOES create a rendering bug however: when selecting a note, the editor re-renders
-    // the menu! It flashes! So to fix this, we do not re-render the menu bar when selecting a note
-    // on the title and the content get updated (along with cursor location, but that's fine).
-    // it comes back to the idea of state vs render
-
     // must debounce the resize handler by some amount or else e2e fails
     const debouncedResizeHandler = debounce(handleResize, 5)
     this.resizeObserver = new ResizeObserver(debouncedResizeHandler)

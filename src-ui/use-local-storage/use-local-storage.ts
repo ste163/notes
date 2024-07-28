@@ -44,9 +44,9 @@ class UseLocalStorage {
     isValid
       ? window.localStorage.setItem(key, JSON.stringify(object))
       : logger.log(
+          'error',
           `Invalid ${key}. Attempted to set local storage with: ` +
-            JSON.stringify(object),
-          'error'
+            JSON.stringify(object)
         )
   }
 

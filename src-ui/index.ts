@@ -17,11 +17,6 @@
  *      - on hover show edit icon (pencil?) = new functionality
  *      - ENTER press saves when input is open (calls onBlur function)
  *
- *  - Move all console.logs and console.errors to the logger()
- *    so that all interactions with the database are logged
- *      - fetches, errors, saves, deletes, etc.
- *      - if possible, add eslint rule to enforce this
- *
  * - FEATURES
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
@@ -111,7 +106,7 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
     if (dialog)
       createEvent(LifeCycleEvents.QueryParamUpdate, { dialog }).dispatch()
   } catch (error) {
-    logger.log('Error in LifeCycleEvents.Init.', 'error', error)
+    logger.log('error', 'Error in LifeCycleEvents.Init.', error)
   }
 })
 
@@ -246,17 +241,10 @@ window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     const notes = await database.getAll()
     const { noteId } = urlController.getParams()
-    // TODO: if no notes, then emit a new event
-    // to handle that state so that we can reset the UI
-    // TODO: only renderNoteList if there are notes
-    // OR, we have a more generic method for supplying updated notes
-    // to the note list
     sidebar.renderNoteList(notes)
     if (noteId) sidebar.setActiveNote(noteId)
   } catch (error) {
-    // TODO: WOULD BE NICE to have a custom eslint rule that does:
-    // - if you are using console.error, say it's an error and say you need to use logger
-    logger.log('Error fetching all notes', 'error', error)
+    logger.log('error', 'Error fetching all notes', error)
   }
 })
 
@@ -276,6 +264,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     if (note) {
       sidebar.setActiveNote(note?._id)
       statusBar.renderSavedOn(new Date(note?.updatedAt).toLocaleString())
+      logger.log('info', `Note selected: ${note.title}`)
     }
 
     statusBar.renderActiveNote(note)
@@ -284,7 +273,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 
     createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
-    logger.log('Error selecting note.', 'error', error)
+    logger.log('error', 'Error selecting note.', error)
   }
 })
 
@@ -295,8 +284,9 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     sidebar.closeInput()
     if (isMobile) sidebar.close()
     createEvent(LifeCycleEvents.QueryParamUpdate, { noteId: _id }).dispatch()
+    logger.log('info', `Note created: ${title}.`)
   } catch (error) {
-    logger.log('Error creating note.', 'error', error)
+    logger.log('error', 'Error creating note.', error)
   }
 })
 
@@ -310,7 +300,7 @@ window.addEventListener(NoteEvents.Save, async (event) => {
     if (shouldShowNotification)
       createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
-    logger.log('Error saving note.', 'error', error)
+    logger.log('error', 'Error saving note.', error)
   }
 })
 
@@ -326,10 +316,11 @@ window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     statusBar.renderActiveNote(updatedNote)
     editor.setNote({ ...updatedNote, updatedAt })
+    logger.log('info', `Updated note title to ${title}`)
     createEvent(NoteEvents.GetAll).dispatch()
     createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
-    logger.log('Error updating note title.', 'error', error)
+    logger.log('error', 'Error updating note title.', error)
   }
 })
 
@@ -337,7 +328,7 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
   try {
     const note = (event as CustomEvent)?.detail?.note as Note
     await database.delete(note)
-    logger.log(`Note deleted: ${note.title}`, 'info')
+    logger.log('info', `Note deleted: ${note.title}`)
     createEvent(LifeCycleEvents.QueryParamUpdate, {
       noteId: null,
     }).dispatch()
@@ -345,7 +336,7 @@ window.addEventListener(NoteEvents.Delete, async (event) => {
     // as the dialog close event handles the URL update
     noteDeleteDialog.close()
   } catch (error) {
-    logger.log('Error deleting note.', 'error', error)
+    logger.log('error', 'Error deleting note.', error)
   }
 })
 
@@ -364,7 +355,6 @@ window.addEventListener(DatabaseEvents.Connecting, () => {
 })
 
 window.addEventListener(DatabaseEvents.ConnectingError, () => {
-  // TODO: consider after testing: should probably update text to say "Unable to connect"
   statusBar.setIsConnected(false)
   statusBar.setIsConnecting(false)
   statusBar.renderRemoteDb()
@@ -425,8 +415,6 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   )
 
   const dialogTitle = (event as CustomEvent)?.detail?.dialog as string
-  // TODO: dialog titles need to be a const so I can do safer checks
-  //
   // clear alert from status bar if the user is opening the db dialog
   // as that contains the alert information
   if (dialogTitle === 'database') statusBar.renderErrorAlert(false)
@@ -489,6 +477,7 @@ async function saveNote() {
     ...note,
     content,
   })
+  logger.log('info', `Note saved: ${note.title}.`)
   editor.setIsDirty(false)
   editor.setLastSavedContent(content)
   return {
