@@ -459,6 +459,7 @@ class Editor {
     const instantiateInput = () => {
       if (!this.note) throw new Error('Note not set')
       let inputValue = this.note.title
+      let isOnBlurSaveEnabled = true
 
       const inputInstance = new Input({
         testId: 'edit-title-input',
@@ -471,26 +472,29 @@ class Editor {
 
       const input = inputInstance.getInput()
 
-      input.onblur = () => {
-        const isValueEmpty = inputValue?.trim() === ''
+      const attemptSaveOrReset = () => {
+        const hasValue = inputValue?.trim() !== ''
         const wasTitleChanged = this.note?.title !== inputValue
-
-        if (isValueEmpty || !wasTitleChanged)
-          // close input, and render title again
-          this.updateTitle(this.note?.title || 'Error')
-
-        const canUpdate = wasTitleChanged && !isValueEmpty
-
-        if (canUpdate)
-          createEvent(NoteEvents.UpdateTitle, {
-            title: inputValue.trim(),
-          }).dispatch()
+        const canUpdate = wasTitleChanged && hasValue
+        canUpdate
+          ? createEvent(NoteEvents.UpdateTitle, {
+              title: inputValue.trim(),
+            }).dispatch()
+          : this.updateTitle(this.note?.title || 'Error')
       }
+
+      input.onblur = () => isOnBlurSaveEnabled && attemptSaveOrReset()
 
       input.addEventListener('keydown', ({ key }) => {
         const keyMap: Record<string, () => void> = {
-          ['Enter']: () => input.blur(),
-          ['Escape']: () => this.updateTitle(this.note?.title || 'Error'),
+          ['Enter']: () => {
+            isOnBlurSaveEnabled = false
+            attemptSaveOrReset()
+          },
+          ['Escape']: () => {
+            isOnBlurSaveEnabled = false
+            this.updateTitle(this.note?.title || 'Error')
+          },
         }
         keyMap[key] && keyMap[key]()
       })

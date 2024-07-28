@@ -52,27 +52,28 @@ describe('flow', () => {
     // can edit the title
     cy.get(locators.editTitle.button).click()
     cy.get(locators.editTitle.input).should('have.value', 'My first note')
-    cy.get(locators.editTitle.input).type(' - updated')
-    cy.get(locators.editTitle.input).type('{enter}')
-
-    // can attempt to update title but can hit escape to cancel
+    cy.get(locators.editTitle.input).type(' - updated{enter}')
     cy.wait(DEFAULT_WAIT)
-    cy.get(locators.editTitle.button).click()
-    cy.get(locators.editTitle.input).should(
-      'have.value',
-      'My first note - updated'
-    )
-    cy.get(locators.editTitle.input).type(' - updated again')
-    cy.get(locators.editTitle.input).type('{esc}')
-    cy.get(locators.editTitle.button).click()
-    cy.get(locators.editTitle.input).should(
-      'have.value',
-      'My first note - updated'
-    )
 
-    // expect save notification from updating title rendered
     cy.get(locators.notification.save).should('exist')
     cy.get(locators.notification.save).should('not.exist') // wait for it to disappear
+
+    // can attempt to update title but can hit escape to cancel
+    cy.get(locators.editTitle.button).click()
+    cy.get(locators.editTitle.input).should(
+      'have.value',
+      'My first note - updated'
+    )
+    cy.get(locators.editTitle.input).type(' - Do not save this!')
+    cy.get(locators.editTitle.input).type('{esc}')
+    cy.wait(DEFAULT_WAIT)
+    // the note update was cancelled
+    cy.get(locators.notification.save).should('not.exist')
+    cy.get(locators.editTitle.button).click()
+    cy.get(locators.editTitle.input).should(
+      'have.value',
+      'My first note - updated'
+    )
 
     // created note renders in sidebar
     cy.get(locators.sidebar.note).should('have.length', 1)
@@ -147,6 +148,7 @@ describe('flow', () => {
     // because of the isDirty check to auto-save unsaved notes
     cy.get(locators.sidebar.note).eq(0).click()
     cy.get(locators.editTitle.button).click()
+    cy.wait(DEFAULT_WAIT)
     cy.get(locators.editTitle.input).should('have.value', 'My second note')
     cy.get(locators.editTitle.input).type('{enter}')
     cy.validateContent('Second note content')
