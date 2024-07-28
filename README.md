@@ -1,5 +1,7 @@
 # notes
 
+[![browser-e2e-tests](https://github.com/ste163/notes/actions/workflows/run-e2e.yml/badge.svg)](https://github.com/ste163/notes/actions/workflows/run-e2e.yml) [![frontend-unit-tests](https://github.com/ste163/notes/actions/workflows/run-unit-tests.yml/badge.svg)](https://github.com/ste163/notes/actions/workflows/run-unit-tests.yml)
+
 A minimal note-taking application for Linux, Mac, Windows, and browsers. Supports cloud syncing through [PouchDB](https://pouchdb.com/). For a simple, self-hosted remote database setup, see the [couchdb-docker repo](https://github.com/ste163/couchdb-docker).
 
 TODO: INSERT IMAGE OF APPLICATION HERE

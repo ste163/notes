@@ -26,9 +26,6 @@
  *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
  *    - if unable to find data, need to be able to delete the undefined notes
  *
- *  - DEV
- *    - Add test reports for unit and e2e to readme
- *
  * - DATABASE INTERACTIONS
  *     Thoroughly manually test db scenarios:
  *
