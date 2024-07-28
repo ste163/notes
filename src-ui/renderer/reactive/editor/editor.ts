@@ -561,8 +561,10 @@ class Editor {
         const debounceSave = () => {
           if (this.saveTimer) clearTimeout(this.saveTimer)
           this.saveTimer = setTimeout(() => {
-            createEvent(NoteEvents.Save).dispatch()
-          }, 800)
+            createEvent(NoteEvents.Save, {
+              shouldShowNotification: false,
+            }).dispatch()
+          }, 500)
         }
 
         compareContentForIsDirty()

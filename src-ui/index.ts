@@ -305,12 +305,15 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   }
 })
 
-window.addEventListener(NoteEvents.Save, async () => {
+window.addEventListener(NoteEvents.Save, async (event) => {
   try {
+    const shouldShowNotification = (event as CustomEvent)?.detail
+      ?.shouldShowNotification
     const { updatedAt } = await saveNote()
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
-    createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
+    if (shouldShowNotification)
+      createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
     logger.log('Error saving note.', 'error', error)
   }

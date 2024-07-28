@@ -42,7 +42,9 @@ describe('status-bar', () => {
     expect(deleteButton).toBeEnabled()
 
     await userEvent.click(saveButton)
-    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Save)
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Save, {
+      shouldShowNotification: true,
+    })
 
     await userEvent.click(deleteButton)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(

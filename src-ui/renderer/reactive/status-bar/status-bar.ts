@@ -182,7 +182,9 @@ class StatusBar {
       testId: 'save-note',
       title: 'Save note',
       html: saveIcon,
-      onClick: createEvent(NoteEvents.Save)?.dispatch,
+      onClick: createEvent(NoteEvents.Save, {
+        shouldShowNotification: true,
+      })?.dispatch,
     })
     saveButton.setEnabled(!!note)
     container?.appendChild(saveButton.getElement())

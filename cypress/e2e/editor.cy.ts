@@ -149,7 +149,7 @@ describe('editor', () => {
 
     // wait a bit for the save notification to appear
     cy.wait(DEFAULT_WAIT)
-    cy.get(locators.notification.save).should('exist')
+    cy.wait(DEFAULT_WAIT)
 
     // because debounced saved, reloading the page should render the same note
     cy.reload()

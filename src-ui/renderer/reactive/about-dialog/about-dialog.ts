@@ -9,16 +9,17 @@ class AboutDialog {
   public render() {
     if (this.dialog) this.close()
     const dialogContent = document.createElement('div')
-
     dialogContent.innerHTML = `
       <div class='about-container'>
         <h3>notes v${pkg.version}</h3>
-        <p>Notes is a free and open source writing application.
-        It is licensed under the <strong>AGPL-3.0</strong>.
-        To view information on the latest release,
-        visit the <a target="_blank" href="https://github.com/ste163/notes/releases" >project's github repository</a>.</p>
-        <button>View AGPL-3.0 License</button>
-        <h3>Other open source licenses</h3>
+        <p>
+          Notes is a free and open source writing application.
+          To view information on the latest release,
+          visit the <a target="_blank" href="https://github.com/ste163/notes/releases" >project's github repository</a>.
+          It is licensed under the <strong>AGPL-3.0</strong>.
+          <button>View AGPL-3.0 License</button>
+        </p>
+        <h3>Other open source projects</h3>
         <p>
             Notes would not be possible without the following open source projects:
             <ul>
