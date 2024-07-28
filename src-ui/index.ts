@@ -241,16 +241,9 @@ window.addEventListener(NoteEvents.GetAll, async () => {
   try {
     const notes = await database.getAll()
     const { noteId } = urlController.getParams()
-    // TODO: if no notes, then emit a new event
-    // to handle that state so that we can reset the UI
-    // TODO: only renderNoteList if there are notes
-    // OR, we have a more generic method for supplying updated notes
-    // to the note list
     sidebar.renderNoteList(notes)
     if (noteId) sidebar.setActiveNote(noteId)
   } catch (error) {
-    // TODO: WOULD BE NICE to have a custom eslint rule that does:
-    // - if you are using console.error, say it's an error and say you need to use logger
     logger.log('error', 'Error fetching all notes', error)
   }
 })
@@ -422,8 +415,6 @@ window.addEventListener(DialogEvents.Opened, (event) => {
   )
 
   const dialogTitle = (event as CustomEvent)?.detail?.dialog as string
-  // TODO: dialog titles need to be a const so I can do safer checks
-  //
   // clear alert from status bar if the user is opening the db dialog
   // as that contains the alert information
   if (dialogTitle === 'database') statusBar.renderErrorAlert(false)
