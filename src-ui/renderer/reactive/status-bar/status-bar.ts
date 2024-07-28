@@ -8,6 +8,7 @@ import {
   saveIcon,
 } from 'icons'
 import { createEvent, LifeCycleEvents, NoteEvents } from 'event'
+import { DIALOGS } from 'const'
 import { urlController } from 'url-controller'
 import pkg from '../../../../package.json'
 import type { Note } from 'types'
@@ -33,7 +34,7 @@ class StatusBar {
         <div id='status-bar-saved-on' class='status-bar-date status-bar-hide-on-mobile'></div>
         <div id='status-bar-save'></div>
         <div id='status-bar-delete'></div>
-        <div>v${pkg.version}</div>
+        <div id='status-bar-about'></div>
       </div>`
 
     const sidebarContainer = document.querySelector('#sidebar-container')
@@ -52,6 +53,7 @@ class StatusBar {
         style: { border: 'none' },
       }).getElement()
     )
+    this.renderAbout()
   }
 
   public setIsConnecting(isConnecting: boolean) {
@@ -81,6 +83,22 @@ class StatusBar {
     )
   }
 
+  public renderAbout() {
+    const container = document.querySelector('#status-bar-about')
+    if (container) container.innerHTML = ''
+    container?.appendChild(
+      new Button({
+        testId: 'about',
+        title: 'About',
+        onClick: () =>
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
+            dialog: DIALOGS.ABOUT,
+          })?.dispatch(),
+        html: `v${pkg.version}`,
+      }).getElement()
+    )
+  }
+
   public renderRemoteDb() {
     const container = document.querySelector('#remote-db-setup-container')
     if (container) container.innerHTML = ''
@@ -99,7 +117,7 @@ class StatusBar {
         `,
         onClick: () =>
           createEvent(LifeCycleEvents.QueryParamUpdate, {
-            dialog: 'database',
+            dialog: DIALOGS.DATABASE,
           })?.dispatch(),
       }).getElement()
     )
@@ -151,7 +169,7 @@ class StatusBar {
         `,
         onClick: () =>
           createEvent(LifeCycleEvents.QueryParamUpdate, {
-            dialog: 'database',
+            dialog: DIALOGS.DATABASE,
           })?.dispatch(),
       }).getElement()
     )
@@ -164,7 +182,9 @@ class StatusBar {
       testId: 'save-note',
       title: 'Save note',
       html: saveIcon,
-      onClick: createEvent(NoteEvents.Save)?.dispatch,
+      onClick: createEvent(NoteEvents.Save, {
+        shouldShowNotification: true,
+      })?.dispatch,
     })
     saveButton.setEnabled(!!note)
     container?.appendChild(saveButton.getElement())
@@ -179,7 +199,7 @@ class StatusBar {
       html: deleteIcon,
       onClick: () =>
         createEvent(LifeCycleEvents.QueryParamUpdate, {
-          dialog: 'delete',
+          dialog: DIALOGS.DELETE,
         })?.dispatch(),
     })
     settingsButton.setEnabled(!!note)

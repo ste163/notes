@@ -54,3 +54,20 @@
   max-height: 60vh;
   max-width: 85vw;
 }
+
+.dialog-content h3 {
+  font-size: inherit;
+  line-height: normal;
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.dialog-content p {
+  font-size: smaller;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.dialog-content ul {
+  font-size: smaller;
+}

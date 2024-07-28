@@ -35,7 +35,7 @@ This application structure allows for real-time data syncing and a SPA-like user
 
 ```mermaid
 flowchart LR
-    subgraph Docker Container (Optional)
+    subgraph Optional Docker Container
       A[(PouchDb instance)]
     end
 
@@ -86,8 +86,3 @@ cargo update
 
 - Trigger re-build of Github Pages
 - Trigger Tauri build
-
-# credits: Remix Icons
-
-(TODO: before releasing app, need to properly share the license)
-https://remixicon.com/license

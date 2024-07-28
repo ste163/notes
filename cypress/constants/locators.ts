@@ -4,6 +4,12 @@ export const locators = {
     deleteDialog: {
       confirmButton: '[data-testid="delete-forever"]',
     },
+    about: {
+      agplButton: '[data-testid="view-agpl"]',
+      agplContent: '[data-testid="agpl-license-block"]',
+      apacheButton: '[data-testid="view-apache"]',
+      apacheContent: '[data-testid="apache-license-block"]',
+    },
   },
   editor: {
     content: '#editor',
@@ -33,6 +39,7 @@ export const locators = {
     resizeHandle: '[data-testid="sidebar-resize-handle"]',
   },
   statusBar: {
+    about: '[data-testid="about"]',
     alert: '[data-testid="alert-error"]',
     database: '[data-testid="setup-database"]',
     delete: '[data-testid="delete-note"]',

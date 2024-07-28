@@ -1,0 +1,25 @@
+.about-container {
+  display: flex;
+  flex-direction: column;
+  width: 30rem;
+}
+
+@media (max-width: 640px) {
+  .about-container {
+    max-width: 19rem;
+  }
+}
+
+#agpl-license-block,
+#apache-license-block {
+  display: block;
+  margin-top: 1rem;
+  font-size: smaller;
+  line-height: normal;
+  padding: 1rem;
+  height: 15rem;
+  white-space: pre-wrap; /* Preserve line breaks and whitespace */
+
+  overflow-y: auto;
+  overflow-x: scroll;
+}

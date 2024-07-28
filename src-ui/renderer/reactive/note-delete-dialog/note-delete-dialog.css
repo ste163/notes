@@ -2,18 +2,5 @@
   display: flex;
   flex-direction: column;
   width: 100vw;
-  max-width: 15rem;
-}
-
-.note-delete-container h3 {
-  font-size: inherit;
-  line-height: normal;
-  margin-top: 0.75rem;
-  margin-bottom: 0.25rem;
-}
-
-.note-delete-container p {
-  font-size: smaller;
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  max-width: 17rem;
 }

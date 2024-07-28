@@ -22,9 +22,6 @@
  *      - fetches, errors, saves, deletes, etc.
  *      - if possible, add eslint rule to enforce this
  *
- *  - Include the Remix icons apache license AND pouchdb AND tauri in the repo and as a 'legal/about' button (or i icon next to the version number) that renders a dialog in the statusBar
- *      - could include info about the application, its version, its license and the remix icon license
- *
  * - FEATURES
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
@@ -61,6 +58,7 @@ import {
   createEvent,
 } from 'event'
 import {
+  AboutDialog,
   DatabaseDialog,
   Editor,
   NoteDeleteDialog,
@@ -69,12 +67,14 @@ import {
 } from 'renderer/reactive'
 import { urlController } from 'url-controller'
 import { logger } from 'logger'
+import { DIALOGS, PARAMS } from 'const'
 import type { Note } from 'types'
 
 let isMobile: boolean
 
-const editor = new Editor()
+const aboutDialog = new AboutDialog()
 const databaseDialog = new DatabaseDialog()
+const editor = new Editor()
 const noteDeleteDialog = new NoteDeleteDialog()
 const sidebar = new Sidebar()
 const statusBar = new StatusBar()
@@ -154,7 +154,7 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
       sidebar.close()
     }
 
-    urlController.setParam('sidebar', sidebarParam)
+    urlController.setParam(PARAMS.SIDEBAR, sidebarParam)
     sidebarParam === 'open' ? openSidebar() : closeSidebar()
   }
 
@@ -170,19 +170,19 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
   // then selecting a new note
   if (noteId) {
     if (editor.getIsDirty()) await saveNote()
-    urlController.setParam('noteId', noteId)
+    urlController.setParam(PARAMS.NOTE_ID, noteId)
     createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
   }
 
   if (noteId === null) {
-    urlController.removeParam('noteId')
+    urlController.removeParam(PARAMS.NOTE_ID)
     createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
   }
 
   if (dialog) {
     const { noteId } = urlController.getParams()
-    urlController.setParam('dialog', dialog)
+    urlController.setParam(PARAMS.DIALOG, dialog)
 
     const openDeleteDialog = async () => {
       const { noteId } = urlController.getParams()
@@ -191,26 +191,28 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
       if (note) noteDeleteDialog.render(note)
     }
 
-    // TODO: use consts from dialog class
-    // use an object instead of switch
-    switch (dialog) {
-      case 'delete':
-        noteId && (await openDeleteDialog())
-        break
-      case 'database':
+    const dialogHandlers: Record<string, () => Promise<void> | void> = {
+      [DIALOGS.ABOUT]: () => {
+        aboutDialog.render()
+      },
+      [DIALOGS.DATABASE]: () => {
         databaseDialog.render()
-        break
-      default:
-        break
+      },
+      [DIALOGS.DELETE]: async () => {
+        if (noteId) await openDeleteDialog()
+      },
     }
+    const handler = dialogHandlers[dialog]
+    if (handler) await handler()
   }
 
   if (dialog === null) {
     const { noteId } = urlController.getParams()
-    urlController.removeParam('dialog')
+    urlController.removeParam(PARAMS.DIALOG)
     // clear the local state of the dialogs
     noteDeleteDialog.clear()
     databaseDialog.clear()
+    aboutDialog.clear()
     // editor is enabled again as the dialog has closed
     if (noteId) editor.setDisabled(false)
   }
@@ -298,12 +300,15 @@ window.addEventListener(NoteEvents.Create, async (event) => {
   }
 })
 
-window.addEventListener(NoteEvents.Save, async () => {
+window.addEventListener(NoteEvents.Save, async (event) => {
   try {
+    const shouldShowNotification = (event as CustomEvent)?.detail
+      ?.shouldShowNotification
     const { updatedAt } = await saveNote()
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
-    createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
+    if (shouldShowNotification)
+      createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
     logger.log('Error saving note.', 'error', error)
   }

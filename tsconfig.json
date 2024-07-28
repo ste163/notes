@@ -8,7 +8,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "types": ["cypress", "vite/client", "node"],
+    "types": ["cypress", "vite/client", "node", "./vite.d.ts"],
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "paths": {
       "config": ["./src-ui/config"],
+      "const": ["./src-ui/const"],
       "components": ["./src-ui/renderer/components"],
       "database": ["./src-ui/database"],
       "event": ["./src-ui/event"],

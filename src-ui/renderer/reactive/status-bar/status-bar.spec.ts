@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { render } from 'test-utils'
 import { NoteEvents, createEvent, LifeCycleEvents } from 'event'
 import { StatusBar } from './status-bar'
+import { DIALOGS } from 'const'
 import pkg from '../../../../package.json'
 
 vi.mock('event')
@@ -41,19 +42,26 @@ describe('status-bar', () => {
     expect(deleteButton).toBeEnabled()
 
     await userEvent.click(saveButton)
-    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Save)
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(NoteEvents.Save, {
+      shouldShowNotification: true,
+    })
 
     await userEvent.click(deleteButton)
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'delete' }
+      { dialog: DIALOGS.DELETE }
     )
   })
 
-  it('renders package version number', () => {
-    const { instance, getByText } = render(StatusBar)
+  it('renders the version number and clicking emits param update', async () => {
+    const { instance, getByRole } = render(StatusBar)
     instance.render()
-    expect(getByText(`v${pkg.version}`)).toBeInTheDocument()
+    const button = getByRole('button', { name: `v${pkg.version}` })
+    await userEvent.click(button)
+    expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
+      LifeCycleEvents.QueryParamUpdate,
+      { dialog: DIALOGS.ABOUT }
+    )
   })
 
   it('error alert renders properly', async () => {
@@ -67,7 +75,7 @@ describe('status-bar', () => {
     await userEvent.click(getByRole('button', { name: 'Error Error' }))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'database' }
+      { dialog: DIALOGS.DATABASE }
     )
   })
 
@@ -91,7 +99,7 @@ describe('status-bar', () => {
     await userEvent.click(getByText(OFFLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'database' }
+      { dialog: DIALOGS.DATABASE }
     )
   })
 
@@ -106,7 +114,7 @@ describe('status-bar', () => {
     await userEvent.click(getByText(ONLINE_TEXT))
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
-      { dialog: 'database' }
+      { dialog: DIALOGS.DATABASE }
     )
   })
 

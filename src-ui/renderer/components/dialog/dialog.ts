@@ -2,11 +2,14 @@ import { nanoid } from 'nanoid'
 import { DialogEvents, LifeCycleEvents, createEvent } from 'event'
 import { closeIcon } from 'icons'
 import { trapFocus } from './trap-focus'
+import type { DIALOGS } from 'const'
 import './dialog.css'
+
+type QueryParam = (typeof DIALOGS)[keyof typeof DIALOGS]
 
 class Dialog {
   private id: string = nanoid()
-  private queryParam: 'database' | 'delete' | null = null
+  private queryParam: QueryParam | null = null
   private dialog: HTMLDivElement
   private dialogBackdrop: HTMLElement
   private previouslyFocusedOutsideElement: HTMLElement | null = null
@@ -71,7 +74,7 @@ class Dialog {
   }: {
     title: string
     content: HTMLElement
-    queryParam: 'database' | 'delete'
+    queryParam: QueryParam
     classList?: string
   }) {
     this.queryParam = queryParam
