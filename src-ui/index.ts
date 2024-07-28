@@ -2,7 +2,7 @@
  * TODO PRIORITY ORDER *
  *  - Title edit
  *      - cleanup styling
- *      - on hover show edit icon (pencil?) = new functionality
+ *      - on hover show edit icon?
  *      - ENTER press saves when input is open (calls onBlur function)
  *
  *  - Responsiveness
