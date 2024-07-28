@@ -157,6 +157,7 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
 
   // then selecting a new note
   if (noteId) {
+    if (editor.getIsDirty()) await saveNote()
     urlController.setParam(PARAMS.NOTE_ID, noteId)
     createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
     createEvent(NoteEvents.GetAll).dispatch()
@@ -449,8 +450,9 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
   // to the save event
   if (event.ctrlKey && event.key === 's') {
     event.preventDefault() // prevent default save behavior
-    // TODO: need to add notification here...
-    createEvent(NoteEvents.Save).dispatch()
+    createEvent(NoteEvents.Save, {
+      shouldShowNotification: true,
+    }).dispatch()
   }
 })
 
@@ -471,6 +473,7 @@ async function saveNote() {
     content,
   })
   logger.log('info', `Note saved: ${note.title}.`)
+  editor.setIsDirty(false)
   return {
     ...note,
     content,

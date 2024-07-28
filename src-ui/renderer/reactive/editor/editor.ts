@@ -52,6 +52,7 @@ class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
   private saveTimer: NodeJS.Timeout | null = null
+  private isDirty = false
 
   private globalClickHandler: (event: MouseEvent) => void = () => {}
   private resizeObserver: ResizeObserver | null = null
@@ -121,6 +122,7 @@ class Editor {
     // and only have the editor enabled if there is a note
     if (this.note) this.updateTitle(this.note.title)
     if (!this.note) this.setDisabled(true)
+    this.isDirty = false
   }
 
   public renderMenu(isDisabled = false) {
@@ -198,20 +200,19 @@ class Editor {
     ellipsisPopOut?.appendChild(this.editorMenuEllipsisContainer)
   }
 
+  public getIsDirty() {
+    return this.isDirty
+  }
+
+  public setIsDirty(isDirty: boolean) {
+    this.isDirty = isDirty
+  }
+
   public getContent() {
     return this.editor?.getHTML() ?? ''
   }
 
-  // TODO:
-  // when selecting a note, always save the previous note
-  // but this means we need to wait for an event.
   public setNote(note: Note | null) {
-    if (note !== null) {
-      console.log('SAVE ME!', note.title)
-      createEvent(NoteEvents.Save, {
-        shouldShowNotification: false,
-      }).dispatch()
-    }
     this.note = note
     this.render()
   }
@@ -532,12 +533,8 @@ class Editor {
         }),
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
-      onUpdate: () => {
-        // TODO: need a simpler isDirty state. Why?
-        // opening and closing dialogs triggers an update
-        //
-        // I want to err on the side of more saves, but this is too much
-        console.log('update happened')
+      onUpdate: ({ transaction }) => {
+        this.isDirty = transaction.docChanged
         const debounceSave = () => {
           if (this.saveTimer) clearTimeout(this.saveTimer)
           this.saveTimer = setTimeout(() => {
@@ -546,7 +543,7 @@ class Editor {
             }).dispatch()
           }, 300)
         }
-        debounceSave()
+        if (this.isDirty) debounceSave()
       },
       onTransaction: () => {
         /**
