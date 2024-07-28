@@ -13,7 +13,7 @@ class Logger {
     return [...this.logs]
   }
 
-  public log(message: string, type: Type, error?: unknown) {
+  public log(type: Type, message: string, error?: unknown) {
     if (type === 'info') this.logInfo(message)
     if (type === 'error') this.logError(message, error)
   }

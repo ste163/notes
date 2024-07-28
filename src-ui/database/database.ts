@@ -27,7 +27,7 @@ class Database {
     // setup local database
     PouchDb.plugin(PouchDbFind)
     this.db = new PouchDb(config.DATABASE_NAME)
-    logger.log('Loaded local database.', 'info')
+    logger.log('info', 'Loaded local database.')
   }
 
   public async createIndexes() {
@@ -44,13 +44,13 @@ class Database {
     const url = this.createRemoteUrl()
     if (!url) {
       logger.log(
-        'No database connection details saved. Saving locally only.',
-        'info'
+        'info',
+        'No database connection details saved. Saving locally only.'
       )
       return
     }
     this.setRemoteUrl(url)
-    logger.log('Remote database details found.', 'info')
+    logger.log('info', 'Remote database details found.')
     await this.testAndInitializeConnection()
   }
 
@@ -61,26 +61,26 @@ class Database {
   public async testAndInitializeConnection() {
     if (!this.remoteUrl)
       logger.log(
-        'No remote database details set. Unable to test connection.',
-        'error'
+        'error',
+        'No remote database details set. Unable to test connection.'
       )
     try {
       const testDb = new PouchDb(`${this.remoteUrl}/${config.DATABASE_NAME}`)
       logger.log(
-        'Attempting to establish connection with remote database.',
-        'info'
+        'info',
+        'Attempting to establish connection with remote database.'
       )
       createEvent(DatabaseEvents.Connecting).dispatch()
       const result = await testDb.info() // will attempt for 1.5 minutes
       logger.log(
-        `Test connection established with remote database, "${result?.db_name ?? ''}".`,
-        'info'
+        'info',
+        `Test connection established with remote database, "${result?.db_name ?? ''}".`
       )
       this.setupSyncing()
     } catch (error) {
       logger.log(
-        'Unable to establish connection with remote database.',
-        'error'
+        'error',
+        'Unable to establish connection with remote database.'
       )
       createEvent(DatabaseEvents.ConnectingError).dispatch()
     }
@@ -95,8 +95,8 @@ class Database {
     const url = this.createRemoteUrl()
     if (!url) {
       logger.log(
-        'No database connection details saved. Saving locally only.',
-        'error'
+        'error',
+        'No database connection details saved. Saving locally only.'
       )
       return
     }
@@ -106,7 +106,7 @@ class Database {
 
   public async setupSyncing(): Promise<void> {
     createEvent(DatabaseEvents.Connecting).dispatch()
-    logger.log('Setting up syncing with remote database.', 'info')
+    logger.log('info', 'Setting up syncing with remote database.')
     this.syncHandler = this.db.sync(
       `${this.remoteUrl}/${config.DATABASE_NAME}`,
       {
@@ -114,35 +114,40 @@ class Database {
         retry: true,
       }
     )
-    logger.log('Syncing with remote database.', 'info')
+    logger.log('info', 'Syncing with remote database.')
     createEvent(DatabaseEvents.Connected).dispatch()
     this.syncHandler
       .on('paused', () => {
         // paused means replication has completed or connection was lost without an error.
         // emit the date for the 'last synced' date
+        const date = new Date()
         createEvent(DatabaseEvents.SyncingPaused, {
-          date: new Date(),
+          date,
         }).dispatch()
+        logger.log(
+          'info',
+          `Syncing completed at ${new Date(date).toLocaleString()}.`
+        )
       })
       .on('error', (error: unknown | Error) => {
-        logger.log('Remote database sync error.', 'error', error)
+        logger.log('error', 'Remote database sync error.', error)
       })
       .on('denied', (error) => {
-        logger.log('Remote database sync denied.', 'error', error)
+        logger.log('error', 'Remote database sync denied.', error)
       })
       .catch((error) => {
-        logger.log('Remote database unknown error.', 'error', error)
+        logger.log('error', 'Remote database unknown error.', error)
       })
   }
 
   public disconnectSyncing(): boolean {
     if (!this.syncHandler) {
-      logger.log('No remote database connection to disconnect.', 'error')
+      logger.log('error', 'No remote database connection to disconnect.')
       return false
     }
     this.syncHandler.cancel()
     this.syncHandler = null
-    logger.log('Disconnected from remote database.', 'info')
+    logger.log('info', 'Disconnected from remote database.')
     return true
   }
 
@@ -238,7 +243,7 @@ class Database {
     })
 
     if (!docs.length) {
-      logger.log(`No note found with id: ${_id}`, 'error')
+      logger.log('error', `No note found with id: ${_id}`)
       return null
     }
 
