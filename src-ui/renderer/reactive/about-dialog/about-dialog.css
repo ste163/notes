@@ -6,13 +6,18 @@
 
 @media (max-width: 640px) {
   .about-container {
-    max-width: 15rem;
+    max-width: 19rem;
   }
 }
 
 #notes-license-block {
   display: block;
   margin-top: 1rem;
+  font-size: smaller;
+  line-height: normal;
+  padding: 1rem;
+  height: 15rem;
+  white-space: pre-wrap; /* Preserve line breaks and whitespace */
 
   overflow-y: auto;
   overflow-x: scroll;

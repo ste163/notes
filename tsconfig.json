@@ -8,7 +8,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "types": ["cypress", "vite/client", "node"],
+    "types": ["cypress", "vite/client", "node", "./vite.d.ts"],
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

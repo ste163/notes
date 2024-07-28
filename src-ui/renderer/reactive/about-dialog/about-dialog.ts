@@ -1,6 +1,7 @@
 import { DIALOGS } from 'const'
 import { Dialog, Button } from 'components'
 import pkg from '../../../../package.json'
+import { markdown as agplLicense } from '../../../../LICENSE.md'
 import './about-dialog.css'
 
 class AboutDialog {
@@ -73,7 +74,7 @@ class AboutDialog {
           const isAlreadyOnDOM = document.querySelector('#notes-license-block')
           isAlreadyOnDOM
             ? (container.innerHTML = '')
-            : this.renderLicenseBlock(container, 'AGPL-3.0')
+            : this.renderLicenseBlock(container, agplLicense)
         },
       }).getElement()
     )
