@@ -24,6 +24,32 @@ describe('dialogs', () => {
     cy.wait(DEFAULT_WAIT)
     cy.get('h2').should('not.exist', 'Database')
 
+    // about dialog renders properly on reload
+    cy.get(locators.statusBar.about).click()
+    cy.get('h2').should('contain', 'About')
+    cy.reload()
+    cy.wait(DEFAULT_WAIT)
+    cy.get('h2').should('contain', 'About')
+
+    // can toggle the agpl license visibility
+    cy.get(locators.dialog.about.agplButton).click()
+    cy.get(locators.dialog.about.agplContent).should('be.visible')
+    // and can close it
+    cy.get(locators.dialog.about.agplButton).click()
+    cy.get(locators.dialog.about.agplContent).should('not.exist')
+
+    // can toggle the apache license visibility
+    cy.get(locators.dialog.about.apacheButton).click()
+
+    cy.get(locators.dialog.about.apacheContent)
+      .scrollIntoView()
+      .should('be.visible')
+    // and can close it
+    cy.get(locators.dialog.about.apacheButton).click()
+    cy.get(locators.dialog.about.apacheContent).should('not.exist')
+
+    cy.get(locators.dialog.close).click()
+
     // delete note dialog should not render as no note was selected
     cy.get(locators.statusBar.delete).should('be.disabled')
 

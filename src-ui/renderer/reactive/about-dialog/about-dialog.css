@@ -10,8 +10,8 @@
   }
 }
 
-#notes-license-block,
-#other-license-block {
+#agpl-license-block,
+#apache-license-block {
   display: block;
   margin-top: 1rem;
   font-size: smaller;

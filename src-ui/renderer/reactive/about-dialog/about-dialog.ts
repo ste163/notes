@@ -21,8 +21,8 @@ class AboutDialog {
           It is licensed under the <strong>AGPL-3.0</strong>.
         </p>
         <div>
-          <div id='notes-license-button'></div>
-          <div id='notes-license-block-container'></div>
+          <div id='agpl-license-button'></div>
+          <div id='agpl-license-block-container'></div>
         </div>
         <h3>Open source licenses</h3>
         <p>
@@ -38,8 +38,8 @@ class AboutDialog {
             Tauri, PouchDb, and Remix Icons are all licensed under the Apache License 2.0 or MIT.
           </p>
         <div>
-          <div id='other-license-button'></div>
-          <div id='other-license-block-container'></div>
+          <div id='apache-license-button'></div>
+          <div id='apache-license-block-container'></div>
         </div>
       </div>`
 
@@ -64,20 +64,21 @@ class AboutDialog {
   }
 
   private renderNotesLicense() {
-    document.querySelector('#notes-license-button')?.appendChild(
+    document.querySelector('#agpl-license-button')?.appendChild(
       new Button({
+        testId: 'view-agpl',
         title: 'View AGPL-3.0 License',
         html: 'View AGPL-3.0 License',
         onClick: () => {
           const container = document.querySelector(
-            '#notes-license-block-container'
+            '#agpl-license-block-container'
           )
           if (!container) return
-          const isAlreadyOnDOM = document.querySelector('#notes-license-block')
+          const isAlreadyOnDOM = document.querySelector('#agpl-license-block')
           isAlreadyOnDOM
             ? (container.innerHTML = '')
             : this.renderLicenseBlock(
-                'notes-license-block',
+                'agpl-license-block',
                 container,
                 agplLicense
               )
@@ -87,20 +88,21 @@ class AboutDialog {
   }
 
   private renderOtherLicense() {
-    document.querySelector('#other-license-button')?.appendChild(
+    document.querySelector('#apache-license-button')?.appendChild(
       new Button({
+        testId: 'view-apache',
         title: 'View Apache 2.0 License',
         html: 'View Apache 2.0 License',
         onClick: () => {
           const container = document.querySelector(
-            '#other-license-block-container'
+            '#apache-license-block-container'
           )
           if (!container) return
-          const isAlreadyOnDOM = document.querySelector('#other-license-block')
+          const isAlreadyOnDOM = document.querySelector('#apache-license-block')
           isAlreadyOnDOM
             ? (container.innerHTML = '')
             : this.renderLicenseBlock(
-                'other-license-block',
+                'apache-license-block',
                 container,
                 apacheLicense
               )
@@ -113,6 +115,7 @@ class AboutDialog {
     element.innerHTML = '' // reset container
     const licenseBlock = document.createElement('div')
     licenseBlock.id = id
+    licenseBlock.setAttribute('data-testid', id)
     licenseBlock.classList.add('code-block')
     licenseBlock.innerHTML = license
     element.appendChild(licenseBlock)

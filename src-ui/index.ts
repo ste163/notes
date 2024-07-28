@@ -1,10 +1,5 @@
 /**
  * TODO PRIORITY ORDER *
- *  - About/Legal Dialog
- *     - Clicking the Version Number in Status Bar opens a new dialog
- *     - This Dialog has About information and button toggles to show the licenses for the main packages
- *       as per the License requirements. Double check, but for sure need (Remix Icons, PouchDB, Tauri)
- *
  *  - Responsiveness
  *    - Note title + input needs to be revisited when width changes (cleanup CSS approach and use JS)
  *    - sidebar buttons need to have their width match the element (using JS)
