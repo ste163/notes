@@ -9,3 +9,11 @@
     max-width: 15rem;
   }
 }
+
+#notes-license-block {
+  display: block;
+  margin-top: 1rem;
+
+  overflow-y: auto;
+  overflow-x: scroll;
+}

@@ -1,5 +1,5 @@
 import { DIALOGS } from 'const'
-import { Dialog } from 'components'
+import { Dialog, Button } from 'components'
 import pkg from '../../../../package.json'
 import './about-dialog.css'
 
@@ -20,7 +20,10 @@ class AboutDialog {
           visit the <a target="_blank" href="https://github.com/ste163/notes/releases" >project's github repository</a>.
           It is licensed under the <strong>AGPL-3.0</strong>.
         </p>
-        <button>View AGPL-3.0 License</button>
+        <div>
+          <div id='notes-license-button'></div>
+          <div id='notes-license-block-container'></div>
+        </div>
         <h3>Open source licenses</h3>
         <p>
             Notes would not be possible without the following open source projects:
@@ -44,6 +47,9 @@ class AboutDialog {
       queryParam: DIALOGS.ABOUT,
     })
     this.dialog.open()
+
+    // it's on the DOM, so we can add the buttons
+    this.renderNotesLicense()
   }
 
   public close() {
@@ -52,6 +58,34 @@ class AboutDialog {
 
   public clear() {
     this.dialog = null
+  }
+
+  private renderNotesLicense() {
+    document.querySelector('#notes-license-button')?.appendChild(
+      new Button({
+        title: 'View AGPL-3.0 License',
+        html: 'View AGPL-3.0 License',
+        onClick: () => {
+          const container = document.querySelector(
+            '#notes-license-block-container'
+          )
+          if (!container) return
+          const isAlreadyOnDOM = document.querySelector('#notes-license-block')
+          isAlreadyOnDOM
+            ? (container.innerHTML = '')
+            : this.renderLicenseBlock(container, 'AGPL-3.0')
+        },
+      }).getElement()
+    )
+  }
+
+  private renderLicenseBlock(element: Element, license: string) {
+    element.innerHTML = '' // reset container
+    const licenseBlock = document.createElement('div')
+    licenseBlock.id = 'notes-license-block'
+    licenseBlock.classList.add('code-block')
+    licenseBlock.innerHTML = license
+    element.appendChild(licenseBlock)
   }
 }
 
