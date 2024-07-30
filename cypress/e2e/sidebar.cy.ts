@@ -20,14 +20,14 @@ describe('sidebar', () => {
     cy.wait(DEFAULT_WAIT)
     cy.get(locators.sidebar.mainElement).should('not.exist')
     cy.get(locators.editor.content).should('be.visible')
-    cy.writeContent('Some content...')
+    cy.writeContent('First note content...')
     cy.get(locators.statusBar.save).click()
 
     // reloading the page renders the note and its content, and no sidebar
     cy.reload()
     cy.wait(DEFAULT_WAIT)
     cy.get(locators.sidebar.mainElement).should('not.exist')
-    cy.validateContent('Some content...')
+    cy.validateContent('First note content...')
 
     // can create a new note and select it
     // open the sidebar from status bar
@@ -199,7 +199,7 @@ describe('sidebar', () => {
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)
     // check the sidebar width is the default
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '170px')
+    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '230px')
     // no ellipsis button as the editor is wide
     cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
 

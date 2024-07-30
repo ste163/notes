@@ -8,6 +8,7 @@
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
+ *    - finish remaining test todos
  *
  * - BRANDING
  *   - make favicon
@@ -269,6 +270,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     sidebar.closeInput()
     if (isMobile) sidebar.close()
     createEvent(LifeCycleEvents.QueryParamUpdate, { noteId: _id }).dispatch()
+    createEvent(NoteEvents.GetAll).dispatch()
     logger.log('info', `Note created: ${title}.`)
   } catch (error) {
     logger.log('error', 'Error creating note.', error)
