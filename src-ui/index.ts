@@ -5,10 +5,17 @@
  *   - right click a note allows you to delete it from the sidebar.
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
+ *   - Put a MAX CHARACTER COUNT so that the app doesn't crash (tip tap allows this option).
+ *     When it nears the limit show a warning banner and mention the need to split
+ *     into multiple notes. (Also need to test what the max is more. It should be
+ *     anything that begins to make a noticeable slow-down but doesn't crash.)
+ *     You can currently crash the app.
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
  *    - finish remaining test todos
+ *    - re-do structure so that I can get it setup with a Docker Pouch DB instance
+ *      and have the same setup run on local and CI/CD
  *
  * - BRANDING
  *   - make favicon
