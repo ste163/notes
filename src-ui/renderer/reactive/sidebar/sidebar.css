@@ -7,6 +7,7 @@
 .sidebar-main {
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
   /* Width is setup by ResizeObserver */
   width: 170px;
 }
@@ -75,6 +76,11 @@
   justify-content: space-between;
 }
 
+.note-create-button {
+  font-size: small;
+  padding: 0 0.5rem 0 0.25rem;
+}
+
 #sidebar-list {
   overflow-y: auto;
   overflow-x: hidden;
@@ -108,14 +114,22 @@
   text-align: left;
 }
 
-.note-select-container > button > div > div:first-child {
+.note-select-container > button > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-select-container > button > div {
+  font-size: medium;
+}
+
+.note-button-text-resize {
   display: inline-block;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  /* TODO: these need to follow with the resized container */
-  /* and need to be a percentage smaller */
-  max-width: 12.5rem;
+  /* this max-width is reset using JS */
+  max-width: 15rem;
 }
 
 .note-select-container > button:hover {

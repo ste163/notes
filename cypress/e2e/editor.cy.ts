@@ -7,6 +7,15 @@ describe('editor', () => {
     // by default, cypress always clears localStorage between test runs
   })
 
+  it.skip(
+    'TODO - editor is disabled if note not found in database'
+    // create a note
+    // in the URL, go to an ID that does not exist
+    // the editor should have GET STARTED text
+    // the editor should be disabled
+    // an ERROR should be rendered in the status bar
+  )
+
   it('editor menu buttons move to ellipsis menu properly on sidebar resize', () => {
     cy.viewport(1020, 768) // picking non-standard sizes here to test edge case
     cy.visit('/')

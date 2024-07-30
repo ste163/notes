@@ -10,6 +10,7 @@ class Sidebar {
   private activeNoteId: string = ''
   private inputContainerId = 'note-input-container'
   private isFullscreen = false
+  private resizeTimer: NodeJS.Timeout | null = null
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -37,6 +38,7 @@ class Sidebar {
       new Button({
         testId: 'create-note',
         title: 'Create note',
+        className: 'note-create-button',
         onClick: () =>
           document.querySelector(`#${this.inputContainerId}`)
             ? this.closeInput()
@@ -66,15 +68,24 @@ class Sidebar {
 
       const getClampedWidth = (newWidth: number) => {
         const screenWidth = window.innerWidth
-        const minWidth = 170
+        const minWidth = 230
         const maxWidth = screenWidth * 0.5
         return Math.max(minWidth, Math.min(newWidth, maxWidth))
       }
 
-      function handleMouseMove(e: MouseEvent) {
+      const handleMouseMove = (e: MouseEvent) => {
         if (!element) return
         const newWidth = e.clientX - element.getBoundingClientRect().left
-        element.style.width = `${getClampedWidth(newWidth)}px`
+        const clampedWidth = getClampedWidth(newWidth)
+        element.style.width = `${clampedWidth}px`
+
+        if (this.resizeTimer) clearTimeout(this.resizeTimer)
+        this.resizeTimer = setTimeout(() => {
+          this.setNoteButtonResizeTextWidth(clampedWidth)
+          // debouncing even a tiny amount greatly
+          // improves performance because it cuts out
+          // many extra event calls
+        }, 5)
       }
 
       /**
@@ -128,11 +139,11 @@ class Sidebar {
             }).dispatch(),
           html: `
         <div>
-          <div>${title}</div>
-          <div class="select-note-date">Updated: ${new Date(
+          <div class='note-button-text-resize'>${title}</div>
+          <div class='select-note-date note-button-text-resize'>Updated: ${new Date(
             updatedAt
           ).toLocaleString()}</div>
-          <div class="select-note-date">Created: ${new Date(
+          <div class='select-note-date note-button-text-resize'>Created: ${new Date(
             createdAt
           ).toLocaleString()}</div>
         </div>`,
@@ -147,6 +158,11 @@ class Sidebar {
       buttonContainer.appendChild(b)
       container.appendChild(buttonContainer)
     })
+
+    // not clamping the width as only valid widths can be stored
+    this.setNoteButtonResizeTextWidth(
+      useLocalStorage.get('sidebar-width')?.width
+    )
   }
 
   public setNotes(notes: Notes) {
@@ -178,6 +194,13 @@ class Sidebar {
   public setFullScreen(isFullscreen: boolean) {
     this.isFullscreen = isFullscreen
     this.assignFullscreenClasses()
+  }
+
+  private setNoteButtonResizeTextWidth(width: number) {
+    const elements = document.querySelectorAll('.note-button-text-resize')
+    Array.from(elements).forEach(
+      (el) => ((el as HTMLDivElement).style.maxWidth = `${width - 30}px`)
+    )
   }
 
   private assignFullscreenClasses() {

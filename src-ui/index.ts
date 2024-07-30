@@ -1,29 +1,32 @@
 /**
- * TODO PRIORITY ORDER
- *  - Responsiveness
- *    - sidebar buttons need to have their width match the element (using JS)
- *
- *  - DATABASE DIALOG FORM:
- *     - Must have a way to STOP a connection attempt: cancel button in the status section
- *     - Disable the submit button UNTIL all inputs are filled.
- *       Need to disable the submit if the full form hasn't been entered
- *       on CHANGE not just initial. If the form has been changed, updated
- *       the button copy from Reconnect to Connect (as it has changed)
- *     - password input needs to be **** instead of not hidden
+ * TODOs
  *
  * - FEATURES
+ *   - right click a note allows you to delete it from the sidebar.
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
- *   - right click a note allows you to delete it from the sidebar.
+ *   - Put a MAX CHARACTER COUNT so that the app doesn't crash (tip tap allows this option).
+ *     When it nears the limit show a warning banner and mention the need to split
+ *     into multiple notes. (Also need to test what the max is more. It should be
+ *     anything that begins to make a noticeable slow-down but doesn't crash.)
+ *     You can currently crash the app.
  *   - e2e:
  *    - if it's main branch, use production link (new action?)
  *    - otherwise, build environment and use that (what's currently setup)
+ *    - finish remaining test todos
+ *    - re-do structure so that I can get it setup with a Docker Pouch DB instance
+ *      and have the same setup run on local and CI/CD
  *
  * - BRANDING
  *   - make favicon
  *
- * - BUGS (which also need e2e tests)
- *    - if a note id is present in the URL, but not in the database, the editor is ACTIVATED!!! It must be disabled
+ * - DATABASE DIALOG FORM:
+ *    - Must have a way to STOP a connection attempt: cancel button in the status section
+ *    - Disable the submit button UNTIL all inputs are filled.
+ *      Need to disable the submit if the full form hasn't been entered
+ *      on CHANGE not just initial. If the form has been changed, updated
+ *      the button copy from Reconnect to Connect (as it has changed)
+ *    - password input needs to be **** instead of not hidden
  *
  * - DATABASE INTERACTIONS
  *     Thoroughly manually test db scenarios:
@@ -109,12 +112,12 @@ window.addEventListener(DatabaseEvents.Init, async () => {
 
   // can only fetch notes after the database has been fully initialized
   const { noteId } = urlController.getParams()
-  noteId
-    ? createEvent(LifeCycleEvents.QueryParamUpdate, {
-        noteId,
-        isDbInit: true,
-      }).dispatch()
-    : createEvent(NoteEvents.GetAll).dispatch()
+  noteId &&
+    createEvent(LifeCycleEvents.QueryParamUpdate, {
+      noteId,
+      isDbInit: true,
+    }).dispatch()
+  createEvent(NoteEvents.GetAll).dispatch()
 })
 
 /**
@@ -160,7 +163,6 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
     if (editor.getIsDirty()) await saveNote()
     urlController.setParam(PARAMS.NOTE_ID, noteId)
     createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
-    createEvent(NoteEvents.GetAll).dispatch()
   }
 
   if (noteId === null) {
@@ -263,8 +265,6 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     statusBar.renderActiveNote(note)
     editor.setNote(note)
     editor.setCursorPosition('start')
-
-    createEvent(NoteEvents.GetAll).dispatch()
   } catch (error) {
     logger.log('error', 'Error selecting note.', error)
   }
@@ -277,6 +277,7 @@ window.addEventListener(NoteEvents.Create, async (event) => {
     sidebar.closeInput()
     if (isMobile) sidebar.close()
     createEvent(LifeCycleEvents.QueryParamUpdate, { noteId: _id }).dispatch()
+    createEvent(NoteEvents.GetAll).dispatch()
     logger.log('info', `Note created: ${title}.`)
   } catch (error) {
     logger.log('error', 'Error creating note.', error)
