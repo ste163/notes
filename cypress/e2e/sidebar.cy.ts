@@ -158,6 +158,34 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.mainElement).should('be.visible')
   })
 
+  it.skip(
+    'handles deleting a note on different screen sizes by right click'
+    // large size
+    // create a few notes + content for easier validation
+    // check to see which ones is selected and rendered
+    // right click on a non-selected note, and delete it
+    // the previously selected note should stay rendered (IF THAT IS EASY TO IMPLEMENT)
+    //
+    // clicking a note that is already selected still allows for deleting
+    //
+    // on small size
+    // create a few notes
+    // right click on a non-selected note, and delete it
+    // SIDEBAR SHOULD STAY RENDERED!
+    // refreshing the page keeps the sidebar open
+  )
+
+  it.skip(
+    'on small screen size, allows for deleting notes by long-press'
+    // on small size
+    // create a few notes
+    // right click on a non-selected note, and delete it
+    // SIDEBAR SHOULD STAY RENDERED!
+    // refreshing the page keeps the sidebar open
+    //
+    // pressing on a note that is already selected still allows for deleting
+  )
+
   it('tracks sidebar open/closed state across page reloads', () => {
     cy.visit('/')
     // default sidebar value added
