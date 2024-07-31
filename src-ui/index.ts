@@ -1,42 +1,48 @@
 /**
  * TODOs
  *
- * - FEATURES
- *   - right click a note allows you to delete it from the sidebar.
+ * v0.0.1
+ * FEATURES
+ *   - right click a note allows you to delete it from the sidebar without selecting the note.
  *   - save cursor position to the note object so we can re-open at the correct location
  *   - add hyperlink insert support
- *   - Put a MAX CHARACTER COUNT so that the app doesn't crash (tip tap allows this option).
+ *   - e2e:
+ *    - finish remaining test todos
+ *
+ * v1.0.0
+ * FEATURES
+ * - Tauri v2 at least desktop support + Android if it works well
+ *
+ * - Put a MAX CHARACTER COUNT so that the app doesn't crash (tip tap allows this option).
  *     When it nears the limit show a warning banner and mention the need to split
  *     into multiple notes. (Also need to test what the max is more. It should be
  *     anything that begins to make a noticeable slow-down but doesn't crash.)
  *     You can currently crash the app.
- *   - e2e:
- *    - if it's main branch, use production link (new action?)
- *    - otherwise, build environment and use that (what's currently setup)
- *    - finish remaining test todos
- *    - re-do structure so that I can get it setup with a Docker Pouch DB instance
- *      and have the same setup run on local and CI/CD
- *
- * - BRANDING
- *   - make favicon
  *
  * - DATABASE DIALOG FORM:
- *    - Must have a way to STOP a connection attempt: cancel button in the status section
+ *    - password input needs to be **** instead of not hidden
  *    - Disable the submit button UNTIL all inputs are filled.
  *      Need to disable the submit if the full form hasn't been entered
  *      on CHANGE not just initial. If the form has been changed, updated
  *      the button copy from Reconnect to Connect (as it has changed)
- *    - password input needs to be **** instead of not hidden
+ *    - Must have a way to STOP a connection attempt: cancel button in the status section
  *
- * - DATABASE INTERACTIONS
- *     Thoroughly manually test db scenarios:
+ * BRANDING
+ * - make favicon
+ * - make desktop/app icon
  *
- *     I have been connected to DB A and synced locally.
- *     I connected to DB B, what happens?
- *     Hypothesis: the local becomes synced to both (unless there are conflicts)
+ * E2E
+ * - If it's a push to main, run against the production build but without db tests
+ * - Add support for the CouchDB docker container
+ * - Add tests for the database dialog and db syncing states
+ *   Thoroughly test db scenarios:
  *
- *     I delete data on my local and not the remote.
- *     Does it stay deleted? (Accidental deletions?)
+ *   I have been connected to DB A and synced locally.
+ *   I connected to DB B, what happens?
+ *   Hypothesis: the local becomes synced to both (unless there are conflicts)
+ *
+ *   I delete data on my local and not the remote.
+ *   Does it stay deleted? (Accidental deletions?)
  */
 import { database } from 'database'
 import {
