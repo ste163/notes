@@ -176,16 +176,15 @@ class Sidebar {
       // Handle long press for touchscreens
       let pressTimer: NodeJS.Timeout
       buttonContainer.addEventListener('touchstart', (event) => {
-        event.preventDefault()
-        pressTimer = setTimeout(() => contextMenuHandler(b.id, event), 700)
-      })
-      const events = ['touchend', 'touchmove', 'touchcancel']
-      events.forEach((e) =>
-        buttonContainer.addEventListener(e, (event) => {
-          clearTimeout(pressTimer)
-          // keep normal behavior for touching a button
-          if (e === 'touchend') event.preventDefault()
+        pressTimer = setTimeout(() => {
+          event.preventDefault()
+          contextMenuHandler(b.id, event), 700
         })
+      })
+
+      const eventsToClear = ['touchend', 'touchmove', 'touchcancel']
+      eventsToClear.forEach((e) =>
+        buttonContainer.addEventListener(e, () => clearTimeout(pressTimer))
       )
 
       buttonContainer.appendChild(b)
