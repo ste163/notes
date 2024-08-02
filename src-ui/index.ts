@@ -270,13 +270,10 @@ window.addEventListener(NoteEvents.GetAll, async () => {
 })
 
 window.addEventListener(NoteEvents.Select, async (event) => {
-  let existingNoteId: string | undefined | null = null
   try {
     const eventNoteId: string = (event as CustomEvent)?.detail?._id
 
     if (!eventNoteId) return
-
-    existingNoteId = eventNoteId
 
     const note = await database.getById(eventNoteId)
 
@@ -296,13 +293,6 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     editor.setCursorPosition('start')
   } catch (error) {
     logger.log('error', 'Error selecting note.', error)
-    if ((error as Error)?.message === 'missing' && existingNoteId) {
-      // allow user to delete this note
-      createEvent(LifeCycleEvents.QueryParamUpdate, {
-        dialog: DIALOGS.DELETE,
-        noteId: existingNoteId,
-      }).dispatch()
-    }
   }
 })
 
