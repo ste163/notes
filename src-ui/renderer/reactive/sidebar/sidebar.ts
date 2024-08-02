@@ -178,7 +178,7 @@ class Sidebar {
       buttonContainer.addEventListener('touchstart', (event) => {
         pressTimer = setTimeout(() => {
           event.preventDefault()
-          contextMenuHandler(b.id, event), 700
+          contextMenuHandler(b.id, event), 2000
         })
       })
 
