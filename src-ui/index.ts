@@ -3,10 +3,8 @@
  *
  * v0.0.1
  * FEATURES
- *   - save cursor position to local storage so that we can set cursor when the note is re-opened
  *   - add hyperlink insert support
- *   - fix the long-press on the sidebar note to open the delete dialog. Doesn't work on mobile.
- *     Need to see what event the long tap actually uses.
+ *   - save cursor position to local storage so that we can set cursor when the note is re-opened
  *
  * v1.0.0
  * FEATURES
