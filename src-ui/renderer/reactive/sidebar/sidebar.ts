@@ -181,7 +181,11 @@ class Sidebar {
       })
       const events = ['touchend', 'touchmove', 'touchcancel']
       events.forEach((e) =>
-        buttonContainer.addEventListener(e, () => clearTimeout(pressTimer))
+        buttonContainer.addEventListener(e, (event) => {
+          clearTimeout(pressTimer)
+          // keep normal behavior for touching a button
+          if (e === 'touchend') event.preventDefault()
+        })
       )
 
       buttonContainer.appendChild(b)
