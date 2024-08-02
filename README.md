@@ -67,13 +67,13 @@ pnpm i
 
 ```bash
 # Run only the UI for the browser
-pnpm start:dev:ui
+pnpm start:dev:ui:web
 ```
 
 or
 
 ```bash
-# Run desktop application through tauri
+# Run desktop application through Tauri
 pnpm start:dev:tauri
 ```
 

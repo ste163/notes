@@ -276,9 +276,9 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 
     if (!eventNoteId) return
 
-    const note = await database.getById(eventNoteId)
+    existingNoteId = eventNoteId
 
-    existingNoteId = note?._id
+    const note = await database.getById(eventNoteId)
 
     if (isMobile)
       createEvent(LifeCycleEvents.QueryParamUpdate, {
@@ -296,7 +296,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     editor.setCursorPosition('start')
   } catch (error) {
     logger.log('error', 'Error selecting note.', error)
-    if (JSON.stringify(error) === 'missing' && existingNoteId) {
+    if ((error as Error)?.message === 'missing' && existingNoteId) {
       // allow user to delete this note
       createEvent(LifeCycleEvents.QueryParamUpdate, {
         dialog: DIALOGS.DELETE,
