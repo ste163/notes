@@ -5,8 +5,6 @@
  * FEATURES
  *   - save cursor position to local storage so that we can set cursor when the note is re-opened
  *   - add hyperlink insert support
- *   - e2e:
- *    - finish remaining test todos
  *
  * v1.0.0
  * FEATURES
