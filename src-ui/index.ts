@@ -3,7 +3,6 @@
  *
  * v0.0.1
  * FEATURES
- *   - right click a note allows you to delete it from the sidebar without selecting the note.
  *   - save cursor position to local storage so that we can set cursor when the note is re-opened
  *   - add hyperlink insert support
  *   - e2e:

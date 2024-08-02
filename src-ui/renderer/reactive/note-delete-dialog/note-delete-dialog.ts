@@ -13,10 +13,10 @@ class NoteDeleteDialog {
     if (this.dialog) this.close()
     this.note = note
     const dialogContent = document.createElement('div')
-    // TODO: add the ellipsis for SUPER long titles
+
     dialogContent.innerHTML = `
       <div class='note-delete-container'>
-        <h3 testid='delete-dialog-header'>Are you sure you want to delete ${note.title}?</h3>
+        <h3 testid='delete-dialog-header'>Are you sure you want to delete <span class='delete-dialog-note-title'>${note.title}?</span></h3>
         <p>This action cannot be undone.</p>
       </div>`
 

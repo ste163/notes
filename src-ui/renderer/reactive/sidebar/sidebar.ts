@@ -151,11 +151,6 @@ class Sidebar {
         }).getElement()
     )
 
-    // TODO:
-    // before we re-render or call any re-render functions
-    // we need to have a "removeAllListeners" function
-    // to cleanup all of these
-    // and then re-add them once things render
     const contextMenuHandler = (id: string, event: Event) => {
       event.preventDefault()
       createEvent(LifeCycleEvents.QueryParamUpdate, {
@@ -169,6 +164,9 @@ class Sidebar {
       const buttonContainer = document.createElement('div')
       buttonContainer.classList.add('note-select-container')
       buttonContainer.id = `${b.id}-${'note-select-container'}`
+
+      // Not explicitly cleaning up these listeners. If it becomes an issue
+      // write a cleanup function
 
       // apply listeners for context menu and touchscreen long-press
       buttonContainer.addEventListener('contextmenu', (event) =>

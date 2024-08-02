@@ -4,3 +4,12 @@
   width: 100vw;
   max-width: 17rem;
 }
+
+.delete-dialog-note-title {
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  /* needs to be a little less than the container */
+  max-width: 16rem;
+}
