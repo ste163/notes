@@ -281,7 +281,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.note)
       .eq(2)
       .trigger('touchstart', { which: 1 })
-      .wait(1000)
+      .wait(2500)
       .trigger('touchend', { force: true })
     cy.wait(DEFAULT_WAIT)
 

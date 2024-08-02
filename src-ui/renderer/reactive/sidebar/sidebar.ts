@@ -5,8 +5,6 @@ import { addNoteIcon, closeIcon } from 'icons'
 import { useLocalStorage } from 'use-local-storage'
 import type { Notes } from 'types'
 import './sidebar.css'
-// DELETE AFTER TESTING
-import { logger } from 'logger'
 
 class Sidebar {
   private notes: Notes = {}
@@ -180,7 +178,6 @@ class Sidebar {
       buttonContainer.addEventListener('touchstart', (event) => {
         pressTimer = setTimeout(() => {
           event.preventDefault()
-          logger.log('info', `long press for button ${b.id}`)
           contextMenuHandler(b.id, event)
         }, 2000)
       })
