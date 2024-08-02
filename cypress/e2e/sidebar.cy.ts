@@ -7,7 +7,7 @@ describe('sidebar', () => {
     // by default, cypress always clears localStorage between test runs
   })
 
-  it.skip('handles creating and selecting a note on small screen sizes', () => {
+  it('handles creating and selecting a note on small screen sizes', () => {
     cy.viewport(dimensions.small.viewPortWidth, dimensions.small.viewPortHeight)
     cy.visit('/')
 
@@ -45,7 +45,7 @@ describe('sidebar', () => {
     cy.validateContent('Second note content...')
   })
 
-  it.skip('handles resizing the viewport with the sidebar open', () => {
+  it('handles resizing the viewport with the sidebar open', () => {
     // starting on large screen sizes
     cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
     cy.visit('/')
@@ -77,7 +77,7 @@ describe('sidebar', () => {
     cy.get(locators.editor.content).should('be.visible')
   })
 
-  it.skip('handles resizing the viewport with the sidebar closed', () => {
+  it('handles resizing the viewport with the sidebar closed', () => {
     // starting on large screen sizes
     cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
     cy.visit('/')
@@ -109,7 +109,7 @@ describe('sidebar', () => {
     cy.get(locators.editor.content).should('be.visible')
   })
 
-  it.skip('handles creating a note on larger screen sizes', () => {
+  it('handles creating a note on larger screen sizes', () => {
     cy.visit('/')
     // tests all scenarios on note creating
 
@@ -255,18 +255,56 @@ describe('sidebar', () => {
     cy.get(locators.editor.content).should('not.be.visible')
   })
 
-  it.skip(
-    'on small screen size, allows for deleting notes by long-press'
-    // on small size
-    // create a few notes
-    // right click on a non-selected note, and delete it
-    // SIDEBAR SHOULD STAY RENDERED!
-    // refreshing the page keeps the sidebar open
-    //
-    // pressing on a note that is already selected still allows for deleting
-  )
+  it('on small screen size, allows for deleting notes by long-press', () => {
+    cy.viewport(dimensions.small.viewPortWidth, dimensions.small.viewPortHeight)
+    cy.visit('/')
 
-  it.skip('tracks sidebar open/closed state across page reloads', () => {
+    // create a few notes
+    cy.createNote('My first note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('First note content...')
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.createNote('My second note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Second note content...')
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.createNote('My third note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Third note content...')
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.wait(DEFAULT_WAIT)
+
+    // simulate a long press tap
+    cy.get(locators.sidebar.note)
+      .eq(2)
+      .trigger('touchstart', { which: 1 })
+      .wait(1000)
+      .trigger('touchend', { force: true })
+    cy.wait(DEFAULT_WAIT)
+
+    cy.get(locators.dialog.deleteDialog.header).should(
+      'be.contain',
+      'My first note'
+    )
+    cy.get(locators.dialog.deleteDialog.confirmButton).click()
+    cy.wait(DEFAULT_WAIT)
+
+    // only the second and third notes are left
+    cy.get(locators.sidebar.note).should('have.length', 2)
+    cy.get(locators.sidebar.note).eq(0).should('be.contain', 'My third note')
+    cy.get(locators.sidebar.note).eq(1).should('be.contain', 'My second note')
+
+    // refreshing the page keeps the sidebar open
+    cy.reload()
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.sidebar.mainElement).should('be.visible')
+    cy.get(locators.sidebar.note).should('have.length', 2)
+  })
+
+  it('tracks sidebar open/closed state across page reloads', () => {
     cy.visit('/')
     // default sidebar value added
     cy.location('search').should('eq', '?sidebar=open')
@@ -302,7 +340,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
-  it.skip('resizing the sidebar saves it to local storage', () => {
+  it('resizing the sidebar saves it to local storage', () => {
     cy.clearLocalStorage()
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)

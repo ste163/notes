@@ -175,11 +175,10 @@ class Sidebar {
         contextMenuHandler(b.id, event)
       )
 
-      // Handle long press for mobile
+      // Handle long press for touchscreens
       let pressTimer: NodeJS.Timeout
       buttonContainer.addEventListener('touchstart', (event) => {
-        // TODO: will need to test this once it's live (also test with cypress)
-        pressTimer = setTimeout(() => contextMenuHandler(b.id, event), 500)
+        pressTimer = setTimeout(() => contextMenuHandler(b.id, event), 700)
       })
       buttonContainer.addEventListener('touchend', () => {
         clearTimeout(pressTimer)
