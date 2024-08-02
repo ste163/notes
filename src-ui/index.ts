@@ -296,7 +296,7 @@ window.addEventListener(NoteEvents.Select, async (event) => {
     editor.setCursorPosition('start')
   } catch (error) {
     logger.log('error', 'Error selecting note.', error)
-    if (error === 'missing' && existingNoteId) {
+    if (JSON.stringify(error) === 'missing' && existingNoteId) {
       // allow user to delete this note
       createEvent(LifeCycleEvents.QueryParamUpdate, {
         dialog: DIALOGS.DELETE,
