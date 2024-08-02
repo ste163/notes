@@ -3,8 +3,9 @@
   display: flex;
   justify-content: center;
   overflow-y: auto;
-  padding-top: 1rem;
-  min-height: max-content;
+  overflow-x: hidden;
+  min-height: min-content;
+  padding: 1rem;
 }
 
 #editor-title-container {
@@ -12,7 +13,7 @@
   align-self: center;
   margin-top: 1rem;
   text-align: center;
-  height: 2rem;
+  height: 2.25rem;
 }
 
 #editor-title-container > .input-container {
@@ -112,18 +113,59 @@
   padding: 0 1rem;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: normal;
+}
+
+.ProseMirror > h1 {
+  margin: 1.5rem 0;
+}
+
+.ProseMirror > h2 {
+  margin: 1.25rem 0;
+}
+
+.ProseMirror > h3 {
+  margin: 1rem 0;
+}
+
+.ProseMirror > h4 {
+  margin: 0.75rem 0;
+}
+
+.ProseMirror > h5 {
+  margin: 0.5rem 0;
+}
+
+.ProseMirror > h6 {
+  margin: 0.25rem 0;
+}
+
+.ProseMirror > p {
+  margin: 0.75rem 0;
+}
+
 .code-block {
   display: block;
-  padding: 0.5rem;
+  padding: 1.25rem 1rem;
   background-color: var(--code-block-color);
   color: white;
   border-radius: 0.3rem;
-  margin: 0.5rem;
+  margin: 2rem 0.5rem;
+  line-height: normal;
+  font-family: monospace;
 }
 
 .task-item {
   display: flex;
   list-style: none;
+  align-items: center;
+  margin: 0.25rem 0;
 }
 
 .task-item > label {
@@ -131,5 +173,5 @@
 }
 
 .task-item > label > input {
-  transform: scale(2);
+  transform: scale(1.5);
 }

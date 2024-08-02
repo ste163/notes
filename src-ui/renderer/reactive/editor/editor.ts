@@ -529,6 +529,7 @@ class Editor {
         CodeBlock.configure({
           HTMLAttributes: {
             class: 'code-block',
+            spellcheck: 'false',
           },
         }),
       ],

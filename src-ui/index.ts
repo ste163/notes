@@ -5,10 +5,14 @@
  * FEATURES
  *   - save cursor position to local storage so that we can set cursor when the note is re-opened
  *   - add hyperlink insert support
+ *   - fix the long-press on the sidebar note to open the delete dialog. Doesn't work on mobile.
+ *     Need to see what event the long tap actually uses.
  *
  * v1.0.0
  * FEATURES
  * - Tauri v2 at least desktop support + Android if it works well
+ *
+ * - Draggable elements inside the editor (like check boxes)
  *
  * - Right clicking/long-press on a sidebar note opens a context menu instead
  *   of immediately opening the delete dialog
