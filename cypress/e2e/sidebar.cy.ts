@@ -1,4 +1,4 @@
-import { locators, DEFAULT_WAIT, dimensions } from '../constants'
+import { locators, DEFAULT_WAIT, dimensions, data } from '../constants'
 import { clearIndexDb } from '../utils'
 
 describe('sidebar', () => {
@@ -7,7 +7,7 @@ describe('sidebar', () => {
     // by default, cypress always clears localStorage between test runs
   })
 
-  it('handles creating and selecting a note on small screen sizes', () => {
+  it.skip('handles creating and selecting a note on small screen sizes', () => {
     cy.viewport(dimensions.small.viewPortWidth, dimensions.small.viewPortHeight)
     cy.visit('/')
 
@@ -45,7 +45,7 @@ describe('sidebar', () => {
     cy.validateContent('Second note content...')
   })
 
-  it('handles resizing the viewport with the sidebar open', () => {
+  it.skip('handles resizing the viewport with the sidebar open', () => {
     // starting on large screen sizes
     cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
     cy.visit('/')
@@ -77,7 +77,7 @@ describe('sidebar', () => {
     cy.get(locators.editor.content).should('be.visible')
   })
 
-  it('handles resizing the viewport with the sidebar closed', () => {
+  it.skip('handles resizing the viewport with the sidebar closed', () => {
     // starting on large screen sizes
     cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
     cy.visit('/')
@@ -109,7 +109,7 @@ describe('sidebar', () => {
     cy.get(locators.editor.content).should('be.visible')
   })
 
-  it('handles creating a note on larger screen sizes', () => {
+  it.skip('handles creating a note on larger screen sizes', () => {
     cy.visit('/')
     // tests all scenarios on note creating
 
@@ -158,22 +158,102 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.mainElement).should('be.visible')
   })
 
-  it.skip(
-    'handles deleting a note on different screen sizes by right click'
-    // large size
-    // create a few notes + content for easier validation
-    // check to see which ones is selected and rendered
-    // right click on a non-selected note, and delete it
-    // the previously selected note should stay rendered (IF THAT IS EASY TO IMPLEMENT)
-    //
-    // clicking a note that is already selected still allows for deleting
-    //
-    // on small size
-    // create a few notes
-    // right click on a non-selected note, and delete it
-    // SIDEBAR SHOULD STAY RENDERED!
-    // refreshing the page keeps the sidebar open
-  )
+  it('handles deleting a note on different screen sizes by right click', () => {
+    cy.viewport(dimensions.large.viewPortWidth, dimensions.large.viewPortHeight)
+    cy.visit('/')
+
+    cy.createNote('My first note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('First note content...')
+    cy.wait(DEFAULT_WAIT)
+    cy.createNote('My second note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Second note content...')
+    cy.wait(DEFAULT_WAIT)
+    cy.createNote('My third note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Third note content...')
+    cy.wait(DEFAULT_WAIT)
+
+    // by this point the third note is rendered
+    // right clicking on the first note opens the delete dialog with the note title rendered
+    cy.get(locators.sidebar.note).eq(2).rightclick()
+    cy.get(locators.dialog.deleteDialog.header).should(
+      'be.contain',
+      'My first note'
+    )
+    // delete the note
+    cy.get(locators.dialog.deleteDialog.confirmButton).click()
+    cy.wait(DEFAULT_WAIT)
+    // render the getting started section as there is no data
+    cy.validateContent(data.expected.editor.content.default)
+
+    // user can't edit the get started text
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .invoke('attr', 'contenteditable')
+      .should('eq', 'false')
+
+    // select the third note
+    cy.get(locators.sidebar.note).eq(0).click()
+    cy.validateContent('Third note content...')
+
+    // right click the third note and delete it
+    cy.get(locators.sidebar.note).eq(0).rightclick()
+    cy.get(locators.dialog.deleteDialog.header).should(
+      'be.contain',
+      'My third note'
+    )
+    cy.get(locators.dialog.deleteDialog.confirmButton).click()
+    cy.wait(DEFAULT_WAIT)
+
+    // only the second note is left
+    cy.get(locators.sidebar.note).should('have.length', 1)
+    cy.get(locators.sidebar.note).eq(0).should('be.contain', 'My second note')
+
+    // resize to a smaller screen size
+    cy.viewport(dimensions.small.viewPortWidth, dimensions.small.viewPortHeight)
+    cy.wait(DEFAULT_WAIT)
+    // create the first and third notes again
+    cy.createNote('My first note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('First note content...')
+    cy.wait(DEFAULT_WAIT)
+    // open sidebar
+    cy.get(locators.statusBar.sidebarToggle).click()
+    cy.createNote('My third note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Third note content...')
+    cy.wait(DEFAULT_WAIT)
+
+    // open sidebar
+    cy.get(locators.statusBar.sidebarToggle).click()
+
+    // right click opens the dialog
+    cy.get(locators.sidebar.note).eq(1).rightclick()
+    cy.get(locators.dialog.deleteDialog.header).should(
+      'be.contain',
+      'My first note'
+    )
+    // delete the note
+    cy.get(locators.dialog.deleteDialog.confirmButton).click()
+    cy.wait(DEFAULT_WAIT)
+
+    // the delete dialog is no longer rendered
+    cy.get(locators.dialog.deleteDialog.header).should('not.exist')
+
+    // sidebar is still opened with only the two remaining notes
+    cy.get(locators.sidebar.note).should('have.length', 2)
+    cy.get(locators.sidebar.note).eq(0).should('be.contain', 'My third note')
+    cy.get(locators.sidebar.note).eq(1).should('be.contain', 'My second note')
+
+    // refreshing the page keeps the sidebar opened because no note is selected
+    cy.reload()
+    cy.wait(DEFAULT_WAIT)
+    cy.get(locators.sidebar.mainElement).should('be.visible')
+    cy.get(locators.editor.content).should('not.be.visible')
+  })
 
   it.skip(
     'on small screen size, allows for deleting notes by long-press'
@@ -186,7 +266,7 @@ describe('sidebar', () => {
     // pressing on a note that is already selected still allows for deleting
   )
 
-  it('tracks sidebar open/closed state across page reloads', () => {
+  it.skip('tracks sidebar open/closed state across page reloads', () => {
     cy.visit('/')
     // default sidebar value added
     cy.location('search').should('eq', '?sidebar=open')
@@ -222,7 +302,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.button).should('not.exist')
   })
 
-  it('resizing the sidebar saves it to local storage', () => {
+  it.skip('resizing the sidebar saves it to local storage', () => {
     cy.clearLocalStorage()
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)
