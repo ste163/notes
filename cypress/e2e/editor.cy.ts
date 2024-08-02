@@ -7,14 +7,33 @@ describe('editor', () => {
     // by default, cypress always clears localStorage between test runs
   })
 
-  it.skip(
-    'TODO - editor is disabled if note not found in database'
-    // create a note
-    // in the URL, go to an ID that does not exist
-    // the editor should have GET STARTED text
-    // the editor should be disabled
-    // an ERROR should be rendered in the status bar
-  )
+  it('editor is disabled if note not found in database', () => {
+    cy.visit('/')
+    cy.wait(DEFAULT_WAIT)
+
+    cy.createNote('test note')
+    cy.wait(DEFAULT_WAIT)
+    cy.writeContent('Here is some content')
+    cy.wait(DEFAULT_WAIT)
+
+    // no errors are in the status bar
+    cy.get(locators.statusBar.alert).should('not.exist')
+    cy.wait(DEFAULT_WAIT)
+
+    // go to a url with a note id that doesn't exist
+    cy.visit('/?noteId=thisNoteDoesNotExist')
+    cy.wait(DEFAULT_WAIT)
+
+    // renders the get started page and the editor is disabled
+
+    cy.validateContent(data.expected.editor.content.default)
+    cy.get(locators.editor.content)
+      .children()
+      .first()
+      .invoke('attr', 'contenteditable')
+      .should('eq', 'false')
+    cy.get(locators.statusBar.alert).should('exist')
+  })
 
   it('editor menu buttons move to ellipsis menu properly on sidebar resize', () => {
     cy.viewport(1020, 768) // picking non-standard sizes here to test edge case

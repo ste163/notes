@@ -3,6 +3,7 @@ export const locators = {
     close: '[testid="dialog-close"]',
     deleteDialog: {
       confirmButton: '[data-testid="delete-forever"]',
+      header: '[testid="delete-dialog-header"]',
     },
     about: {
       agplButton: '[data-testid="view-agpl"]',

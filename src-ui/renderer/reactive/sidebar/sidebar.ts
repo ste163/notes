@@ -1,3 +1,4 @@
+import { DIALOGS } from 'const'
 import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
 import { addNoteIcon, closeIcon } from 'icons'
@@ -150,11 +151,40 @@ class Sidebar {
         }).getElement()
     )
 
+    const contextMenuHandler = (id: string, event: Event) => {
+      event.preventDefault()
+      createEvent(LifeCycleEvents.QueryParamUpdate, {
+        dialog: DIALOGS.DELETE,
+        noteId: id,
+      })?.dispatch()
+    }
+
     noteButtons?.forEach((b) => {
       // setup container for button and append to sidebar
       const buttonContainer = document.createElement('div')
       buttonContainer.classList.add('note-select-container')
       buttonContainer.id = `${b.id}-${'note-select-container'}`
+
+      // Not explicitly cleaning up these listeners. If it becomes an issue
+      // write a cleanup function
+
+      // apply listeners for context menu and touchscreen long-press
+      buttonContainer.addEventListener('contextmenu', (event) =>
+        contextMenuHandler(b.id, event)
+      )
+
+      // Handle long press for touchscreens
+      let pressTimer: NodeJS.Timeout
+      buttonContainer.addEventListener('touchstart', (event) => {
+        pressTimer = setTimeout(() => contextMenuHandler(b.id, event), 700)
+      })
+      buttonContainer.addEventListener('touchend', () => {
+        clearTimeout(pressTimer)
+      })
+      buttonContainer.addEventListener('touchmove', () => {
+        clearTimeout(pressTimer)
+      })
+
       buttonContainer.appendChild(b)
       container.appendChild(buttonContainer)
     })

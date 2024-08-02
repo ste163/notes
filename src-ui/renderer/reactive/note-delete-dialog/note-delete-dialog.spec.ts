@@ -23,6 +23,7 @@ describe('NoteDeleteDialog', () => {
     await userEvent.click(
       getByRole('button', { name: 'Delete Delete forever' })
     )
+    expect(getByRole('dialog').innerHTML).toContain(note.title)
     expect(createEvent).toHaveBeenCalledWith(NoteEvents.Delete, { note })
   })
 })

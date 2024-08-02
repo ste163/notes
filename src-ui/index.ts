@@ -3,15 +3,15 @@
  *
  * v0.0.1
  * FEATURES
- *   - right click a note allows you to delete it from the sidebar without selecting the note.
- *   - save cursor position to the note object so we can re-open at the correct location
+ *   - save cursor position to local storage so that we can set cursor when the note is re-opened
  *   - add hyperlink insert support
- *   - e2e:
- *    - finish remaining test todos
  *
  * v1.0.0
  * FEATURES
  * - Tauri v2 at least desktop support + Android if it works well
+ *
+ * - Right clicking/long-press on a sidebar note opens a context menu instead
+ *   of immediately opening the delete dialog
  *
  * - Put a MAX CHARACTER COUNT so that the app doesn't crash (tip tap allows this option).
  *     When it nears the limit show a warning banner and mention the need to split
@@ -26,6 +26,17 @@
  *      on CHANGE not just initial. If the form has been changed, updated
  *      the button copy from Reconnect to Connect (as it has changed)
  *    - Must have a way to STOP a connection attempt: cancel button in the status section
+ *
+ * - Organization features for notes in sidebar
+ *    Easy adds
+ *    - search bar? (an easy add)
+ *    - a less "busy" sidebar (ie, no dates on when the note was last edited or created,
+ *     or have that toggle-able)
+ *
+ *    More work
+ *    - tags?
+ *    - drag-and-drop re-ordering?
+ *    - "folder" structure?
  *
  * BRANDING
  * - make favicon
@@ -137,6 +148,13 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
   const noteId: string = (event as CustomEvent)?.detail?.noteId
   const dialog: string = (event as CustomEvent)?.detail?.dialog
   const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar
+
+  // for handling the deleting of a note from the sidebar
+  if (dialog === DIALOGS.DELETE && noteId) {
+    const note = await database.getById(noteId)
+    if (note) noteDeleteDialog.render(note)
+    return
+  }
 
   if (sidebarParam) {
     const openSidebar = () => {
