@@ -479,7 +479,7 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
   // the keyboard does not have access to the current note, so it will need to fetch it from state.
   // this should actually trigger a fetch request, reading data from the URL, and pass the full data through
   // to the save event
-  if (event.ctrlKey && event.key === 's') {
+  if ((event.ctrlKey || event.metaKey) && event.key === 's') {
     event.preventDefault() // prevent default save behavior
     createEvent(NoteEvents.Save, {
       shouldShowNotification: true,
