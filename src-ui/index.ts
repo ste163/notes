@@ -3,12 +3,12 @@
  *
  * v0.0.1
  * FEATURES
- *   - add hyperlink insert support
- *   - save cursor position to local storage so that we can set cursor when the note is re-opened
+ *   - save cursor position to local storage or db so that we can set cursor when the note is re-opened
  *
  * v1.0.0
  * FEATURES
  * - Tauri v2 at least desktop support + Android if it works well
+ * - Keyboard shortcuts (Saving, Add a Link, open/close sidebar)
  *
  * - Draggable elements inside the editor (like check boxes)
  *
@@ -479,7 +479,7 @@ document.addEventListener(KeyboardEvents.Keydown, (event) => {
   // the keyboard does not have access to the current note, so it will need to fetch it from state.
   // this should actually trigger a fetch request, reading data from the URL, and pass the full data through
   // to the save event
-  if (event.ctrlKey && event.key === 's') {
+  if ((event.ctrlKey || event.metaKey) && event.key === 's') {
     event.preventDefault() // prevent default save behavior
     createEvent(NoteEvents.Save, {
       shouldShowNotification: true,

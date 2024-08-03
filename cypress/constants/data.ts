@@ -4,11 +4,11 @@ export const data = {
       mainToolbarButtonCount: {
         small: 4,
         medium: 7,
-        large: 11,
+        large: 12,
       },
       ellipsisToolbarButtonCount: {
-        small: 7,
-        medium: 4,
+        small: 8,
+        medium: 5,
         large: 0,
       },
       content: {

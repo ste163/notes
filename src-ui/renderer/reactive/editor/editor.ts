@@ -1,20 +1,21 @@
 import { BUTTON_CONFIGURATION, instantiateMenuButtons } from './editor-buttons'
 import { Editor as TipTapEditor } from '@tiptap/core'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
 import Bold from '@tiptap/extension-bold'
-import Italic from '@tiptap/extension-italic'
-import Underline from '@tiptap/extension-underline'
-import Strike from '@tiptap/extension-strike'
-import Heading from '@tiptap/extension-heading'
-import ListItem from '@tiptap/extension-list-item'
 import BulletList from '@tiptap/extension-bullet-list'
+import CodeBlock from '@tiptap/extension-code-block'
+import Document from '@tiptap/extension-document'
+import Heading from '@tiptap/extension-heading'
+import History from '@tiptap/extension-history'
+import Italic from '@tiptap/extension-italic'
+import Link from '@tiptap/extension-link'
+import ListItem from '@tiptap/extension-list-item'
 import OrderedList from '@tiptap/extension-ordered-list'
+import Paragraph from '@tiptap/extension-paragraph'
+import Strike from '@tiptap/extension-strike'
 import TaskItem from '@tiptap/extension-task-item'
 import TaskList from '@tiptap/extension-task-list'
-import CodeBlock from '@tiptap/extension-code-block'
-import History from '@tiptap/extension-history'
+import Text from '@tiptap/extension-text'
+import Underline from '@tiptap/extension-underline'
 import { Button, Input } from 'components'
 import { NoteEvents, createEvent } from 'event'
 import { ellipsisIcon } from 'icons'
@@ -507,31 +508,32 @@ class Editor {
     const editor = new TipTapEditor({
       element: this.editorContainer,
       extensions: [
-        Document,
-        History,
-        Paragraph,
-        Text,
         Bold,
-        Italic,
-        Underline,
-        Strike,
-        Heading,
         BulletList,
-        ListItem,
-        OrderedList,
-        TaskList,
-        TaskItem.configure({
-          nested: true,
-          HTMLAttributes: {
-            class: 'task-item',
-          },
-        }),
         CodeBlock.configure({
           HTMLAttributes: {
             class: 'code-block',
             spellcheck: 'false',
           },
         }),
+        Document,
+        Heading,
+        History,
+        Italic,
+        Link,
+        ListItem,
+        OrderedList,
+        Paragraph,
+        Strike,
+        TaskItem.configure({
+          nested: true,
+          HTMLAttributes: {
+            class: 'task-item',
+          },
+        }),
+        TaskList,
+        Text,
+        Underline,
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
       onUpdate: ({ transaction }) => {

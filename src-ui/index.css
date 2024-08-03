@@ -28,6 +28,11 @@
   background: var(--active-color);
 }
 
+a {
+  color: #204587;
+  cursor: pointer;
+}
+
 svg {
   fill: var(--text-primary);
 }
