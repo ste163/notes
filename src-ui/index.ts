@@ -8,6 +8,7 @@
  * v1.0.0
  * FEATURES
  * - Tauri v2 at least desktop support + Android if it works well
+ * - Keyboard shortcuts (Saving, Add a Link, open/close sidebar)
  *
  * - Draggable elements inside the editor (like check boxes)
  *
