@@ -146,91 +146,95 @@ window.addEventListener(DatabaseEvents.Init, async () => {
 // @ts-expect-error - expecting a ts error here because I am doing
 // a return to exit the function early. This is intentional.
 window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
-  const isDbInit: boolean = !!(event as CustomEvent)?.detail?.isDbInit
-  const noteId: string = (event as CustomEvent)?.detail?.noteId
-  const dialog: string = (event as CustomEvent)?.detail?.dialog
-  const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar
+  try {
+    const isDbInit: boolean = !!(event as CustomEvent)?.detail?.isDbInit
+    const noteId: string = (event as CustomEvent)?.detail?.noteId
+    const dialog: string = (event as CustomEvent)?.detail?.dialog
+    const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar
 
-  // for handling the deleting of a note from the sidebar
-  if (dialog === DIALOGS.DELETE && noteId) {
-    const note = await database.getById(noteId)
-    if (note) noteDeleteDialog.render(note)
-    return
-  }
-
-  if (sidebarParam) {
-    const openSidebar = () => {
-      toggleFullscreenSidebar(isMobile)
-      statusBar.setSidebarButtonActive(true)
-      sidebar.open()
-    }
-
-    const closeSidebar = () => {
-      toggleFullscreenSidebar(false)
-      statusBar.setSidebarButtonActive(false)
-      sidebar.close()
-    }
-
-    urlController.setParam(PARAMS.SIDEBAR, sidebarParam)
-    sidebarParam === 'open' ? openSidebar() : closeSidebar()
-  }
-
-  const isSelectingSameNote = noteId === urlController.getParams().noteId
-  if (isSelectingSameNote && !isDbInit)
-    return (
-      isMobile &&
-      createEvent(LifeCycleEvents.QueryParamUpdate, {
-        sidebar: 'close',
-      }).dispatch()
-    )
-
-  // then selecting a new note
-  if (noteId) {
-    if (editor.getIsDirty()) await saveNote()
-    urlController.setParam(PARAMS.NOTE_ID, noteId)
-    createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
-  }
-
-  if (noteId === null) {
-    urlController.removeParam(PARAMS.NOTE_ID)
-    createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
-  }
-
-  if (dialog) {
-    const { noteId } = urlController.getParams()
-    urlController.setParam(PARAMS.DIALOG, dialog)
-
-    const openDeleteDialog = async () => {
-      const { noteId } = urlController.getParams()
-      if (!noteId) return
+    // for handling the deleting of a note from the sidebar
+    if (dialog === DIALOGS.DELETE && noteId) {
       const note = await database.getById(noteId)
       if (note) noteDeleteDialog.render(note)
+      return
     }
 
-    const dialogHandlers: Record<string, () => Promise<void> | void> = {
-      [DIALOGS.ABOUT]: () => {
-        aboutDialog.render()
-      },
-      [DIALOGS.DATABASE]: () => {
-        databaseDialog.render()
-      },
-      [DIALOGS.DELETE]: async () => {
-        if (noteId) await openDeleteDialog()
-      },
-    }
-    const handler = dialogHandlers[dialog]
-    if (handler) await handler()
-  }
+    if (sidebarParam) {
+      const openSidebar = () => {
+        toggleFullscreenSidebar(isMobile)
+        statusBar.setSidebarButtonActive(true)
+        sidebar.open()
+      }
 
-  if (dialog === null) {
-    const { noteId } = urlController.getParams()
-    urlController.removeParam(PARAMS.DIALOG)
-    // clear the local state of the dialogs
-    noteDeleteDialog.clear()
-    databaseDialog.clear()
-    aboutDialog.clear()
-    // editor is enabled again as the dialog has closed
-    if (noteId) editor.setDisabled(false)
+      const closeSidebar = () => {
+        toggleFullscreenSidebar(false)
+        statusBar.setSidebarButtonActive(false)
+        sidebar.close()
+      }
+
+      urlController.setParam(PARAMS.SIDEBAR, sidebarParam)
+      sidebarParam === 'open' ? openSidebar() : closeSidebar()
+    }
+
+    const isSelectingSameNote = noteId === urlController.getParams().noteId
+    if (isSelectingSameNote && !isDbInit)
+      return (
+        isMobile &&
+        createEvent(LifeCycleEvents.QueryParamUpdate, {
+          sidebar: 'close',
+        }).dispatch()
+      )
+
+    // then selecting a new note
+    if (noteId) {
+      if (editor.getIsDirty()) await saveNote()
+      urlController.setParam(PARAMS.NOTE_ID, noteId)
+      createEvent(NoteEvents.Select, { _id: noteId }).dispatch()
+    }
+
+    if (noteId === null) {
+      urlController.removeParam(PARAMS.NOTE_ID)
+      createEvent(LifeCycleEvents.NoNoteSelected).dispatch()
+    }
+
+    if (dialog) {
+      const { noteId } = urlController.getParams()
+      urlController.setParam(PARAMS.DIALOG, dialog)
+
+      const openDeleteDialog = async () => {
+        const { noteId } = urlController.getParams()
+        if (!noteId) return
+        const note = await database.getById(noteId)
+        if (note) noteDeleteDialog.render(note)
+      }
+
+      const dialogHandlers: Record<string, () => Promise<void> | void> = {
+        [DIALOGS.ABOUT]: () => {
+          aboutDialog.render()
+        },
+        [DIALOGS.DATABASE]: () => {
+          databaseDialog.render()
+        },
+        [DIALOGS.DELETE]: async () => {
+          if (noteId) await openDeleteDialog()
+        },
+      }
+      const handler = dialogHandlers[dialog]
+      if (handler) await handler()
+    }
+
+    if (dialog === null) {
+      const { noteId } = urlController.getParams()
+      urlController.removeParam(PARAMS.DIALOG)
+      // clear the local state of the dialogs
+      noteDeleteDialog.clear()
+      databaseDialog.clear()
+      aboutDialog.clear()
+      // editor is enabled again as the dialog has closed
+      if (noteId) editor.setDisabled(false)
+    }
+  } catch (error) {
+    logger.log('error', 'Error in LifeCycleEvents.QueryParamUpdate.', error)
   }
 })
 

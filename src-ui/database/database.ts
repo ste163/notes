@@ -248,13 +248,25 @@ class Database {
     }
 
     const note = docs[0] as Note
-    const attachment = (await this.db.getAttachment(
-      note._id,
-      this.attachmentId
-    )) as unknown as Blob // in browser, it's a Blob; in Node it's a Buffer
-    note.content = await attachment?.text()
-
-    return note
+    try {
+      const attachment = (await this.db.getAttachment(
+        note._id,
+        this.attachmentId
+      )) as unknown as Blob // in browser, it's a Blob; in Node it's a Buffer
+      note.content = await attachment?.text()
+      return note
+    } catch (error) {
+      logger.log(
+        'error',
+        `Error fetching note content for ${_id}. Deleting note.`,
+        error
+      )
+      // one-off delete to remove old note. Ideally this would be
+      // handled by the client in a more user-friendly way.
+      // but this isn't needed at this point
+      this.delete(note)
+      return null
+    }
   }
 }
 
