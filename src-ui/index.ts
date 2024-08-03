@@ -3,8 +3,7 @@
  *
  * v0.0.1
  * FEATURES
- *   - add hyperlink insert support
- *   - save cursor position to local storage so that we can set cursor when the note is re-opened
+ *   - save cursor position to local storage or db so that we can set cursor when the note is re-opened
  *
  * v1.0.0
  * FEATURES

@@ -7,6 +7,7 @@ import {
   heading2Icon,
   heading3Icon,
   italicIcon,
+  linkIcon,
   orderedListIcon,
   strikeIcon,
   taskListIcon,
@@ -129,6 +130,31 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
       editor?.chain().focus().toggleCodeBlock().run()
     },
     html: codeBlockIcon,
+  },
+  {
+    group: 4,
+    title: 'Link',
+    markName: 'link',
+    className: 'menu-button-link',
+    onClick: (editor) => {
+      const isLink = editor?.isActive('link')
+      const setLink = () => {
+        const url = window.prompt('URL')
+        if (url) {
+          const validateProtocol = (url: string) =>
+            url.startsWith('http://') && url.startsWith('https://')
+              ? url
+              : 'https://' + url
+          editor
+            ?.chain()
+            .focus()
+            .toggleLink({ href: validateProtocol(url) })
+            .run()
+        }
+      }
+      isLink ? editor?.chain().focus().unsetLink().run() : setLink()
+    },
+    html: linkIcon,
   },
 ]
 
