@@ -369,8 +369,6 @@ class Editor {
         responsivenessConfig.forEach(processResponsiveConfig)
 
       showHideEllipsisButton()
-
-      // TODO: resize very long titles and the title input
     }
 
     // must debounce the resize handler by some amount or else e2e fails
