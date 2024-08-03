@@ -159,7 +159,7 @@ class Database {
     const { username, password, host, port } =
       useLocalStorage.get('remote-db-details')
     return username && password && host && port
-      ? `http://${username}:${password}@${host}:${port}`
+      ? `https://${username}:${password}@${host}:${port}`
       : null
   }
 
