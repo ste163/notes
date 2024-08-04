@@ -1,5 +1,14 @@
 import { logger } from 'logger'
 
+type AllowedKeys = 'remote-db-details' | 'sidebar-width' | 'cursor-position'
+
+interface CursorPosition {
+  [key: string]: {
+    from: number
+    to: number
+  }
+}
+
 interface DatabaseDetails {
   [key: string]: string // needed for correct type indexing
   username: string
@@ -12,15 +21,15 @@ interface SidebarWidth {
   width: number
 }
 
-type AllowedKeys = 'remote-db-details' | 'sidebar-width'
-
 class UseLocalStorage {
   private validators = {
+    'cursor-position': this.validateCursorPosition,
     'remote-db-details': this.validateDetails,
     'sidebar-width': this.validateSidebarWidth,
   }
 
   private defaults: Record<AllowedKeys, unknown> = {
+    'cursor-position': { from: 1, to: 1 },
     'remote-db-details': {
       username: '',
       password: '',
@@ -37,9 +46,12 @@ class UseLocalStorage {
     return isValid ? parsed : this.defaults[key]
   }
 
-  public set(key: AllowedKeys, object: DatabaseDetails | SidebarWidth) {
+  public set(
+    key: AllowedKeys,
+    object: DatabaseDetails | SidebarWidth | CursorPosition
+  ) {
     const isValid = this.validators[key](
-      object as unknown as DatabaseDetails & SidebarWidth
+      object as unknown as DatabaseDetails & SidebarWidth & CursorPosition
     )
     isValid
       ? window.localStorage.setItem(key, JSON.stringify(object))
@@ -48,6 +60,14 @@ class UseLocalStorage {
           `Invalid ${key}. Attempted to set local storage with: ` +
             JSON.stringify(object)
         )
+  }
+
+  private validateCursorPosition(cursorPosition: CursorPosition): boolean {
+    return (
+      cursorPosition &&
+      typeof cursorPosition?.from === 'number' &&
+      typeof cursorPosition?.to === 'number'
+    )
   }
 
   private validateDetails(detail: DatabaseDetails): boolean {

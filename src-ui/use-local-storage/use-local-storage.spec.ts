@@ -97,4 +97,8 @@ describe('use-local-storage', () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify({ width: 200 }))
     expect(useLocalStorage.get('sidebar-width')).toEqual({ width: 200 })
   })
+
+  it.todo('if a note is not found, returns the default cursor position')
+
+  it.todo('if a note is found, returns the stored cursor position')
 })

@@ -501,6 +501,12 @@ class Editor {
     input.focus()
   }
 
+  private getCursorPosition() {
+    if (!this.editor) return
+    const { from, to } = this.editor.state.selection
+    return { from, to }
+  }
+
   private instantiateTipTap(note: Note | null) {
     if (!this.editorContainer) return
     const editor = new TipTapEditor({
@@ -534,6 +540,10 @@ class Editor {
         Underline,
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
+      onBlur: () => {
+        const position = this.getCursorPosition()
+        console.log('position', position)
+      },
       onUpdate: ({ transaction }) => {
         this.isDirty = transaction.docChanged
         const debounceSave = () => {
@@ -542,6 +552,8 @@ class Editor {
             createEvent(NoteEvents.Save, {
               shouldShowNotification: false,
             }).dispatch()
+            const position = this.getCursorPosition()
+            console.log('position', position)
           }, 300)
         }
         if (this.isDirty) debounceSave()
