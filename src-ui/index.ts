@@ -2,8 +2,8 @@
  * TODOs
  *
  * v0.0.1
- * FEATURES
- *   - save cursor position to local storage or db so that we can set cursor when the note is re-opened
+ * - Update readme with image of the app
+ * - set package version to 0.0.1
  *
  * v1.0.0
  * FEATURES
