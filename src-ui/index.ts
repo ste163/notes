@@ -294,7 +294,6 @@ window.addEventListener(NoteEvents.Select, async (event) => {
 
     statusBar.renderActiveNote(note)
     editor.setNote(note)
-    editor.setCursorPosition('start')
   } catch (error) {
     logger.log('error', 'Error selecting note.', error)
   }

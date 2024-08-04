@@ -19,8 +19,8 @@ import Underline from '@tiptap/extension-underline'
 import { Button, Input } from 'components'
 import { NoteEvents, createEvent } from 'event'
 import { ellipsisIcon } from 'icons'
+import { useLocalStorage } from 'use-local-storage'
 import type { MarkOptions, Note } from 'types'
-import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
 
 interface ResponsivenessConfig {
@@ -224,10 +224,6 @@ class Editor {
     // this triggers the re-rendering of the menu buttons
     // into their correct containers after they have been enabled/disabled
     this.resetResizeObserver()
-  }
-
-  public setCursorPosition(position: FocusPosition) {
-    this.editor?.commands.focus(position)
   }
 
   private resetResizeObserver() {
@@ -501,10 +497,23 @@ class Editor {
     input.focus()
   }
 
-  private getCursorPosition() {
-    if (!this.editor) return
-    const { from, to } = this.editor.state.selection
-    return { from, to }
+  // TODO: this needs to be called from an event. Why?
+  // because there are MANY ways the application can be saved.
+  // And we need to ensure it's been handled in all cases.
+  // This approach only works for onBlur and auto-save
+  private saveCursorPosition() {
+    const noteId = this.note?._id
+    if (!this.editor || !noteId) return
+    const getCursorPosition = (editor: TipTapEditor) => {
+      const { from, to } = editor.state.selection
+      return { from, to }
+    }
+    const position = getCursorPosition(this.editor)
+    const savedPositions = useLocalStorage.get('cursor-position')
+    useLocalStorage.set('cursor-position', {
+      ...savedPositions,
+      [noteId]: position,
+    })
   }
 
   private instantiateTipTap(note: Note | null) {
@@ -541,8 +550,7 @@ class Editor {
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
       onBlur: () => {
-        const position = this.getCursorPosition()
-        console.log('position', position)
+        this.saveCursorPosition()
       },
       onUpdate: ({ transaction }) => {
         this.isDirty = transaction.docChanged
@@ -552,8 +560,7 @@ class Editor {
             createEvent(NoteEvents.Save, {
               shouldShowNotification: false,
             }).dispatch()
-            const position = this.getCursorPosition()
-            console.log('position', position)
+            this.saveCursorPosition()
           }, 300)
         }
         if (this.isDirty) debounceSave()
@@ -573,6 +580,23 @@ class Editor {
         })
       },
     })
+
+    const applyCursorPosition = () => {
+      const noteId = note?._id ?? 'default'
+      const cursorPositions = JSON.parse(
+        localStorage.getItem('cursor-position') || '{}'
+      )
+      const position = cursorPositions[noteId] ?? cursorPositions?.default
+      if (position.from && position.to) {
+        editor.commands.focus(position.from, { scrollIntoView: true })
+        editor.commands.setTextSelection({
+          from: position.from,
+          to: position.to,
+        })
+      }
+    }
+
+    applyCursorPosition()
 
     return editor
   }
