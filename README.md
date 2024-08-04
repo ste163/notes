@@ -50,6 +50,10 @@ flowchart LR
   A <-- Sync changes --> B
 ```
 
+# Known issues (published web release only)
+
+Cloud syncing is not easy to support for the published web release on `github.io`. This is because github is hosted over `HTTPS`, but the docker container is setup to run on a device on your local LAN which will not have a certified SSL certificate for `HTTPS`. You can connect through the browser, but it requires manually going to the address for your container and forcing the browser to allow the connection. This issue does not exist for the desktop apps because those are not hosted over `HTTPS` but run on your device locally.
+
 # For development
 
 ## Installation

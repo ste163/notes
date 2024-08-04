@@ -158,10 +158,8 @@ class Database {
   private createRemoteUrl() {
     const { username, password, host, port } =
       useLocalStorage.get('remote-db-details')
-    // TODO: if this is a tauri build, use `http`
-    // if it is a browser build, use `https`
     return username && password && host && port
-      ? `https://${username}:${password}@${host}:${port}`
+      ? `http${config.MODE === 'web' ? 's' : ''}://${username}:${password}@${host}:${port}`
       : null
   }
 
