@@ -1,6 +1,12 @@
 import { logger } from 'logger'
 
-type AllowedKeys = 'remote-db-details' | 'sidebar-width' | 'cursor-position'
+const Keys = {
+  cursorPosition: 'cursor-position',
+  remoteDbDetails: 'remote-db-details',
+  sidebarWidth: 'sidebar-width',
+} as const
+
+type AllowedKeys = (typeof Keys)[keyof typeof Keys]
 
 interface CursorPosition {
   [key: string]: {
@@ -22,26 +28,42 @@ interface SidebarWidth {
 }
 
 class UseLocalStorage {
+  constructor() {
+    const ensureDefaultCursorExists = () => {
+      const cursorPositions = JSON.parse(
+        localStorage.getItem(Keys.cursorPosition) || '{}'
+      )
+      if (!cursorPositions.default) {
+        cursorPositions.default = { from: 1, to: 1 }
+        localStorage.setItem(
+          Keys.cursorPosition,
+          JSON.stringify(cursorPositions)
+        )
+      }
+    }
+    ensureDefaultCursorExists()
+  }
+
   private validators = {
-    'cursor-position': this.validateCursorPosition,
-    'remote-db-details': this.validateDetails,
-    'sidebar-width': this.validateSidebarWidth,
+    [Keys.cursorPosition]: this.validateCursorPosition,
+    [Keys.remoteDbDetails]: this.validateDetails,
+    [Keys.sidebarWidth]: this.validateSidebarWidth,
   }
 
   private defaults: Record<AllowedKeys, unknown> = {
-    'cursor-position': { from: 1, to: 1 },
-    'remote-db-details': {
+    [Keys.cursorPosition]: { default: { from: 1, to: 1 } },
+    [Keys.remoteDbDetails]: {
       username: '',
       password: '',
       host: '',
       port: '',
     },
-    'sidebar-width': { width: 230 },
+    [Keys.sidebarWidth]: { width: 230 },
   }
 
   public get(key: AllowedKeys) {
-    const details = window.localStorage.getItem(key)
-    const parsed = details ? JSON.parse(details) : {}
+    const value = window.localStorage.getItem(key)
+    const parsed = value ? JSON.parse(value) : {}
     const isValid = this.validators[key](parsed)
     return isValid ? parsed : this.defaults[key]
   }
@@ -63,10 +85,11 @@ class UseLocalStorage {
   }
 
   private validateCursorPosition(cursorPosition: CursorPosition): boolean {
-    return (
-      cursorPosition &&
-      typeof cursorPosition?.from === 'number' &&
-      typeof cursorPosition?.to === 'number'
+    return Object.values(cursorPosition).every(
+      (position) =>
+        position &&
+        typeof position.from === 'number' &&
+        typeof position.to === 'number'
     )
   }
 
