@@ -226,6 +226,17 @@ class Editor {
     this.resetResizeObserver()
   }
 
+  public saveCursorPosition() {
+    const noteId = this.note?._id
+    if (!this.editor || !noteId) return
+    const { to, from } = this.editor.state.selection
+    const savedPositions = useLocalStorage.get('cursor-position')
+    useLocalStorage.set('cursor-position', {
+      ...savedPositions,
+      [noteId]: { to, from },
+    })
+  }
+
   private resetResizeObserver() {
     function debounce(
       func: (args: ResizeObserverEntry[]) => void,
@@ -497,25 +508,6 @@ class Editor {
     input.focus()
   }
 
-  // TODO: this needs to be called from an event. Why?
-  // because there are MANY ways the application can be saved.
-  // And we need to ensure it's been handled in all cases.
-  // This approach only works for onBlur and auto-save
-  private saveCursorPosition() {
-    const noteId = this.note?._id
-    if (!this.editor || !noteId) return
-    const getCursorPosition = (editor: TipTapEditor) => {
-      const { from, to } = editor.state.selection
-      return { from, to }
-    }
-    const position = getCursorPosition(this.editor)
-    const savedPositions = useLocalStorage.get('cursor-position')
-    useLocalStorage.set('cursor-position', {
-      ...savedPositions,
-      [noteId]: position,
-    })
-  }
-
   private instantiateTipTap(note: Note | null) {
     if (!this.editorContainer) return
     const editor = new TipTapEditor({
@@ -550,7 +542,7 @@ class Editor {
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
       onBlur: () => {
-        this.saveCursorPosition()
+        createEvent(NoteEvents.SaveCursorPosition).dispatch()
       },
       onUpdate: ({ transaction }) => {
         this.isDirty = transaction.docChanged
@@ -560,7 +552,7 @@ class Editor {
             createEvent(NoteEvents.Save, {
               shouldShowNotification: false,
             }).dispatch()
-            this.saveCursorPosition()
+            createEvent(NoteEvents.SaveCursorPosition).dispatch()
           }, 300)
         }
         if (this.isDirty) debounceSave()

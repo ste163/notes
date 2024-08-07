@@ -62,7 +62,6 @@ import {
   LifeCycleEvents,
   KeyboardEvents,
   LoggerEvents,
-  DialogEvents,
   DatabaseEvents,
   NoteEvents,
   createEvent,
@@ -319,12 +318,17 @@ window.addEventListener(NoteEvents.Save, async (event) => {
     const shouldShowNotification = detail?.shouldShowNotification
     const { updatedAt } = await saveNote()
     statusBar.renderSavedOn(new Date(updatedAt ?? '').toLocaleString())
+    createEvent(NoteEvents.SaveCursorPosition).dispatch()
     createEvent(NoteEvents.GetAll).dispatch() // updates rest of state
     if (shouldShowNotification)
       createEvent(LifeCycleEvents.ShowSaveNotification).dispatch()
   } catch (error) {
     logger.log('error', 'Error saving note.', error)
   }
+})
+
+window.addEventListener(NoteEvents.SaveCursorPosition, () => {
+  editor.saveCursorPosition()
 })
 
 window.addEventListener(NoteEvents.UpdateTitle, async (event) => {
@@ -424,7 +428,7 @@ window.addEventListener(DatabaseEvents.SyncingPaused, (event) => {
  * any dialogs and for rendering specific dialogs.
  *
  */
-window.addEventListener(DialogEvents.Opened, (event) => {
+window.addEventListener(LifeCycleEvents.OpenedDialog, (event) => {
   const focusDialog = () => {
     // because there is not a singleton dialog, find first for now.
     // The dialog component supports 'n' amount, but the app only uses one at a time
