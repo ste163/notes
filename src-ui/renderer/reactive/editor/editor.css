@@ -53,7 +53,7 @@
   }
 }
 
-@media (max-width: 580px) {
+@media (max-width: 640px) {
   .editor-title,
   .editor-title-disabled {
     max-width: 35vw;

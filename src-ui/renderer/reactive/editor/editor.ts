@@ -19,8 +19,8 @@ import Underline from '@tiptap/extension-underline'
 import { Button, Input } from 'components'
 import { NoteEvents, createEvent } from 'event'
 import { ellipsisIcon } from 'icons'
+import { useLocalStorage } from 'use-local-storage'
 import type { MarkOptions, Note } from 'types'
-import type { FocusPosition } from '@tiptap/core'
 import './editor.css'
 
 interface ResponsivenessConfig {
@@ -226,8 +226,15 @@ class Editor {
     this.resetResizeObserver()
   }
 
-  public setCursorPosition(position: FocusPosition) {
-    this.editor?.commands.focus(position)
+  public saveCursorPosition() {
+    const noteId = this.note?._id
+    if (!this.editor || !noteId) return
+    const { to, from } = this.editor.state.selection
+    const savedPositions = useLocalStorage.get('cursor-position')
+    useLocalStorage.set('cursor-position', {
+      ...savedPositions,
+      [noteId]: { to, from },
+    })
   }
 
   private resetResizeObserver() {
@@ -369,8 +376,6 @@ class Editor {
         responsivenessConfig.forEach(processResponsiveConfig)
 
       showHideEllipsisButton()
-
-      // TODO: resize very long titles and the title input
     }
 
     // must debounce the resize handler by some amount or else e2e fails
@@ -536,6 +541,9 @@ class Editor {
         Underline,
       ],
       content: note?.content ?? NO_NOTE_CONTENT,
+      onBlur: () => {
+        createEvent(NoteEvents.SaveCursorPosition).dispatch()
+      },
       onUpdate: ({ transaction }) => {
         this.isDirty = transaction.docChanged
         const debounceSave = () => {
@@ -544,6 +552,7 @@ class Editor {
             createEvent(NoteEvents.Save, {
               shouldShowNotification: false,
             }).dispatch()
+            createEvent(NoteEvents.SaveCursorPosition).dispatch()
           }, 300)
         }
         if (this.isDirty) debounceSave()
@@ -563,6 +572,23 @@ class Editor {
         })
       },
     })
+
+    const applyCursorPosition = () => {
+      const noteId = note?._id ?? 'default'
+      const cursorPositions = JSON.parse(
+        localStorage.getItem('cursor-position') || '{}'
+      )
+      const position = cursorPositions[noteId] ?? cursorPositions?.default
+      if (position.from && position.to) {
+        editor.commands.focus(position.from, { scrollIntoView: true })
+        editor.commands.setTextSelection({
+          from: position.from,
+          to: position.to,
+        })
+      }
+    }
+
+    applyCursorPosition()
 
     return editor
   }

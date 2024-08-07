@@ -8,20 +8,17 @@ export enum DatabaseEvents {
   Disconnect = 'remote-disconnect',
 }
 
-export enum DialogEvents {
-  Opened = 'opened-dialog',
-}
-
 export enum KeyboardEvents {
   Keydown = 'keydown',
 }
 
 export enum LifeCycleEvents {
   Init = 'init',
-  WidthChanged = 'width-changed',
-  ShowSaveNotification = 'show-save-notification',
   NoNoteSelected = 'no-note-selected',
+  OpenedDialog = 'opened-dialog',
   QueryParamUpdate = 'query-param-update',
+  ShowSaveNotification = 'show-save-notification',
+  WidthChanged = 'width-changed',
 }
 
 export enum LoggerEvents {
@@ -29,10 +26,11 @@ export enum LoggerEvents {
 }
 
 export enum NoteEvents {
-  GetAll = 'get-all-notes',
-  Select = 'select-note',
   Create = 'create-note',
-  Save = 'save-note',
-  UpdateTitle = 'update-note-title',
   Delete = 'delete-note',
+  GetAll = 'get-all-notes',
+  Save = 'save-note',
+  SaveCursorPosition = 'save-cursor-position',
+  Select = 'select-note',
+  UpdateTitle = 'update-note-title',
 }

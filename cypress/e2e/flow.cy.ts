@@ -188,9 +188,9 @@ describe('flow', () => {
     cy.get(locators.statusBar.save).should('be.enabled')
     cy.get(locators.statusBar.delete).should('be.enabled')
     cy.get(locators.statusBar.savedOn).should('be.visible')
-    // and the editor is still active
-    cy.writeContent('More content! ')
-    cy.validateContent('More content! Lets add some content! Extra.')
+    // and the editor is still active, and the cursor position was saved
+    cy.writeContent(' More content!')
+    cy.validateContent('Lets add some content! Extra. More content!')
     cy.wait(DEFAULT_WAIT)
 
     // can delete first note and the app is reset to the get started screen

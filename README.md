@@ -16,6 +16,12 @@ Once Tauri v2 releases, Notes will support:
 - Keyboard shortcuts
 - Linux, Mac, Windows, and Android
 
+### Known issue (web only)
+
+Will be revisited once Tauri v2 is done. Cloud syncing may be removed from the browser builds to due `HTTPS` and `HTTP` limitations.
+
+Cloud syncing is not easy to support for the published web release on `github.io`. This is because github is hosted over `HTTPS`, but the docker container is setup to run on a device on your LAN that will not have a certified SSL certificate. You can connect through the browser, but it requires manually visiting the address for your container and forcing the browser to allow the connection. This issue does not exist for the desktop apps because those are not hosted over `HTTPS`.
+
 ## Application Architecture
 
 ### Goal

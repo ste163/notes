@@ -36,7 +36,7 @@ describe('editor', () => {
     expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
       note.title
     )
-    expect(createEvent).not.toHaveBeenCalled()
+    expect(createEvent).not.toHaveBeenCalledWith([NoteEvents.UpdateTitle])
   })
 
   it('if the title was set to an empty string, then the original title renders', async () => {
@@ -57,7 +57,7 @@ describe('editor', () => {
     expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
       note.title
     )
-    expect(createEvent).not.toHaveBeenCalled()
+    expect(createEvent).not.toHaveBeenCalledWith([NoteEvents.UpdateTitle])
   })
 
   it('if the title was changed, then calls the update title event', async () => {

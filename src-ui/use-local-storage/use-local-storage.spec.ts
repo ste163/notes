@@ -4,8 +4,8 @@ import { useLocalStorage } from './use-local-storage'
 import type { DatabaseDetails, SidebarWidth } from './use-local-storage'
 
 vi.mock('logger')
-
 vi.mocked(logger.log).mockImplementation(vi.fn())
+
 const localStorageGetSpy = vi.spyOn(Storage.prototype, 'getItem')
 const localStorageSetSpy = vi.spyOn(Storage.prototype, 'setItem')
 
@@ -96,5 +96,22 @@ describe('use-local-storage', () => {
   it('returns valid sidebar width if stored', () => {
     localStorageGetSpy.mockReturnValue(JSON.stringify({ width: 200 }))
     expect(useLocalStorage.get('sidebar-width')).toEqual({ width: 200 })
+  })
+
+  it('can set cursor position and always have the default returned', () => {
+    // disable the spies for this test
+    localStorageGetSpy.mockRestore()
+    localStorageSetSpy.mockRestore()
+
+    const original = useLocalStorage.get('cursor-position')
+    useLocalStorage.set('cursor-position', {
+      ...original,
+      'note-id': { from: 3, to: 3 },
+    })
+    const positions = useLocalStorage.get('cursor-position')
+    expect(positions).toEqual({
+      default: { from: 1, to: 1 },
+      'note-id': { from: 3, to: 3 },
+    })
   })
 })

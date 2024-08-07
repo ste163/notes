@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid'
-import { DialogEvents, LifeCycleEvents, createEvent } from 'event'
+import { LifeCycleEvents, createEvent } from 'event'
 import { closeIcon } from 'icons'
 import { trapFocus } from './trap-focus'
 import type { DIALOGS } from 'const'
@@ -93,7 +93,9 @@ class Dialog {
     this.dialog.addEventListener('keydown', this.trapFocusListener)
     this.dialog.addEventListener('keydown', this.escapePressListener)
 
-    createEvent(DialogEvents.Opened, { dialog: this.queryParam })?.dispatch()
+    createEvent(LifeCycleEvents.OpenedDialog, {
+      dialog: this.queryParam,
+    })?.dispatch()
   }
 
   public close() {
