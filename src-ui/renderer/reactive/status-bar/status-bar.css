@@ -65,7 +65,7 @@
   background-color: var(--button-hover-color);
 }
 
-@media (max-width: 580px) {
+@media (max-width: 640px) {
   .status-bar-hide-on-mobile {
     display: none !important;
   }

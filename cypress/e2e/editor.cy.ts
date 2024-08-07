@@ -184,13 +184,4 @@ describe('editor', () => {
     cy.wait(DEFAULT_WAIT)
     cy.validateContent('Here is some unsaved content')
   })
-
-  it.skip(
-    'saves and restores cursor position'
-    // TODO: see if cypress can test where exactly the cursor is
-    //
-    // create two notes
-    // write content in both
-    // select the first note again, and the cursor should be at the end
-  )
 })
