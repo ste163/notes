@@ -1,10 +1,6 @@
 /**
  * TODOs
  *
- * v0.0.1
- * - Update readme with image of the app
- * - set package version to 0.0.1
- *
  * v1.0.0
  * FEATURES
  * - Tauri v2 at least desktop support + Android if it works well
