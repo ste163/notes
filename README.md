@@ -4,8 +4,6 @@
 
 A minimal note-taking application for Linux, Mac, Windows, and browsers. Supports cloud syncing through [PouchDB](https://pouchdb.com/). For a simple, self-hosted remote database setup, see the [couchdb-docker repo](https://github.com/ste163/couchdb-docker).
 
-TODO: INSERT IMAGE OF APPLICATION HERE
-
 ## Web and Desktop versions
 
 Notes uses the Tauri framework for desktop builds (and soon to be Android). Until Tauri v2's release, I will not be developing the desktop-specific features as v2 will include API changes.
