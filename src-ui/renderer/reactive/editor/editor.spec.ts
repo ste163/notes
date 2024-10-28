@@ -26,13 +26,13 @@ describe('editor', () => {
 
     // the button is now gone and the input renders
     expect(queryByRole('button', { name: 'Note title' })).toBeNull()
-    expect(getByRole('textbox')).toHaveValue(note.title)
+    expect(getByRole('textbox', { name: 'Edit title' })).toHaveValue(note.title)
 
     // remove focus from the text input
     await userEvent.click(getByRole('button', { name: 'Bold' }))
 
     // the input is now gone and the button renders
-    expect(queryByRole('textbox')).toBeNull()
+    expect(queryByRole('textbox', { name: 'Edit title' })).toBeNull()
     expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
       note.title
     )
@@ -45,15 +45,14 @@ describe('editor', () => {
 
     // open input
     await userEvent.click(getByRole('button', { name: 'Note title' }))
-
-    const input = getByRole('textbox')
+    const input = getByRole('textbox', { name: 'Edit title' })
     await userEvent.clear(input)
 
     // remove focus from the text input
     await userEvent.click(getByRole('button', { name: 'Bold' }))
 
     // the input is now gone and the button renders
-    expect(queryByRole('textbox')).toBeNull()
+    expect(queryByRole('textbox', { name: 'Edit title' })).toBeNull()
     expect(getByRole('button', { name: 'Note title' })).toHaveTextContent(
       note.title
     )
@@ -67,7 +66,7 @@ describe('editor', () => {
     // open input
     await userEvent.click(getByRole('button', { name: 'Note title' }))
 
-    const input = getByRole('textbox')
+    const input = getByRole('textbox', { name: 'Edit title' })
     await userEvent.clear(input) // remove old title
     await userEvent.type(input, 'New title!')
 
