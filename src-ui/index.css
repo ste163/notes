@@ -45,6 +45,11 @@ body {
   margin: 0;
   padding: 0;
   overflow-y: hidden;
+  overscroll-behavior: none;
+}
+
+html {
+  overscroll-behavior: none;
 }
 
 #status-bar {
