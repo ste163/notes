@@ -100,13 +100,14 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 
     const { noteId, dialog, sidebar: sidebarParam } = urlController.getParams()
 
-    sidebarParam
-      ? createEvent(LifeCycleEvents.QueryParamUpdate, {
-          sidebar: sidebarParam,
-        }).dispatch()
-      : createEvent(LifeCycleEvents.QueryParamUpdate, {
-          sidebar: 'open',
-        }).dispatch()
+    if (sidebarParam)
+      createEvent(LifeCycleEvents.QueryParamUpdate, {
+        sidebar: sidebarParam,
+      }).dispatch()
+    else
+      createEvent(LifeCycleEvents.QueryParamUpdate, {
+        sidebar: 'open',
+      }).dispatch()
 
     if (!noteId) {
       editor.setDisabled(true)
@@ -126,7 +127,7 @@ window.addEventListener(DatabaseEvents.Init, async () => {
 
   // can only fetch notes after the database has been fully initialized
   const { noteId } = urlController.getParams()
-  noteId &&
+  if (noteId)
     createEvent(LifeCycleEvents.QueryParamUpdate, {
       noteId,
       isDbInit: true,
@@ -168,7 +169,8 @@ window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
       }
 
       urlController.setParam(PARAMS.SIDEBAR, sidebarParam)
-      sidebarParam === 'open' ? openSidebar() : closeSidebar()
+      if (sidebarParam === 'open') openSidebar()
+      else closeSidebar()
     }
 
     const isSelectingSameNote = noteId === urlController.getParams().noteId

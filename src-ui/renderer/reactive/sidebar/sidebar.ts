@@ -238,9 +238,9 @@ class Sidebar {
   private assignFullscreenClasses() {
     const styleMainContainer = () => {
       const element = document.querySelector('.sidebar-main')
-      this.isFullscreen
-        ? element?.classList.add('sidebar-fullscreen')
-        : element?.classList.remove('sidebar-fullscreen')
+
+      if (this.isFullscreen) element?.classList.add('sidebar-fullscreen')
+      else element?.classList.remove('sidebar-fullscreen')
     }
 
     const styleResizeHandle = () => {
@@ -248,9 +248,8 @@ class Sidebar {
         '#sidebar-resizer-handle'
       ) as HTMLElement
       if (!resizeHandle) return
-      this.isFullscreen
-        ? (resizeHandle.style.display = 'none')
-        : (resizeHandle.style.display = 'flex')
+      if (this.isFullscreen) resizeHandle.style.display = 'none'
+      else resizeHandle.style.display = 'flex'
     }
 
     styleMainContainer()

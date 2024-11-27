@@ -53,9 +53,9 @@ class Dialog {
       </div>
     </div>`
 
-    document.body.firstChild
-      ? document.body.insertBefore(dialogBackdrop, document.body.firstChild)
-      : document.body.appendChild(dialogBackdrop)
+    if (document.body.firstChild)
+      document.body.insertBefore(dialogBackdrop, document.body.firstChild)
+    else document.body.appendChild(dialogBackdrop)
   }
 
   private trapFocusListener = (event: KeyboardEvent) => {
