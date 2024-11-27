@@ -387,9 +387,8 @@ class Editor {
   private toggleEllipsisPopOut() {
     const ellipsisPopOut = document.querySelector('#ellipsis-pop-out')
     const isVisible = ellipsisPopOut?.classList.toggle('show-ellipsis-pop-out')
-    isVisible
-      ? this.addGlobalPopOutListener()
-      : this.removeGlobalPopOutListener()
+    if (isVisible) this.addGlobalPopOutListener()
+    else this.removeGlobalPopOutListener()
   }
 
   private addGlobalPopOutListener() {
@@ -420,9 +419,9 @@ class Editor {
     if (!elements.length) return
     elements.forEach((element) => {
       // isActive checks the current cursor position
-      this.editor?.isActive(markName, markOptions && markOptions)
-        ? element.classList.add('isActive')
-        : element.classList.remove('isActive')
+      if (this.editor?.isActive(markName, markOptions && markOptions))
+        element.classList.add('isActive')
+      else element.classList.remove('isActive')
     })
   }
 
@@ -470,11 +469,11 @@ class Editor {
         const hasValue = inputValue?.trim() !== ''
         const wasTitleChanged = this.note?.title !== inputValue
         const canUpdate = wasTitleChanged && hasValue
-        canUpdate
-          ? createEvent(NoteEvents.UpdateTitle, {
-              title: inputValue.trim(),
-            }).dispatch()
-          : this.updateTitle(this.note?.title || 'Error')
+        if (canUpdate)
+          createEvent(NoteEvents.UpdateTitle, {
+            title: inputValue.trim(),
+          }).dispatch()
+        else this.updateTitle(this.note?.title || 'Error')
       }
 
       input.onblur = () => isOnBlurSaveEnabled && attemptSaveOrReset()
@@ -490,7 +489,7 @@ class Editor {
             this.updateTitle(this.note?.title || 'Error')
           },
         }
-        keyMap[key] && keyMap[key]()
+        if (keyMap[key]) keyMap[key]()
       })
 
       input.addEventListener('input', (event) => {

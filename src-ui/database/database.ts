@@ -77,6 +77,7 @@ class Database {
         `Test connection established with remote database, "${result?.db_name ?? ''}".`
       )
       this.setupSyncing()
+      // eslint-disable-next-line
     } catch (_e) {
       logger.log(
         'error',

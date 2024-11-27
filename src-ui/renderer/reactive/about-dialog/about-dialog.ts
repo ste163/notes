@@ -75,13 +75,13 @@ class AboutDialog {
           )
           if (!container) return
           const isAlreadyOnDOM = document.querySelector('#agpl-license-block')
-          isAlreadyOnDOM
-            ? (container.innerHTML = '')
-            : this.renderLicenseBlock(
-                'agpl-license-block',
-                container,
-                agplLicense
-              )
+          if (isAlreadyOnDOM) container.innerHTML = ''
+          else
+            this.renderLicenseBlock(
+              'agpl-license-block',
+              container,
+              agplLicense
+            )
         },
       }).getElement()
     )
@@ -99,13 +99,13 @@ class AboutDialog {
           )
           if (!container) return
           const isAlreadyOnDOM = document.querySelector('#apache-license-block')
-          isAlreadyOnDOM
-            ? (container.innerHTML = '')
-            : this.renderLicenseBlock(
-                'apache-license-block',
-                container,
-                apacheLicense
-              )
+          if (isAlreadyOnDOM) container.innerHTML = ''
+          else
+            this.renderLicenseBlock(
+              'apache-license-block',
+              container,
+              apacheLicense
+            )
         },
       }).getElement()
     )

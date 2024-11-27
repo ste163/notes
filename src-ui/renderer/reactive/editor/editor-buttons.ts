@@ -152,7 +152,8 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
             .run()
         }
       }
-      isLink ? editor?.chain().focus().unsetLink().run() : setLink()
+      if (isLink) editor?.chain().focus().unsetLink().run()
+      else setLink()
     },
     html: linkIcon,
   },

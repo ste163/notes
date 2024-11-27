@@ -70,9 +70,8 @@ class StatusBar {
   public setSidebarButtonActive(isActive: boolean) {
     const button = document.querySelector('#handle-sidebar-button')
     if (!button) return
-    isActive
-      ? button.classList.add('handle-sidebar-button-active')
-      : button.classList.remove('handle-sidebar-button-active')
+    if (isActive) button.classList.add('handle-sidebar-button-active')
+    else button.classList.remove('handle-sidebar-button-active')
   }
 
   public renderActiveNote(note: Note | null) {
