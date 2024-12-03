@@ -8,12 +8,13 @@ const Keys = {
 
 type AllowedKeys = (typeof Keys)[keyof typeof Keys]
 
-interface CursorPosition {
-  [key: string]: {
+type CursorPosition = Record<
+  string,
+  {
     from: number
     to: number
   }
-}
+>
 
 interface DatabaseDetails {
   [key: string]: string // needed for correct type indexing

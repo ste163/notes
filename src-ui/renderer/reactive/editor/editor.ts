@@ -52,10 +52,10 @@ const NO_NOTE_CONTENT = `<h1>Get started</h1><p>Create or select a note from the
 class Editor {
   private editor: TipTapEditor | null = null
   private note: Note | null = null
-  private saveTimer: NodeJS.Timeout | null = null
+  private saveTimer: ReturnType<typeof setTimeout> | null = null
   private isDirty = false
 
-  private globalClickHandler: (event: MouseEvent) => void = () => {}
+  private globalClickHandler: (event: MouseEvent) => void = () => Object
   private resizeObserver: ResizeObserver | null = null
   private editorTitleContainer: HTMLDivElement | null = null
   private editorMenuContainer: HTMLDivElement | null = null
@@ -242,7 +242,7 @@ class Editor {
       func: (args: ResizeObserverEntry[]) => void,
       wait: number
     ) {
-      let timeout: NodeJS.Timeout
+      let timeout: ReturnType<typeof setTimeout>
       return (args: ResizeObserverEntry[]) => {
         const later = () => {
           clearTimeout(timeout)

@@ -143,7 +143,7 @@ window.addEventListener(DatabaseEvents.Init, async () => {
 // a return to exit the function early. This is intentional.
 window.addEventListener(LifeCycleEvents.QueryParamUpdate, async (event) => {
   try {
-    const isDbInit: boolean = !!(event as CustomEvent)?.detail?.isDbInit
+    const isDbInit = !!(event as CustomEvent)?.detail?.isDbInit
     const noteId: string = (event as CustomEvent)?.detail?.noteId
     const dialog: string = (event as CustomEvent)?.detail?.dialog
     const sidebarParam: string = (event as CustomEvent)?.detail?.sidebar

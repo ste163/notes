@@ -8,7 +8,7 @@ import './sidebar.css'
 
 class Sidebar {
   private notes: Notes = {}
-  private activeNoteId: string = ''
+  private activeNoteId = ''
   private inputContainerId = 'note-input-container'
   private isFullscreen = false
   private resizeTimer: NodeJS.Timeout | null = null
