@@ -7,6 +7,11 @@ import prettierRecommended from 'eslint-plugin-prettier/recommended'
 import testingLibrary from 'eslint-plugin-testing-library'
 import { FlatCompat } from '@eslint/eslintrc'
 
+// TODO:
+// - reimplement each piece with the TSconfig first
+// - remove the compat piece as it won't be needed.
+// - will then hopefully be able to remove globals
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
