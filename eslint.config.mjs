@@ -1,21 +1,15 @@
-import globals from 'globals'
-import js from '@eslint/js'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import eslint from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import eslintConfigPrettier from 'eslint-config-prettier'
 import prettierRecommended from 'eslint-plugin-prettier/recommended'
 import testingLibrary from 'eslint-plugin-testing-library'
-import { FlatCompat } from '@eslint/eslintrc'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-})
-
-export default [
+export default tseslint.config(
+  eslint.configs.recommended,
+  tseslint.configs.strict,
+  tseslint.configs.stylistic,
+  eslintConfigPrettier,
+  prettierRecommended,
   {
     ignores: [
       '**/node_modules/**/*',
@@ -26,41 +20,17 @@ export default [
       '**/*.yaml',
     ],
   },
-  ...compat.extends(
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
-    'plugin:prettier/recommended'
-  ),
   {
-    plugins: {
-      '@typescript-eslint': typescriptEslint,
-      'prettier/recommended': prettierRecommended,
-      'testing-library': testingLibrary,
-    },
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-      },
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      parserOptions: {
-        parser: '@typescript-eslint/parser',
-      },
-    },
     rules: {
       'no-prototype-builtins': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
-  ...compat.extends('plugin:testing-library/dom').map((config) => ({
-    ...config,
-    files: ['**/*.spec.ts'],
-  })),
   {
     files: ['**/*.spec.ts'],
+    ...testingLibrary.configs['flat/dom'],
     rules: {
       'testing-library/prefer-screen-queries': 'off',
     },
-  },
-]
+  }
+)

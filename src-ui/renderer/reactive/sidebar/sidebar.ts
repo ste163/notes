@@ -8,10 +8,10 @@ import './sidebar.css'
 
 class Sidebar {
   private notes: Notes = {}
-  private activeNoteId: string = ''
+  private activeNoteId = ''
   private inputContainerId = 'note-input-container'
   private isFullscreen = false
-  private resizeTimer: NodeJS.Timeout | null = null
+  private resizeTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor() {
     this.renderInput = this.renderInput.bind(this)
@@ -174,7 +174,7 @@ class Sidebar {
       )
 
       // Handle long press for touchscreens
-      let pressTimer: NodeJS.Timeout
+      let pressTimer: ReturnType<typeof setTimeout>
       buttonContainer.addEventListener('touchstart', (event) => {
         pressTimer = setTimeout(() => {
           event.preventDefault()

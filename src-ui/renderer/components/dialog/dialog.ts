@@ -79,8 +79,9 @@ class Dialog {
   }) {
     this.queryParam = queryParam
     if (classList) this.dialog?.classList.add(classList)
-    document.getElementById(`dialog-title-${this.id}`)!.innerText = title
-    document.getElementById(`dialog-content-${this.id}`)!.appendChild(content)
+    const dialogTitle = document.getElementById(`dialog-title-${this.id}`)
+    if (dialogTitle) dialogTitle.innerText = title
+    document.getElementById(`dialog-content-${this.id}`)?.appendChild(content)
   }
 
   public open() {
