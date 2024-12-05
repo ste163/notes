@@ -40,7 +40,11 @@
       "capabilities": [
         "http"
       ],
-      "csp": "default-src 'self'; connect-src 'self' http://192.168.*.*:*"
+      "csp": {
+        "default-src": "self",          
+        "connect-src": "http: http://192.168.*.*:*",
+        "style-src": "'self' 'unsafe-inline'"
+      }
     }
   }
 }
