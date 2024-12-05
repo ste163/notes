@@ -14,7 +14,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "targets": "all"
+    "targets": "all",
+    "macOS": {
+      "signingIdentity": "-"
+    }
   },
   "productName": "notes",
   "mainBinaryName": "notes",
