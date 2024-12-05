@@ -36,5 +36,8 @@
     "security": {
       "csp": null
     }
+  },
+  "macOS": {
+    "signingIdentity": "-"
   }
 }
