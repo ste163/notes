@@ -1,0 +1,18 @@
+{
+  "identifier": "http",
+  "description": "Allows the main webview window to access LAN",
+  "windows": [
+    "main"
+  ],
+  "allow": [
+    { "url:": "http://192.168.*.*:*" }
+  ],
+  "remote": {
+    "urls": [
+      "http://192.168.*.*:*"
+    ]
+  }, 
+  "permissions": [
+    "core:default"
+  ]
+}

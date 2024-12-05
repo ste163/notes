@@ -1,1 +1,1 @@
-{"migrated":{"identifier":"migrated","description":"permissions that were migrated from v1","local":true,"windows":["main"],"permissions":["core:default","shell:allow-open","shell:default"]}}
+{"http":{"identifier":"http","description":"Allows the main webview window to access LAN","remote":{"urls":["http://192.168.*.*:*"]},"local":true,"windows":["main"],"permissions":["core:default"]}}
