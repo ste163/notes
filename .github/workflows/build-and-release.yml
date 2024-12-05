@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main # main for now, but a 'release' branch would be better for manual approval
+
 jobs:
   publish-tauri:
     permissions:
@@ -16,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-     - name: install ubuntu dependencies
+      - name: install ubuntu dependencies
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
@@ -31,6 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
       
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
