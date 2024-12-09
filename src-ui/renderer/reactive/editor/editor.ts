@@ -127,19 +127,7 @@ class Editor {
   }
 
   public renderMenu(isDisabled = false) {
-    if (!this.editorMenuContainer) return
-
-    // If it is a subsequent re-render
-    // then enable/disable buttons instead of a full re-render
-    const renderedButtons = document.querySelectorAll(
-      '.editor-menu-button'
-    ) as NodeListOf<HTMLButtonElement>
-    if (renderedButtons.length) {
-      renderedButtons.forEach((button) => {
-        button.disabled = isDisabled
-      })
-      return
-    }
+    if (!this.editorMenuContainer || !this.editor) return
 
     const createButtonGroups = (button: HTMLButtonElement) => {
       button.classList.add('editor-menu-button')
@@ -165,6 +153,10 @@ class Editor {
 
     const buttons = instantiateMenuButtons(this.editor)
     buttons
+      .map((b) => {
+        b.disabled = isDisabled
+        return b
+      })
       .map(createButtonGroups)
       .forEach((groupContainer) => mainButtonDiv?.appendChild(groupContainer))
 

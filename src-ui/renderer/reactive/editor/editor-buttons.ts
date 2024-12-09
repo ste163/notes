@@ -19,7 +19,7 @@ import type { Editor } from '@tiptap/core'
 
 interface EditorButton extends Omit<ButtonOptions, 'onClick'> {
   group: number // used for placing in which div for organization
-  onClick: (editor: Editor | null) => void
+  onClick: (editor: Editor) => void
   markName?: string // used for toggling css
   markOptions?: MarkOptions // used for toggling css
 }
@@ -34,7 +34,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Bold',
     markName: 'bold',
     className: 'menu-button-bold',
-    onClick: (editor) => editor?.chain().focus().toggleBold().run(),
+    onClick: (editor) => editor.chain().focus().toggleBold().run(),
     html: boldIcon,
   },
   {
@@ -42,7 +42,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Italic',
     markName: 'italic',
     className: 'menu-button-italic',
-    onClick: (editor) => editor?.chain().focus().toggleItalic().run(),
+    onClick: (editor) => editor.chain().focus().toggleItalic().run(),
     html: italicIcon,
   },
   {
@@ -50,7 +50,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Underline',
     markName: 'underline',
     className: 'menu-button-underline',
-    onClick: (editor) => editor?.chain().focus().toggleUnderline().run(),
+    onClick: (editor) => editor.chain().focus().toggleUnderline().run(),
     html: underlineIcon,
   },
   {
@@ -58,7 +58,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     title: 'Strike',
     markName: 'strike',
     className: 'menu-button-strike',
-    onClick: (editor) => editor?.chain().focus().toggleStrike().run(),
+    onClick: (editor) => editor.chain().focus().toggleStrike().run(),
     html: strikeIcon,
   },
   {
@@ -68,7 +68,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 1 },
     className: 'menu-button-h1',
     onClick: (editor) =>
-      editor?.chain().focus().toggleHeading({ level: 1 }).run(),
+      editor.chain().focus().toggleHeading({ level: 1 }).run(),
     html: heading1Icon,
   },
   {
@@ -78,7 +78,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 2 },
     className: 'menu-button-h2',
     onClick: (editor) =>
-      editor?.chain().focus().toggleHeading({ level: 2 }).run(),
+      editor.chain().focus().toggleHeading({ level: 2 }).run(),
     html: heading2Icon,
   },
   {
@@ -88,7 +88,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markOptions: { level: 3 },
     className: 'menu-button-h3',
     onClick: (editor) =>
-      editor?.chain().focus().toggleHeading({ level: 3 }).run(),
+      editor.chain().focus().toggleHeading({ level: 3 }).run(),
     html: heading3Icon,
   },
   {
@@ -97,7 +97,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'bulletList',
     className: 'menu-button-bullet-list',
     onClick: (editor) => {
-      editor?.chain().focus().toggleBulletList().run()
+      editor.chain().focus().toggleBulletList().run()
     },
     html: bulletListIcon,
   },
@@ -107,7 +107,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'orderedList',
     className: 'menu-button-ordered-list',
     onClick: (editor) => {
-      editor?.chain().focus().toggleOrderedList().run()
+      editor.chain().focus().toggleOrderedList().run()
     },
     html: orderedListIcon,
   },
@@ -117,7 +117,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'taskList',
     className: 'menu-button-task-list',
     onClick: (editor) => {
-      editor?.chain().focus().toggleTaskList().run()
+      editor.chain().focus().toggleTaskList().run()
     },
     html: taskListIcon,
   },
@@ -127,7 +127,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'codeBlock',
     className: 'menu-button-code-block',
     onClick: (editor) => {
-      editor?.chain().focus().toggleCodeBlock().run()
+      editor.chain().focus().toggleCodeBlock().run()
     },
     html: codeBlockIcon,
   },
@@ -137,7 +137,7 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
     markName: 'link',
     className: 'menu-button-link',
     onClick: (editor) => {
-      const isLink = editor?.isActive('link')
+      const isLink = editor.isActive('link')
       const setLink = () => {
         const url = window.prompt('URL')
         if (url) {
@@ -152,14 +152,14 @@ const BUTTON_CONFIGURATION: EditorButton[] = [
             .run()
         }
       }
-      if (isLink) editor?.chain().focus().unsetLink().run()
+      if (isLink) editor.chain().focus().unsetLink().run()
       else setLink()
     },
     html: linkIcon,
   },
 ]
 
-function instantiateMenuButtons(editor: Editor | null) {
+function instantiateMenuButtons(editor: Editor) {
   return BUTTON_CONFIGURATION.map((b) => {
     const button = new Button({
       title: b.title,
