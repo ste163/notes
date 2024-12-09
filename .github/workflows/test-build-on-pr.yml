@@ -3,7 +3,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
-# test
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
