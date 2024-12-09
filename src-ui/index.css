@@ -37,6 +37,19 @@ svg {
   fill: var(--text-primary);
 }
 
+.banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #204587;
+  color: var(--background-color);
+  padding: 0.75rem;
+  font-weight: bold;
+  font-size: small;
+  z-index: 1000;
+}
+
 body {
   display: grid;
   grid-template-columns: auto 10fr;

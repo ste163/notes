@@ -13,5 +13,13 @@
     <div id="sidebar"></div>
     <main id="main"></main>
   </body>
-  <script></script>
+  <script>
+    if ('%MODE%' === 'web') {
+      const banner = document.createElement('div')
+      banner.className = 'banner'
+      banner.textContent =
+        'Running web version. This version is for example purposes only and has a limited feature set. Download the app for all features (like cloud syncing).'
+      document.body.insertBefore(banner, document.body.firstChild)
+    }
+  </script>
 </html>
