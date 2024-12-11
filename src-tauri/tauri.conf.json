@@ -22,7 +22,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE3Mzk1N0VFREJEQUQ3NgpSV1I$",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQzRjdCMDY0MjFBRTA3MjQKUldRa0I2NGhaTEQzMHhpa2pub2JtcFNoR3JyZWV0K2F1M3JMcnc4ZlhCN3FaQUY0a0grQUVxaFMK",
       "endpoints": [
         "https://github.com/ste163/notes/releases/latest/download/latest.json"
       ],
