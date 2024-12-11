@@ -6,9 +6,11 @@
   "scripts": {
     "build:ui:web": "tsc && vite build --mode web",
     "build:ui:desktop": "tsc && vite build --mode desktop",
+    "build:android": "pnpm tauri android build",
     "start:dev:ui:web": "vite --mode web",
     "start:dev:ui:desktop": "vite --mode desktop",
     "start:dev:tauri": "tauri dev",
+    "start:dev:android": "pnpm tauri android dev --open",
     "start:preview:ui": "pnpm run build:ui:web && vite preview --port 1420",
     "test": "vitest --watch=false",
     "test:watch": "vitest --watch=true",
