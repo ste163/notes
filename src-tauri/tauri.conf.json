@@ -15,15 +15,32 @@
       "icons/icon.ico"
     ],
     "targets": "all",
+    "createUpdaterArtifacts": true,
     "macOS": {
       "signingIdentity": "-"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE3Mzk1N0VFREJEQUQ3NgpSV1I$",
+      "endpoints": [
+        "https://github.com/ste163/notes/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "basicUi"
+      },
+      "macOS": {
+        "installMode": "basicUi"
+      },
+      "linux": {
+        "installMode": "basicUi"
+      }
     }
   },
   "productName": "notes",
   "mainBinaryName": "notes",
   "version": "0.0.2",
   "identifier": "com.github.ste163.notes",
-  "plugins": {},
   "app": {
     "withGlobalTauri": true,
     "windows": [
