@@ -25,12 +25,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf    
           
-      # test that the key is evening showing correctly
-      - name: Echo TAURI_SIGNING_PRIVATE_KEY
-        run: echo $TAURI_SIGNING_PRIVATE_KEY
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-
       - name: setup pnpm
         uses: pnpm/action-setup@v4
         with:
