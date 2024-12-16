@@ -1,5 +1,6 @@
 {
-  "identifier": "desktop-capability",
+  "identifier": "desktop-updater",
+  "description": "Automatic update support for desktop releases.",
   "platforms": [
     "macOS",
     "windows",
