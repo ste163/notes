@@ -27,13 +27,13 @@
         "https://github.com/ste163/notes/releases/latest/download/latest.json"
       ],
       "windows": {
-        "installMode": "basicUi"
+        "installMode": "passive"
       },
       "macOS": {
-        "installMode": "basicUi"
+        "installMode": "passive"
       },
       "linux": {
-        "installMode": "basicUi"
+        "installMode": "passive"
       }
     }
   },

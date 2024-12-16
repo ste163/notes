@@ -5,10 +5,10 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [package]
 name = "notes"
 version = "0.0.2"
-description = "Tauri + Tiptap notes app"
+description = "Couchdb-based writing application"
 authors = ["you"]
-license = ""
-repository = ""
+license = "AGPL-3.0"
+repository = "https://github.com/ste163/notes"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
