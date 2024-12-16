@@ -55,7 +55,8 @@
     ],
     "security": {
       "capabilities": [
-        "http"
+        "http",
+        "desktop-updater"
       ],
       "csp": {
         "default-src": "self",          

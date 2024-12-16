@@ -3,7 +3,6 @@
  *
  * v1.0.0
  * FEATURES
- * - Tauri v2 at least desktop support + Android if it works well
  * - Keyboard shortcuts (Saving, Add a Link, open/close sidebar)
  *
  * - Draggable elements inside the editor (like check boxes)
@@ -73,6 +72,7 @@ import {
 import { urlController } from 'url-controller'
 import { logger } from 'logger'
 import { DIALOGS, PARAMS } from 'const'
+import { checkForUpdate } from './tauri'
 import type { Note } from 'types'
 
 let isMobile: boolean
@@ -116,6 +116,8 @@ window.addEventListener(LifeCycleEvents.Init, async () => {
 
     if (dialog)
       createEvent(LifeCycleEvents.QueryParamUpdate, { dialog }).dispatch()
+
+    await checkForUpdate()
   } catch (error) {
     logger.log('error', 'Error in LifeCycleEvents.Init.', error)
   }
