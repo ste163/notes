@@ -3,7 +3,6 @@
   align-items: center;
   justify-content: space-between;
   font-size: small;
-  border-bottom: var(--outline-color) 0.13rem solid;
   padding: 0.25rem 0.5rem;
   overflow-y: hidden;
   overflow-x: auto;
@@ -65,7 +64,7 @@
   background-color: var(--button-hover-color);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 660px) {
   .status-bar-hide-on-mobile {
     display: none !important;
   }

@@ -18,7 +18,6 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--background-color);
-  border: 0.13rem solid var(--outline-color);
   border-radius: 0.25rem;
   overflow-y: hidden;
   overflow-x: hidden;
