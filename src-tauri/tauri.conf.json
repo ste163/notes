@@ -1,4 +1,8 @@
 {
+  "productName": "notes",
+  "mainBinaryName": "notes",
+  "version": "0.0.3",
+  "identifier": "com.github.ste163.notes",
   "build": {
     "beforeDevCommand": "pnpm start:dev:ui:desktop",
     "beforeBuildCommand": "pnpm build:ui:desktop",
@@ -37,18 +41,18 @@
       }
     }
   },
-  "productName": "notes",
-  "mainBinaryName": "notes",
-  "version": "0.0.3",
-  "identifier": "com.github.ste163.notes",
   "app": {
     "withGlobalTauri": true,
+    "macOSPrivateApi": false,
     "windows": [
       {
+        "devtools": true,
         "fullscreen": false,
         "resizable": true,
         "title": "notes",
+        "minWidth": 400,
         "width": 800,
+        "minHeight": 300,
         "height": 600,
         "useHttpsScheme": false
       }
