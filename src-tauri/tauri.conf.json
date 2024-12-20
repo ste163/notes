@@ -60,7 +60,7 @@
       ],
       "csp": {
         "default-src": "self",          
-        "connect-src": "http: http://192.168.*.*:*",
+        "connect-src": "http: ipc:",
         "style-src": "'self' 'unsafe-inline'"
       }
     }
