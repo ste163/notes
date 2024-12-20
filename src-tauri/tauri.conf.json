@@ -39,7 +39,7 @@
   },
   "productName": "notes",
   "mainBinaryName": "notes",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "identifier": "com.github.ste163.notes",
   "app": {
     "withGlobalTauri": true,

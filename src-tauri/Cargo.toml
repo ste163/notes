@@ -4,7 +4,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [package]
 name = "notes"
-version = "0.0.2"
+version = "0.0.3"
 description = "Couchdb-based writing application"
 authors = ["you"]
 license = "AGPL-3.0"
