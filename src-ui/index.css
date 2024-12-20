@@ -14,7 +14,7 @@
   --error-color: rgb(231, 123, 123);
 
   color: var(--text-primary);
-  background-color: var(--background-color);
+  background-color: rgba(0, 0, 0, 0.116);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -86,6 +86,9 @@ main {
   flex-direction: column;
   grid-area: main;
   overflow-y: auto;
+  border-radius: 10px;
+  background-color: var(--background-color);
+  margin: 1rem;
 }
 
 main > h1 {

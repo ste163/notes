@@ -13,7 +13,7 @@ describe('sidebar', () => {
     instance.render()
 
     // renders input on create click
-    const createButton = getByRole('button', { name: 'Add Create' })
+    const createButton = getByRole('button', { name: 'Add New' })
     await userEvent.click(createButton)
 
     // clicking cancel button removes input
@@ -45,8 +45,8 @@ describe('sidebar', () => {
     const { instance, getAllByRole } = render(Sidebar)
     instance.render()
     instance.renderNoteList()
-    // notes are rendered as buttons, but the first two are the create and close buttons
-    expect(getAllByRole('button')).toHaveLength(2)
+    // notes are rendered as buttons, but the first is the create note button
+    expect(getAllByRole('button')).toHaveLength(1)
   })
 
   it('renders note list and clicking note emits event', async () => {
@@ -72,10 +72,10 @@ describe('sidebar', () => {
 
     // notes are rendered as buttons
     const buttons = getAllByRole('button')
-    expect(buttons).toHaveLength(Object.keys(notes).length + 2) // first two buttons are create and close
+    expect(buttons).toHaveLength(Object.keys(notes).length + 1) // first button is for new note
 
     // clicking note emits event
-    await userEvent.click(buttons[2]) // click the first note
+    await userEvent.click(buttons[1]) // click the first note
     expect(vi.mocked(createEvent)).toHaveBeenCalledWith(
       LifeCycleEvents.QueryParamUpdate,
       {

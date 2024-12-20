@@ -3,7 +3,7 @@ button {
   flex-direction: row;
   align-items: center;
   border-radius: 0.3rem;
-  border: 0.13rem solid var(--outline-color);
+  border: none;
   padding: 0.25rem 0.4rem;
 
   font-size: small;
@@ -12,7 +12,7 @@ button {
   cursor: pointer;
 
   color: var(--text-primary);
-  background-color: var(--background-color);
+  background-color: transparent;
 
   transition: background-color 0.1s ease-in-out;
 }
