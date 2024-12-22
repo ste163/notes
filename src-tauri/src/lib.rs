@@ -15,7 +15,7 @@ pub fn run() {
         .expect("Unsupported platform! 'apply_vibrancy' is only supported on macOS");
 
     #[cfg(target_os = "windows")]
-    apply_mica(&window, true)
+    apply_mica(&window, Some(true))
         .expect("Unsupported platform! 'apply_mica' is only supported on Windows");
 
 
