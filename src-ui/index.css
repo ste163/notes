@@ -4,17 +4,17 @@
   line-height: 24px;
   font-weight: 400;
 
-  /* TODO: revisit naming */
-  --background-color: rgb(251, 252, 255);
-  --text-primary: rgb(45, 55, 72);
+  --background-dark: rgba(0, 0, 0, 0.5);
+  --text-primary: rgb(225, 225, 225); /* used against the darkest background */
+  --text-background: rgb(180, 180, 180); /* used against lighter backgrounds */
   --outline-color: rgb(45, 55, 72);
-  --active-color: #b3bfd4;
+  --active-color: #3a69c7d6;
   --button-hover-color: rgba(128, 128, 128, 0.2);
-  --code-block-color: rgb(45, 55, 72);
-  --error-color: rgb(231, 123, 123);
+  --code-block-color: rgba(0, 0, 0, 0.4);
+  --error-color: rgba(237, 67, 67, 0.722);
 
   color: var(--text-primary);
-  background-color: var(--background-color);
+  background-color: rgba(0, 0, 0, 0.8);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -29,7 +29,7 @@
 }
 
 a {
-  color: #204587;
+  color: #3b7ef0;
   cursor: pointer;
 }
 
@@ -43,11 +43,12 @@ svg {
   left: 0;
   right: 0;
   background-color: #204587;
-  color: var(--background-color);
+  color: var(--text-primary);
   padding: 0.75rem;
   font-weight: bold;
   font-size: small;
   z-index: 1000;
+  line-height: 1rem;
 }
 
 body {
@@ -86,6 +87,9 @@ main {
   flex-direction: column;
   grid-area: main;
   overflow-y: auto;
+  border-radius: 10px;
+  background-color: var(--background-dark);
+  margin: 1rem;
 }
 
 main > h1 {

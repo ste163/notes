@@ -55,15 +55,15 @@ pnpm i
 ### Running
 
 ```bash
-# Run only the UI for the browser
-pnpm start:dev:ui:web
+# Run desktop application through Tauri
+pnpm start:dev:tauri
 ```
 
 or
 
 ```bash
-# Run desktop application through Tauri
-pnpm start:dev:tauri
+# Run only the UI for the browser
+pnpm start:dev:ui:web
 ```
 
 ### Updating Tauri/Rust Cargo packages

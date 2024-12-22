@@ -1,7 +1,7 @@
 import { DIALOGS } from 'const'
 import { LifeCycleEvents, NoteEvents, createEvent } from 'event'
 import { Button, Input } from 'components'
-import { addNoteIcon, closeIcon } from 'icons'
+import { addNoteIcon } from 'icons'
 import { useLocalStorage } from 'use-local-storage'
 import type { Notes } from 'types'
 import './sidebar.css'
@@ -38,7 +38,7 @@ class Sidebar {
     document.querySelector('#sidebar-menu-controls')?.appendChild(
       new Button({
         testId: 'create-note',
-        title: 'Create note',
+        title: 'New note',
         className: 'note-create-button',
         onClick: () =>
           document.querySelector(`#${this.inputContainerId}`)
@@ -46,18 +46,7 @@ class Sidebar {
             : this.renderInput(),
         html: `
           ${addNoteIcon}
-          <span>Create<span/>`,
-      }).getElement()
-    )
-
-    document.querySelector('#sidebar-menu-controls')?.appendChild(
-      new Button({
-        testId: 'close-sidebar',
-        id: 'close-sidebar',
-        title: 'Close sidebar',
-        onClick: this.emitClose.bind(this),
-        html: `${closeIcon}`,
-        style: { border: 'none' },
+          <span>New<span/>`,
       }).getElement()
     )
 
@@ -128,27 +117,20 @@ class Sidebar {
     if (!container) return
     container.innerHTML = '' // reset container before rendering
 
-    const noteButtons = Object.values(notes)?.map(
-      ({ _id, title, updatedAt, createdAt }) =>
-        new Button({
-          id: _id,
-          testId: 'note-select',
-          title: 'Select note',
-          onClick: () =>
-            createEvent(LifeCycleEvents.QueryParamUpdate, {
-              noteId: _id,
-            }).dispatch(),
-          html: `
+    const noteButtons = Object.values(notes)?.map(({ _id, title }) =>
+      new Button({
+        id: _id,
+        testId: 'note-select',
+        title: 'Select note',
+        onClick: () =>
+          createEvent(LifeCycleEvents.QueryParamUpdate, {
+            noteId: _id,
+          }).dispatch(),
+        html: `
         <div>
           <div class='note-button-text-resize'>${title}</div>
-          <div class='select-note-date note-button-text-resize'>Updated: ${new Date(
-            updatedAt
-          ).toLocaleString()}</div>
-          <div class='select-note-date note-button-text-resize'>Created: ${new Date(
-            createdAt
-          ).toLocaleString()}</div>
         </div>`,
-        }).getElement()
+      }).getElement()
     )
 
     const contextMenuHandler = (id: string, event: Event) => {
@@ -254,12 +236,6 @@ class Sidebar {
 
     styleMainContainer()
     styleResizeHandle()
-  }
-
-  private emitClose() {
-    createEvent(LifeCycleEvents.QueryParamUpdate, {
-      sidebar: 'close',
-    }).dispatch()
   }
 
   private setActiveNoteInList() {

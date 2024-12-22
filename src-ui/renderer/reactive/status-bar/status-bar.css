@@ -3,11 +3,11 @@
   align-items: center;
   justify-content: space-between;
   font-size: small;
-  border-bottom: var(--outline-color) 0.13rem solid;
   padding: 0.25rem 0.5rem;
   overflow-y: hidden;
   overflow-x: auto;
   user-select: none; /* Prevents text selection */
+  color: var(--text-background);
 }
 
 #status-bar button {
@@ -15,6 +15,7 @@
   padding: 0 0.2rem;
   font-weight: inherit;
   font-size: inherit;
+  color: var(--text-background);
 }
 
 #status-bar button:hover {
@@ -40,11 +41,16 @@
 #status-bar-error-alert button {
   font-weight: bold;
   background-color: var(--error-color);
+  color: black;
   padding-right: 0.3rem;
 }
 
 #status-bar-error-alert button:hover {
   background-color: var(--error-color);
+}
+
+#status-bar-error-alert svg {
+  fill: black;
 }
 
 #status-bar-save-alert > div {
@@ -54,6 +60,7 @@
   font-weight: bold;
   border-radius: 0.3rem;
   background-color: var(--active-color);
+  color: var(--text-primary);
 }
 
 #status-bar-save-alert > div > svg {
@@ -65,7 +72,7 @@
   background-color: var(--button-hover-color);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 660px) {
   .status-bar-hide-on-mobile {
     display: none !important;
   }

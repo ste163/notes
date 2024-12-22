@@ -17,8 +17,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--background-color);
-  border: 0.13rem solid var(--outline-color);
+  background-color: rgba(84, 84, 84, 0.8);
+  backdrop-filter: blur(0.25rem);
   border-radius: 0.25rem;
   overflow-y: hidden;
   overflow-x: hidden;
@@ -57,7 +57,7 @@
 
 .dialog-content h3 {
   font-size: inherit;
-  line-height: normal;
+  line-height: 1.5rem;
   margin-top: 0.75rem;
   margin-bottom: 0.25rem;
 }

@@ -88,7 +88,7 @@ describe('sidebar', () => {
     cy.wait(DEFAULT_WAIT)
 
     // close the sidebar
-    cy.get(locators.sidebar.close).click()
+    cy.get(locators.statusBar.sidebarToggle).click()
     cy.get(locators.sidebar.mainElement).should('not.exist')
 
     // when resizing to a smaller screen, sidebar should stay hidden
@@ -145,7 +145,7 @@ describe('sidebar', () => {
     // opening the create note input, adding a title, but closing the sidebar and then reopening it
     // has closed the input. Opening the input again does not render the input title
     cy.get(locators.sidebar.createNote.input).type('My first note')
-    cy.get(locators.sidebar.close).click()
+    cy.get(locators.statusBar.sidebarToggle).click()
     cy.get(locators.statusBar.sidebarToggle).click()
     cy.get(locators.sidebar.createNote.input).should('not.exist')
     cy.get(locators.sidebar.createNote.button).click()
@@ -317,7 +317,7 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.createNote.button).should('be.visible')
 
     // closing sidebar from sidebar close button
-    cy.get(locators.sidebar.close).click()
+    cy.get(locators.statusBar.sidebarToggle).click()
     cy.location('search').should('eq', '?sidebar=close')
     cy.get(locators.sidebar.createNote.button).should('not.exist')
     cy.reload()
@@ -345,7 +345,11 @@ describe('sidebar', () => {
     cy.visit('/')
     cy.wait(DEFAULT_WAIT)
     // check the sidebar width is the default
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '230px')
+    cy.get(locators.sidebar.mainElement).should(
+      'have.css',
+      'width',
+      '229.99375px'
+    )
     // no ellipsis button as the editor is wide
     cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
 
@@ -354,12 +358,20 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.resizeHandle).trigger('mousemove', { clientX: 400 })
     cy.get(locators.sidebar.resizeHandle).trigger('mouseup')
 
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
+    cy.get(locators.sidebar.mainElement).should(
+      'have.css',
+      'width',
+      '399.99375px'
+    )
 
     // reload the page
     cy.reload()
     cy.wait(DEFAULT_WAIT)
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
+    cy.get(locators.sidebar.mainElement).should(
+      'have.css',
+      'width',
+      '399.99375px'
+    )
     // ellipsis button renders as the editor was resized
     cy.get(locators.editor.menu.ellipsisButton).should('be.visible')
   })
