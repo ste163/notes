@@ -11,7 +11,7 @@ button {
 
   cursor: pointer;
 
-  color: var(--text-primary);
+  color: rgb(55, 55, 55);
   background-color: transparent;
 
   transition: background-color 0.1s ease-in-out;
@@ -24,6 +24,7 @@ button:hover {
 button > svg {
   width: 1.2rem;
   margin: 0.1rem 0;
+  fill: rgb(55, 55, 55);
 }
 
 button > span {
@@ -31,13 +32,13 @@ button > span {
 }
 
 button.isActive {
-  background-color: var(--active-color);
+  background-color: var(--color);
 }
 
 button:disabled {
   background-color: transparent;
-  border-color: gray;
-  color: gray;
-  fill: gray;
+  border-color: rgb(70, 70, 70);
+  color: rgb(70, 70, 70);
+  fill: rgb(70, 70, 70);
   cursor: not-allowed;
 }

@@ -5,16 +5,16 @@
   font-weight: 400;
 
   /* TODO: revisit naming */
-  --background-color: rgb(251, 252, 255);
-  --text-primary: rgb(45, 55, 72);
+  --background-color: rgba(0, 0, 0, 0.6);
+  --text-primary: rgb(225, 225, 225);
   --outline-color: rgb(45, 55, 72);
-  --active-color: #b3bfd4;
+  --active-color: #4a6189;
   --button-hover-color: rgba(128, 128, 128, 0.2);
   --code-block-color: rgb(45, 55, 72);
   --error-color: rgb(231, 123, 123);
 
   color: var(--text-primary);
-  background-color: rgba(0, 0, 0, 0.116);
+  background-color: rgba(0, 0, 0, 0.1);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

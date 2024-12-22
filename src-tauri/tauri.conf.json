@@ -43,7 +43,7 @@
   },
   "app": {
     "withGlobalTauri": true,
-    "macOSPrivateApi": false,
+    "macOSPrivateApi": true,
     "windows": [
       {
         "devtools": true,
@@ -54,7 +54,9 @@
         "width": 800,
         "minHeight": 300,
         "height": 600,
-        "useHttpsScheme": false
+        "useHttpsScheme": false,
+        "transparent": true,
+        "titleBarStyle": "Visible"
       }
     ],
     "security": {
