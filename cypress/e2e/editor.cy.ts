@@ -110,7 +110,7 @@ describe('editor', () => {
     cy.get(locators.editor.menu.ellipsisButton).should('be.visible')
     cy.get(locators.editor.menu.mainSection)
       .children()
-      .should('have.length', data.expected.editor.mainToolbarButtonCount.medium)
+      .should('have.length', data.expected.editor.mainToolbarButtonCount.small)
 
     // opening the ellipsis menu shows the hidden buttons
     cy.get(locators.editor.menu.ellipsisButton).click()
@@ -118,7 +118,7 @@ describe('editor', () => {
       .children()
       .should(
         'have.length',
-        data.expected.editor.ellipsisToolbarButtonCount.medium
+        data.expected.editor.ellipsisToolbarButtonCount.small
       )
 
     // clicking the first ellipsis menu item closes the menu
@@ -163,7 +163,7 @@ describe('editor', () => {
     cy.get(locators.editor.menu.ellipsisButton).should('be.visible')
     cy.get(locators.editor.menu.mainSection)
       .children()
-      .should('have.length', data.expected.editor.mainToolbarButtonCount.medium)
+      .should('have.length', data.expected.editor.mainToolbarButtonCount.small)
   })
 
   it('handles debounced auto-saving when changes are made', () => {

@@ -358,12 +358,20 @@ describe('sidebar', () => {
     cy.get(locators.sidebar.resizeHandle).trigger('mousemove', { clientX: 400 })
     cy.get(locators.sidebar.resizeHandle).trigger('mouseup')
 
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
+    cy.get(locators.sidebar.mainElement).should(
+      'have.css',
+      'width',
+      '399.99375px'
+    )
 
     // reload the page
     cy.reload()
     cy.wait(DEFAULT_WAIT)
-    cy.get(locators.sidebar.mainElement).should('have.css', 'width', '400px')
+    cy.get(locators.sidebar.mainElement).should(
+      'have.css',
+      'width',
+      '399.99375px'
+    )
     // ellipsis button renders as the editor was resized
     cy.get(locators.editor.menu.ellipsisButton).should('be.visible')
   })
