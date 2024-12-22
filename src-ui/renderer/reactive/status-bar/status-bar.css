@@ -41,11 +41,16 @@
 #status-bar-error-alert button {
   font-weight: bold;
   background-color: var(--error-color);
+  color: black;
   padding-right: 0.3rem;
 }
 
 #status-bar-error-alert button:hover {
   background-color: var(--error-color);
+}
+
+#status-bar-error-alert svg {
+  fill: black;
 }
 
 #status-bar-save-alert > div {
@@ -55,6 +60,7 @@
   font-weight: bold;
   border-radius: 0.3rem;
   background-color: var(--active-color);
+  color: var(--text-primary);
 }
 
 #status-bar-save-alert > div > svg {

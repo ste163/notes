@@ -32,7 +32,7 @@ button > span {
 }
 
 button.isActive {
-  background-color: var(--color);
+  background-color: rgba(185, 185, 185, 0.25);
 }
 
 button:disabled {

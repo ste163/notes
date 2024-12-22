@@ -8,10 +8,10 @@
   --text-primary: rgb(225, 225, 225); /* used against the darkest background */
   --text-background: rgb(180, 180, 180); /* used against lighter backgrounds */
   --outline-color: rgb(45, 55, 72);
-  --active-color: #4a6189;
+  --active-color: #3a69c7d6;
   --button-hover-color: rgba(128, 128, 128, 0.2);
   --code-block-color: rgba(0, 0, 0, 0.4);
-  --error-color: rgb(231, 123, 123);
+  --error-color: rgba(237, 67, 67, 0.722);
 
   color: var(--text-primary);
   background-color: rgba(0, 0, 0, 0.8);
