@@ -11,7 +11,7 @@ button {
 
   cursor: pointer;
 
-  color: rgb(55, 55, 55);
+  color: rgb(40, 40, 40);
   background-color: transparent;
 
   transition: background-color 0.1s ease-in-out;
@@ -24,7 +24,7 @@ button:hover {
 button > svg {
   width: 1.2rem;
   margin: 0.1rem 0;
-  fill: rgb(55, 55, 55);
+  fill: rgb(40, 40, 40);
 }
 
 button > span {
