@@ -4,8 +4,9 @@ import {
   databaseIcon,
   deleteIcon,
   errorIcon,
-  fileListIcon,
+  sidebarUnfoldIcon,
   saveIcon,
+  sidebarFoldIcon,
 } from 'icons'
 import { createEvent, LifeCycleEvents, NoteEvents } from 'event'
 import { DIALOGS } from 'const'
@@ -49,7 +50,8 @@ class StatusBar {
             sidebar: sidebar === 'open' ? 'close' : 'open',
           }).dispatch()
         },
-        html: `${fileListIcon}`,
+        // TODO: this needs to be rendering based on state
+        html: `${urlController.getParams().sidebar === 'open' ? sidebarFoldIcon : sidebarUnfoldIcon}`,
         style: { border: 'none' },
       }).getElement()
     )
