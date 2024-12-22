@@ -4,13 +4,13 @@
   line-height: 24px;
   font-weight: 400;
 
-  /* TODO: revisit naming */
-  --background-color: rgba(0, 0, 0, 0.5);
-  --text-primary: rgb(225, 225, 225);
+  --background-dark: rgba(0, 0, 0, 0.5);
+  --text-primary: rgb(225, 225, 225); /* used against the darkest background */
+  --text-background: rgb(180, 180, 180); /* used against lighter backgrounds */
   --outline-color: rgb(45, 55, 72);
   --active-color: #4a6189;
   --button-hover-color: rgba(128, 128, 128, 0.2);
-  --code-block-color: rgb(45, 55, 72);
+  --code-block-color: rgba(0, 0, 0, 0.4);
   --error-color: rgb(231, 123, 123);
 
   color: var(--text-primary);
@@ -29,7 +29,7 @@
 }
 
 a {
-  color: #204587;
+  color: #3b7ef0;
   cursor: pointer;
 }
 
@@ -43,7 +43,7 @@ svg {
   left: 0;
   right: 0;
   background-color: #204587;
-  color: var(--background-color);
+  color: var(--background-dark);
   padding: 0.75rem;
   font-weight: bold;
   font-size: small;
@@ -87,7 +87,7 @@ main {
   grid-area: main;
   overflow-y: auto;
   border-radius: 10px;
-  background-color: var(--background-color);
+  background-color: var(--background-dark);
   margin: 1rem;
 }
 

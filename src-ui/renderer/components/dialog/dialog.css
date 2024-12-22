@@ -17,7 +17,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: var(--background-color);
+  background-color: rgba(84, 84, 84, 0.8);
+  backdrop-filter: blur(0.25rem);
   border-radius: 0.25rem;
   overflow-y: hidden;
   overflow-x: hidden;

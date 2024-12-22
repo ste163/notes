@@ -91,7 +91,7 @@
   position: absolute;
   z-index: 999;
 
-  background-color: var(--background-color);
+  background-color: var(--background-dark);
   box-shadow: 0 0.15rem 0.2rem 0 rgba(80, 80, 80, 0.099);
   border-radius: 0.3rem;
 
