@@ -56,13 +56,15 @@
         "height": 600,
         "useHttpsScheme": false,
         "transparent": true,
-        "titleBarStyle": "Visible"
+        "titleBarStyle": "Visible",
+        "hiddenTitle": true
       }
     ],
     "security": {
       "capabilities": [
-        "http",
-        "desktop-updater"
+        "default",
+        "desktop-updater",
+        "http"
       ],
       "csp": {
         "default-src": "self",          

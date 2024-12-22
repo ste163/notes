@@ -1,0 +1,15 @@
+{
+    "identifier": "default",
+    "description": "Default settings for desktop.",
+    "platforms": [
+      "macOS",
+      "windows",
+      "linux"
+    ],
+    "windows": [
+      "main"
+    ],
+    "permissions": [
+      "core:window:default"
+    ]
+  }
