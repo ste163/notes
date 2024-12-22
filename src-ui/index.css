@@ -43,11 +43,12 @@ svg {
   left: 0;
   right: 0;
   background-color: #204587;
-  color: var(--background-dark);
+  color: var(--text-primary);
   padding: 0.75rem;
   font-weight: bold;
   font-size: small;
   z-index: 1000;
+  line-height: 1rem;
 }
 
 body {

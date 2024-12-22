@@ -79,7 +79,7 @@ describe('editor', () => {
       .should('contain.text', 'Heading 1')
 
     // closing the sidebar renders all the buttons without ellipsis
-    cy.get(locators.sidebar.close).click()
+    cy.get(locators.statusBar.sidebarToggle).click()
     cy.wait(DEFAULT_WAIT)
     cy.get(locators.editor.menu.ellipsisButton).should('not.be.visible')
     cy.get(locators.editor.menu.mainSection)

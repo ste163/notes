@@ -28,7 +28,6 @@ export const locators = {
     save: '[data-testid="save-notification"]',
   },
   sidebar: {
-    close: '[data-testid="close-sidebar"]',
     createNote: {
       button: '[data-testid="create-note"]',
       cancel: '[data-testid="create-note-cancel"]',
