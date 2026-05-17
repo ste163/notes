@@ -48,12 +48,62 @@ interface AutoFixtures {
   clearDb: void
 }
 
+interface SyncFixtures {
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  connectToRemoteDb: void
+}
+
+const COUCH_URL = 'http://localhost:5984'
+const COUCH_AUTH = `Basic ${Buffer.from('admin:password').toString('base64')}`
+
 export const test = base.extend<AutoFixtures>({
   clearDb: [
     async ({ page }, use) => {
       await page.goto('/')
       await clearIndexDb(page)
       await page.evaluate(() => localStorage.clear())
+      await use()
+    },
+    { auto: true },
+  ],
+})
+
+export const syncTest = test.extend<SyncFixtures>({
+  connectToRemoteDb: [
+    async ({ page }, use) => {
+      // Ensure a clean, known CouchDB state for each test.
+      // Ignore 404 if the database does not yet exist.
+      await page.request.delete(`${COUCH_URL}/notes`, {
+        headers: { Authorization: COUCH_AUTH },
+        failOnStatusCode: false,
+      })
+      await page.request.put(`${COUCH_URL}/notes`, {
+        headers: { Authorization: COUCH_AUTH },
+      })
+
+      // Inject credentials so initRemoteConnection() picks them up on reload.
+      await page.evaluate(() => {
+        localStorage.setItem(
+          'remote-db-details',
+          JSON.stringify({
+            username: 'admin',
+            password: 'password',
+            host: 'localhost',
+            port: '5984',
+          })
+        )
+      })
+
+      // Reload triggers DOMContentLoaded → DatabaseEvents.Init → initRemoteConnection().
+      await page.reload()
+
+      // Wait for PouchDB's first `paused` event (initial sync complete, even on empty DB),
+      // which dispatches SyncingPaused and renders the status-bar-synced-on element.
+      await page.locator(locators.statusBar.syncedOn).waitFor({
+        state: 'attached',
+        timeout: 15_000,
+      })
+
       await use()
     },
     { auto: true },
