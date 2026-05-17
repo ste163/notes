@@ -386,7 +386,6 @@ test.describe('sidebar', () => {
   })
 
   test('resizing the sidebar saves it to local storage', async ({ page }) => {
-    // use 1000px viewport to match Cypress default so sidebar drag to 400px
     // makes editor narrow enough (~568px) to trigger the ellipsis menu (<700px threshold)
     await page.setViewportSize({ width: 1000, height: 660 })
     await page.goto('/')
