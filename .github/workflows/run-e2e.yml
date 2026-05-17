@@ -1,11 +1,11 @@
 name: browser-e2e-tests
 on:
-    push:
-      branches:
-        - main
-    pull_request:
-      branches:
-        - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,7 +21,18 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 9
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
+      - name: setup node
+        uses: actions/setup-node@v4
         with:
-            start: pnpm start:preview:ui
+          node-version: 22
+          cache: pnpm
+      - name: install dependencies
+        run: pnpm install
+      - name: install playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+      - name: start preview server
+        run: pnpm start:preview:ui &
+      - name: wait for server
+        run: until curl -s http://localhost:1420 > /dev/null; do sleep 1; done
+      - name: run e2e tests
+        run: pnpm test:e2e:headless
