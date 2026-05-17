@@ -42,7 +42,13 @@ export async function validateContent(
   ).toHaveText(expectedContent)
 }
 
-export const test = base.extend({
+interface AutoFixtures {
+  // Playwright recommends this approach
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  clearDb: void
+}
+
+export const test = base.extend<AutoFixtures>({
   clearDb: [
     async ({ page }, use) => {
       await page.goto('/')

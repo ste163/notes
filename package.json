@@ -51,7 +51,7 @@
     "pouchdb-find": "9.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "1.60.0",
     "@tauri-apps/cli": "2.2.4",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
