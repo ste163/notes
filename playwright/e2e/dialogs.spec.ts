@@ -28,15 +28,23 @@ test.describe('dialogs', () => {
     await expect(page.locator(locators.dialog.about.agplContent)).toBeVisible()
     // and can close it
     await page.locator(locators.dialog.about.agplButton).click()
-    await expect(page.locator(locators.dialog.about.agplContent)).not.toBeAttached()
+    await expect(
+      page.locator(locators.dialog.about.agplContent)
+    ).not.toBeAttached()
 
     // can toggle the apache license visibility
     await page.locator(locators.dialog.about.apacheButton).click()
-    await page.locator(locators.dialog.about.apacheContent).scrollIntoViewIfNeeded()
-    await expect(page.locator(locators.dialog.about.apacheContent)).toBeVisible()
+    await page
+      .locator(locators.dialog.about.apacheContent)
+      .scrollIntoViewIfNeeded()
+    await expect(
+      page.locator(locators.dialog.about.apacheContent)
+    ).toBeVisible()
     // and can close it
     await page.locator(locators.dialog.about.apacheButton).click()
-    await expect(page.locator(locators.dialog.about.apacheContent)).not.toBeAttached()
+    await expect(
+      page.locator(locators.dialog.about.apacheContent)
+    ).not.toBeAttached()
 
     await page.locator(locators.dialog.close).click()
 

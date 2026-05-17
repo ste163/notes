@@ -1,4 +1,11 @@
-import { test, expect, createNote, writeContent, validateContent } from '../fixtures'
+import {
+  test,
+  expect,
+  createNote,
+  writeContent,
+  validateContent,
+  focusEditorAtEnd,
+} from '../fixtures'
 import { locators, data } from '../constants'
 
 /**
@@ -6,14 +13,19 @@ import { locators, data } from '../constants'
  * Uses IndexedDB (not CouchDB).
  */
 test.describe('flow', () => {
-  test('can create, edit, write, select, and delete notes', async ({ page }) => {
+  test('can create, edit, write, select, and delete notes', async ({
+    page,
+  }) => {
     await page.goto('/')
 
     // render the getting started section as there is no data
     await validateContent(page, data.expected.editor.content.default)
 
     // user can't edit the get started text
-    const editorFirstChild = page.locator(locators.editor.content).locator(':scope > *').first()
+    const editorFirstChild = page
+      .locator(locators.editor.content)
+      .locator(':scope > *')
+      .first()
     await expect(editorFirstChild).toHaveAttribute('contenteditable', 'false')
 
     // status bar state is expected (ie, disabled)
@@ -34,7 +46,9 @@ test.describe('flow', () => {
 
     // can edit the title
     await page.locator(locators.editTitle.button).click()
-    await expect(page.locator(locators.editTitle.input)).toHaveValue('My first note')
+    await expect(page.locator(locators.editTitle.input)).toHaveValue(
+      'My first note'
+    )
     await page.locator(locators.editTitle.input).pressSequentially(' - updated')
     await page.locator(locators.editTitle.input).press('Enter')
 
@@ -43,21 +57,31 @@ test.describe('flow', () => {
 
     // can attempt to update title but can hit escape to cancel
     await page.locator(locators.editTitle.button).click()
-    await expect(page.locator(locators.editTitle.input)).toHaveValue('My first note - updated')
-    await page.locator(locators.editTitle.input).pressSequentially(' - Do not save this!')
+    await expect(page.locator(locators.editTitle.input)).toHaveValue(
+      'My first note - updated'
+    )
+    await page
+      .locator(locators.editTitle.input)
+      .pressSequentially(' - Do not save this!')
     await page.locator(locators.editTitle.input).press('Escape')
     // the note update was cancelled
     await expect(page.locator(locators.notification.save)).not.toBeAttached()
     await page.locator(locators.editTitle.button).click()
-    await expect(page.locator(locators.editTitle.input)).toHaveValue('My first note - updated')
+    await expect(page.locator(locators.editTitle.input)).toHaveValue(
+      'My first note - updated'
+    )
 
     // created note renders in sidebar
     await expect(page.locator(locators.sidebar.note)).toHaveCount(1)
-    await expect(page.locator(locators.sidebar.note)).toContainText('My first note - updated')
+    await expect(page.locator(locators.sidebar.note)).toContainText(
+      'My first note - updated'
+    )
 
     // selecting the note again renders the same note
     await page.locator(locators.sidebar.note).click()
-    await expect(page.locator(locators.sidebar.note)).toContainText('My first note - updated')
+    await expect(page.locator(locators.sidebar.note)).toContainText(
+      'My first note - updated'
+    )
 
     // can write and save content
     await writeContent(page, 'Lets add some content!')
@@ -65,6 +89,9 @@ test.describe('flow', () => {
     // can add content after opening and closing a dialog (editor stays enabled)
     await page.locator(locators.statusBar.delete).click()
     await page.locator(locators.dialog.close).click()
+    // dialog.close() returns focus to the delete button, not the editor;
+    // click to refocus via physical click (no TipTap async selection reset) then move to end
+    await focusEditorAtEnd(page)
     await writeContent(page, ' Extra.')
     await validateContent(page, 'Lets add some content! Extra.')
 
@@ -78,7 +105,9 @@ test.describe('flow', () => {
 
     // should have opened the second note — check the title and content
     await page.locator(locators.editTitle.button).click()
-    await expect(page.locator(locators.editTitle.input)).toHaveValue('My second note')
+    await expect(page.locator(locators.editTitle.input)).toHaveValue(
+      'My second note'
+    )
     await page.locator(locators.editor.content).click()
     // because the value wasn't changed, don't save
     await expect(page.locator(locators.notification.save)).not.toBeAttached()
@@ -90,15 +119,21 @@ test.describe('flow', () => {
 
     // sidebar renders the two notes
     await expect(page.locator(locators.sidebar.note)).toHaveCount(2)
-    await expect(page.locator(locators.sidebar.note).nth(0)).toContainText('My second note')
-    await expect(page.locator(locators.sidebar.note).nth(1)).toContainText('My first note - updated')
+    await expect(page.locator(locators.sidebar.note).nth(0)).toContainText(
+      'My second note'
+    )
+    await expect(page.locator(locators.sidebar.note).nth(1)).toContainText(
+      'My first note - updated'
+    )
     await expect(page.locator(locators.sidebar.note).nth(1)).toBeEnabled()
 
     // select first note and renders it
     await page.locator(locators.sidebar.note).nth(1).click()
 
     await page.locator(locators.editTitle.button).click()
-    await expect(page.locator(locators.editTitle.input)).toHaveValue('My first note - updated')
+    await expect(page.locator(locators.editTitle.input)).toHaveValue(
+      'My first note - updated'
+    )
     await page.locator(locators.editTitle.input).press('Enter')
 
     // validate the first content was loaded
@@ -107,7 +142,9 @@ test.describe('flow', () => {
     // auto saving works
     await page.locator(locators.sidebar.note).nth(0).click()
     await page.locator(locators.editTitle.button).click()
-    await expect(page.locator(locators.editTitle.input)).toHaveValue('My second note')
+    await expect(page.locator(locators.editTitle.input)).toHaveValue(
+      'My second note'
+    )
     await page.locator(locators.editTitle.input).press('Enter')
     await validateContent(page, 'Second note content')
 
@@ -117,6 +154,7 @@ test.describe('flow', () => {
 
     // can close modal and the editor is enabled again
     await page.locator(locators.dialog.close).click()
+    await focusEditorAtEnd(page)
     await writeContent(page, 'More content! ')
 
     // and then the note can really be deleted
@@ -134,7 +172,9 @@ test.describe('flow', () => {
     await expect(page.locator(locators.statusBar.savedOn)).not.toBeAttached()
     // only one note renders in sidebar
     await expect(page.locator(locators.sidebar.note)).toHaveCount(1)
-    await expect(page.locator(locators.sidebar.note)).toContainText('My first note - updated')
+    await expect(page.locator(locators.sidebar.note)).toContainText(
+      'My first note - updated'
+    )
 
     // can select the first note and the status bar is enabled again
     await page.locator(locators.sidebar.note).click()

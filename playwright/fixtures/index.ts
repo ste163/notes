@@ -9,25 +9,40 @@ export async function createNote(page: Page, title: string): Promise<void> {
   await page.locator(locators.sidebar.createNote.input).fill(title)
   await page.locator(locators.sidebar.createNote.save).click()
   // wait for the URL to reflect the new noteId so the note is fully selected
-  await page.waitForURL((url) => new URLSearchParams(url.search).get('noteId') !== prevNoteId)
+  await page.waitForURL(
+    (url) => new URLSearchParams(url.search).get('noteId') !== prevNoteId
+  )
   await expect(page.locator(locators.statusBar.save)).toBeEnabled()
 }
 
-export async function writeContent(page: Page, content: string): Promise<void> {
-  await page.locator(locators.editor.content).locator(':scope > *').first().pressSequentially(content)
+export async function focusEditorAtEnd(page: Page): Promise<void> {
+  const inner = page
+    .locator(locators.editor.content)
+    .locator(':scope > *')
+    .first()
+  await inner.click()
+  await expect(inner).toHaveClass(/ProseMirror-focused/)
+  await page.keyboard.press('End')
 }
 
-export async function validateContent(page: Page, expectedContent: string): Promise<void> {
+export async function writeContent(page: Page, content: string): Promise<void> {
+  await page
+    .locator(locators.editor.content)
+    .locator(':scope > *')
+    .first()
+    .pressSequentially(content)
+}
+
+export async function validateContent(
+  page: Page,
+  expectedContent: string
+): Promise<void> {
   await expect(
     page.locator(locators.editor.content).locator(':scope > *').first()
   ).toHaveText(expectedContent)
 }
 
-type Fixtures = {
-  clearDb: void
-}
-
-export const test = base.extend<Fixtures>({
+export const test = base.extend({
   clearDb: [
     async ({ page }, use) => {
       await page.goto('/')

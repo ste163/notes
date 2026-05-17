@@ -1,5 +1,5 @@
 # Logs
-logs
+
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -28,3 +28,4 @@ src-tauri/target/
 
 # Cypress
 cypress/screenshots
+test-results
