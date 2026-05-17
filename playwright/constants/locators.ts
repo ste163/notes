@@ -46,6 +46,6 @@ export const locators = {
     save: '[data-testid="save-note"]',
     savedOn: '[data-testid="status-bar-saved-on"]',
     sidebarToggle: '[data-testid="status-bar-sidebar-toggle"]',
-    syncedOn: '[data-testid="status-bar-synced-on"]', // TODO: test when CouchDB is connected
+    syncedOn: '[data-testid="status-bar-synced-on"]',
   },
 }

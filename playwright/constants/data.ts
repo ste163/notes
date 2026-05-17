@@ -12,7 +12,6 @@ export const data = {
         large: 0,
       },
       content: {
-        // odd spacing is because this shows as unformatted from a data perspective
         default: 'Get startedCreate or select a note from the sidebar.',
       },
     },
