@@ -6,6 +6,7 @@
   "scripts": {
     "build:ui:web": "tsc && vite build --mode web",
     "build:ui:desktop": "tsc && vite build --mode desktop",
+    "build:ui:e2e": "tsc && vite build --mode e2e",
     "build:android": "pnpm tauri android build",
     "build:desktop": "pnpm tauri build",
     "start:dev:android": "pnpm tauri android dev --open",
@@ -14,8 +15,7 @@
     "start:dev:ui:desktop": "vite --mode desktop",
     "start:preview:ui": "pnpm run build:ui:web && vite preview --port 1420",
     "test": "vitest --watch=false",
-    "test:e2e": "playwright test --ui",
-    "test:e2e:headless": "playwright test",
+    "test:e2e": "docker compose -f docker-compose.e2e.yml up -d --build && playwright test; docker compose -f docker-compose.e2e.yml down",
     "test:watch": "vitest --watch=true",
     "pre-commit": "tsc --noEmit && eslint .",
     "pre-push": "pnpm test",

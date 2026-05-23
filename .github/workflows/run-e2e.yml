@@ -30,9 +30,5 @@ jobs:
         run: pnpm install
       - name: install playwright browsers
         run: pnpm exec playwright install --with-deps chromium
-      - name: start preview server
-        run: pnpm start:preview:ui &
-      - name: wait for server
-        run: until curl -s http://localhost:1420 > /dev/null; do sleep 1; done
       - name: run e2e tests
-        run: pnpm test:e2e:headless
+        run: pnpm test:e2e

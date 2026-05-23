@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    ports:
+      - "4173:1420"
+
+  couchdb:
+    image: couchdb:3
+    ports:
+      - "5984:5984"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - ./couchdb/local.ini:/opt/couchdb/etc/local.d/cors.ini
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5984/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
